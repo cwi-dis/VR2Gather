@@ -63,11 +63,13 @@ namespace VRT.Orchestrator.Wrapping
 
         //Session
         private Session mySession;
-        private List<Session> availableSessions;
+        private List<Session> availableSessions = new List<Session>();
 
         //Scenario
-        private ScenarioInstance myScenario;
+        private Scenario myScenario;
+#if orch_removed_2
         private List<Scenario> availableScenarios;
+#endif
 
         // user Login state
         private bool userIsLogged = false;
@@ -89,7 +91,7 @@ namespace VRT.Orchestrator.Wrapping
         private bool autoStopOnLeave = false;
 #endregion
 
-        #region public
+#region public
 
         //Orchestrator Controller Singleton
         public static OrchestratorController Instance {
@@ -135,7 +137,7 @@ namespace VRT.Orchestrator.Wrapping
         public Action<string> OnUserLeaveSessionEvent;
 
         // Orchestrator Scenarios Events
-        public Action<ScenarioInstance> OnGetScenarioEvent;
+        public Action<Scenario> OnGetScenarioEvent;
         public Action<Scenario[]> OnGetScenariosEvent;
 
         // Orchestrator User Events
@@ -175,8 +177,10 @@ namespace VRT.Orchestrator.Wrapping
         public User SelfUser { get { return me; } set { me = value; } }
         public User[] AvailableUserAccounts { get { return availableUserAccounts?.ToArray(); } }
         public User[] ConnectedUsers { get { return connectedUsers?.ToArray(); } }
+#if orch_removed_2
         public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
-        public ScenarioInstance MyScenario { get { return myScenario; } }
+#endif
+        public Scenario MyScenario { get { return myScenario; } }
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public Session MySession { get { return mySession; } }
 
@@ -184,7 +188,7 @@ namespace VRT.Orchestrator.Wrapping
 
 #endregion
 
-        #region Unity
+#region Unity
 
         private void Awake() {
             
@@ -431,8 +435,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        public void AddSession(string pScenarioID, string pSessionName, string pSessionDescription, string pSessionProtocol) {
-            orchestratorWrapper.AddSession(pScenarioID, pSessionName, pSessionDescription, pSessionProtocol);
+        public void AddSession(string pScenarioID, Scenario scOrch, string pSessionName, string pSessionDescription, string pSessionProtocol) {
+            myScenario = scOrch;
+            orchestratorWrapper.AddSession(pScenarioID, scOrch, pSessionName, pSessionDescription, pSessionProtocol);
         }
 
         public void OnAddSessionResponse(ResponseStatus status, Session session) {
@@ -454,9 +459,11 @@ namespace VRT.Orchestrator.Wrapping
 
             availableSessions.Add(session);
             OnAddSessionEvent?.Invoke(session);
+#if orch_removed_2
 
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
+#endif
         }
 
         public void GetSessionInfo() {
@@ -485,6 +492,7 @@ namespace VRT.Orchestrator.Wrapping
 
             OnSessionInfoEvent?.Invoke(session);
         }
+#if orch_removed_2
 
         public void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario) {
             if (status.Error != 0) {
@@ -497,7 +505,7 @@ namespace VRT.Orchestrator.Wrapping
             myScenario = scenario;
             OnGetScenarioEvent?.Invoke(myScenario);
         }
-
+#endif
         public void DeleteSession(string pSessionID) {
             orchestratorWrapper.DeleteSession(pSessionID);
         }
@@ -538,15 +546,16 @@ namespace VRT.Orchestrator.Wrapping
             // Simulate user join a session for each connected users
             foreach (string id in session.sessionUsers) {
                 if (id != me.userId) {
-                    OnUserJoinedSession(id);
+                    OnUserJoinedSession(id, null);
                 }
             }
 
             OnJoinSessionEvent?.Invoke(mySession);
             OnSessionJoinedEvent?.Invoke();
-
+#if orch_removed_2
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
+#endif
         }
 
         public void LeaveSession() {
@@ -594,10 +603,22 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        public void OnUserJoinedSession(string userID) {
+        public void OnUserJoinedSession(string userID, User user) {
             // Someone as joined the session
+            if (string.IsNullOrEmpty(userID))
+            {
+                Debug.LogError("OrchestratorController: OnUserJoinedSession: empty userID");
+            }
+            if (user == null)
+            {
+                user = GetUser(userID);
+                if (user == null)
+                {
+                    Debug.LogError($"OrchestratorController: OnUserJoinedSession: userID {userID} unknown");
+                }
+            }
             if (!string.IsNullOrEmpty(userID)) {
-                if (enableLogging) Debug.Log("OrchestratorController: OnUserJoinedSession: User " + GetUser(userID).userName + " joined the session.");
+                if (enableLogging) Debug.Log("OrchestratorController: OnUserJoinedSession: User " + user.userName + " joined the session.");
                 orchestratorWrapper.GetSessionInfo();
                 OnUserJoinSessionEvent?.Invoke(userID);
             }
@@ -620,10 +641,10 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        #endregion
+#endregion
 
-        #region Scenarios
-
+#region Scenarios
+#if orch_removed_2
         public void AddScenario(Scenario scOrch)
         {
             orchestratorWrapper.AddScenario(scOrch);
@@ -651,7 +672,7 @@ namespace VRT.Orchestrator.Wrapping
                 orchestratorWrapper.GetSessions();
             }
         }
-
+#endif
 #endregion
 
 #region Users
@@ -670,11 +691,12 @@ namespace VRT.Orchestrator.Wrapping
 
             availableUserAccounts = users;
             OnGetUsersEvent?.Invoke(users.ToArray());
-
+#if orch_removed_2
             if (isAutoRetrievingData) {
                 // auto retriving phase: call next
                 orchestratorWrapper.GetScenarios();
             }
+#endif
         }
 
 
@@ -911,8 +933,8 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
     }
 }

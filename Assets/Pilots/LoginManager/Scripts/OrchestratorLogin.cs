@@ -1045,8 +1045,10 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
             OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
+#if orch_removed_2
             OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
+#endif
 
             OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
@@ -1077,8 +1079,10 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
             OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
+#if orch_removed_2
             OrchestratorController.Instance.OnGetScenarioEvent -= OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent -= OnGetScenariosHandler;
+#endif
 
             OrchestratorController.Instance.OnGetUsersEvent -= OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent -= OnAddUserHandler;
@@ -1197,8 +1201,11 @@ namespace VRT.Pilots.LoginManager
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
             OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
-            ForwardScenariosToOrchestrator();
+#if orch_removed_2
+           ForwardScenariosToOrchestrator();
+#endif
         }
+#if orch_removed_2
 
         private void ForwardScenariosToOrchestrator()
         {
@@ -1211,6 +1218,7 @@ namespace VRT.Pilots.LoginManager
                 OrchestratorController.Instance.AddScenario(scOrch);
             }
         }
+#endif
         // Check saved used credentials.
         private void CheckRememberMe()
         {
@@ -1337,7 +1345,10 @@ namespace VRT.Pilots.LoginManager
         {
             string protocol = SessionConfig.ProtocolToString(SessionConfig.Instance.protocolType);
 
-            OrchestratorController.Instance.AddSession(ScenarioRegistry.Instance.Scenarios[scenarioIdDrop.value].scenarioId,
+            ScenarioRegistry.ScenarioInfo scenarioInfo = ScenarioRegistry.Instance.Scenarios[scenarioIdDrop.value];
+            Scenario scenario = scenarioInfo.AsScenario();
+            OrchestratorController.Instance.AddSession(scenarioInfo.scenarioId,
+                                                        scenario,
                                                         sessionNameIF.text,
                                                         sessionDescriptionIF.text,
                                                         protocol);
@@ -1402,7 +1413,7 @@ namespace VRT.Pilots.LoginManager
                 RemoveComponentsFromList(usersSession.transform);
             }
         }
-
+#if orch_removed_2
         private void OnGetScenarioInstanceInfoHandler(ScenarioInstance scenario)
         {
             if (scenario != null)
@@ -1412,7 +1423,7 @@ namespace VRT.Pilots.LoginManager
                 UpdateUsersSession(usersSession);
             }
         }
-
+#endif
         private void OnDeleteSessionHandler()
         {
             if (developerMode) Debug.Log("OrchestratorLogin: OnDeleteSessionHandler: Session deleted");
@@ -1523,10 +1534,10 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-#endregion
+        #endregion
 
 #region Scenarios
-
+#if orch_removed_2
         private void OnGetScenariosHandler(Scenario[] scenarios)
         {
             if (scenarios != null && scenarios.Length > 0)
@@ -1538,6 +1549,7 @@ namespace VRT.Pilots.LoginManager
                     Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
+#endif
 
 #endregion
 

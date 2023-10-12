@@ -39,7 +39,7 @@ namespace VRT.Orchestrator.Wrapping
     // from the session updates by the orchestrator
     public interface IUserSessionEventsListener
     {
-        void OnUserJoinedSession(string userID);
+        void OnUserJoinedSession(string userID, User user);
         void OnUserLeftSession(string userID);
     }
 
@@ -65,10 +65,11 @@ namespace VRT.Orchestrator.Wrapping
         void OnDeleteSessionResponse(ResponseStatus status);
         void OnJoinSessionResponse(ResponseStatus status, Session session);
         void OnLeaveSessionResponse(ResponseStatus status);
+#if orch_removed_2
 
         void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios);
         void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario);
-
+#endif
         void OnGetUsersResponse(ResponseStatus status, List<User> scenarios);
         void OnAddUserResponse(ResponseStatus status, User user);
         void OnGetUserInfoResponse(ResponseStatus status, User user);

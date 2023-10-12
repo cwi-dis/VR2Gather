@@ -273,7 +273,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 
-        internal void AddScenario(Scenario scOrch)
+        internal void _AddScenario(Scenario scOrch)
         {
             OrchestratorCommand command = GetOrchestratorCommand("AddScenario");
             command.GetParameter("scenarioId").ParamValue = scOrch.scenarioId;
@@ -282,16 +282,24 @@ namespace VRT.Orchestrator.Wrapping
             OrchestrationSocketIoManager.EmitCommand(command);
         }
 
-        private void OnAddScenarioResponse(OrchestratorCommand command, OrchestratorResponse response)
+        private void _OnAddScenarioResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             // Just ignore the response. We'll get another error later when we create a session.
         }
 
-        public void AddSession(string scenarioId, string sessionName, string sessionDescription, string sessionProtocol)
+        public void AddSession(string scenarioId, Scenario scenario, string sessionName, string sessionDescription, string sessionProtocol)
         {
+            
             OrchestratorCommand command = GetOrchestratorCommand("AddSession");
             command.GetParameter("scenarioId").ParamValue = scenarioId;
+            if (scenario != null)
+            {
+                // This is gross. Have to go via string to get a JsonData.
+                string jsonString = JsonUtility.ToJson(scenario);
+                JsonData json = JsonMapper.ToObject(jsonString);
+                command.GetParameter("scenarioDefinition").ParamValue = json;
+            }
             command.GetParameter("sessionName").ParamValue = sessionName;
             command.GetParameter("sessionDescription").ParamValue = sessionDescription;
             command.GetParameter("sessionProtocol").ParamValue = sessionProtocol;
@@ -377,6 +385,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLeaveSessionResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
+#if orch_removed_2
 
         public void GetScenarios()
         {
@@ -406,7 +415,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetSecenarioInstanceInfoResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetScenarioInstanceInfoResponse(status, scenario);
         }
-
+#endif
         public void GetUsers()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetUsers");
@@ -574,7 +583,7 @@ namespace VRT.Orchestrator.Wrapping
 
 #endregion
 
-        #region remote response
+#region remote response
 
         // messages from the orchestrator
         private void OnMessageSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
@@ -621,7 +630,7 @@ namespace VRT.Orchestrator.Wrapping
 
                     foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
-                        e?.OnUserJoinedSession(lUserID);
+                        e?.OnUserJoinedSession(lUserID, null);
                     }
 
                     break;
@@ -667,7 +676,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 #endregion
 
-        #region grammar definition
+#region grammar definition
         // declare te available commands, their parameters and the callbacks that should be used for the response of each command
         public void InitGrammar()
         {
@@ -685,6 +694,7 @@ namespace VRT.Orchestrator.Wrapping
 
                 //NTP
                 new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
+#if orch_removed_2
 
                 // scenarios
                 new OrchestratorCommand("AddScenario", new List<Parameter>
@@ -695,6 +705,7 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnAddScenarioResponse
                 ),
+#endif
                 //sessions
                 new OrchestratorCommand("AddSession", new List<Parameter>
                 {
@@ -702,6 +713,7 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("sessionName", typeof(string)),
                     new Parameter("sessionDescription", typeof(string)),
                     new Parameter("sessionProtocol", typeof(string)),
+                    new Parameter("scenarioDefinition", typeof(string))
                 },
                 OnAddSessionResponse),
                 new OrchestratorCommand("GetSessions", null, OnGetSessionsResponse),
@@ -718,7 +730,7 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnJoinSessionResponse),
                 new OrchestratorCommand("LeaveSession", null, OnLeaveSessionResponse),
-
+#if orch_removed_2
                 //scenarios
                 new OrchestratorCommand("GetScenarios", null, OnGetScenariosResponse),
                 new OrchestratorCommand("GetScenarioInstanceInfo", new List<Parameter>
@@ -726,7 +738,7 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("scenarioId", typeof(string))
                 },
                 OnGetScenarioInstanceInfoResponse),
-
+#endif
                 //users
                 new OrchestratorCommand("GetUsers", null, OnGetUsersResponse),
                 new OrchestratorCommand("GetUserInfo",
@@ -837,6 +849,6 @@ namespace VRT.Orchestrator.Wrapping
             return null;
         }
 
-        #endregion
+#endregion
     }
 }

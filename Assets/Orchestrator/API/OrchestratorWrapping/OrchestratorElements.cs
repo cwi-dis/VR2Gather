@@ -165,7 +165,7 @@ namespace VRT.Orchestrator.Wrapping
             return scenarioName + " (" + scenarioDescription + ")";
         }
     }
-
+#if orch_removed_2
     public class ScenarioInstance : OrchestratorElement
     {
         public string scenarioRefId; //store reference on the source scenario
@@ -184,7 +184,7 @@ namespace VRT.Orchestrator.Wrapping
             return scenarioName + " (" + scenarioDescription + ")";
         }
     }
-
+#endif
     public class Session : OrchestratorElement
     {
         public string sessionId;
