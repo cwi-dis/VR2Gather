@@ -29,7 +29,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private bool developerMode = true;
 
         private static OrchestratorLogin instance;
-
+        
         #region GUI Components
 
         [Tooltip("This user is the master of the session")]
@@ -529,6 +529,9 @@ namespace VRT.Pilots.LoginManager
 
             // Font to build gui components for logs!
             //MenuFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+
+            // Fill scenarios
+            UpdateScenarios();
 
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
             UpdateRepresentations(representationTypeConfigDropdown);
