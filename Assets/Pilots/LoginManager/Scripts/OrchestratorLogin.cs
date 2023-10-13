@@ -291,22 +291,23 @@ namespace VRT.Pilots.LoginManager
         private void UpdateUsersSession(Transform container)
         {
             RemoveComponentsFromList(usersSession.transform);
-            if (OrchestratorController.Instance.ConnectedUsers != null)
+            Session session = OrchestratorController.Instance.CurrentSession;
+            if (session == null)
             {
-                foreach (User u in OrchestratorController.Instance.ConnectedUsers)
-                {
-                    //AddTextComponentOnContent(container.transform, u.userName);
-                    AddUserComponentOnContent(container.transform, u);
-                }
-                sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
-                // We may be able to continue auto-starting
-                if (VRTConfig.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
+                Debug.Log("xxxjack OrchestratorLogin: UpdateUsersSession: no current session");
+                return;
             }
-            else
+            User[] sessionUsers = session.GetUsers();
+            foreach (User u in sessionUsers)
             {
-                if (developerMode) Debug.Log("OrchestratorLogin: UpdateUsersSession: ConnectedUsers was null");
+                //AddTextComponentOnContent(container.transform, u.userName);
+                AddUserComponentOnContent(container.transform, u);
             }
+            sessionNumUsersText.text = sessionUsers.Length.ToString() /*+ "/" + "4"*/;
+            Debug.Log($"xxxjack OrchestratorLogin: UpdateUsersSession: {sessionUsers.Length} users in session");
+            // We may be able to continue auto-starting
+            if (VRTConfig.Instance.AutoStart != null)
+                Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
         }
 
         private void UpdateSessions(Transform container)
@@ -1574,19 +1575,20 @@ namespace VRT.Pilots.LoginManager
             if (developerMode) Debug.Log("OrchestratorLogin: OnGetUsersHandler: Users Updated");
 
             // Update the sfuData if is in session.
-            if (OrchestratorController.Instance.ConnectedUsers != null)
+            Session session = OrchestratorController.Instance.CurrentSession;
+
+            if ( session != null)
             {
-                for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i)
+                foreach(User u in users)
                 {
-                    foreach (User u in users)
+                    User sessionUser = session.GetUser(u.userId);
+                    if (sessionUser != null)
                     {
-                        if (OrchestratorController.Instance.ConnectedUsers[i].userId == u.userId)
-                        {
-                            OrchestratorController.Instance.ConnectedUsers[i].sfuData = u.sfuData;
-                            OrchestratorController.Instance.ConnectedUsers[i].userData = u.userData;
-                        }
+                        sessionUser.userData = u.userData;
+                        sessionUser.sfuData = u.sfuData;
                     }
                 }
+                
             }
 
             UpdateUsersSession(usersSession);
