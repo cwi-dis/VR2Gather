@@ -70,9 +70,9 @@ namespace VRT.Orchestrator.Wrapping
         void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios);
         void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario);
         void OnGetUsersResponse(ResponseStatus status, List<User> scenarios);
-#endif
         void OnAddUserResponse(ResponseStatus status, User user);
         void OnGetUserInfoResponse(ResponseStatus status, User user);
+#endif
         void OnUpdateUserDataResponse(ResponseStatus status);
         void OnUpdateUserDataJsonResponse(ResponseStatus status);
 

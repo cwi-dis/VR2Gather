@@ -430,7 +430,6 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OnGetUsersResponse: OnSocketConnect: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetUsersResponse(status, list);
         }
-#endif
 
         public void AddUser(string userName, string userPassword, bool isAdmin)
         {
@@ -463,6 +462,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetUserInfoResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
+#endif
         public void UpdateUserData(string userDataKey, string userDataValue)
         {
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
@@ -742,7 +742,6 @@ namespace VRT.Orchestrator.Wrapping
                 OnGetScenarioInstanceInfoResponse),
                 //users
                 new OrchestratorCommand("GetUsers", null, OnGetUsersResponse),
-#endif
                 new OrchestratorCommand("GetUserInfo",
                 new List<Parameter>
                     {
@@ -756,6 +755,7 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("userAdmin", typeof(bool))
                 },
                 OnAddUserResponse),
+#endif
 
                 new OrchestratorCommand("UpdateUserData", new List<Parameter>
                 {

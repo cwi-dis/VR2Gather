@@ -942,7 +942,9 @@ namespace VRT.Pilots.LoginManager
         public void ExitConfigButton()
         {
             selfRepresentationPreview.StopMicrophone();
+#if orch_removed_2
             GetUserInfo();
+#endif
             state = State.Logged;
             PanelChanger();
         }
@@ -1049,11 +1051,10 @@ namespace VRT.Pilots.LoginManager
 #if orch_removed_2
             OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
-#endif
-
             OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
+#endif
 
             OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
@@ -1083,11 +1084,10 @@ namespace VRT.Pilots.LoginManager
 #if orch_removed_2
             OrchestratorController.Instance.OnGetScenarioEvent -= OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent -= OnGetScenariosHandler;
-#endif
-
             OrchestratorController.Instance.OnGetUsersEvent -= OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent -= OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent -= OnGetUserInfoHandler;
+#endif
 
             OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
@@ -1252,15 +1252,6 @@ namespace VRT.Pilots.LoginManager
                     }
                 }
 
-                OrchestratorController.Instance.StartRetrievingData();
-
-                // UserData info in Login
-                //UserData lUserData = new UserData {
-                //    userMQexchangeName = exchangeNameLoginIF.text,
-                //    userMQurl = connectionURILoginIF.text,
-                //    userRepresentationType = (UserRepresentationType)representationTypeLoginDropdown.value
-                //};
-                //OrchestratorController.Instance.UpdateUserData(lUserData);
                 state = State.Logged;
             }
             else
@@ -1563,14 +1554,13 @@ namespace VRT.Pilots.LoginManager
 
 #region Users
 
+#if orch_removed_2
         private void _xxxjack_GetUsers()
         {
-#if orch_removed_2
             OrchestratorController.Instance.GetUsers();
-#endif
-        }
+    }
 
-        private void OnGetUsersHandler(User[] users)
+    private void OnGetUsersHandler(User[] users)
         {
             if (developerMode) Debug.Log("OrchestratorLogin: OnGetUsersHandler: Users Updated");
 
@@ -1593,7 +1583,6 @@ namespace VRT.Pilots.LoginManager
 
             UpdateUsersSession(usersSession);
         }
-
         private void OnAddUserHandler(User user)
         {
             if (developerMode) Debug.Log("OrchestratorLogin: OnAddUserHandler: User " + user.userName + " registered with exit.");
@@ -1601,6 +1590,7 @@ namespace VRT.Pilots.LoginManager
             signinPanel.SetActive(false);
             userNameLoginIF.text = userNameRegisterIF.text;
         }
+#endif
 
         private void UpdateUserData()
         {
@@ -1613,8 +1603,10 @@ namespace VRT.Pilots.LoginManager
                 webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
                 microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
             };
+#if orch_removed_2
             // Send new UserData to the orchestrator
             OrchestratorController.Instance.UpdateFullUserData(lUserData);
+#endif
             // And also save a local copy, if wanted
             if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
             {
@@ -1625,6 +1617,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
+#if orch_removed_2
         private void GetUserInfo()
         {
             OrchestratorController.Instance.GetUserInfo(OrchestratorController.Instance.SelfUser.userId);
@@ -1660,7 +1653,6 @@ namespace VRT.Pilots.LoginManager
                 }
             }
 
-#if orch_removed_2
             GetUsers(); // To update the user representation
 
             // Update the sfuData and UserData if is in session.
@@ -1677,9 +1669,9 @@ namespace VRT.Pilots.LoginManager
                     }
                 }
             }
-#endif
             Debug.Log($"xxxjack OnGetUserInfoHandler: should update user info");
         }
+#endif
 
 #endregion
 

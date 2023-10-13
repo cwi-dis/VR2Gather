@@ -83,9 +83,7 @@ namespace VRT.Orchestrator.Wrapping
         private bool connectedToOrchestrator = false;
         private bool hasBeenConnectedToOrchestrator = false;
 
-        // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios).
-        private bool isAutoRetrievingData = false;
-
+        
 #if orch_removed_2
         // Enable or disable SFU logs collection (disabled by default).
         private bool collectSFULogs = false;
@@ -139,6 +137,7 @@ namespace VRT.Orchestrator.Wrapping
         public Action<string> OnUserJoinSessionEvent;
         public Action<string> OnUserLeaveSessionEvent;
 
+#if orch_removed_2
         // Orchestrator Scenarios Events
         public Action<Scenario> OnGetScenarioEvent;
         public Action<Scenario[]> OnGetScenariosEvent;
@@ -147,6 +146,7 @@ namespace VRT.Orchestrator.Wrapping
         public Action<User[]> OnGetUsersEvent;
         public Action<User> OnGetUserInfoEvent;
         public Action<User> OnAddUserEvent;
+#endif
 
         // Orchestrator User Messages Events
         public Action<UserMessage> OnUserMessageReceivedEvent;
@@ -163,14 +163,6 @@ namespace VRT.Orchestrator.Wrapping
                 scenarioId = "LocalDevelopmentTest",
                 sessionId = "0000"
             };
-        }
-
-        public void StartRetrievingData() {
-            if (!connectedToOrchestrator)
-            {
-                Debug.LogError("OrchestratorController: cannot retrieve data if not connected");
-            }
-            isAutoRetrievingData = true;
         }
 
         public bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
@@ -377,7 +369,9 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void SignIn(string pName, string pPassword) {
+#if orch_removed_2
             orchestratorWrapper.AddUser(pName, pPassword, false);
+#endif
         }
 
 #endregion
@@ -434,10 +428,7 @@ namespace VRT.Orchestrator.Wrapping
 
             OnSessionsEvent?.Invoke(sessions.ToArray());
 
-            if (isAutoRetrievingData) {
-                // auto retriving phase: this was the last call
-                isAutoRetrievingData = false;
-            }
+    
         }
 
         public void AddSession(string pScenarioID, Scenario scOrch, string pSessionName, string pSessionDescription, string pSessionProtocol) {
@@ -644,9 +635,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        #endregion
+#endregion
 
-        #region Scenarios
+#region Scenarios
 #if orch_removed_2
         public void AddScenario(Scenario scOrch)
         {
@@ -676,9 +667,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 #endif
-        #endregion
+#endregion
 
-        #region Users
+#region Users
 
 #if orch_removed_2
         private void GetUsers() {
@@ -700,7 +691,6 @@ namespace VRT.Orchestrator.Wrapping
                 orchestratorWrapper.GetScenarios();
             }
     }
-#endif
 
 
         public void OnAddUserResponse(ResponseStatus status, User user) {
@@ -713,15 +703,14 @@ namespace VRT.Orchestrator.Wrapping
                 if (enableLogging) Debug.Log("OrchestratorController: OnAddUserResponse: User successfully added.");
                 OnAddUserEvent?.Invoke(user);
 
-#if orch_removed_2
                 // update the lists of user, anyway the result
                 orchestratorWrapper.GetUsers();
-#endif
             } else {
                 if (enableLogging) Debug.Log("OrchestratorController: OnAddUserResponse: User successfully registered.");
                 OnSignInEvent.Invoke();
             }
         }
+#endif
 
         public void UpdateUserDataKey(string pKey, string pValue) {
             orchestratorWrapper.UpdateUserData(pKey, pValue);
@@ -734,7 +723,9 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnUpdateUserDataResponse: User data key updated.");
+#if orch_removed_2
             orchestratorWrapper.GetUserInfo();
+#endif
         }
 
         public void UpdateFullUserData(UserData pUserData) {
@@ -748,9 +739,12 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
+#if orch_removed_2
             orchestratorWrapper.GetUserInfo();
+#endif
         }
 
+#if orch_removed_2
         public void GetUserInfo(string pUserID) {
             orchestratorWrapper.GetUserInfo(pUserID);
         }
@@ -764,13 +758,12 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorController: OnGetUserInfoResponse: Get info of user ID: " + user.userId);
 
             OnGetUserInfoEvent?.Invoke(user);
-#if orch_removed_2
             if (isAutoRetrievingData) {
                 // auto retriving phase: call next
                 orchestratorWrapper.GetUsers();
             }
+    }
 #endif
-        }
 
 #endregion
 
