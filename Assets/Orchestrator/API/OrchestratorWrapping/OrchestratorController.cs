@@ -58,8 +58,10 @@ namespace VRT.Orchestrator.Wrapping
 
         //Users
         private User me;
+#if orch_removed_2
         private List<User> connectedUsers;
         private List<User> availableUserAccounts;
+#endif
 
         //Session
         private Session mySession;
@@ -454,10 +456,10 @@ namespace VRT.Orchestrator.Wrapping
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = GetUsersForCurrentSession(session.sessionUsers);
-
+            int  userCount = session.GetUserCount();
+            
 #if VRT_WITH_STATS
-            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={connectedUsers.Count}");
+            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={userCount}");
 #endif
 
             availableSessions.Add(session);
@@ -490,8 +492,8 @@ namespace VRT.Orchestrator.Wrapping
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = GetUsersForCurrentSession(session.sessionUsers);
-            if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
+            int userCount = mySession.GetUserCount();
+            if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={userCount}");
 
             OnSessionInfoEvent?.Invoke(session);
         }
@@ -543,8 +545,8 @@ namespace VRT.Orchestrator.Wrapping
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = GetUsersForCurrentSession(session.sessionUsers);
-            if (enableLogging) Debug.Log($"OrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
+            int userCount = session.GetUserCount();
+            if (enableLogging) Debug.Log($"OrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={userCount}");
 
             // Simulate user join a session for each connected users
             foreach (string id in session.sessionUsers) {
@@ -575,8 +577,6 @@ namespace VRT.Orchestrator.Wrapping
 
             // success
             myScenario = null;
-            connectedUsers?.Clear();
-            connectedUsers = null;
             OnLeaveSessionEvent?.Invoke();
 
             if (mySession != null && me != null) {
@@ -644,9 +644,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-#endregion
+        #endregion
 
-#region Scenarios
+        #region Scenarios
 #if orch_removed_2
         public void AddScenario(Scenario scOrch)
         {
@@ -676,10 +676,11 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 #endif
-#endregion
+        #endregion
 
-#region Users
+        #region Users
 
+#if orch_removed_2
         private void GetUsers() {
             orchestratorWrapper.GetUsers();
         }
@@ -694,13 +695,12 @@ namespace VRT.Orchestrator.Wrapping
 
             availableUserAccounts = users;
             OnGetUsersEvent?.Invoke(users.ToArray());
-#if orch_removed_2
             if (isAutoRetrievingData) {
                 // auto retriving phase: call next
                 orchestratorWrapper.GetScenarios();
             }
+    }
 #endif
-        }
 
 
         public void OnAddUserResponse(ResponseStatus status, User user) {
@@ -712,8 +712,11 @@ namespace VRT.Orchestrator.Wrapping
             if (userIsLogged) {
                 if (enableLogging) Debug.Log("OrchestratorController: OnAddUserResponse: User successfully added.");
                 OnAddUserEvent?.Invoke(user);
+
+#if orch_removed_2
                 // update the lists of user, anyway the result
                 orchestratorWrapper.GetUsers();
+#endif
             } else {
                 if (enableLogging) Debug.Log("OrchestratorController: OnAddUserResponse: User successfully registered.");
                 OnSignInEvent.Invoke();
@@ -761,11 +764,12 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorController: OnGetUserInfoResponse: Get info of user ID: " + user.userId);
 
             OnGetUserInfoEvent?.Invoke(user);
-
+#if orch_removed_2
             if (isAutoRetrievingData) {
                 // auto retriving phase: call next
                 orchestratorWrapper.GetUsers();
             }
+#endif
         }
 
 #endregion
@@ -865,6 +869,7 @@ namespace VRT.Orchestrator.Wrapping
 
 #region Logics
 
+#if orch_removed_2
         public User _xxxjack_GetUser(string masterUuid) {
             if (availableUserAccounts != null) {
                 for (int i = 0; i < availableUserAccounts.Count; i++) {
@@ -888,6 +893,7 @@ namespace VRT.Orchestrator.Wrapping
 
             return users;
         }
+#endif
 
         private IEnumerator WaitForEmptySessionToDelete() {
             if (mySession == null) {

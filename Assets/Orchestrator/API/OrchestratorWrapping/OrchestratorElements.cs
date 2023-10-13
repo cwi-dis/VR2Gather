@@ -233,5 +233,10 @@ namespace VRT.Orchestrator.Wrapping
             }
             return null;
         }
+
+        public int GetUserCount()
+        {
+            return sessionUserDefinitions.Count;
+        }
     }
 }
