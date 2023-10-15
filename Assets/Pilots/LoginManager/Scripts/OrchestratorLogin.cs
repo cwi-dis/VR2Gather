@@ -1248,7 +1248,8 @@ namespace VRT.Pilots.LoginManager
                         UserData lUserData = new UserData();
                         JsonUtility.FromJsonOverwrite(configData, lUserData);
                         OrchestratorController.Instance.SelfUser.userData = lUserData;
-
+                        // Also send to orchestrator. This is mainly so that the orchestrator can tell
+                        // other participants our self-representation.
                         OrchestratorController.Instance.UpdateFullUserData(lUserData);
                         Debug.Log($"OrchestratorLogin: uploaded UserData to orchestrator");
                     }
