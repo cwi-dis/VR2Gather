@@ -470,6 +470,7 @@ namespace VRT.Orchestrator.Wrapping
             command.GetParameter("userDataValue").ParamValue = userDataValue;
             OrchestrationSocketIoManager.EmitCommand(command);
         }
+#if orch_removed_2
 
         private void OnUpdateUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
@@ -477,6 +478,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataResponse(status);
         }
+#endif
         public void UpdateUserDataJson(UserData userData)
         {
             JsonData json = JsonUtility.ToJson(userData);
@@ -755,7 +757,6 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("userAdmin", typeof(bool))
                 },
                 OnAddUserResponse),
-#endif
 
                 new OrchestratorCommand("UpdateUserData", new List<Parameter>
                 {
@@ -763,7 +764,8 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("userDataValue", typeof(string))
                 },
                 OnUpdateUserDataResponse),
-                new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
+ #endif
+               new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
                 {
                     new Parameter("userDataJson", typeof(string))
                 },
