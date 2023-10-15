@@ -65,17 +65,7 @@ namespace VRT.Orchestrator.Wrapping
         void OnDeleteSessionResponse(ResponseStatus status);
         void OnJoinSessionResponse(ResponseStatus status, Session session);
         void OnLeaveSessionResponse(ResponseStatus status);
-#if orch_removed_2
-
-        void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios);
-        void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario);
-        void OnGetUsersResponse(ResponseStatus status, List<User> scenarios);
-        void OnAddUserResponse(ResponseStatus status, User user);
-        void OnGetUserInfoResponse(ResponseStatus status, User user);
-        void OnUpdateUserDataResponse(ResponseStatus status);
-#endif
         void OnUpdateUserDataJsonResponse(ResponseStatus status);
-
 
         void OnSendMessageResponse(ResponseStatus status);
         void OnSendMessageToAllResponse(ResponseStatus status);

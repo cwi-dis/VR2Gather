@@ -54,9 +54,6 @@ namespace VRT.Orchestrator.Wrapping
         public string userId = "";
         public string userName = "";
         public string userPassword = "";
-#if orch_removed_2
-        public bool userAdmin = false;
-#endif
         public UserData userData;
         public SfuData sfuData;
 
@@ -168,26 +165,6 @@ namespace VRT.Orchestrator.Wrapping
             return scenarioName + " (" + scenarioDescription + ")";
         }
     }
-#if orch_removed_2
-    public class ScenarioInstance : OrchestratorElement
-    {
-        public string scenarioRefId; //store reference on the source scenario
-        public string sessionId;
-        public string scenarioId;
-        public string scenarioName;
-        public string scenarioDescription;
-
-        public override string GetId()
-        {
-            return scenarioId;
-        }
-
-        public override string GetGuiRepresentation()
-        {
-            return scenarioName + " (" + scenarioDescription + ")";
-        }
-    }
-#endif
     public class Session : OrchestratorElement
     {
         public string sessionId;

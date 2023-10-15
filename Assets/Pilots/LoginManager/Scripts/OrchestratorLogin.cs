@@ -942,9 +942,6 @@ namespace VRT.Pilots.LoginManager
         public void ExitConfigButton()
         {
             selfRepresentationPreview.StopMicrophone();
-#if orch_removed_2
-            GetUserInfo();
-#endif
             state = State.Logged;
             PanelChanger();
         }
@@ -1048,13 +1045,6 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
             OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
-#if orch_removed_2
-            OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioInstanceInfoHandler;
-            OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
-            OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
-            OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
-            OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
-#endif
 
             OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
@@ -1081,13 +1071,6 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
             OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
-#if orch_removed_2
-            OrchestratorController.Instance.OnGetScenarioEvent -= OnGetScenarioInstanceInfoHandler;
-            OrchestratorController.Instance.OnGetScenariosEvent -= OnGetScenariosHandler;
-            OrchestratorController.Instance.OnGetUsersEvent -= OnGetUsersHandler;
-            OrchestratorController.Instance.OnAddUserEvent -= OnAddUserHandler;
-            OrchestratorController.Instance.OnGetUserInfoEvent -= OnGetUserInfoHandler;
-#endif
 
             OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
@@ -1202,24 +1185,7 @@ namespace VRT.Pilots.LoginManager
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
             OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
-#if orch_removed_2
-           ForwardScenariosToOrchestrator();
-#endif
         }
-#if orch_removed_2
-
-        private void ForwardScenariosToOrchestrator()
-        {
-            foreach(var sc in ScenarioRegistry.Instance.Scenarios)
-            {
-                Scenario scOrch = new Scenario();
-                scOrch.scenarioId = sc.scenarioId;
-                scOrch.scenarioName = sc.scenarioName;
-                scOrch.scenarioDescription = sc.scenarioDescription;
-                OrchestratorController.Instance.AddScenario(scOrch);
-            }
-        }
-#endif
         // Check saved used credentials.
         private void CheckRememberMe()
         {
@@ -1408,17 +1374,6 @@ namespace VRT.Pilots.LoginManager
                 RemoveComponentsFromList(usersSession.transform);
             }
         }
-#if orch_removed_2
-        private void OnGetScenarioInstanceInfoHandler(ScenarioInstance scenario)
-        {
-            if (scenario != null)
-            {
-                scenarioIdText.text = scenario.scenarioName;
-                // Update the list of session users
-                UpdateUsersSession(usersSession);
-            }
-        }
-#endif
         private void OnDeleteSessionHandler()
         {
             if (developerMode) Debug.Log("OrchestratorLogin: OnDeleteSessionHandler: Session deleted");
@@ -1515,85 +1470,18 @@ namespace VRT.Pilots.LoginManager
 
         private void OnUserJoinedSessionHandler(string userID)
         {
-#if orch_removed_2
-
-            if (!string.IsNullOrEmpty(userID))
-            {
-                OrchestratorController.Instance.GetUsers();
-            }
-#endif
             Debug.Log($"xxxjack OnUserJoinedSession({userID}), should get user record");
         }
 
         private void OnUserLeftSessionHandler(string userID)
         {
-#if orch_removed_2
-            if (!string.IsNullOrEmpty(userID))
-            {
-                OrchestratorController.Instance.GetUsers();
-            }
-#endif
         }
-
-#endregion
-
-#region Scenarios
-#if orch_removed_2
-        private void OnGetScenariosHandler(Scenario[] scenarios)
-        {
-            if (scenarios != null && scenarios.Length > 0)
-            {
-                //update the data in the dropdown
-                UpdateScenarios();
-                // We may be able to advance auto-connection
-                if (VRTConfig.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
-            }
-        }
-#endif
 
 #endregion
 
 
 #region Users
 
-#if orch_removed_2
-        private void _xxxjack_GetUsers()
-        {
-            OrchestratorController.Instance.GetUsers();
-    }
-
-    private void OnGetUsersHandler(User[] users)
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnGetUsersHandler: Users Updated");
-
-            // Update the sfuData if is in session.
-            Session session = OrchestratorController.Instance.CurrentSession;
-
-            if ( session != null)
-            {
-                foreach(User u in users)
-                {
-                    User sessionUser = session.GetUser(u.userId);
-                    if (sessionUser != null)
-                    {
-                        sessionUser.userData = u.userData;
-                        sessionUser.sfuData = u.sfuData;
-                    }
-                }
-                
-            }
-
-            UpdateUsersSession(usersSession);
-        }
-        private void OnAddUserHandler(User user)
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnAddUserHandler: User " + user.userName + " registered with exit.");
-            loginPanel.SetActive(true);
-            signinPanel.SetActive(false);
-            userNameLoginIF.text = userNameRegisterIF.text;
-        }
-#endif
 
         private void UpdateUserData()
         {
@@ -1606,10 +1494,6 @@ namespace VRT.Pilots.LoginManager
                 webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
                 microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
             };
-#if orch_removed_2
-            // Send new UserData to the orchestrator
-            OrchestratorController.Instance.UpdateFullUserData(lUserData);
-#endif
             // And also save a local copy, if wanted
             if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
             {
@@ -1620,61 +1504,6 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-#if orch_removed_2
-        private void GetUserInfo()
-        {
-            OrchestratorController.Instance.GetUserInfo(OrchestratorController.Instance.SelfUser.userId);
-        }
-
-        private void OnGetUserInfoHandler(User user)
-        {
-            if (user == null)
-            {
-                Debug.LogWarning($"OrchestratorLogin: OnGetUserInfoHander: null user");
-                return;
-            }
-            if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
-            {
-                if (developerMode) Debug.Log($"OrchestratorLogin: OnGetUserInfoHandler: set SelfUser to {user.userId}");
-                OrchestratorController.Instance.SelfUser = user;
-
-                userId.text = user.userId;
-                userName.text = user.userName;
-                userNameVRTText.text = user.userName;
-
-                //UserData
-                tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
-                tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
-                representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
-
-                SetUserRepresentationGUI(user.userData.userRepresentationType);
-                // Session name
-                if (string.IsNullOrEmpty(sessionNameIF.text))
-                {
-                    string time = DateTime.Now.ToString("hhmmss");
-                    sessionNameIF.text = $"{user.userName}_{time}";
-                }
-            }
-
-            GetUsers(); // To update the user representation
-
-            // Update the sfuData and UserData if is in session.
-            if (OrchestratorController.Instance.ConnectedUsers != null)
-            {
-                for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i)
-                {
-                    if (OrchestratorController.Instance.ConnectedUsers[i].userId == user.userId)
-                    {
-                        // sfuData
-                        OrchestratorController.Instance.ConnectedUsers[i].sfuData = user.sfuData;
-                        // UserData
-                        OrchestratorController.Instance.ConnectedUsers[i].userData = user.userData;
-                    }
-                }
-            }
-            Debug.Log($"xxxjack OnGetUserInfoHandler: should update user info");
-        }
-#endif
 
 #endregion
 
