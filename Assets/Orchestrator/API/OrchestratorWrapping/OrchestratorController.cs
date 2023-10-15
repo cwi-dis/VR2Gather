@@ -294,6 +294,9 @@ namespace VRT.Orchestrator.Wrapping
 #region Login/Logout
 
         public void Login(string pName, string pPassword) {
+            SelfUser = new User();
+            SelfUser.userName = pName;
+            SelfUser.userPassword = pPassword;
             orchestratorWrapper.Login(pName, pPassword);
         }
 
@@ -311,11 +314,13 @@ namespace VRT.Orchestrator.Wrapping
                     if (enableLogging) Debug.Log("OrchestratorController: OnLoginResponse: User logged in.");
 
                     userIsLogged = true;
-
+                    SelfUser.userId = userId;
+#if orch_removed_2
                     // Replaced by UpdateUserDataKey to update the IP adress field of the user on the Login.
                     //orchestratorWrapper.GetUserInfo();
                     // xxxjack note: this has the side-effect that we get a callback with all the settings.
                     UpdateUserDataKey("userIP", GetIPAddress());
+#endif
                 } else {
                     userIsLogged = false;
                 }

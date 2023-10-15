@@ -54,7 +54,9 @@ namespace VRT.Orchestrator.Wrapping
         public string userId = "";
         public string userName = "";
         public string userPassword = "";
+#if orch_removed_2
         public bool userAdmin = false;
+#endif
         public UserData userData;
         public SfuData sfuData;
 

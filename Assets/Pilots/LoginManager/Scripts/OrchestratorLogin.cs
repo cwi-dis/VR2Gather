@@ -1237,7 +1237,7 @@ namespace VRT.Pilots.LoginManager
         {
             if (userLoggedSucessfully)
             {
-                // Load locally save user data for orchestrator, if wanted
+                // Load locally save user data
                 if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
                 {
                     var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
@@ -1245,8 +1245,10 @@ namespace VRT.Pilots.LoginManager
                     {
                         Debug.Log($"OrchestratorLogin: load UserData from {fullName}");
                         var configData = System.IO.File.ReadAllText(fullName);
-                        UserData lUserData = new UserData(); // = UserData.ParseJsonData(configData);
+                        UserData lUserData = new UserData();
                         JsonUtility.FromJsonOverwrite(configData, lUserData);
+                        OrchestratorController.Instance.SelfUser.userData = lUserData;
+
                         OrchestratorController.Instance.UpdateFullUserData(lUserData);
                         Debug.Log($"OrchestratorLogin: uploaded UserData to orchestrator");
                     }
