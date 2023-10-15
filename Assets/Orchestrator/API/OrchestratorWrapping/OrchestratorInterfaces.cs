@@ -72,8 +72,8 @@ namespace VRT.Orchestrator.Wrapping
         void OnGetUsersResponse(ResponseStatus status, List<User> scenarios);
         void OnAddUserResponse(ResponseStatus status, User user);
         void OnGetUserInfoResponse(ResponseStatus status, User user);
-#endif
         void OnUpdateUserDataResponse(ResponseStatus status);
+#endif
         void OnUpdateUserDataJsonResponse(ResponseStatus status);
 
 

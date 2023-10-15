@@ -467,6 +467,7 @@ namespace VRT.Orchestrator.Wrapping
 #endif
         }
 
+        // xxxjack is this needed?
         public void GetSessionInfo() {
             orchestratorWrapper.GetSessionInfo();
         }
@@ -640,9 +641,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-#endregion
+        #endregion
 
-#region Scenarios
+        #region Scenarios
 #if orch_removed_2
         public void AddScenario(Scenario scOrch)
         {
@@ -672,9 +673,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 #endif
-#endregion
+        #endregion
 
-#region Users
+        #region Users
 
 #if orch_removed_2
         private void GetUsers() {
@@ -715,7 +716,6 @@ namespace VRT.Orchestrator.Wrapping
                 OnSignInEvent.Invoke();
             }
         }
-#endif
 
         public void UpdateUserDataKey(string pKey, string pValue) {
             orchestratorWrapper.UpdateUserData(pKey, pValue);
@@ -732,6 +732,7 @@ namespace VRT.Orchestrator.Wrapping
             orchestratorWrapper.GetUserInfo();
 #endif
         }
+#endif
 
         public void UpdateFullUserData(UserData pUserData) {
             orchestratorWrapper.UpdateUserDataJson(pUserData);
