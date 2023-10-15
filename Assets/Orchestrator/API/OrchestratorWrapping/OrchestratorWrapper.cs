@@ -620,8 +620,8 @@ namespace VRT.Orchestrator.Wrapping
             JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
 
             string lEventID = jsonResponse[1]["eventId"].ToString();
-            string lUserID = jsonResponse[1]["eventData"][0].ToString();
-
+            string lUserID = jsonResponse[1]["eventData"]["userId"].ToString();
+            
             if (lUserID == myUserID)
             {
                 //I just joined a session, so I need to get all connected users IDs to get their audio, provided by the OnGetSessionInfoResponse callback.
@@ -631,10 +631,11 @@ namespace VRT.Orchestrator.Wrapping
             switch (lEventID)
             {
                 case "USER_JOINED_SESSION":
+                    User lUser = User.ParseJsonData(jsonResponse[1]["eventData"]["userData"]);
 
                     foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
-                        e?.OnUserJoinedSession(lUserID, null);
+                        e?.OnUserJoinedSession(lUserID, lUser);
                     }
 
                     break;
