@@ -5,7 +5,7 @@
   	"autoLogin" : true,
   	"sessionName" : "jack-grab",
   	"sessionScenario" : "Technical Playground",
-  	"sessionTransportProtocol" : "socketio",
+  	"sessionTransportProtocol" : "dash",
   	"sessionUncompressed" : true,
   	"sessionUncompressedAudio" : true,
   	"autoCreateForUser" : "flauwte",
