@@ -559,6 +559,12 @@ namespace VRT.Orchestrator.Wrapping
                     Debug.LogError($"OrchestratorController: OnUserJoinedSession: userID {userID} unknown");
                 }
             }
+            else
+            {
+                // xxxjack this is gross. We add the user to the session here.
+                // xxxjack but all the other administration is handled in our client class.
+                mySession.sessionUserDefinitions.Add(user);
+            }
             if (!string.IsNullOrEmpty(userID)) {
                 if (enableLogging) Debug.Log("OrchestratorController: OnUserJoinedSession: User " + user.userName + " joined the session.");
                 orchestratorWrapper.GetSessionInfo();
