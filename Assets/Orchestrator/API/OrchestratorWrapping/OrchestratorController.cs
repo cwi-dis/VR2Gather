@@ -433,12 +433,12 @@ namespace VRT.Orchestrator.Wrapping
 
         public void OnGetSessionInfoResponse(ResponseStatus status, Session session) {
             if (mySession == null || string.IsNullOrEmpty(session.sessionId)) {
-                if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionInfoResponse: Aborted, current session is null.");
+                if (enableLogging) Debug.LogError("OrchestratorController: OnGetSessionInfoResponse: Aborted, current session is null.");
                 return;
             }
 
             if (status.Error != 0) {
-                if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: clear session, status={status}");
+                if (enableLogging) Debug.LogError($"OrchestratorController: OnGetSessionInfoResponse: clear session, status={status}");
                 mySession = null;
                 OnErrorEvent?.Invoke(status);
                 return;
@@ -561,15 +561,11 @@ namespace VRT.Orchestrator.Wrapping
             }
             else
             {
-                // xxxjack this is gross. We add the user to the session here.
-                // xxxjack but all the other administration is handled in our client class.
-                mySession.sessionUserDefinitions.Add(user);
+                // xxxjack we don't add the user, but we call GetSessionInfo below to get a complete picture.
             }
-            if (!string.IsNullOrEmpty(userID)) {
-                if (enableLogging) Debug.Log("OrchestratorController: OnUserJoinedSession: User " + user.userName + " joined the session.");
-                orchestratorWrapper.GetSessionInfo();
-                OnUserJoinSessionEvent?.Invoke(userID);
-            }
+            if (enableLogging) Debug.Log("OrchestratorController: OnUserJoinedSession: User " + user.userName + " joined the session.");
+            orchestratorWrapper.GetSessionInfo();
+            OnUserJoinSessionEvent?.Invoke(userID);
         }
 
         public void OnUserLeftSession(string userID) {
@@ -581,7 +577,7 @@ namespace VRT.Orchestrator.Wrapping
                 }
                 // Otherwise, just proceed to the common user left event.
                 else {
-                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + mySession.GetUser(userID).userName + " left the session.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + mySession.GetUser(userID).userName + " left the session. Getting new session info.");
                     // Required to update the list of connect users.
                     orchestratorWrapper.GetSessionInfo();
                     OnUserLeaveSessionEvent?.Invoke(userID);

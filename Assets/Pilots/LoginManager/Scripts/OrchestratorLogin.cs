@@ -1470,7 +1470,6 @@ namespace VRT.Pilots.LoginManager
 
         private void OnUserJoinedSessionHandler(string userID)
         {
-            Debug.Log($"xxxjack OnUserJoinedSession({userID}), should get user record");
         }
 
         private void OnUserLeftSessionHandler(string userID)
