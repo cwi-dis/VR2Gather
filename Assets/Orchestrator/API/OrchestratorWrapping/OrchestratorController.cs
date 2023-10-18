@@ -408,6 +408,14 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorController: OnAddSessionResponse: Session " + session.sessionName + " successfully created by " + session.GetUser(session.sessionAdministrator).userName + ".");
             // success
             mySession = session;
+            // We may need to update our own user definition (because the sfuData may have been added)
+            User newMe = session.GetUser(me.userId);
+            if (newMe == null)
+            {
+                Debug.LogError($"OrchestratorController: OnAddSessionResponse: userId {me.userId} (which is me) not in session");
+                return;
+            }
+            me = newMe;
             userIsMaster = session.sessionMaster == me.userId;
             int  userCount = session.GetUserCount();
             
