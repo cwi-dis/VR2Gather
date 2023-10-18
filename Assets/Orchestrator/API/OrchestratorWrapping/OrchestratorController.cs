@@ -57,7 +57,7 @@ namespace VRT.Orchestrator.Wrapping
         private orchestratorConnectionStatus connectionStatus;
 
         //Users
-        private User me;
+        private User _me; // Accessed via SelfUser
 
         //Session
         private Session mySession;
@@ -144,7 +144,7 @@ namespace VRT.Orchestrator.Wrapping
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
         public bool UserIsLogged { get { return userIsLogged; } }
         public bool UserIsMaster { get { return userIsMaster; } }
-        public User SelfUser { get { return me; } set { me = value; } }
+        public User SelfUser { get { return _me; } set { _me = value; } }
         public Scenario CurrentScenario { get { return myScenario; } }
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public Session CurrentSession { get { return mySession; } }
@@ -234,7 +234,7 @@ namespace VRT.Orchestrator.Wrapping
         // SockerDisconnect response callback
         public void OnDisconnect() {
             Debug.LogWarning($"OrchestratorController: disconnected from orchestrator");
-            me = null;
+            SelfUser = null;
             connectedToOrchestrator = false;
             connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
             userIsLogged = false;
@@ -322,7 +322,7 @@ namespace VRT.Orchestrator.Wrapping
                     if (enableLogging) Debug.Log("OrchestratorController: OnLogoutResponse: User logout.");
 
                     //normal
-                    me = null;
+                    SelfUser = null;
                     userIsLogged = false;
                 } else {
                     // problem while logout
@@ -409,14 +409,14 @@ namespace VRT.Orchestrator.Wrapping
             // success
             mySession = session;
             // We may need to update our own user definition (because the sfuData may have been added)
-            User newMe = session.GetUser(me.userId);
+            User newMe = session.GetUser(SelfUser.userId);
             if (newMe == null)
             {
-                Debug.LogError($"OrchestratorController: OnAddSessionResponse: userId {me.userId} (which is me) not in session");
+                Debug.LogError($"OrchestratorController: OnAddSessionResponse: userId {SelfUser.userId} (which is me) not in session");
                 return;
             }
-            me = newMe;
-            userIsMaster = session.sessionMaster == me.userId;
+            SelfUser = newMe;
+            userIsMaster = session.sessionMaster == SelfUser.userId;
             int  userCount = session.GetUserCount();
             
 #if VRT_WITH_STATS
@@ -447,7 +447,7 @@ namespace VRT.Orchestrator.Wrapping
            
             // success
             mySession = session;
-            userIsMaster = session.sessionMaster == me.userId;
+            userIsMaster = session.sessionMaster == SelfUser.userId;
             int userCount = mySession.GetUserCount();
             if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={userCount}");
 
@@ -487,13 +487,13 @@ namespace VRT.Orchestrator.Wrapping
             
             // success
             mySession = session;
-            userIsMaster = session.sessionMaster == me.userId;
+            userIsMaster = session.sessionMaster == SelfUser.userId;
             int userCount = session.GetUserCount();
             if (enableLogging) Debug.Log($"OrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={userCount}");
 
             // Simulate user join a session for each connected users
             foreach (string id in session.sessionUsers) {
-                if (id != me.userId) {
+                if (id != SelfUser.userId) {
                     OnUserJoinedSession(id, null);
                 }
             }
@@ -518,10 +518,10 @@ namespace VRT.Orchestrator.Wrapping
             myScenario = null;
             OnLeaveSessionEvent?.Invoke();
 
-            if (mySession != null && me != null) {
+            if (mySession != null && SelfUser != null) {
  
                 // As the session creator, the session should be deleted when leaving.
-                if (mySession.sessionAdministrator == me.userId) {
+                if (mySession.sessionAdministrator == SelfUser.userId) {
                     if (enableLogging) Debug.Log("OrchestratorController: OnLeaveSessionResponse: As session creator, delete the current session when its empty.");
                     StartCoroutine(WaitForEmptySessionToDelete());
                     return;
@@ -694,14 +694,14 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void OnMasterEventReceived(UserEvent pMasterEventData) {
-            if (pMasterEventData.fromId != me.userId) {
+            if (pMasterEventData.fromId != SelfUser.userId) {
                 //if (enableLogging) Debug.Log("OrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.fromId + " sent: " + pMasterEventData.message);
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
         }
 
         public void OnUserEventReceived(UserEvent pUserEventData) {
-            if (pUserEventData.fromId != me.userId) {
+            if (pUserEventData.fromId != SelfUser.userId) {
                 //if (enableLogging) Debug.Log("OrchestratorController: OnUserEventReceived: User: " + pUserEventData.fromId + " sent: " + pUserEventData.message);
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
