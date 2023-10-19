@@ -1,7 +1,7 @@
 {
-  "orchestratorURL" : "http://flauwte.local:8080/socket.io/",
+  "orchestratorURL" : "http://sap.local:8080/socket.io/",
   "statsOutputFile" : "",
-  "AutoStart" : {
+  "_unused_AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jack-grab",
   	"sessionScenario" : "Technical Playground",
