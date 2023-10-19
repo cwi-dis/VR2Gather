@@ -22,8 +22,8 @@
 //  other intellectual property.
 
 using LitJson;
-using System.Collections.Generic;
 using VRT.Core;
+using System.Collections.Generic;
 
 namespace VRT.Orchestrator.Wrapping
 {
@@ -54,7 +54,6 @@ namespace VRT.Orchestrator.Wrapping
         public string userId = "";
         public string userName = "";
         public string userPassword = "";
-        public bool userAdmin = false;
         public UserData userData;
         public SfuData sfuData;
 
@@ -82,12 +81,7 @@ namespace VRT.Orchestrator.Wrapping
 
     public class UserData: OrchestratorElement
     {
-#if outdated_orchestrator
 
-        public string userIP = "";
-        public string userMQexchangeName = "";
-        public string userMQurl = "";
-#endif
         public string userPCurl = "";
         public string userAudioUrl = "";
 
@@ -120,17 +114,6 @@ namespace VRT.Orchestrator.Wrapping
         public SfuData() { }
     }
 
-#if outdated_orchestrator
-
-    public class LivePresenterData : OrchestratorElement
-    {
-        public string liveAddress = "";
-        public string vodAddress = "";
-
-        // empty constructor callled by the JsonData parser
-        public LivePresenterData() { }
-    }
-#endif
     public class DataStream : OrchestratorElement
     {
         public string dataStreamUserId = "";
@@ -161,22 +144,14 @@ namespace VRT.Orchestrator.Wrapping
         public string scenarioId;
         public string scenarioName;
         public string scenarioDescription;
-#if outdated_orchestrator
-        public List<Room> scenarioRooms = new List<Room>();
-        public JsonData scenarioGltf;
-#endif
+
         public static Scenario ParseJsonData(JsonData data)
         {
             Scenario scenario = new Scenario();
             scenario.scenarioId = data["scenarioId"].ToString();
             scenario.scenarioName = data["scenarioName"].ToString();
             scenario.scenarioDescription = data["scenarioDescription"].ToString();
-#if outdated_orchestrator
 
-            JsonData rooms = data["scenarioRooms"];
-            scenario.scenarioRooms = Helper.ParseElementsList<Room>(rooms);
-            scenario.scenarioGltf = data["scenarioGltf"];
-#endif
             return scenario;
         }
 
@@ -190,74 +165,6 @@ namespace VRT.Orchestrator.Wrapping
             return scenarioName + " (" + scenarioDescription + ")";
         }
     }
-
-    public class ScenarioInstance : OrchestratorElement
-    {
-        public string scenarioRefId; //store reference on the source scenario
-        public string sessionId;
-        public string scenarioId;
-        public string scenarioName;
-        public string scenarioDescription;
-#if outdated_orchestrator
-        public List<OrchestratorElement> scenarioRooms = new List<OrchestratorElement>();
-#endif
-        public override string GetId()
-        {
-            return scenarioId;
-        }
-
-        public override string GetGuiRepresentation()
-        {
-            return scenarioName + " (" + scenarioDescription + ")";
-        }
-    }
-
-#if outdated_orchestrator
-
-    public class Room : OrchestratorElement
-    {
-        public string roomId;
-        public string roomName;
-        public string roomDescription;
-        public int roomCapacity;
-
-        public static Room ParseJsonData(JsonData data)
-        {
-            return JsonMapper.ToObject<Room>(data.ToJson());
-        }
-
-        public override string GetId()
-        {
-            return roomId;
-        }
-
-        public override string GetGuiRepresentation()
-        {
-            return roomName + " (" + roomDescription + ")";
-        }
-    }
-
-    public class RoomInstance : Room
-    {
-        public string roomRefId;
-        public string[] roomUsers;
-
-        public static new RoomInstance ParseJsonData(JsonData data)
-        {
-            return JsonMapper.ToObject<RoomInstance>(data.ToJson());
-        }
-
-        public override string GetId()
-        {
-            return roomId;
-        }
-
-        public override string GetGuiRepresentation()
-        {
-            return roomName + " (" + roomDescription + ")";
-        }
-    }
-#endif
     public class Session : OrchestratorElement
     {
         public string sessionId;
@@ -267,10 +174,16 @@ namespace VRT.Orchestrator.Wrapping
         public string sessionMaster;
         public string scenarioId; // the scenario ID
         public string[] sessionUsers;
+        public List<User> sessionUserDefinitions;
+
+        public Session()
+        {
+        }
 
         public static Session ParseJsonData(JsonData data)
         {
-            return JsonMapper.ToObject<Session>(data.ToJson());
+            Session rv = JsonMapper.ToObject<Session>(data.ToJson());
+            return rv;
         }
 
         public override string GetId()
@@ -281,6 +194,28 @@ namespace VRT.Orchestrator.Wrapping
         public override string GetGuiRepresentation()
         {
             return sessionName + " (" + sessionDescription + ")";
+        }
+
+        public User[] GetUsers()
+        {
+            return sessionUserDefinitions.ToArray();
+        }
+
+        public User GetUser(string userID)
+        {
+            foreach(var userDefinition in sessionUserDefinitions)
+            {
+                if (userDefinition.userId == userID)
+                {
+                    return userDefinition;
+                }
+            }
+            return null;
+        }
+
+        public int GetUserCount()
+        {
+            return sessionUserDefinitions.Count;
         }
     }
 }
