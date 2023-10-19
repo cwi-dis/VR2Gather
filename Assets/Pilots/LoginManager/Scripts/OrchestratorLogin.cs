@@ -235,17 +235,7 @@ namespace VRT.Pilots.LoginManager
             rectImage.sizeDelta = new Vector2(30, 30);
             rectImage.localScale = Vector3.one;
             // IMAGE
-            switch (user.userData.userRepresentationType)
-            {
-                case UserRepresentationType.Deprecated__PCC_SYNTH__:
-                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
-                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
-                case UserRepresentationType.Deprecated__PCC_PROXY__:
-                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {user.userData.userRepresentationType} changed to PointCloud");
-                    user.userData.userRepresentationType = UserRepresentationType.PointCloud;
-                    break;
-
-            }
+           
             switch (user.userData.userRepresentationType)
             {
                 case UserRepresentationType.NoRepresentation:
@@ -431,17 +421,7 @@ namespace VRT.Pilots.LoginManager
         {
             userRepresentationLobbyText.text = _representationType.ToString();
             // left change the icon 'userRepresentationLobbyImage'
-            switch (_representationType)
-            {
-                case UserRepresentationType.Deprecated__PCC_SYNTH__:
-                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
-                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
-                case UserRepresentationType.Deprecated__PCC_PROXY__:
-                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {_representationType} changed to PointCloud");
-                    _representationType = UserRepresentationType.PointCloud;
-                    break;
-
-            }
+         
             switch (_representationType)
             {
                 case UserRepresentationType.NoRepresentation:
@@ -466,17 +446,7 @@ namespace VRT.Pilots.LoginManager
 
         private void SetUserRepresentationDescription(UserRepresentationType _representationType)
         {
-            switch (_representationType)
-            {
-                case UserRepresentationType.Deprecated__PCC_SYNTH__:
-                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
-                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
-                case UserRepresentationType.Deprecated__PCC_PROXY__:
-                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {_representationType} changed to PointCloud");
-                    _representationType = UserRepresentationType.PointCloud;
-                    break;
 
-            }
             // left change the icon 'userRepresentationLobbyImage'
             switch (_representationType)
             {
@@ -492,7 +462,7 @@ namespace VRT.Pilots.LoginManager
                 case UserRepresentationType.PointCloud:
                     selfRepresentationDescription.text = "Realistic point cloud user representation, captured live.";
                     break;
-                           case UserRepresentationType.AudioOnly:
+                case UserRepresentationType.AudioOnly:
                     selfRepresentationDescription.text = "No visual representation, only audio communication.";
                     break;
                 case UserRepresentationType.NoRepresentationCamera:
