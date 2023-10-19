@@ -216,10 +216,18 @@ namespace VRT.Orchestrator.WSManagement
                     // for each parameter defined in the command, fill the parameter with its value
                     command.Parameters.ForEach(delegate (Parameter parameter) {
                         if (parameter.ParamValue != null) {
-                            if (parameter.type == typeof(bool)) {
+                            if (parameter.type == typeof(bool))
+                            {
                                 parameters[parameter.ParamName] = (bool)parameter.ParamValue;
                             } else {
-                                parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                                if (parameter.ParamValue is JsonData)
+                                {
+                                    parameters[parameter.ParamName] = parameter.ParamValue as JsonData;
+                                }
+                                else
+                                {
+                                    parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                                }
                             }
                         } else {
                             parameters[parameter.ParamName] = "";

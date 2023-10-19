@@ -157,17 +157,6 @@ namespace VRT.Orchestrator.Wrapping
 
             InitGrammar();
         }
-#if outdated_orchestrator
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IUserMessagesListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, null, messagesFromOrchestratorListener, null) { }
-        public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null, null) { }
-
-        public void AddUserSessionEventLister(IUserSessionEventsListener e)
-        {
-            UserSessionEventslisteners.Add(e);
-        }
-
-        public Action<UserAudioPacket> OnAudioSent;
-#endif
         public Action<UserDataStreamPacket> OnDataStreamReceived;
 
         private string myUserID = "";
@@ -284,7 +273,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 
-        internal void AddScenario(Scenario scOrch)
+        internal void _AddScenario(Scenario scOrch)
         {
             OrchestratorCommand command = GetOrchestratorCommand("AddScenario");
             command.GetParameter("scenarioId").ParamValue = scOrch.scenarioId;
@@ -293,16 +282,24 @@ namespace VRT.Orchestrator.Wrapping
             OrchestrationSocketIoManager.EmitCommand(command);
         }
 
-        private void OnAddScenarioResponse(OrchestratorCommand command, OrchestratorResponse response)
+        private void _OnAddScenarioResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             // Just ignore the response. We'll get another error later when we create a session.
         }
 
-        public void AddSession(string scenarioId, string sessionName, string sessionDescription, string sessionProtocol)
+        public void AddSession(string scenarioId, Scenario scenario, string sessionName, string sessionDescription, string sessionProtocol)
         {
+            
             OrchestratorCommand command = GetOrchestratorCommand("AddSession");
             command.GetParameter("scenarioId").ParamValue = scenarioId;
+            if (scenario != null)
+            {
+                // This is gross. Have to go via string to get a JsonData.
+                string jsonString = JsonUtility.ToJson(scenario);
+                JsonData json = JsonMapper.ToObject(jsonString);
+                command.GetParameter("scenarioDefinition").ParamValue = json;
+            }
             command.GetParameter("sessionName").ParamValue = sessionName;
             command.GetParameter("sessionDescription").ParamValue = sessionDescription;
             command.GetParameter("sessionProtocol").ParamValue = sessionProtocol;
@@ -388,110 +385,12 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLeaveSessionResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
-
-#if outdated_orchestrator
-
-        public void GetLivePresenterData()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("GetLivePresenterData");
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void GetLivePresenterDataResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            LivePresenterData liveData = LivePresenterData.ParseJsonData<LivePresenterData>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: GetLivePresenterDataResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnGetLivePresenterDataResponse(status, liveData);
-        }
-#endif
-        public void GetScenarios()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("GetScenarios");
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnGetScenariosResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            List<Scenario> list = Helper.ParseElementsList<Scenario>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetSecenarionsResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnGetScenariosResponse(status, list);
-        }
-
-        public void GetScenarioInstanceInfo(string scenarioId)
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("GetScenarioInstanceInfo");
-            command.GetParameter("scenarioId").ParamValue = scenarioId;
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnGetScenarioInstanceInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            ScenarioInstance scenario = ScenarioInstance.ParseJsonData<ScenarioInstance>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetSecenarioInstanceInfoResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnGetScenarioInstanceInfoResponse(status, scenario);
-        }
-
-        public void GetUsers()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("GetUsers");
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnGetUsersResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            List<User> list = Helper.ParseElementsList<User>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OnGetUsersResponse: OnSocketConnect: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnGetUsersResponse(status, list);
-        }
-
-        public void AddUser(string userName, string userPassword, bool isAdmin)
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("AddUser");
-            command.GetParameter("userName").ParamValue = userName;
-            command.GetParameter("userPassword").ParamValue = userPassword;
-            command.GetParameter("userAdmin").ParamValue = isAdmin;
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnAddUserResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            User user = User.ParseJsonData<User>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnAddUserResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnAddUserResponse(status, user);
-        }
-
-        public void GetUserInfo(string userId = "")
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("GetUserInfo");
-            command.GetParameter("userId").ParamValue = userId;
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnGetUserInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            User user = User.ParseJsonData<User>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetUserInfoResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
-        }
         public void UpdateUserData(string userDataKey, string userDataValue)
         {
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
             command.GetParameter("userDataKey").ParamValue = userDataKey;
             command.GetParameter("userDataValue").ParamValue = userDataValue;
             OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnUpdateUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataResponse(status);
         }
         public void UpdateUserDataJson(UserData userData)
         {
@@ -507,78 +406,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataJsonResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataJsonResponse(status);
         }
-#if outdated_orchestrator
 
-        public void ClearUserData()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("ClearUserData");
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-        
-
-        private void OnClearUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnClearUserDataResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnClearUserDataResponse(status);
-        }
-
-        public void DeleteUser(string userId)
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("DeleteUser");
-            command.GetParameter("userId").ParamValue = userId;
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnDeleteUserResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnDeleteUserResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnDeleteUserResponse(status);
-        }
-
-
-        public void GetRooms()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("GetRooms");
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnGetRoomsResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            List<RoomInstance> rooms = Helper.ParseElementsList<RoomInstance>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetRoomsResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnGetRoomsResponse(status, rooms);
-        }
-
-        public void JoinRoom(string roomId)
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("JoinRoom");
-            command.GetParameter("roomId").ParamValue = roomId;
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnJoinRoomResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnJoinRoomResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnJoinRoomResponse(status);
-        }
-
-        public void LeaveRoom()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("LeaveRoom");
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnLeaveRoomResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLeaveRoomResponse: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnLeaveRoomResponse(status);
-        }
-#endif
         public void SendMessage(string message, string userId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendMessage");
@@ -607,49 +435,10 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSendMessageToAllResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
-#if outdated_orchestrator
-
-        public void GetAvailableDataStreams(string pDataStreamUserId)
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("GetAvailableDataStreams");
-            command.GetParameter("dataStreamUserId").ParamValue = pDataStreamUserId;
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnGetAvailableDataStreams(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            List<DataStream> lDataStreams = Helper.ParseElementsList<DataStream>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetAvailableDataStreams: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnGetAvailableDataStreams(status, lDataStreams);
-        }
-
-        public void GetRegisteredDataStreams()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("GetRegisteredDataStreams");
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnGetRegisteredDataStreams(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            List<DataStream> lDataStreams = Helper.ParseElementsList<DataStream>(response.body);
-            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetRegisteredDataStreams: no ResponsesListener");
-            if (ResponsesListener != null) ResponsesListener.OnGetRegisteredDataStreams(status, lDataStreams);
-        }
-#endif
 #endregion
 
 #region commands - no Acks
 
-#if outdated_orchestrator
-        public void PushAudioPacket(byte[] pByteArray)
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("PushAudio");
-            command.GetParameter("audiodata").ParamValue = pByteArray;
-            OrchestrationSocketIoManager.EmitPacket(command);
-        }
-#endif
         public void SendSceneEventPacketToMaster(byte[] pByteArray)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendSceneEventToMaster");
@@ -686,14 +475,6 @@ namespace VRT.Orchestrator.Wrapping
             command.GetParameter("dataStreamKind").ParamValue = pDataStreamType;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
-#if outdated_orchestrator
-
-        public void RemoveAllDataStreams()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("RemoveAllDataStreams");
-            OrchestrationSocketIoManager.EmitPacket(command);
-        }
-#endif
         public void RegisterForDataStream(string pDataStreamUserId, string pDataStreamType)
         {
             OrchestratorCommand command = GetOrchestratorCommand("RegisterForDataStream");
@@ -709,14 +490,6 @@ namespace VRT.Orchestrator.Wrapping
             command.GetParameter("dataStreamKind").ParamValue = pDataStreamKind;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
-#if outdated_orchestrator
-
-        public void UnregisterFromAllDataStreams()
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("UnregisterFromAllDataStreams");
-            OrchestrationSocketIoManager.EmitPacket(command);
-        }
-#endif
         public void SendData(string pDataStreamType, byte[] pDataStreamBytes)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendData");
@@ -727,7 +500,7 @@ namespace VRT.Orchestrator.Wrapping
 
 #endregion
 
-        #region remote response
+#region remote response
 
         // messages from the orchestrator
         private void OnMessageSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
@@ -739,21 +512,6 @@ namespace VRT.Orchestrator.Wrapping
 
             if (UserMessagesListener != null) UserMessagesListener.OnUserMessageReceived(messageReceived);
         }
-#if outdated_orchestrator
-
-        // audio packets from the orchestrator
-        private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
-        {
-            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
-            string lUserID = jsonResponse[1]["audioFrom"].ToString();
-
-            if (myUserID != lUserID)
-            {
-                UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0], lUserID);
-                OnAudioSent?.Invoke(packetReceived);
-            }
-        }
-#endif
 
         // bit-stream packets from the orchestrator
         private void OnUserDataReceived(Socket socket, Packet packet, params object[] args)
@@ -775,8 +533,8 @@ namespace VRT.Orchestrator.Wrapping
             JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
 
             string lEventID = jsonResponse[1]["eventId"].ToString();
-            string lUserID = jsonResponse[1]["eventData"][0].ToString();
-
+            string lUserID = jsonResponse[1]["eventData"]["userId"].ToString();
+            
             if (lUserID == myUserID)
             {
                 //I just joined a session, so I need to get all connected users IDs to get their audio, provided by the OnGetSessionInfoResponse callback.
@@ -786,10 +544,11 @@ namespace VRT.Orchestrator.Wrapping
             switch (lEventID)
             {
                 case "USER_JOINED_SESSION":
+                    User lUser = User.ParseJsonData(jsonResponse[1]["eventData"]["userData"]);
 
                     foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
-                        e?.OnUserJoinedSession(lUserID);
+                        e?.OnUserJoinedSession(lUserID, lUser);
                     }
 
                     break;
@@ -835,7 +594,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 #endregion
 
-        #region grammar definition
+#region grammar definition
         // declare te available commands, their parameters and the callbacks that should be used for the response of each command
         public void InitGrammar()
         {
@@ -853,16 +612,6 @@ namespace VRT.Orchestrator.Wrapping
 
                 //NTP
                 new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
-
-                // scenarios
-                new OrchestratorCommand("AddScenario", new List<Parameter>
-                {
-                    new Parameter("scenarioId", typeof(string)),
-                    new Parameter("scenarioName", typeof(string)),
-                    new Parameter("scenarioDescription", typeof(string)),
-                },
-                OnAddScenarioResponse
-                ),
                 //sessions
                 new OrchestratorCommand("AddSession", new List<Parameter>
                 {
@@ -870,6 +619,7 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("sessionName", typeof(string)),
                     new Parameter("sessionDescription", typeof(string)),
                     new Parameter("sessionProtocol", typeof(string)),
+                    new Parameter("scenarioDefinition", typeof(string))
                 },
                 OnAddSessionResponse),
                 new OrchestratorCommand("GetSessions", null, OnGetSessionsResponse),
@@ -886,65 +636,12 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnJoinSessionResponse),
                 new OrchestratorCommand("LeaveSession", null, OnLeaveSessionResponse),
-#if outdated_orchestrator
 
-                //live stream
-                new OrchestratorCommand("GetLivePresenterData", null, GetLivePresenterDataResponse),
-#endif
-
-                //scenarios
-                new OrchestratorCommand("GetScenarios", null, OnGetScenariosResponse),
-                new OrchestratorCommand("GetScenarioInstanceInfo", new List<Parameter>
-                {
-                    new Parameter("scenarioId", typeof(string))
-                },
-                OnGetScenarioInstanceInfoResponse),
-
-                //users
-                new OrchestratorCommand("GetUsers", null, OnGetUsersResponse),
-                new OrchestratorCommand("GetUserInfo",
-                new List<Parameter>
-                    {
-                        new Parameter("userId", typeof(string))
-                    }, 
-                    OnGetUserInfoResponse),
-                new OrchestratorCommand("AddUser", new List<Parameter>
-                {
-                    new Parameter("userName", typeof(string)),
-                    new Parameter("userPassword", typeof(string)),
-                    new Parameter("userAdmin", typeof(bool))
-                },
-                OnAddUserResponse),
-
-                new OrchestratorCommand("UpdateUserData", new List<Parameter>
-                {
-                    new Parameter("userDataKey", typeof(string)),
-                    new Parameter("userDataValue", typeof(string))
-                },
-                OnUpdateUserDataResponse),
                 new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
                 {
                     new Parameter("userDataJson", typeof(string))
                 },
                 OnUpdateUserDataJsonResponse),
-#if outdated_orchestrator
-                new OrchestratorCommand("ClearUserData", null, OnClearUserDataResponse),
-                new OrchestratorCommand("DeleteUser", new List<Parameter>
-                {
-                    new Parameter("userId", typeof(string))
-                },
-                OnDeleteUserResponse),
-
-
-                //rooms
-                new OrchestratorCommand("GetRooms", null, OnGetRoomsResponse),
-                new OrchestratorCommand("JoinRoom", new List<Parameter>
-                {
-                    new Parameter("roomId", typeof(string))
-                },
-                OnJoinRoomResponse),
-                new OrchestratorCommand("LeaveRoom", null, OnLeaveRoomResponse),
-#endif
                 //messages
                 new OrchestratorCommand("SendMessage", new List<Parameter>
                 {
@@ -957,14 +654,6 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("message", typeof(string))
                 },
                 OnSendMessageToAllResponse),
-#if outdated_orchestrator
-
-                //audio packets
-                new OrchestratorCommand("PushAudio", new List<Parameter>
-                {
-                    new Parameter("audiodata", typeof(byte[]))
-                }),
-#endif
 
                 //user events
                 new OrchestratorCommand("SendSceneEventToMaster", new List<Parameter>
@@ -991,9 +680,6 @@ namespace VRT.Orchestrator.Wrapping
                 {
                     new Parameter("dataStreamKind", typeof(string)),
                 }),
-#if outdated_orchestrator
-                new OrchestratorCommand("RemoveAllDataStreams", null),
-#endif
                 new OrchestratorCommand("RegisterForDataStream", new List<Parameter>
                 {
                     new Parameter("dataStreamUserId", typeof(string)),
@@ -1004,16 +690,6 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("dataStreamUserId", typeof(string)),
                     new Parameter("dataStreamKind", typeof(string))
                 }),
-#if outdated_orchestrator
-
-                new OrchestratorCommand("UnregisterFromAllDataStreams", null),
-                new OrchestratorCommand("GetAvailableDataStreams", new List<Parameter>
-                {
-                    new Parameter("dataStreamUserId", typeof(string))
-                },
-                OnGetAvailableDataStreams),
-                new OrchestratorCommand("GetRegisteredDataStreams", null, OnGetRegisteredDataStreams),
-#endif
                 new OrchestratorCommand("SendData", new List<Parameter>
                 {
                     new Parameter("dataStreamKind", typeof(string)),
@@ -1026,9 +702,6 @@ namespace VRT.Orchestrator.Wrapping
                 //messages
                 new OrchestratorMessageReceiver("MessageSent", OnMessageSentFromOrchestrator),
                 //audio packets
-#if outdated_orchestrator
-                new OrchestratorMessageReceiver("AudioSent", OnAudioSentFromOrchestrator),
-#endif
                 //session update events
                 new OrchestratorMessageReceiver("SessionUpdated", OnSessionUpdated),
                 //user events
@@ -1052,6 +725,6 @@ namespace VRT.Orchestrator.Wrapping
             return null;
         }
 
-        #endregion
+#endregion
     }
 }
