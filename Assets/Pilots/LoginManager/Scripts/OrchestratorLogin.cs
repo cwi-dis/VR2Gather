@@ -765,6 +765,9 @@ namespace VRT.Pilots.LoginManager
 
         public void PanelChanger()
         {
+            // Get the user name (if we have one) it is used to initialize various fields.
+            string uname = OrchestratorController.Instance?.SelfUser?.userName;
+
             developerPanel.SetActive(developerMode);
             connectPanel.gameObject.SetActive(state == State.Offline);
             loginPanel.SetActive(state == State.Online);
@@ -783,7 +786,8 @@ namespace VRT.Pilots.LoginManager
                     CheckRememberMe();
                     break;
                 case State.Logged:
-                   
+                    userNameVRTText.text = uname;
+                    userName.text = uname;
                     break;
                 case State.Config:
                    
@@ -794,7 +798,11 @@ namespace VRT.Pilots.LoginManager
                     
                     break;
                 case State.Create:
-                   
+                    if (string.IsNullOrEmpty(sessionNameIF.text))
+                    {
+                         string time = DateTime.Now.ToString("hhmmss");
+                        sessionNameIF.text = $"{uname}_{time}";
+                    }
                     break;
                 case State.Join:
                     // Behaviour
