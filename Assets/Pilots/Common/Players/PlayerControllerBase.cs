@@ -182,6 +182,7 @@ namespace VRT.Pilots.Common
                     }
                     catch (Exception e)
                     {
+                        Debug.Log($"Cannot set representation {userRepresentation}. Exception {e}");
                         Debug.LogError($"Cannot set representation {userRepresentation}. Revert to avatar.");
                         userRepresentation = UserRepresentationType.SimpleAvatar;
                         avatar.SetActive(true);
