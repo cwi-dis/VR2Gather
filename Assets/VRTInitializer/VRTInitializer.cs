@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Management;
 using VRT.UserRepresentation.PointCloud;
 using VRT.UserRepresentation.WebCam;
 using VRT.Core;
@@ -12,21 +13,20 @@ using Cwipc;
 
 public class VRTInitializer : MonoBehaviour
 {
+    
     // Start is called before the first frame update
     void Awake()
     {
-        Debug.Log("Initializer: Registering pipelines");
+         Debug.Log("VRTInitializer: Registering pipelines");
         PointCloudPipelineSelf.Register();
         PointCloudPipelineOther.Register();
         WebCamPipeline.Register();
-        Debug.Log("Initializer: Initialize NegateProcessor");
-        var tmp = new NegateProcessor();
     }
 
     private void OnApplicationQuit()
     {
 #if VRT_WITH_STATS
-        Statistics.Output("PilotController", $"quitting=1");
+        Statistics.Output("VRTInitializer", $"quitting=1");
 #endif
         // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
@@ -34,8 +34,21 @@ public class VRTInitializer : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Initializer: Start");
+        Debug.Log("VRTInitializer: Start");
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        if (XRGeneralSettings.Instance.Manager.activeLoader != null)
+        {
+            XRGeneralSettings.Instance.Manager.StopSubsystems();
+            XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+            Debug.LogWarning("VRTInitializer: de-initialize XR on Mac to work around bug");
+        }
+        else
+        {
+            Debug.Log("VRTInitializer: XR was not enabled");
+        }
+#endif
     }
+
     // Update is called once per frame
     void Update()
     {

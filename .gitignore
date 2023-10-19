@@ -8,6 +8,8 @@ dlls/
 Testbed.sln
 Assembly-CSharp.csproj
 cameraconfig.xml
+cameraconfig.json
+config-user.json
 .collabignore
 *.csproj
 *.sln

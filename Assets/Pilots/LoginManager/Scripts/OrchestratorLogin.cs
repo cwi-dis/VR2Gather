@@ -1,17 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
-using UnityEditor;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
-using Cwipc;
 using VRT.Pilots.Common;
+using static System.Collections.Specialized.BitVector32;
 
 namespace VRT.Pilots.LoginManager
 {
@@ -33,8 +30,6 @@ namespace VRT.Pilots.LoginManager
 
         private static OrchestratorLogin instance;
 
-        public static OrchestratorLogin Instance { get { return instance; } }
-
         #region GUI Components
 
         [Tooltip("This user is the master of the session")]
@@ -44,11 +39,7 @@ namespace VRT.Pilots.LoginManager
         private State state = State.Offline;
         private AutoState autoState = AutoState.DidNone;
 
-        // Because we re-order the scenarios in the menu (to get usable ones near the top) we need to also keep
-        // a list in order of the menu.
-        private List<string> scenarioIDs;
-
-
+        
         [Header("Developer")]
         [SerializeField] private Toggle developerModeButton = null;
         [SerializeField] private GameObject developerPanel = null;
@@ -113,6 +104,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private InputField sessionNameIF = null;
         [SerializeField] private InputField sessionDescriptionIF = null;
         [SerializeField] private Dropdown scenarioIdDrop = null;
+        [SerializeField] private Text scenarioDescription = null;
         [SerializeField] private Toggle socketProtocolToggle = null;
         [SerializeField] private Toggle dashProtocolToggle = null;
         [SerializeField] private Toggle tcpProtocolToggle = null;
@@ -123,6 +115,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private GameObject joinPanel = null;
         [SerializeField] private Button backJoinButton = null;
         [SerializeField] private Dropdown sessionIdDrop = null;
+        [SerializeField] private Text sessionJoinMessage = null;
         [SerializeField] private int refreshTimer = 5;
 
         [Header("Lobby")]
@@ -243,41 +236,43 @@ namespace VRT.Pilots.LoginManager
             // IMAGE
             switch (user.userData.userRepresentationType)
             {
-                case UserRepresentationType.__NONE__:
+                case UserRepresentationType.Deprecated__PCC_SYNTH__:
+                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
+                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
+                case UserRepresentationType.Deprecated__PCC_PROXY__:
+                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {user.userData.userRepresentationType} changed to PointCloud");
+                    user.userData.userRepresentationType = UserRepresentationType.PointCloud;
+                    break;
+
+            }
+            switch (user.userData.userRepresentationType)
+            {
+                case UserRepresentationType.NoRepresentation:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                     textItem.text += " - (No Rep)";
                     break;
-                case UserRepresentationType.__2D__:
+                case UserRepresentationType.VideoAvatar:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                     textItem.text += " - (2D Video)";
                     break;
-                case UserRepresentationType.__AVATAR__:
+                case UserRepresentationType.SimpleAvatar:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                     textItem.text += " - (3D Avatar)";
                     break;
-                case UserRepresentationType.__PCC_CWI_:
-                case UserRepresentationType.__PCC_CWIK4A_:
-                case UserRepresentationType.__PCC_PROXY__:
-                    imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                case UserRepresentationType.PointCloud:
+                   imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                     textItem.text += " - (Simple PC)";
                     break;
-                case UserRepresentationType.__PCC_SYNTH__:
-                    imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                    textItem.text += " - (Synthetic PC)";
-                    break;
-                case UserRepresentationType.__PCC_PRERECORDED__:
-                    imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                    textItem.text += " - (Prerecorded PC)";
-                    break;
-                case UserRepresentationType.__SPECTATOR__:
+               case UserRepresentationType.AudioOnly:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                     textItem.text += " - (Spectator)";
                     break;
-                case UserRepresentationType.__CAMERAMAN__:
+                case UserRepresentationType.NoRepresentationCamera:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
                     textItem.text += " - (Cameraman)";
                     break;
                 default:
+                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {user.userData.userRepresentationType}");
                     break;
             }
         }
@@ -313,7 +308,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void UpdateSessions(Transform container, Dropdown dd)
+        private void UpdateSessions(Transform container)
         {
             RemoveComponentsFromList(container.transform);
             foreach (var session in OrchestratorController.Instance.AvailableSessions)
@@ -323,38 +318,44 @@ namespace VRT.Pilots.LoginManager
 
             string selectedOption = "";
             // store selected option in dropdown
-            if (dd.options.Count > 0)
-                selectedOption = dd.options[dd.value].text;
+            if (sessionIdDrop.options.Count > 0)
+                selectedOption = sessionIdDrop.options[sessionIdDrop.value].text;
             // update the dropdown
-            dd.ClearOptions();
+            sessionIdDrop.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
             foreach (var sess in OrchestratorController.Instance.AvailableSessions)
             {
                 options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
             }
-            dd.AddOptions(options);
+            sessionIdDrop.AddOptions(options);
             // re-assign selected option in dropdown
-            if (dd.options.Count > 0)
+            if (sessionIdDrop.options.Count > 0)
             {
-                for (int i = 0; i < dd.options.Count; ++i)
+                for (int i = 0; i < sessionIdDrop.options.Count; ++i)
                 {
-                    if (dd.options[i].text == selectedOption)
-                        dd.value = i;
+                    if (sessionIdDrop.options[i].text == selectedOption)
+                        sessionIdDrop.value = i;
                 }
             }
+            SessionSelectionChanged();
         }
 
-        private void UpdateScenarios(Dropdown dd)
+        private void UpdateScenarios()
         {
             // update the dropdown
-            dd.ClearOptions();
+            scenarioIdDrop.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+            foreach (var sc in ScenarioRegistry.Instance.Scenarios)
+            {
+                options.Add(new Dropdown.OptionData(sc.scenarioName));
+            }
+#if old_scenarios
             // Add scenarios we have implemented first, others afterwards after a blank line
             scenarioIDs = new List<string>();
             foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
             {
 
-                if (PilotRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
+                if (ScenarioRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
                 {
                     options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
                     scenarioIDs.Add(scenario.scenarioId);
@@ -365,63 +366,50 @@ namespace VRT.Pilots.LoginManager
             foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
             {
 
-                if (PilotRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
+                if (ScenarioRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
                 {
                     options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
                     scenarioIDs.Add(scenario.scenarioId);
                 }
             }
-            dd.AddOptions(options);
+#endif
+            scenarioIdDrop.AddOptions(options);
+            ScenarioSelectionChanged();
+        }
+
+        private void ScenarioSelectionChanged()
+        {
+            var idx = scenarioIdDrop.value;
+            bool ok = false;
+            string message = "(no scenario selected)";
+            var scenarios = ScenarioRegistry.Instance.Scenarios;
+            if (idx >= 0 && idx < scenarios.Count)
+            {
+                var sc = scenarios[idx];
+                // Empty entries can be used as separators
+                if (!string.IsNullOrEmpty(sc.scenarioId))
+                {
+                    ok = true;
+                    message = sc.scenarioDescription;
+
+                }
+            }
+            if (scenarioDescription != null)
+            {
+                scenarioDescription.text = message;
+            }
+            doneCreateButton.interactable = ok;
         }
 
         private void UpdateRepresentations(Dropdown dd)
         {
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
+            // xxxjack this has the huge disadvantage that they are numerically sorted.
+            // xxxjack and the order is difficult to change currently, because the values
+            // xxxjack are stored by the orchestrator in the user record, in numerical form...
             dd.ClearOptions();
-            //dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
-            List<string> finalNames = new List<string>();
-            foreach (string type in Enum.GetNames(typeof(UserRepresentationType)))
-            {
-                string enumName;
-                switch (type)
-                {
-                    case "__NONE__":
-                        enumName = "No Representation";
-                        break;
-                    case "__2D__":
-                        enumName = "Video Avatar";
-                        break;
-                    case "__AVATAR__":
-                        enumName = "Avatar";
-                        break;
-                    case "__PCC_CWI_":
-                        enumName = "PointCloud (RealSense)";
-                        break;
-                    case "__PCC_CWIK4A_":
-                        enumName = "PointCloud (Kinect)";
-                        break;
-                    case "__PCC_PROXY__":
-                        enumName = "PointCloud (5G phone)";
-                        break;
-                    case "__PCC_SYNTH__":
-                        enumName = "Synthetic PointCloud";
-                        break;
-                    case "__PCC_PRERECORDED__":
-                        enumName = "Prerecorded PointCloud";
-                        break;
-                    case "__SPECTATOR__":
-                        enumName = "Voice-only Spectator";
-                        break;
-                    case "__CAMERAMAN__":
-                        enumName = "Cameraman";
-                        break;
-                    default:
-                        enumName = type + " Not Defined";
-                        break;
-                }
-                finalNames.Add(enumName);
-            }
-            dd.AddOptions(finalNames);
+            dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
+            
         }
 
         private void UpdateWebcams(Dropdown dd)
@@ -454,88 +442,80 @@ namespace VRT.Pilots.LoginManager
             // left change the icon 'userRepresentationLobbyImage'
             switch (_representationType)
             {
-                case UserRepresentationType.__NONE__:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
-                    userRepresentationLobbyText.text = "NO REPRESENTATION";
+                case UserRepresentationType.Deprecated__PCC_SYNTH__:
+                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
+                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
+                case UserRepresentationType.Deprecated__PCC_PROXY__:
+                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {_representationType} changed to PointCloud");
+                    _representationType = UserRepresentationType.PointCloud;
                     break;
-                case UserRepresentationType.__2D__:
+
+            }
+            switch (_representationType)
+            {
+                case UserRepresentationType.NoRepresentation:
+                case UserRepresentationType.AudioOnly:
+                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                    break;
+                case UserRepresentationType.VideoAvatar:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
-                    userRepresentationLobbyText.text = "VIDEO";
                     break;
-                case UserRepresentationType.__AVATAR__:
+                case UserRepresentationType.SimpleAvatar:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                    userRepresentationLobbyText.text = "AVATAR";
                     break;
-                case UserRepresentationType.__PCC_CWI_:
-                case UserRepresentationType.__PCC_CWIK4A_:
-                case UserRepresentationType.__PCC_PROXY__:
+                case UserRepresentationType.PointCloud:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                    userRepresentationLobbyText.text = "POINTCLOUD";
                     break;
-                case UserRepresentationType.__PCC_SYNTH__:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                    userRepresentationLobbyText.text = "SYNTHETIC PC";
-                    break;
-                case UserRepresentationType.__PCC_PRERECORDED__:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                    userRepresentationLobbyText.text = "PRERECORDED PC";
-                    break;
-                case UserRepresentationType.__SPECTATOR__:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
-                    userRepresentationLobbyText.text = "SPECTATOR";
-                    break;
-                case UserRepresentationType.__CAMERAMAN__:
+                 case UserRepresentationType.NoRepresentationCamera:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
-                    userRepresentationLobbyText.text = "CAMERAMAN";
                     break;
-                default:
-                    break;
+              
             }
         }
 
         private void SetUserRepresentationDescription(UserRepresentationType _representationType)
         {
+            switch (_representationType)
+            {
+                case UserRepresentationType.Deprecated__PCC_SYNTH__:
+                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
+                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
+                case UserRepresentationType.Deprecated__PCC_PROXY__:
+                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {_representationType} changed to PointCloud");
+                    _representationType = UserRepresentationType.PointCloud;
+                    break;
+
+            }
             // left change the icon 'userRepresentationLobbyImage'
             switch (_representationType)
             {
-                case UserRepresentationType.__NONE__:
+                case UserRepresentationType.NoRepresentation:
                     selfRepresentationDescription.text = "No representation, no audio. The user can only watch.";
                     break;
-                case UserRepresentationType.__2D__:
+                case UserRepresentationType.VideoAvatar:
                     selfRepresentationDescription.text = "Avatar with video window from your camera.";
                     break;
-                case UserRepresentationType.__AVATAR__:
+                case UserRepresentationType.SimpleAvatar:
                     selfRepresentationDescription.text = "3D Synthetic Avatar.";
                     break;
-                case UserRepresentationType.__PCC_CWI_:
-                    selfRepresentationDescription.text = "Realistic point cloud user representation, captured with RealSense cameras.";
+                case UserRepresentationType.PointCloud:
+                    selfRepresentationDescription.text = "Realistic point cloud user representation, captured live.";
                     break;
-                case UserRepresentationType.__PCC_CWIK4A_:
-                    selfRepresentationDescription.text = "Realistic point cloud user representation, captured with Azure Kinect cameras.";
-                    break;
-                case UserRepresentationType.__PCC_PROXY__:
-                    selfRepresentationDescription.text = "Realistic point cloud user representation, captured with 5G phone camera.";
-                    break;
-                case UserRepresentationType.__PCC_SYNTH__:
-                    selfRepresentationDescription.text = "3D Synthetic point cloud avatar.";
-                    break;
-                case UserRepresentationType.__PCC_PRERECORDED__:
-                    selfRepresentationDescription.text = "3D Pre-recorded point cloud.";
-                    break;
-                case UserRepresentationType.__SPECTATOR__:
+                           case UserRepresentationType.AudioOnly:
                     selfRepresentationDescription.text = "No visual representation, only audio communication.";
                     break;
-                case UserRepresentationType.__CAMERAMAN__:
+                case UserRepresentationType.NoRepresentationCamera:
                     selfRepresentationDescription.text = "Local video recorder.";
                     break;
                 default:
+                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {_representationType}");
                     break;
             }
         }
 
-        #endregion
+#endregion
 
-        #region Unity
+#region Unity
 
         // Start is called before the first frame update
         void Start()
@@ -553,7 +533,7 @@ namespace VRT.Pilots.LoginManager
             developerModeButton.isOn = developerMode;
             // Update Application version
             orchURLText.text = VRTConfig.Instance.orchestratorURL;
-            nativeVerText.text = VersionLog.Instance.NativeClient;
+            if (VersionLog.Instance != null) nativeVerText.text = VersionLog.Instance.NativeClient;
             playerVerText.text = "v" + Application.version;
             orchVerText.text = "";
 
@@ -596,6 +576,9 @@ namespace VRT.Pilots.LoginManager
             microphoneDropdown.onValueChanged.AddListener(delegate {
                 selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
             });
+            scenarioIdDrop.onValueChanged.AddListener(delegate { ScenarioSelectionChanged(); });
+
+            sessionIdDrop.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
 
             InitialiseControllerEvents();
 
@@ -611,8 +594,8 @@ namespace VRT.Pilots.LoginManager
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
                 statusText.color = connectedCol;
                 FillSelfUserData();
-                UpdateSessions(orchestratorSessions, sessionIdDrop);
-                UpdateScenarios(scenarioIdDrop);
+                UpdateSessions(orchestratorSessions);
+                UpdateScenarios();
                 Debug.Log("OrchestratorLogin: Coming from another Scene");
 
                 OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
@@ -721,14 +704,10 @@ namespace VRT.Pilots.LoginManager
                     int idx = 0;
                     foreach (var entry in scenarioIdDrop.options)
                     {
-                        if (entry.text.Contains(config.sessionScenario + " "))
+                        if (entry.text == config.sessionScenario)
                         {
-                            if (found)
-                            {
-                                Debug.LogError($"OrchestratorLogin: AutoStart: Multiple scenarios match {config.sessionScenario}");
-                            }
-                            found = true;
                             scenarioIdDrop.value = idx;
+                            found = true;
                         }
                         idx++;
                     }
@@ -774,7 +753,10 @@ namespace VRT.Pilots.LoginManager
 
         public void FillSelfUserData()
         {
-            if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
+            if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null)
+            {
+                Debug.LogWarning($"OrchestratorLogin: FillSelfUserData: no SelfUser data yet");
+            }
             User user = OrchestratorController.Instance.SelfUser;
 
             // UserID & Name
@@ -861,7 +843,7 @@ namespace VRT.Pilots.LoginManager
             webcamInfoGO.SetActive(false);
           
          
-            if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__2D__)
+            if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.VideoAvatar)
             {
                 webcamInfoGO.SetActive(true);
             }
@@ -877,9 +859,9 @@ namespace VRT.Pilots.LoginManager
             TerminateControllerEvents();
         }
 
-        #endregion
+#endregion
 
-        #region Input
+#region Input
 
         void SelectFirstIF()
         {
@@ -931,9 +913,9 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        #endregion
+#endregion
 
-        #region Buttons
+#region Buttons
 
         private void DeveloperModeButtonClicked()
         {
@@ -1014,9 +996,9 @@ namespace VRT.Pilots.LoginManager
 
      
 
-        #endregion
+#endregion
 
-        #region Toggles 
+#region Toggles 
 
         private void AudioToggle()
         {
@@ -1086,9 +1068,9 @@ namespace VRT.Pilots.LoginManager
 
 
 
-        #endregion
+#endregion
 
-        #region Events listeners
+#region Events listeners
 
         // Subscribe to Orchestrator Wrapper Events
         private void InitialiseControllerEvents()
@@ -1111,13 +1093,17 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
+#if outdated_orchestrator
             OrchestratorController.Instance.OnGetLiveDataEvent += OnGetLivePresenterDataHandler;
+#endif
             OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
+#if outdated_orchestrator
             OrchestratorController.Instance.OnGetRoomsEvent += OnGetRoomsHandler;
             OrchestratorController.Instance.OnJoinRoomEvent += OnJoinRoomHandler;
             OrchestratorController.Instance.OnLeaveRoomEvent += OnLeaveRoomHandler;
+#endif
             OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
             OrchestratorController.Instance.OnUserEventReceivedEvent += OnUserEventReceivedHandler;
@@ -1145,24 +1131,29 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnGetScenarioEvent -= OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent -= OnGetScenariosHandler;
+#if outdated_orchestrator
             OrchestratorController.Instance.OnGetLiveDataEvent -= OnGetLivePresenterDataHandler;
+#endif
             OrchestratorController.Instance.OnGetUsersEvent -= OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent -= OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent -= OnGetUserInfoHandler;
+#if outdated_orchestrator
+
             OrchestratorController.Instance.OnGetRoomsEvent -= OnGetRoomsHandler;
             OrchestratorController.Instance.OnJoinRoomEvent -= OnJoinRoomHandler;
             OrchestratorController.Instance.OnLeaveRoomEvent -= OnLeaveRoomHandler;
+#endif
             OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
             OrchestratorController.Instance.OnUserEventReceivedEvent -= OnUserEventReceivedHandler;
             OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
         }
 
-        #endregion
+#endregion
 
-        #region Commands
+#region Commands
 
-        #region Socket.io connect
+#region Socket.io connect
 
         public void SocketConnect()
         {
@@ -1204,11 +1195,6 @@ namespace VRT.Pilots.LoginManager
             statusText.color = connectingCol;
         }
 
-        private void socketDisconnect()
-        {
-            OrchestratorController.Instance.socketDisconnect();
-        }
-
         private void OnDisconnect(bool pConnected)
         {
             if (!pConnected)
@@ -1228,10 +1214,10 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.GetNTPTime();
         }
 
-        #endregion
+#endregion
 
       
-        #region Login/Logout
+#region Login/Logout
 
         private void SignIn()
         {
@@ -1270,8 +1256,20 @@ namespace VRT.Pilots.LoginManager
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
             OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
+            ForwardScenariosToOrchestrator();
         }
 
+        private void ForwardScenariosToOrchestrator()
+        {
+            foreach(var sc in ScenarioRegistry.Instance.Scenarios)
+            {
+                Scenario scOrch = new Scenario();
+                scOrch.scenarioId = sc.scenarioId;
+                scOrch.scenarioName = sc.scenarioName;
+                scOrch.scenarioDescription = sc.scenarioDescription;
+                OrchestratorController.Instance.AddScenario(scOrch);
+            }
+        }
         // Check saved used credentials.
         private void CheckRememberMe()
         {
@@ -1289,6 +1287,21 @@ namespace VRT.Pilots.LoginManager
         {
             if (userLoggedSucessfully)
             {
+                // Load locally save user data for orchestrator, if wanted
+                if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+                {
+                    var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+                    if (System.IO.File.Exists(fullName))
+                    {
+                        Debug.Log($"OrchestratorLogin: load UserData from {fullName}");
+                        var configData = System.IO.File.ReadAllText(fullName);
+                        UserData lUserData = new UserData(); // = UserData.ParseJsonData(configData);
+                        JsonUtility.FromJsonOverwrite(configData, lUserData);
+                        OrchestratorController.Instance.UpdateFullUserData(lUserData);
+                        Debug.Log($"OrchestratorLogin: uploaded UserData to orchestrator");
+                    }
+                }
+
                 OrchestratorController.Instance.StartRetrievingData();
 
                 // UserData info in Login
@@ -1344,14 +1357,9 @@ namespace VRT.Pilots.LoginManager
             PanelChanger();
         }
 
-        #endregion
+#endregion
 
-        #region NTP clock
-
-        private void GetNTPTime()
-        {
-            OrchestratorController.Instance.GetNTPTime();
-        }
+#region NTP clock
 
         private void OnGetNTPTimeResponse(NtpClock ntpTime)
         {
@@ -1363,9 +1371,9 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        #endregion
+#endregion
 
-        #region Sessions
+#region Sessions
 
         private void GetSessions()
         {
@@ -1377,7 +1385,7 @@ namespace VRT.Pilots.LoginManager
             if (sessions != null)
             {
                 // update the list of available sessions
-                UpdateSessions(orchestratorSessions, sessionIdDrop);
+                UpdateSessions(orchestratorSessions);
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
                     Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
@@ -1386,9 +1394,23 @@ namespace VRT.Pilots.LoginManager
 
         private void AddSession()
         {
-            OrchestratorController.Instance.AddSession(scenarioIDs[scenarioIdDrop.value],
+            string protocol = "";
+            switch(SessionConfig.Instance.protocolType)
+            {
+                case SessionConfig.ProtocolType.SocketIO:
+                    protocol = "socketio";
+                    break;
+                case SessionConfig.ProtocolType.Dash:
+                    protocol = "dash";
+                    break;
+                case SessionConfig.ProtocolType.TCP:
+                    protocol = "tcp";
+                    break;
+            }
+            OrchestratorController.Instance.AddSession(ScenarioRegistry.Instance.Scenarios[scenarioIdDrop.value].scenarioId,
                                                         sessionNameIF.text,
-                                                        sessionDescriptionIF.text);
+                                                        sessionDescriptionIF.text,
+                                                        protocol);
         }
 
         private void OnAddSessionHandler(Session session)
@@ -1397,7 +1419,7 @@ namespace VRT.Pilots.LoginManager
             if (session != null)
             {
                 // update the list of available sessions
-                UpdateSessions(orchestratorSessions, sessionIdDrop);
+                UpdateSessions(orchestratorSessions);
 
                 // Update the info in LobbyPanel
                 isMaster = OrchestratorController.Instance.UserIsMaster;
@@ -1461,14 +1483,41 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void DeleteSession()
-        {
-            OrchestratorController.Instance.DeleteSession(OrchestratorController.Instance.MySession.sessionId);
-        }
-
         private void OnDeleteSessionHandler()
         {
             if (developerMode) Debug.Log("OrchestratorLogin: OnDeleteSessionHandler: Session deleted");
+        }
+
+        private void SessionSelectionChanged()
+        {
+            var idx = sessionIdDrop.value;
+            string description = "";
+            bool ok = idx >= 0 && idx < OrchestratorController.Instance.AvailableSessions.Length;
+            if (ok)
+            {
+                var sessionSelected = OrchestratorController.Instance.AvailableSessions[idx];
+                var scenarioSelected = sessionSelected.scenarioId;
+                var sessionMaster = sessionSelected.sessionMaster;
+                var masterUser = OrchestratorController.Instance.GetUser(sessionMaster);
+                var masterName = masterUser == null ? sessionMaster : masterUser.userName;
+                var scenarioInfo = ScenarioRegistry.Instance.GetScenarioById(scenarioSelected);
+                description = $"{sessionSelected.sessionName} by {masterName}\n{sessionSelected.sessionDescription}\n";
+                if (scenarioInfo == null)
+                {
+                    description += "Cannot join: not implemented in this VR2Gather player.";
+                    ok = false;
+                }
+                else
+                {
+                    description += scenarioInfo.scenarioDescription;
+                }
+          }
+            else
+            {
+                description = "(no session selected)";
+            }
+            sessionJoinMessage.text = description;
+            doneJoinButton.interactable = ok;
         }
 
         private void JoinSession()
@@ -1544,39 +1593,36 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        #endregion
+#endregion
 
-        #region Scenarios
-
-        private void GetScenarios()
-        {
-            OrchestratorController.Instance.GetScenarios();
-        }
+#region Scenarios
 
         private void OnGetScenariosHandler(Scenario[] scenarios)
         {
             if (scenarios != null && scenarios.Length > 0)
             {
                 //update the data in the dropdown
-                UpdateScenarios(scenarioIdDrop);
+                UpdateScenarios();
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
                     Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 
-        #endregion
+#endregion
 
-        #region Live
+#if outdated_orchestrator
+
+#region Live
 
         private void OnGetLivePresenterDataHandler(LivePresenterData liveData)
         {
             //Debug.Log("[OrchestratorLogin][OnGetLivePresenterDataHandler] Not implemented");
         }
 
-        #endregion
-
-        #region Users
+#endregion
+#endif
+#region Users
 
         private void GetUsers()
         {
@@ -1606,12 +1652,6 @@ namespace VRT.Pilots.LoginManager
             UpdateUsersSession(usersSession);
         }
 
-        private void AddUser()
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: AddUser: Send AddUser registration for user " + userNameRegisterIF.text);
-            OrchestratorController.Instance.AddUser(userNameRegisterIF.text, userPasswordRegisterIF.text);
-        }
-
         private void OnAddUserHandler(User user)
         {
             if (developerMode) Debug.Log("OrchestratorLogin: OnAddUserHandler: User " + user.userName + " registered with exit.");
@@ -1631,7 +1671,16 @@ namespace VRT.Pilots.LoginManager
                 webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
                 microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
             };
+            // Send new UserData to the orchestrator
             OrchestratorController.Instance.UpdateFullUserData(lUserData);
+            // And also save a local copy, if wanted
+            if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            {
+                var configData = lUserData.AsJsonString();
+                var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+                System.IO.File.WriteAllText(fullName, configData);
+                Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
+            }
         }
 
         private void GetUserInfo()
@@ -1641,56 +1690,62 @@ namespace VRT.Pilots.LoginManager
 
         private void OnGetUserInfoHandler(User user)
         {
-            if (user != null)
+            if (user == null)
             {
-                if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
+                Debug.LogWarning($"OrchestratorLogin: OnGetUserInfoHander: null user");
+                return;
+            }
+            if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
+            {
+                if (developerMode) Debug.Log($"OrchestratorLogin: OnGetUserInfoHandler: set SelfUser to {user.userId}");
+                OrchestratorController.Instance.SelfUser = user;
+
+                userId.text = user.userId;
+                userName.text = user.userName;
+                userNameVRTText.text = user.userName;
+
+                //UserData
+                tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
+                tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
+                representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
+
+                SetUserRepresentationGUI(user.userData.userRepresentationType);
+                // Session name
+                if (string.IsNullOrEmpty(sessionNameIF.text))
                 {
-                    OrchestratorController.Instance.SelfUser = user;
-
-                    userId.text = user.userId;
-                    userName.text = user.userName;
-                    userNameVRTText.text = user.userName;
-
-                    //UserData
-                    tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
-                    tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
-                    representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
-
-                    SetUserRepresentationGUI(user.userData.userRepresentationType);
-                    // Session name
-
                     string time = DateTime.Now.ToString("hhmmss");
                     sessionNameIF.text = $"{user.userName}_{time}";
-
                 }
+            }
 
-                GetUsers(); // To update the user representation
+            GetUsers(); // To update the user representation
 
-                // Update the sfuData and UserData if is in session.
-                if (OrchestratorController.Instance.ConnectedUsers != null)
+            // Update the sfuData and UserData if is in session.
+            if (OrchestratorController.Instance.ConnectedUsers != null)
+            {
+                for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i)
                 {
-                    for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i)
+                    if (OrchestratorController.Instance.ConnectedUsers[i].userId == user.userId)
                     {
-                        if (OrchestratorController.Instance.ConnectedUsers[i].userId == user.userId)
-                        {
-                            // sfuData
-                            OrchestratorController.Instance.ConnectedUsers[i].sfuData = user.sfuData;
-                            // UserData
-                            OrchestratorController.Instance.ConnectedUsers[i].userData = user.userData;
-                        }
+                        // sfuData
+                        OrchestratorController.Instance.ConnectedUsers[i].sfuData = user.sfuData;
+                        // UserData
+                        OrchestratorController.Instance.ConnectedUsers[i].userData = user.userData;
                     }
                 }
             }
         }
+#if outdated_orchestrator
 
         private void DeleteUser()
         {
             Debug.LogError("OrchestratorLogin: DeleteUser: Not implemented");
         }
+#endif
+#endregion
+#if outdated_orchestrator
 
-        #endregion
-
-        #region Rooms
+#region Rooms
 
         private void GetRooms()
         {
@@ -1724,14 +1779,10 @@ namespace VRT.Pilots.LoginManager
             Debug.LogError("OrchestratorLogin: OnLeaveRoomHandler: Not implemented");
         }
 
-        #endregion
+#endregion
+#endif
+#region Messages
 
-        #region Messages
-
-        private void SendMessage()
-        {
-            Debug.LogError("OrchestratorLogin: SendMessage: Not implemented");
-        }
 
         private void SendMessageToAll(string message)
         {
@@ -1743,24 +1794,7 @@ namespace VRT.Pilots.LoginManager
             LoginController.Instance.OnUserMessageReceived(userMessage.message);
         }
 
-        #endregion
-
-        #region Events
-
-        private void SendEventToMaster()
-        {
-            Debug.LogError("OrchestratorLogin: SendEventToMaster: Not implemented");
-        }
-
-        private void SendEventToUser()
-        {
-            Debug.LogError("OrchestratorLogin: SendEventToUser: Not implemented");
-        }
-
-        private void SendEventToAll()
-        {
-            Debug.LogError("OrchestratorLogin: SendEventToAll: Not implemented");
-        }
+#endregion
 
         private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
         {
@@ -1771,10 +1805,10 @@ namespace VRT.Pilots.LoginManager
         {
             Debug.LogError("OrchestratorLogin: OnUserEventReceivedHandler: Unexpected message from " + pUserEventData.fromId + ": " + pUserEventData.message);
         }
+#endregion
 
-        #endregion
-
-        #region Data Stream
+#region Data Stream
+#if outdated_orchestrator
 
         private void GetAvailableDataStreams()
         {
@@ -1785,10 +1819,10 @@ namespace VRT.Pilots.LoginManager
         {
             OrchestratorController.Instance.GetRegisteredDataStreams();
         }
+#endif
+#endregion
 
-        #endregion
-
-        #region Errors
+#region Errors
 
         private void OnErrorHandler(ResponseStatus status)
         {
@@ -1796,9 +1830,7 @@ namespace VRT.Pilots.LoginManager
             ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
         }
 
-        #endregion
-
-        #endregion
+#endregion
 
     }
 

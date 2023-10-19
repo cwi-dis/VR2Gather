@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -45,6 +46,8 @@ namespace VRT.Pilots.Common
 		public List<PlayerLocation> PlayerLocations;
 		[Tooltip("Location where no-representation players will be instantiated")]
 		public Transform NonPlayersLocation;
+		[Tooltip("Delay between Start() and InstantiatePlayers()")]
+		public float InstantiatePlayersDelay = 2.0f;
 
 		[Tooltip("If true, the players will be put on the available locations in order of appearance in the Player Locations list")]
 		public bool AutoSpawnOnLocation = false;
@@ -53,6 +56,9 @@ namespace VRT.Pilots.Common
 		[DisableEditing] public GameObject localPlayer;
 		[Tooltip("All players")]
 		[DisableEditing] public List<PlayerNetworkControllerBase> AllUsers;
+
+		[Tooltip("Verbose logging")]
+		[SerializeField] private bool debug = true;
 
 		public Dictionary<string, PlayerNetworkControllerBase> Players;
 		private Dictionary<string, PlayerLocation> _PlayerIdToLocation;
@@ -89,11 +95,13 @@ namespace VRT.Pilots.Common
 
 			OrchestratorController.Instance.Subscribe<PlayerLocationData>(OnPlayerLocationData);
 			OrchestratorController.Instance.Subscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
+			if (debug) Debug.Log($"SessionPlayersManager: Awake, subscribed to PlayerLocationData");
 		}
 
 		public void OnDestroy()
 		{
-			OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeft;
+            if (debug) Debug.Log($"SessionPlayersManager: OnDestroy, unsubscribing to PlayerLocationData");
+            OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeft;
 
 			OrchestratorController.Instance.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
 			OrchestratorController.Instance.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
@@ -101,11 +109,18 @@ namespace VRT.Pilots.Common
 
 		public void Start()
 		{
+			StartCoroutine(InstantiatePlayersAfterDelay());
+		}
+
+		protected IEnumerator InstantiatePlayersAfterDelay()
+		{
+			yield return new WaitForSeconds(InstantiatePlayersDelay);
 			InstantiatePlayers();
 		}
 
 		public void SetupConfigDistributors()
 		{
+            if (debug) Debug.Log($"SessionPlayersManager: SetupConfigDistributors");
             var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
             if (configDistributors == null || configDistributors.Length == 0)
             {
@@ -121,9 +136,10 @@ namespace VRT.Pilots.Common
 		{
 			var me = OrchestratorController.Instance.SelfUser;
 
-			SetupConfigDistributors();	
+			SetupConfigDistributors();
+            if (debug) Debug.Log($"SessionPlayersManager: Instantiating players");
 
-			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
+            foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
 				bool isLocalPlayer = me.userId == user.userId;
 				GameObject player = null;
@@ -154,11 +170,11 @@ namespace VRT.Pilots.Common
 				var representationType = user.userData.userRepresentationType;
 				switch(representationType)
 				{
-					case UserRepresentationType.__NONE__:
-					case UserRepresentationType.__SPECTATOR__:
+					case UserRepresentationType.NoRepresentation:
+					case UserRepresentationType.AudioOnly:
                         AddSpectator(networkPlayer);
                         break;
-                    case UserRepresentationType.__CAMERAMAN__:
+                    case UserRepresentationType.NoRepresentationCamera:
 						AddSpectator(networkPlayer);
 #if UNITY_EDITOR
                         if (isLocalPlayer)
@@ -174,19 +190,25 @@ namespace VRT.Pilots.Common
 				}
 			}
 
-			if (!OrchestratorController.Instance.UserIsMaster)
+
+            if (OrchestratorController.Instance.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(new PlayerLocationDataRequest());
+				if (debug) Debug.Log($"SessionPlayersManager: sending playerLocationData to all");
+				SendPlayerLocationData();
 			}
 			else
 			{
-				SendPlayerLocationData();
-			}
-		}
+                if (debug) Debug.Log($"SessionPlayersManager: ask master for playerLocationData");
+				RequestPlayerLocationData();
+            }
+            if (debug) Debug.Log($"SessionPlayersManager: All players instantiated");
+        }
 
-		private void OnUserLeft(string userId)
+        private void OnUserLeft(string userId)
 		{
-			if (Players.TryGetValue(userId, out PlayerNetworkControllerBase playerToRemove))
+            if (debug) Debug.Log($"SessionPlayersManager: OnUserLeft({userId})");
+
+            if (Players.TryGetValue(userId, out PlayerNetworkControllerBase playerToRemove))
 			{
 				RemovePlayer(playerToRemove);
 			} else
@@ -209,17 +231,13 @@ namespace VRT.Pilots.Common
 				{
 					if (location.IsEmpty)
 					{
-						location.SetPlayer(player);
+                        Debug.Log($"SessionPlayersManager: Initialize player {player.UserId} to location {location.NetworkId}.");
+
+                        location.SetPlayer(player);
 						_PlayerIdToLocation[player.UserId] = location;
 						_LocationToPlayerId[location] = player.UserId;
 						break;
 					}
-				}
-
-				if (Players.Count > 1)
-				{
-					//No need to send anything if it's just us
-					SendPlayerLocationData();
 				}
 			}
 		}
@@ -231,8 +249,6 @@ namespace VRT.Pilots.Common
             player.transform.rotation = NonPlayersLocation.rotation;
 
 			Spectators.Add(player.UserId, player);
-           
-
         }
 
         private void RemovePlayer(PlayerNetworkControllerBase player)
@@ -244,6 +260,10 @@ namespace VRT.Pilots.Common
 				location.ClearPlayer();
 				_PlayerIdToLocation.Remove(player.UserId);
 				_LocationToPlayerId.Remove(location);
+			}
+			else
+			{
+				Debug.LogWarning($"SessionPlayerManager: RemovePlayer({player.UserId}) which has no location");
 			}
 
 			Destroy(player.gameObject);
@@ -281,22 +301,42 @@ namespace VRT.Pilots.Common
 			}
 		}
 
+		private void RequestPlayerLocationData()
+		{
+			if (OrchestratorController.Instance.UserIsMaster)
+			{
+				Debug.LogError($"SessionPlayersManager: master should not call RequestPlayerLocationData");
+			}
+			PlayerLocationDataRequest data = new PlayerLocationDataRequest();
+			OrchestratorController.Instance.SendTypeEventToMaster(data);
+		}
+
 		private void OnPlayerLocationData(PlayerLocationData playerLocationData)
 		{
-			if (playerLocationData == null || OrchestratorController.Instance.UserIsMaster)
-			{
-				return;
-			}
-
-			for (int i = 0; i < playerLocationData.PlayerIds.Length; ++i)
+            if (playerLocationData == null)
+            {
+				Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationData: playerLocationData is null");
+                return;
+            }
+            if (OrchestratorController.Instance.UserIsMaster)
+            {
+                Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationData: we are not master");
+                return;
+            }
+		
+            for (int i = 0; i < playerLocationData.PlayerIds.Length; ++i)
 			{
 				string playerId = playerLocationData.PlayerIds[i];
 				if (Players.ContainsKey(playerId))
 				{
+					if (debug) Debug.Log($"SessionsPlayerManager: OnPlayerLocationData: set player {playerId} to location {i}");
                     PlayerNetworkControllerBase player = Players[playerId];
 					PlayerLocation location = PlayerLocations[playerLocationData.LocationIds[i]];
 
 					SetPlayerToLocation(player, location);
+				} else
+				{
+					Debug.LogWarning($"SessionsPlayersManager: OnPlayerLocationData: unknown player {playerId}");
 				}
 			}
 
@@ -306,13 +346,18 @@ namespace VRT.Pilots.Common
 		{
 			if (OrchestratorController.Instance.UserIsMaster)
 			{
+				Debug.Log($"SessionPlayersManager: OnPlayerLocationDataRequest: reply to {request.SenderId}");
 				SendPlayerLocationData(request.SenderId);
 			}
-		}
+			else
+			{
+                Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationDataRequest: we are not master");
+            }
+        }
 		
 		private void SetPlayerToLocation(PlayerNetworkControllerBase player, PlayerLocation location)
 		{
-			Debug.Log($"[SessionPlayersManager] Set player {player.UserId} to location {location.NetworkId}.");
+			Debug.Log($"SessionPlayersManager: Set player {player.UserId} to location {location.NetworkId}.");
 
 			string playerId = player.UserId;
 

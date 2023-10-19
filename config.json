@@ -1,4 +1,6 @@
 {
+  "_orchestratorURL" : "http://sap.local:8080/socket.io/",
+  "statsOutputFile" : "",
   "AutoStart": {
     "autoLogin": true,
     "sessionName": "mediascape",
@@ -16,5 +18,43 @@
   },
   "Voice": {
     "ignoreSynchronizer" :  true
+  },
+
+  "LocalUser": {
+    "orchestratorConfigFilename" : "config-user.json",
+    "PCSelfConfig": {
+	  "capturerTypeName" : "auto",
+      "RS2ReaderConfig": {
+        "configFilename": "./cameraconfig.json"
+      },
+      "SynthReaderConfig": {
+        "nPoints": 16000
+      },
+      "ProxyReaderConfig": {
+        "localIP": "",
+        "port": 9335
+      },
+	  "PrerecordedReaderConfig" : {
+		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
+	  },
+      "voxelSize": 0,
+      "frameRate": 15,
+      "tiled": false,
+      "Encoders": [
+		
+		{
+          "octreeBits": 9
+        }
+
+      ],
+      "Bin2Dash": {
+        "segmentSize": 1000,
+        "segmentLife": 16000
+      },
+      "AudioBin2Dash": {
+        "segmentSize": 1000,
+        "segmentLife": 16000
+      }
+    }
   }
 }
