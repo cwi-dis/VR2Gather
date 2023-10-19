@@ -1,12 +1,12 @@
 {
-  "orchestratorURL" : "http://sap.local:8080/socket.io/",
+  "_unused_orchestratorURL" : "http://sap.local:8080/socket.io/",
   "statsOutputFile" : "",
   "AutoStart": {
     "autoLogin": true,
     "sessionName": "mediascape",
     "sessionScenario": "Mediascape",
     "sessionTransportProtocol": "tcp",
-    "autoCreateForUser": "vrtiny",
+    "autoCreateForUser": "topinambur",
     "autoCreate": false,
     "autoJoin": false,
     "autoStartWith": 2,
