@@ -250,6 +250,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 45788406781831039, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1935332283100515003, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_Name
@@ -315,6 +320,16 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 19
       objectReference: {fileID: 0}
+    - target: {fileID: 2611444667368900312, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: drawGizmoBbox
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2611444667368900312, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: drawGizmoHeadcube
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3673924254292886361, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
@@ -335,6 +350,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 5085212277543437832, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.07
+      objectReference: {fileID: 0}
     - target: {fileID: 6094539924294276110, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
@@ -354,6 +374,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376418575889346714, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7982515813306233572, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
