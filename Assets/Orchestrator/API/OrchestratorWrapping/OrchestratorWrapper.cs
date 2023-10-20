@@ -200,7 +200,6 @@ namespace VRT.Orchestrator.Wrapping
         {
             if (OrchestrationSocketIoManager != null)
             {
-                Debug.Log("OrchestratorWrapper: xxxjack Disconnect()");
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
         }

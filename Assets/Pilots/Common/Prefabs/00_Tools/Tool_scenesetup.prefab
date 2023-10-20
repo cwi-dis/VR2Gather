@@ -116,6 +116,7 @@ MonoBehaviour:
   AutoSpawnOnLocation: 1
   localPlayer: {fileID: 0}
   AllUsers: []
+  debug: 0
 --- !u!114 &2108755284289232089
 MonoBehaviour:
   m_ObjectHideFlags: 0

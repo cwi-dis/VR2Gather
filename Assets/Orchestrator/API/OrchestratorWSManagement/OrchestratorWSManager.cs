@@ -133,7 +133,6 @@ namespace VRT.Orchestrator.WSManagement
         // Socket.io disconnection
         public void SocketDisconnect()
         {
-            UnityEngine.Debug.Log("OrchestratorWSManager: xxxjack SocketDisconnect()");
             Manager.Close();
         }
 
@@ -250,19 +249,6 @@ namespace VRT.Orchestrator.WSManagement
                 // emit the command on socket.io
                 Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
 
-                /*
-                // send the command
-                if (!SendCommand(command.SocketEventName, parameters))
-                {
-                    UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
-                    // problem while sending the command
-                    sentCommand = null;
-                    return false;
-                }
-                // command succesfully sent
-                sentCommand = command;
-                return true;
-                */
             }
         }
 
@@ -302,17 +288,6 @@ namespace VRT.Orchestrator.WSManagement
   
             ackedCmd.ResponseCallback.Invoke(ackedCmd, response);
 
-            /*
-            for (int i = 0; i < commandQueue.Count; i++)
-            {
-                UnityEngine.Debug.Log(commandQueue[i].commandID);
-            }
-            */
-
-            //IsWaitingResponse = false;
-            // If a function is declared in the grammar to treat the response 
-            // for this command, then call this function
-            //sentCommand?.ResponseCallback.Invoke(sentCommand, response);
         }
 
         // Parse the first level of this JSON string response
