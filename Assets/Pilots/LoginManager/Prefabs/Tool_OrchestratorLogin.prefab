@@ -14896,8 +14896,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   developerMode: 1
-  isMaster: 0
-  userID: 
   developerModeButton: {fileID: 1271954657437000141}
   developerPanel: {fileID: 7371037902100223151}
   statusText: {fileID: 6457971032310051784}
@@ -14907,7 +14905,6 @@ MonoBehaviour:
   nativeVerText: {fileID: 6542866074137546315}
   playerVerText: {fileID: 2025160657793672183}
   orchVerText: {fileID: 5613023755126059771}
-  ntpText: {fileID: 0}
   developerSessionButton: {fileID: 2614710130514583428}
   connectPanel: {fileID: 3529967804447537619}
   loginPanel: {fileID: 8798074575742713247}

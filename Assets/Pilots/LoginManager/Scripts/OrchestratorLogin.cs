@@ -15,7 +15,7 @@ namespace VRT.Pilots.LoginManager
 
     public enum State
     {
-        Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame
+        Offline, Online, LoggedIn, Config, Play, Create, Join, Lobby, InGame
     }
 
     public enum AutoState
@@ -32,10 +32,7 @@ namespace VRT.Pilots.LoginManager
         
         #region GUI Components
 
-        [Tooltip("This user is the master of the session")]
-        [DisableEditing] public bool isMaster = false;
-        [DisableEditing] public string userID = "";
-
+        
         private State state = State.Offline;
         private AutoState autoState = AutoState.DidNone;
 
@@ -50,7 +47,6 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Text nativeVerText = null;
         [SerializeField] private Text playerVerText = null;
         [SerializeField] private Text orchVerText = null;
-        [SerializeField] private Text ntpText = null;
         [SerializeField] private Button developerSessionButton = null;
 
         [Header("Connect")]
@@ -524,7 +520,7 @@ namespace VRT.Pilots.LoginManager
             saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
             exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
             refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
-            backPlayButton.onClick.AddListener(delegate { StateButton(State.Logged); });
+            backPlayButton.onClick.AddListener(delegate { StateButton(State.LoggedIn); });
             createButton.onClick.AddListener(delegate { StateButton(State.Create); });
             joinButton.onClick.AddListener(delegate { StateButton(State.Join); });
             backCreateButton.onClick.AddListener(delegate { StateButton(State.Play); });
@@ -741,7 +737,7 @@ namespace VRT.Pilots.LoginManager
             developerPanel.SetActive(developerMode);
             connectPanel.gameObject.SetActive(state == State.Offline);
             loginPanel.SetActive(state == State.Online);
-            vrtPanel.SetActive(state == State.Logged);
+            vrtPanel.SetActive(state == State.LoggedIn);
             configPanel.SetActive(state == State.Config);
             playPanel.SetActive(state == State.Play);
             createPanel.SetActive(state == State.Create);
@@ -755,7 +751,7 @@ namespace VRT.Pilots.LoginManager
                 case State.Online:
                     CheckRememberMe();
                     break;
-                case State.Logged:
+                case State.LoggedIn:
                     userNameVRTText.text = uname;
                     userName.text = uname;
                     break;
@@ -913,14 +909,14 @@ namespace VRT.Pilots.LoginManager
         {
             selfRepresentationPreview.StopMicrophone();
             UpdateUserData();
-            state = State.Logged;
+            state = State.LoggedIn;
             PanelChanger();
         }
 
         public void ExitConfigButton()
         {
             selfRepresentationPreview.StopMicrophone();
-            state = State.Logged;
+            state = State.LoggedIn;
             PanelChanger();
         }
 
@@ -1199,7 +1195,7 @@ namespace VRT.Pilots.LoginManager
                     }
                 }
 
-                state = State.Logged;
+                state = State.LoggedIn;
             }
             else
             {
@@ -1302,7 +1298,6 @@ namespace VRT.Pilots.LoginManager
                 UpdateSessions(orchestratorSessions);
 
                 // Update the info in LobbyPanel
-                isMaster = OrchestratorController.Instance.UserIsMaster;
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
                 sessionMasterID = session.GetUser(session.sessionMaster).userName;
@@ -1318,7 +1313,6 @@ namespace VRT.Pilots.LoginManager
             }
             else
             {
-                isMaster = false;
                 sessionNameText.text = "";
                 sessionDescriptionText.text = "";
                 scenarioIdText.text = "";
@@ -1333,7 +1327,6 @@ namespace VRT.Pilots.LoginManager
             if (session != null)
             {
                 // Update the info in LobbyPanel
-                isMaster = OrchestratorController.Instance.UserIsMaster;
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
                 if (session.sessionMaster != "")
@@ -1343,7 +1336,6 @@ namespace VRT.Pilots.LoginManager
             }
             else
             {
-                isMaster = false;
                 sessionNameText.text = "";
                 sessionDescriptionText.text = "";
                 scenarioIdText.text = "";
@@ -1404,7 +1396,6 @@ namespace VRT.Pilots.LoginManager
         {
             if (session != null)
             {
-                isMaster = OrchestratorController.Instance.UserIsMaster;
                 // Update the info in LobbyPanel
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
@@ -1418,7 +1409,6 @@ namespace VRT.Pilots.LoginManager
             }
             else
             {
-                isMaster = false;
                 sessionNameText.text = "";
                 sessionDescriptionText.text = "";
                 scenarioIdText.text = "";
@@ -1435,7 +1425,6 @@ namespace VRT.Pilots.LoginManager
 
         private void OnLeaveSessionHandler()
         {
-            isMaster = false;
             sessionNameText.text = "";
             sessionDescriptionText.text = "";
             scenarioIdText.text = "";
