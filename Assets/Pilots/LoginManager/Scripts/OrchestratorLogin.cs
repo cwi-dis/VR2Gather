@@ -121,8 +121,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Button doneJoinButton = null;
         [SerializeField] private Button readyButton = null;
         [SerializeField] private Button leaveButton = null;
-        [SerializeField] private Button refreshSessionsButton = null;
-
+      
         [Header("Content")]
         [SerializeField] private RectTransform orchestratorSessions = null;
         [SerializeField] private RectTransform usersSession = null;
@@ -284,7 +283,7 @@ namespace VRT.Pilots.LoginManager
             Debug.Log($"xxxjack OrchestratorLogin: UpdateUsersSession: {sessionUsers.Length} users in session");
             // We may be able to continue auto-starting
             if (VRTConfig.Instance.AutoStart != null)
-                Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
+                Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
         }
 
         private void UpdateSessions(Transform container)
@@ -508,7 +507,6 @@ namespace VRT.Pilots.LoginManager
             });
             saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
             exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
-            refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
             backPlayButton.onClick.AddListener(delegate { StateButton(State.LoggedIn); });
             createButton.onClick.AddListener(delegate { StateButton(State.Create); });
             joinButton.onClick.AddListener(delegate { StateButton(State.Join); });
@@ -649,7 +647,7 @@ namespace VRT.Pilots.LoginManager
                 if (config.autoCreate)
                 {
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: creating");
-                    Invoke("AddSession", config.autoDelay);
+                    Invoke(nameof(AddSession), config.autoDelay);
                 }
                 autoState = AutoState.DidCompleteCreation;
 
@@ -659,7 +657,7 @@ namespace VRT.Pilots.LoginManager
                 if (sessionNumUsersText.text == config.autoStartWith.ToString())
                 {
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting with {config.autoStartWith} users");
-                    Invoke("ReadyButton", config.autoDelay);
+                    Invoke(nameof(ReadyButton), config.autoDelay);
                     autoState = AutoState.Done;
                 }
             }
@@ -674,7 +672,7 @@ namespace VRT.Pilots.LoginManager
                         if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: entry {i} is {config.sessionName}, joining");
                         sessionIdDrop.value = i;
                         autoState = AutoState.Done;
-                        Invoke("JoinSession", config.autoDelay);
+                        Invoke(nameof(JoinSession), config.autoDelay);
                     }
                 }
             }
@@ -1161,7 +1159,7 @@ namespace VRT.Pilots.LoginManager
                 if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
                 autoState = AutoState.DidPlay;
                 StateButton(State.Play);
-                Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
+                Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 
@@ -1213,7 +1211,7 @@ namespace VRT.Pilots.LoginManager
                 UpdateSessions(orchestratorSessions);
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
+                    Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 
@@ -1250,7 +1248,7 @@ namespace VRT.Pilots.LoginManager
                 PanelChanger();
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
+                    Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
             }
             else
             {
