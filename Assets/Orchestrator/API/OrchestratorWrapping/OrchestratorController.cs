@@ -107,8 +107,7 @@ namespace VRT.Orchestrator.Wrapping
         // Orchestrator Login Events
         public Action<bool> OnLoginEvent;
         public Action<bool> OnLogoutEvent;
-        public Action OnSignInEvent;
-
+        
         // Orchestrator NTP clock Events
         public Action<NtpClock> OnGetNTPTimeEvent;
 

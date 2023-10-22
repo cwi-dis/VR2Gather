@@ -57,15 +57,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private InputField userNameLoginIF = null;
         [SerializeField] private InputField userPasswordLoginIF = null;
         [SerializeField] private Button loginButton = null;
-        [SerializeField] private Button signinButton = null;
         [SerializeField] private Toggle rememberMeButton = null;
-
-        [Header("Signin")]
-        [SerializeField] private GameObject signinPanel = null;
-        [SerializeField] private InputField userNameRegisterIF = null;
-        [SerializeField] private InputField userPasswordRegisterIF = null;
-        [SerializeField] private InputField confirmPasswordRegisterIF = null;
-        [SerializeField] private Button registerButton = null;
 
         [Header("VRT")]
         [SerializeField] private GameObject vrtPanel = null;
@@ -509,8 +501,6 @@ namespace VRT.Pilots.LoginManager
             developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
             developerSessionButton.onClick.AddListener(delegate { StartDeveloperSession(); });
             loginButton.onClick.AddListener(delegate { Login(); });
-            signinButton.onClick.AddListener(delegate { SigninButton(); });
-            registerButton.onClick.AddListener(delegate { RegisterButton(true); });
             logoutButton.onClick.AddListener(delegate { Logout(); });
             playButton.onClick.AddListener(delegate { StateButton(State.Play); });
             configButton.onClick.AddListener(delegate {
@@ -877,34 +867,6 @@ namespace VRT.Pilots.LoginManager
             PilotController.LoadScene("SoloPlayground");
         }
 
-        private void SigninButton()
-        {
-            loginPanel.SetActive(false);
-            signinPanel.SetActive(true);
-        }
-
-        public void RegisterButton(bool register)
-        {
-            if (register)
-            {
-                if (userPasswordRegisterIF.text == confirmPasswordRegisterIF.text)
-                {
-                    SignIn();
-                    confirmPasswordRegisterIF.textComponent.color = Color.white;
-                }
-                else
-                {
-                    confirmPasswordRegisterIF.textComponent.color = Color.red;
-                }
-            }
-            else
-            {
-                loginPanel.SetActive(true);
-                signinPanel.SetActive(false);
-                confirmPasswordRegisterIF.textComponent.color = Color.white;
-            }
-        }
-
         public void SaveConfigButton()
         {
             selfRepresentationPreview.StopMicrophone();
@@ -1009,7 +971,6 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnGetOrchestratorVersionEvent += OnGetOrchestratorVersionHandler;
             OrchestratorController.Instance.OnLoginEvent += OnLogin;
             OrchestratorController.Instance.OnLogoutEvent += OnLogout;
-            OrchestratorController.Instance.OnSignInEvent += OnSignIn;
             OrchestratorController.Instance.OnGetNTPTimeEvent += OnGetNTPTimeResponse;
             OrchestratorController.Instance.OnSessionsEvent += OnSessionsHandler;
             OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
@@ -1035,7 +996,6 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= OnGetOrchestratorVersionHandler;
             OrchestratorController.Instance.OnLoginEvent -= OnLogin;
             OrchestratorController.Instance.OnLogoutEvent -= OnLogout;
-            OrchestratorController.Instance.OnSignInEvent -= OnSignIn;
             OrchestratorController.Instance.OnGetNTPTimeEvent -= OnGetNTPTimeResponse;
             OrchestratorController.Instance.OnSessionsEvent -= OnSessionsHandler;
             OrchestratorController.Instance.OnAddSessionEvent -= OnAddSessionHandler;
@@ -1121,21 +1081,6 @@ namespace VRT.Pilots.LoginManager
 
       
 #region Login/Logout
-
-        private void SignIn()
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: SignIn: Send SignIn registration for user " + userNameRegisterIF.text);
-            OrchestratorController.Instance.SignIn(userNameRegisterIF.text, userPasswordRegisterIF.text);
-        }
-
-        private void OnSignIn()
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnSignIn: User " + userNameLoginIF.text + " successfully registered.");
-            userNameLoginIF.text = userNameRegisterIF.text;
-            userPasswordLoginIF.text = userPasswordRegisterIF.text;
-            loginPanel.SetActive(true);
-            signinPanel.SetActive(false);
-        }
 
         // Login from the main buttons Login & Logout
         private void Login()
