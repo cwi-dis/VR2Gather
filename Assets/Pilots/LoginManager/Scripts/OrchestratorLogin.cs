@@ -55,7 +55,6 @@ namespace VRT.Pilots.LoginManager
         [Header("Login")]
         [SerializeField] private GameObject loginPanel = null;
         [SerializeField] private InputField userNameLoginIF = null;
-        [SerializeField] private InputField userPasswordLoginIF = null;
         [SerializeField] private Button loginButton = null;
         [SerializeField] private Toggle rememberMeButton = null;
 
@@ -1088,12 +1087,10 @@ namespace VRT.Pilots.LoginManager
             if (rememberMeButton.isOn)
             {
                 PlayerPrefs.SetString("userNameLoginIF", userNameLoginIF.text);
-                PlayerPrefs.SetString("userPasswordLoginIF", userPasswordLoginIF.text);
             }
             else
             {
                 PlayerPrefs.DeleteKey("userNameLoginIF");
-                PlayerPrefs.DeleteKey("userPasswordLoginIF");
             }
             // If we want to autoCreate or autoStart depending on username set the right config flags.
             if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
@@ -1103,7 +1100,7 @@ namespace VRT.Pilots.LoginManager
                 VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
-            OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
+            OrchestratorController.Instance.Login(userNameLoginIF.text, "");
         }
         // Check saved used credentials.
         private void CheckRememberMe()
@@ -1112,7 +1109,6 @@ namespace VRT.Pilots.LoginManager
             {
                 rememberMeButton.isOn = true;
                 userNameLoginIF.text = PlayerPrefs.GetString("userNameLoginIF");
-                userPasswordLoginIF.text = PlayerPrefs.GetString("userPasswordLoginIF");
             }
             else
                 rememberMeButton.isOn = false;
