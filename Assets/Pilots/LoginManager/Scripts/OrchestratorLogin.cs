@@ -37,7 +37,7 @@ namespace VRT.Pilots.LoginManager
         private AutoState autoState = AutoState.DidNone;
 
         
-        [Header("Developer")]
+        [Header("Status and DeveloperStatus")]
         [SerializeField] private Toggle developerModeButton = null;
         [SerializeField] private GameObject developerPanel = null;
         [SerializeField] private Text statusText = null;
@@ -49,23 +49,23 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Text orchVerText = null;
         [SerializeField] private Button developerSessionButton = null;
 
-        [Header("Connect")]
+        [Header("ConnectPanel")]
         [SerializeField] private GameObject connectPanel = null;
       
-        [Header("Login")]
+        [Header("LoginPanel")]
         [SerializeField] private GameObject loginPanel = null;
         [SerializeField] private InputField userNameLoginIF = null;
         [SerializeField] private Button loginButton = null;
         [SerializeField] private Toggle rememberMeButton = null;
 
-        [Header("VRT")]
+        [Header("HomePanel")]
         [SerializeField] private GameObject vrtPanel = null;
         [SerializeField] private Text userNameVRTText = null;
         [SerializeField] private Button logoutButton = null;
         [SerializeField] private Button playButton = null;
         [SerializeField] private Button configButton = null;
 
-        [Header("Config")]
+        [Header("SettingsPanel")]
         [SerializeField] private GameObject configPanel = null;
         [SerializeField] private GameObject webcamInfoGO = null;
         [SerializeField] private InputField tcpPointcloudURLConfigIF = null;
@@ -79,13 +79,13 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private SelfRepresentationPreview selfRepresentationPreview = null;
         [SerializeField] private Text selfRepresentationDescription = null;
 
-        [Header("Play")]
+        [Header("PlayPanel")]
         [SerializeField] private GameObject playPanel = null;
         [SerializeField] private Button backPlayButton = null;
         [SerializeField] private Button createButton = null;
         [SerializeField] private Button joinButton = null;
 
-        [Header("Create")]
+        [Header("CreatePanel")]
         [SerializeField] private GameObject createPanel = null;
         [SerializeField] private Button backCreateButton = null;
         [SerializeField] private InputField sessionNameIF = null;
@@ -99,14 +99,14 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
         [SerializeField] private Toggle uncompressedAudioToggle = null;
 
-        [Header("Join")]
+        [Header("JoinPanel")]
         [SerializeField] private GameObject joinPanel = null;
         [SerializeField] private Button backJoinButton = null;
         [SerializeField] private Dropdown sessionIdDrop = null;
         [SerializeField] private Text sessionJoinMessage = null;
         [SerializeField] private int refreshTimer = 5;
 
-        [Header("Lobby")]
+        [Header("LobbyPanel")]
         [SerializeField] private GameObject lobbyPanel = null;
         [SerializeField] private Text sessionNameText = null;
         [SerializeField] private Text sessionDescriptionText = null;
