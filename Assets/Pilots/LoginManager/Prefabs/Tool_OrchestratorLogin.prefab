@@ -1530,7 +1530,7 @@ GameObject:
   - component: {fileID: 7667316819925288692}
   - component: {fileID: 7582815140763733459}
   m_Layer: 5
-  m_Name: CreateButton
+  m_Name: PlayPanel_CreateButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4072,7 +4072,7 @@ GameObject:
   - component: {fileID: 7387214310238115005}
   - component: {fileID: 7971333119567475808}
   m_Layer: 5
-  m_Name: PreviewPanel
+  m_Name: SettingsPanel_PreviewPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6565,7 +6565,7 @@ GameObject:
   - component: {fileID: 2209486509423493394}
   - component: {fileID: 3017215135372394653}
   m_Layer: 5
-  m_Name: Description
+  m_Name: SettingsPanel_SelfRepresentationDescription
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7728,7 +7728,7 @@ GameObject:
   - component: {fileID: 320594629116080341}
   - component: {fileID: 8958135622475625243}
   m_Layer: 5
-  m_Name: VUMeter
+  m_Name: SettingsPanel_VUMeter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8168,7 +8168,7 @@ GameObject:
   - component: {fileID: 6022794130523006234}
   - component: {fileID: 5840702292454839355}
   m_Layer: 5
-  m_Name: Background
+  m_Name: VUMeter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8689,7 +8689,7 @@ GameObject:
   - component: {fileID: 5577679501969592179}
   - component: {fileID: 845156337131251218}
   m_Layer: 5
-  m_Name: Dropdown-UserRepresentation
+  m_Name: SettingsPanel_UserRepresentationDropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9054,7 +9054,7 @@ GameObject:
   - component: {fileID: 6730858978125341305}
   - component: {fileID: 8506713961127630960}
   m_Layer: 5
-  m_Name: JoinButton
+  m_Name: PlayPanel_JoinButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9579,7 +9579,7 @@ GameObject:
   - component: {fileID: 6276846270482551322}
   - component: {fileID: 786090048598621773}
   m_Layer: 5
-  m_Name: InputField-TCPPointcloudURL
+  m_Name: SettingsPanel__TCP_PointcloudURL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9930,7 +9930,7 @@ GameObject:
   - component: {fileID: 3069868894025408527}
   - component: {fileID: 985680599381232975}
   m_Layer: 5
-  m_Name: SaveButton
+  m_Name: SettingsPanel_SaveButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10452,7 +10452,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5916575847965431224}
   m_Layer: 5
-  m_Name: WebcamInfo
+  m_Name: SettingsPanel_WebcamInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10493,7 +10493,7 @@ GameObject:
   - component: {fileID: 5916575848051990050}
   - component: {fileID: 5916575848051990048}
   m_Layer: 5
-  m_Name: Dropdown-Microhone
+  m_Name: SettingsPanel_MicrohoneDropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10626,7 +10626,7 @@ GameObject:
   - component: {fileID: 5916575848221921208}
   - component: {fileID: 5916575848221921211}
   m_Layer: 5
-  m_Name: Dropdown-Webcam
+  m_Name: SettingsPanel_WebcamDropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11427,7 +11427,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6457971031709309462}
   m_Layer: 5
-  m_Name: ConfigTitle
+  m_Name: SettingsTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11857,7 +11857,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6457971032172637051
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12231,7 +12231,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6457971032356984461
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15544,9 +15544,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 20, y: -17}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &6963007955477282481
 CanvasRenderer:
@@ -16017,9 +16017,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: -17}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &6963007955564973381
 CanvasRenderer:
@@ -16102,7 +16102,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6963007955752019958}
   m_HandleRect: {fileID: 6963007955752019959}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -16476,7 +16476,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -16825,7 +16825,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -16879,7 +16879,7 @@ GameObject:
   - component: {fileID: 6963007955771357407}
   - component: {fileID: 6963007955771357400}
   m_Layer: 5
-  m_Name: Content
+  m_Name: JoinSession_AllSessions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16903,7 +16903,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &6963007955771357407
 MonoBehaviour:
@@ -17061,9 +17061,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 20}
+  m_SizeDelta: {x: -17, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &6963007955979595401
 CanvasRenderer:
@@ -17673,9 +17673,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 20}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &6963007956180591096
 CanvasRenderer:
@@ -17758,7 +17758,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6963007956605084034}
   m_HandleRect: {fileID: 6963007956605084035}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -18195,7 +18195,7 @@ GameObject:
   - component: {fileID: 6963007956489862665}
   - component: {fileID: 6963007956489862666}
   m_Layer: 5
-  m_Name: Content
+  m_Name: Lobby_AllUsers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18218,8 +18218,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: -0.000030517578}
-  m_SizeDelta: {x: 0, y: 10}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &6963007956489862665
 MonoBehaviour:
@@ -18640,7 +18640,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -18718,9 +18718,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: -17}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &6963007956628570790
 MonoBehaviour:
@@ -18887,7 +18887,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -20083,9 +20083,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -17, y: -17}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &6963007957313098954
 MonoBehaviour:
@@ -20557,7 +20557,7 @@ GameObject:
   - component: {fileID: 4938709632937397359}
   - component: {fileID: 6535750279288028468}
   m_Layer: 5
-  m_Name: BackButton
+  m_Name: SettingsPanel_BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21101,7 +21101,7 @@ GameObject:
   - component: {fileID: 8061845611628091185}
   - component: {fileID: 193144926460792102}
   m_Layer: 5
-  m_Name: ConfigIcon
+  m_Name: SettingsIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22465,7 +22465,7 @@ GameObject:
   - component: {fileID: 1858817598623068459}
   - component: {fileID: 3096292403496545405}
   m_Layer: 5
-  m_Name: InputField-TCPAudioURL
+  m_Name: SettingsPanel_TCP_AudioURL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
