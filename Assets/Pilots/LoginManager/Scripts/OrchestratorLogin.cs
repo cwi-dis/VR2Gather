@@ -42,13 +42,13 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Toggle developerModeButton = null;
         [SerializeField] private GameObject developerPanel = null;
         [SerializeField] private Text statusText = null;
-        [SerializeField] private Text userId = null;
-        [SerializeField] private Text userName = null;
-        [SerializeField] private Text orchURLText = null;
-        [SerializeField] private Text nativeVerText = null;
-        [SerializeField] private Text playerVerText = null;
-        [SerializeField] private Text orchVerText = null;
-        [SerializeField] private Button developerSessionButton = null;
+        [SerializeField][FormerlySerializedAs("userId")] private Text StatusPanelUserId = null;
+        [SerializeField][FormerlySerializedAs("userName")] private Text StatusPanelUserName = null;
+        [SerializeField][FormerlySerializedAs("orchURLText")] private Text StatusPanelOrchestratorURL = null;
+        [SerializeField][FormerlySerializedAs("nativeVerText")] private Text StatusPanelNativeVersion = null;
+        [SerializeField][FormerlySerializedAs("playerVerText")] private Text StatusPanelPlayerVersion = null;
+        [SerializeField][FormerlySerializedAs("orchVerText")] private Text StatusPanelOrchestratorVersion = null;
+        [SerializeField][FormerlySerializedAs("developerSessionButton")] private Button StatusPanelStartDeveloperSceneButton = null;
 
         [Header("ConnectPanel")]
         [SerializeField] private GameObject connectPanel = null;
@@ -474,10 +474,10 @@ namespace VRT.Pilots.LoginManager
             developerMode = PlayerPrefs.GetInt("developerMode", 0) != 0;
             developerModeButton.isOn = developerMode;
             // Update Application version
-            orchURLText.text = VRTConfig.Instance.orchestratorURL;
-            if (VersionLog.Instance != null) nativeVerText.text = VersionLog.Instance.NativeClient;
-            playerVerText.text = "v" + Application.version;
-            orchVerText.text = "";
+            StatusPanelOrchestratorURL.text = VRTConfig.Instance.orchestratorURL;
+            if (VersionLog.Instance != null) StatusPanelNativeVersion.text = VersionLog.Instance.NativeClient;
+            StatusPanelPlayerVersion.text = "v" + Application.version;
+            StatusPanelOrchestratorVersion.text = "";
 
             // Font to build gui components for logs!
             //MenuFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
@@ -492,7 +492,7 @@ namespace VRT.Pilots.LoginManager
 
             // Buttons listeners
             developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
-            developerSessionButton.onClick.AddListener(delegate { StartDeveloperSession(); });
+            StatusPanelStartDeveloperSceneButton.onClick.AddListener(delegate { StartDeveloperSession(); });
             loginButton.onClick.AddListener(delegate { Login(); });
             logoutButton.onClick.AddListener(delegate { Logout(); });
             playButton.onClick.AddListener(delegate { StateButton(State.Play); });
@@ -538,7 +538,7 @@ namespace VRT.Pilots.LoginManager
                 UpdateScenarios();
                 Debug.Log("OrchestratorLogin: Coming from another Scene");
 
-                OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
+                OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), StatusPanelUserId.text);
             }
             else
             { // Enter for first time
@@ -682,8 +682,8 @@ namespace VRT.Pilots.LoginManager
             User user = OrchestratorController.Instance.SelfUser;
 
             // UserID & Name
-            userId.text = user.userId;
-            userName.text = user.userName;
+            StatusPanelUserId.text = user.userId;
+            StatusPanelUserName.text = user.userName;
             userNameVRTText.text = user.userName;
             // Config Info
             UserData userData = user.userData;
@@ -735,7 +735,7 @@ namespace VRT.Pilots.LoginManager
                     break;
                 case State.LoggedIn:
                     userNameVRTText.text = uname;
-                    userName.text = uname;
+                    StatusPanelUserName.text = uname;
                     break;
                 case State.Config:
                    
@@ -1065,7 +1065,7 @@ namespace VRT.Pilots.LoginManager
         private void OnGetOrchestratorVersionHandler(string pVersion)
         {
             Debug.Log("Orchestration Service: " + pVersion);
-            orchVerText.text = pVersion;
+            StatusPanelOrchestratorVersion.text = pVersion;
             OrchestratorController.Instance.GetNTPTime();
         }
 
@@ -1133,8 +1133,8 @@ namespace VRT.Pilots.LoginManager
             }
             else
             {
-                this.userId.text = "";
-                userName.text = "";
+                this.StatusPanelUserId.text = "";
+                StatusPanelUserName.text = "";
                 userNameVRTText.text = "";
 
                 state = State.Online;
@@ -1167,8 +1167,8 @@ namespace VRT.Pilots.LoginManager
         {
             if (userLogoutSucessfully)
             {
-                userId.text = "";
-                userName.text = "";
+                StatusPanelUserId.text = "";
+                StatusPanelUserName.text = "";
                 userNameVRTText.text = "";
                 state = State.Online;
             }

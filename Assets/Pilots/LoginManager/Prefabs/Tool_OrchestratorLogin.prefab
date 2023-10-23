@@ -12371,13 +12371,13 @@ MonoBehaviour:
   developerModeButton: {fileID: 1271954657437000141}
   developerPanel: {fileID: 7371037902100223151}
   statusText: {fileID: 6457971032310051784}
-  userId: {fileID: 6457971033296139410}
-  userName: {fileID: 1374518616137530355}
-  orchURLText: {fileID: 5237756625683840188}
-  nativeVerText: {fileID: 6542866074137546315}
-  playerVerText: {fileID: 2025160657793672183}
-  orchVerText: {fileID: 5613023755126059771}
-  developerSessionButton: {fileID: 2614710130514583428}
+  StatusPanelUserId: {fileID: 6457971033296139410}
+  StatusPanelUserName: {fileID: 1374518616137530355}
+  StatusPanelOrchestratorURL: {fileID: 5237756625683840188}
+  StatusPanelNativeVersion: {fileID: 6542866074137546315}
+  StatusPanelPlayerVersion: {fileID: 2025160657793672183}
+  StatusPanelOrchestratorVersion: {fileID: 5613023755126059771}
+  StatusPanelStartDeveloperSceneButton: {fileID: 2614710130514583428}
   connectPanel: {fileID: 3529967804447537619}
   loginPanel: {fileID: 8798074575742713247}
   userNameLoginIF: {fileID: 8153449555847552914}
