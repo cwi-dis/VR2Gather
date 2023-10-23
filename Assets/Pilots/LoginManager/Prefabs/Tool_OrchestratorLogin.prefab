@@ -12396,16 +12396,16 @@ MonoBehaviour:
   webcamDropdown: {fileID: 5916575848221921211}
   microphoneDropdown: {fileID: 5916575848051990048}
   VUMeter: {fileID: 861818860071689431}
-  saveConfigButton: {fileID: 985680599381232975}
-  exitConfigButton: {fileID: 6535750279288028468}
+  SettingsPanelSaveButton: {fileID: 985680599381232975}
+  SettingsPanelBackButton: {fileID: 6535750279288028468}
   selfRepresentationPreview: {fileID: 300757396}
   selfRepresentationDescription: {fileID: 3017215135372394653}
   playPanel: {fileID: 5546505954573061395}
-  backPlayButton: {fileID: 8203536086151598511}
-  createButton: {fileID: 7582815140763733459}
-  joinButton: {fileID: 8506713961127630960}
+  PlayPanelBackButton: {fileID: 8203536086151598511}
+  PlayPanelCreateButton: {fileID: 7582815140763733459}
+  PlayPanelJoinButton: {fileID: 8506713961127630960}
   createPanel: {fileID: 6457971033769258985}
-  backCreateButton: {fileID: 7869143600626671204}
+  CreatePanelBackButton: {fileID: 7869143600626671204}
   sessionNameIF: {fileID: 6457971033247036048}
   sessionDescriptionIF: {fileID: 6457971033459605558}
   scenarioIdDrop: {fileID: 6457971032236005372}
@@ -12413,12 +12413,12 @@ MonoBehaviour:
   sessionProtocolDrop: {fileID: 5563265398217327997}
   uncompressedPointcloudsToggle: {fileID: 387389570}
   uncompressedAudioToggle: {fileID: 694705610}
-  doneCreateButton: {fileID: 6457971033556758724}
+  CreatePanelCreateButton: {fileID: 6457971033556758724}
   joinPanel: {fileID: 6457971032356984462}
-  backJoinButton: {fileID: 2235418248480033197}
+  JoinPanelBackButton: {fileID: 2235418248480033197}
   sessionIdDrop: {fileID: 6457971032597693187}
   sessionJoinMessage: {fileID: 1983446077738297626}
-  doneJoinButton: {fileID: 6457971033399391678}
+  JoinPanelJoinButton: {fileID: 6457971033399391678}
   orchestratorSessions: {fileID: 6963007955771357401}
   refreshTimer: 5
   lobbyPanel: {fileID: 6457971032172637052}
@@ -12426,8 +12426,8 @@ MonoBehaviour:
   sessionDescriptionText: {fileID: 3039232443859429398}
   scenarioIdText: {fileID: 6457971032909827202}
   sessionNumUsersText: {fileID: 6457971033508907615}
-  readyButton: {fileID: 6457971032624323591}
-  leaveButton: {fileID: 6457971032860003685}
+  LobbyPanelStartButton: {fileID: 6457971032624323591}
+  LobbyPanelLeaveButton: {fileID: 6457971032860003685}
   usersSession: {fileID: 6963007956489862667}
   userRepresentationLobbyText: {fileID: 7890038468874615349}
   userRepresentationLobbyImage: {fileID: 6380644936749171119}

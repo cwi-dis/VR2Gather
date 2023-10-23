@@ -76,20 +76,20 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Dropdown webcamDropdown = null;
         [SerializeField] private Dropdown microphoneDropdown = null;
         [SerializeField] private RectTransform VUMeter = null;
-        [SerializeField] private Button saveConfigButton = null;
-        [SerializeField] private Button exitConfigButton = null;
+        [SerializeField][FormerlySerializedAs("saveConfigButton")] private Button SettingsPanelSaveButton = null;
+        [SerializeField][FormerlySerializedAs("exitConfigButton")] private Button SettingsPanelBackButton = null;
         [SerializeField] private SelfRepresentationPreview selfRepresentationPreview = null;
         [SerializeField] private Text selfRepresentationDescription = null;
 
         [Header("PlayPanel")]
         [SerializeField] private GameObject playPanel = null;
-        [SerializeField] private Button backPlayButton = null;
-        [SerializeField] private Button createButton = null;
-        [SerializeField] private Button joinButton = null;
+        [SerializeField][FormerlySerializedAs("backPlayButton")] private Button PlayPanelBackButton = null;
+        [SerializeField][FormerlySerializedAs("createButton")] private Button PlayPanelCreateButton = null;
+        [SerializeField][FormerlySerializedAs("joinButton")] private Button PlayPanelJoinButton = null;
 
         [Header("CreatePanel")]
         [SerializeField] private GameObject createPanel = null;
-        [SerializeField] private Button backCreateButton = null;
+        [SerializeField][FormerlySerializedAs("backCreateButton")] private Button CreatePanelBackButton = null;
         [SerializeField] private InputField sessionNameIF = null;
         [SerializeField] private InputField sessionDescriptionIF = null;
         [SerializeField] private Dropdown scenarioIdDrop = null;
@@ -97,14 +97,14 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Dropdown sessionProtocolDrop = null;
         [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
         [SerializeField] private Toggle uncompressedAudioToggle = null;
-        [SerializeField] private Button doneCreateButton = null;
+        [SerializeField][FormerlySerializedAs("doneCreateButton")] private Button CreatePanelCreateButton = null;
 
         [Header("JoinPanel")]
         [SerializeField] private GameObject joinPanel = null;
-        [SerializeField] private Button backJoinButton = null;
+        [SerializeField][FormerlySerializedAs("backJoinButton")] private Button JoinPanelBackButton = null;
         [SerializeField] private Dropdown sessionIdDrop = null;
         [SerializeField] private Text sessionJoinMessage = null;
-        [SerializeField] private Button doneJoinButton = null;
+        [SerializeField][FormerlySerializedAs("doneJoinButton")] private Button JoinPanelJoinButton = null;
         [SerializeField] private RectTransform orchestratorSessions = null;
         [SerializeField] private int refreshTimer = 5;
 
@@ -114,8 +114,8 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Text sessionDescriptionText = null;
         [SerializeField] private Text scenarioIdText = null;
         [SerializeField] private Text sessionNumUsersText = null;
-        [SerializeField] private Button readyButton = null;
-        [SerializeField] private Button leaveButton = null;
+        [SerializeField][FormerlySerializedAs("readyButton")] private Button LobbyPanelStartButton = null;
+        [SerializeField][FormerlySerializedAs("leaveButton")] private Button LobbyPanelLeaveButton = null;
         [SerializeField] private RectTransform usersSession = null;
         [SerializeField] private Text userRepresentationLobbyText = null;
         [SerializeField] private Image userRepresentationLobbyImage = null;
@@ -348,7 +348,7 @@ namespace VRT.Pilots.LoginManager
             {
                 scenarioDescription.text = message;
             }
-            doneCreateButton.interactable = ok;
+            CreatePanelCreateButton.interactable = ok;
         }
 
         private void UpdateRepresentations(Dropdown dd)
@@ -500,17 +500,17 @@ namespace VRT.Pilots.LoginManager
                 FillSelfUserData();
                 StateButton(State.Config);
             });
-            saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
-            exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
-            backPlayButton.onClick.AddListener(delegate { StateButton(State.LoggedIn); });
-            createButton.onClick.AddListener(delegate { StateButton(State.Create); });
-            joinButton.onClick.AddListener(delegate { StateButton(State.Join); });
-            backCreateButton.onClick.AddListener(delegate { StateButton(State.Play); });
-            doneCreateButton.onClick.AddListener(delegate { AddSession(); });
-            backJoinButton.onClick.AddListener(delegate { StateButton(State.Play); });
-            doneJoinButton.onClick.AddListener(delegate { JoinSession(); });
-            readyButton.onClick.AddListener(delegate { ReadyButton(); });
-            leaveButton.onClick.AddListener(delegate { LeaveSession(); });
+            SettingsPanelSaveButton.onClick.AddListener(delegate { SaveConfigButton(); });
+            SettingsPanelBackButton.onClick.AddListener(delegate { ExitConfigButton(); });
+            PlayPanelBackButton.onClick.AddListener(delegate { StateButton(State.LoggedIn); });
+            PlayPanelCreateButton.onClick.AddListener(delegate { StateButton(State.Create); });
+            PlayPanelJoinButton.onClick.AddListener(delegate { StateButton(State.Join); });
+            CreatePanelBackButton.onClick.AddListener(delegate { StateButton(State.Play); });
+            CreatePanelCreateButton.onClick.AddListener(delegate { AddSession(); });
+            JoinPanelBackButton.onClick.AddListener(delegate { StateButton(State.Play); });
+            JoinPanelJoinButton.onClick.AddListener(delegate { JoinSession(); });
+            LobbyPanelStartButton.onClick.AddListener(delegate { ReadyButton(); });
+            LobbyPanelLeaveButton.onClick.AddListener(delegate { LeaveSession(); });
 
             // Dropdown listeners
             representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
@@ -757,7 +757,7 @@ namespace VRT.Pilots.LoginManager
                     GetSessions();
                     break;
                 case State.Lobby:
-                    readyButton.gameObject.SetActive(OrchestratorController.Instance.UserIsMaster);
+                    LobbyPanelStartButton.gameObject.SetActive(OrchestratorController.Instance.UserIsMaster);
                     break;
                 case State.InGame:
                     break;
@@ -1307,7 +1307,7 @@ namespace VRT.Pilots.LoginManager
                 description = "(no session selected)";
             }
             sessionJoinMessage.text = description;
-            doneJoinButton.interactable = ok;
+            JoinPanelJoinButton.interactable = ok;
         }
 
         private void JoinSession()
