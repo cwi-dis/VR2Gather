@@ -16,7 +16,7 @@ namespace VRT.Pilots.LoginManager
 
     public enum State
     {
-        Offline, Online, LoggedIn, Config, Play, Create, Join, Lobby, InGame
+        Offline, Online, LoggedIn, Settings, Play, Create, Join, Lobby, InGame
     }
 
     public enum AutoState
@@ -502,10 +502,7 @@ namespace VRT.Pilots.LoginManager
             LoginPanelLoginButton.onClick.AddListener(delegate { Login(); });
             HomePanelLogoutButton.onClick.AddListener(delegate { Logout(); });
             HomePanelPlayButton.onClick.AddListener(delegate { ChangeState(State.Play); });
-            HomePanelSettingsButton.onClick.AddListener(delegate {
-                AllPanels_UpdateUserData();
-                ChangeState(State.Config);
-            });
+            HomePanelSettingsButton.onClick.AddListener(delegate { ChangeState(State.Settings); });
             SettingsPanelSaveButton.onClick.AddListener(delegate { SettingsPanel_SaveButtonPressed(); });
             SettingsPanelBackButton.onClick.AddListener(delegate { SettingsPanel_BackButtonPressed(); });
             PlayPanelBackButton.onClick.AddListener(delegate { ChangeState(State.LoggedIn); });
@@ -693,6 +690,16 @@ namespace VRT.Pilots.LoginManager
             StatusPanelUserId.text = user.userId;
             StatusPanelUserName.text = user.userName;
             HomePanelUserName.text = user.userName;
+            if (state == State.Settings)
+            {
+                SettingsPanel_UpdateUserData();
+            }
+        }
+
+        public void SettingsPanel_UpdateUserData()
+        {
+            User user = OrchestratorController.Instance.SelfUser;
+
             // Config Info
             UserData userData = user.userData;
             SettingsPanelTCPPointcloudURLField.text = userData.userPCurl;
@@ -728,12 +735,12 @@ namespace VRT.Pilots.LoginManager
             connectPanel.gameObject.SetActive(state == State.Offline);
             loginPanel.SetActive(state == State.Online);
             homePanel.SetActive(state == State.LoggedIn);
-            settingsPanel.SetActive(state == State.Config);
+            settingsPanel.SetActive(state == State.Settings);
             playPanel.SetActive(state == State.Play);
             createPanel.SetActive(state == State.Create);
             joinPanel.SetActive(state == State.Join);
             lobbyPanel.SetActive(state == State.Lobby);
-            // Buttons
+            // We have to (re)initialize some fields for some of the panels.
             switch (state)
             {
                 case State.Offline:
@@ -745,15 +752,14 @@ namespace VRT.Pilots.LoginManager
                     HomePanelUserName.text = uname;
                     StatusPanelUserName.text = uname;
                     break;
-                case State.Config:
-                   
-                    // Behaviour
+                case State.Settings:
                     SettingsPanel_UpdateAfterRepresentationChange();
+                    SettingsPanel_UpdateUserData();
                     break;
                 case State.Play:
-                    
                     break;
                 case State.Create:
+                    // Ensure we always have a default sesssion name (for running without access to a keyboard)
                     if (string.IsNullOrEmpty(CreatePanelSessionNameField.text))
                     {
                          string time = DateTime.Now.ToString("hhmmss");
@@ -761,10 +767,11 @@ namespace VRT.Pilots.LoginManager
                     }
                     break;
                 case State.Join:
-                    // Behaviour
+                    // Refresh the list of sessions
                     GetSessions();
                     break;
                 case State.Lobby:
+                    // Ensure only the session master has the Start button.
                     LobbyPanelStartButton.gameObject.SetActive(OrchestratorController.Instance.UserIsMaster);
                     break;
                 case State.InGame:
@@ -872,7 +879,8 @@ namespace VRT.Pilots.LoginManager
         public void SettingsPanel_SaveButtonPressed()
         {
             SettingsPanelSelfRepresentationPreview.StopMicrophone();
-            UpdateUserData();
+            SettingsPanel_ExtractUserData();
+            SaveUserData();
             state = State.LoggedIn;
             AllPanels_UpdateAfterStateChange();
         }
@@ -888,11 +896,7 @@ namespace VRT.Pilots.LoginManager
         {
             state = _state;
             AllPanels_UpdateAfterStateChange();
-            if (state == State.Config)
-            {
-                UpdateUserData();
-            }
-        }
+       }
 
         public void LobbyPanel_StartButtonPressed()
         {
@@ -1121,28 +1125,13 @@ namespace VRT.Pilots.LoginManager
         {
             if (userLoggedSucessfully)
             {
-                // Load locally save user data
-                if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
-                {
-                    var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
-                    if (System.IO.File.Exists(fullName))
-                    {
-                        Debug.Log($"OrchestratorLogin: load UserData from {fullName}");
-                        var configData = System.IO.File.ReadAllText(fullName);
-                        UserData lUserData = new UserData();
-                        JsonUtility.FromJsonOverwrite(configData, lUserData);
-                        OrchestratorController.Instance.SelfUser.userData = lUserData;
-                        // Also send to orchestrator. This is mainly so that the orchestrator can tell
-                        // other participants our self-representation.
-                        OrchestratorController.Instance.UpdateFullUserData(lUserData);
-                        Debug.Log($"OrchestratorLogin: uploaded UserData to orchestrator");
-                    }
-                }
-
+                LoadUserData();
+                UploadUserData();
                 state = State.LoggedIn;
             }
             else
             {
+                // User has logged out, or login failed.
                 this.StatusPanelUserId.text = "";
                 StatusPanelUserName.text = "";
                 HomePanelUserName.text = "";
@@ -1391,7 +1380,7 @@ namespace VRT.Pilots.LoginManager
 #region Users
 
 
-        private void UpdateUserData()
+        private void SettingsPanel_ExtractUserData()
         {
             // UserData info in Config
             UserData lUserData = new UserData
@@ -1402,20 +1391,57 @@ namespace VRT.Pilots.LoginManager
                 webcamName = (SettingsPanelWebcamDropdown.options.Count <= 0) ? "None" : SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
                 microphoneName = (SettingsPanelMicrophoneDropdown.options.Count <= 0) ? "None" : SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
             };
-            // And also save a local copy, if wanted
-            if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
-            {
-                var configData = lUserData.AsJsonString();
-                var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
-                System.IO.File.WriteAllText(fullName, configData);
-                Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
-            }
+            OrchestratorController.Instance.SelfUser.userData = lUserData;
         }
 
+        private void SaveUserData()
+        {
+            // And also save a local copy, if wanted
+            if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            {
+                Debug.LogError("OrchestratorLogin.SaveUserData: orchestratorConfigFilename is empty");
+                return;
+            }
+            var configData = OrchestratorController.Instance.SelfUser.userData.AsJsonString();
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            System.IO.File.WriteAllText(fullName, configData);
+            Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
 
-#endregion
+        }
 
-#region Messages
+        private void LoadUserData()
+        {
+            // Load locally save user data
+            if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            {
+                Debug.LogError("OrchestratorLogin.LoadUserData: orchestratorConfigFilename is empty");
+                return;
+            }
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            if (!System.IO.File.Exists(fullName))
+            {
+                Debug.LogWarning($"OrchestratorLogin.LoadUserData: Cannot open {fullName}");
+                return;
+            }
+                    
+            Debug.Log($"OrchestratorLogin: load UserData from {fullName}");
+            var configData = System.IO.File.ReadAllText(fullName);
+            UserData lUserData = new UserData();
+            JsonUtility.FromJsonOverwrite(configData, lUserData);
+            OrchestratorController.Instance.SelfUser.userData = lUserData;
+        }
+
+        private void UploadUserData()
+        {
+            // Also send to orchestrator. This is mainly so that the orchestrator can tell
+            // other participants our self-representation.
+            OrchestratorController.Instance.UpdateFullUserData(OrchestratorController.Instance.SelfUser.userData);
+            Debug.Log($"OrchestratorLogin: uploaded UserData to orchestrator");
+        }
+
+        #endregion
+
+        #region Messages
 
 
         private void SendMessageToAll(string message)
