@@ -12422,15 +12422,15 @@ MonoBehaviour:
   orchestratorSessions: {fileID: 6963007955771357401}
   refreshTimer: 5
   lobbyPanel: {fileID: 6457971032172637052}
-  sessionNameText: {fileID: 6963007955317777261}
-  sessionDescriptionText: {fileID: 3039232443859429398}
-  scenarioIdText: {fileID: 6457971032909827202}
-  sessionNumUsersText: {fileID: 6457971033508907615}
+  LobbyPanelSessionName: {fileID: 6963007955317777261}
+  LobbyPanelSessionDescription: {fileID: 3039232443859429398}
+  LobbyPanelScenarioName: {fileID: 6457971032909827202}
+  LobbyPanelSessionNumUsers: {fileID: 6457971033508907615}
   LobbyPanelStartButton: {fileID: 6457971032624323591}
   LobbyPanelLeaveButton: {fileID: 6457971032860003685}
-  usersSession: {fileID: 6963007956489862667}
-  userRepresentationLobbyText: {fileID: 7890038468874615349}
-  userRepresentationLobbyImage: {fileID: 6380644936749171119}
+  LobbyPanelSessionUsers: {fileID: 6963007956489862667}
+  LobbyPanelUserRepresentationText: {fileID: 7890038468874615349}
+  LobbyPanelUserRepresentationImage: {fileID: 6380644936749171119}
   MenuFont: {fileID: 12800000, guid: b30c1f4e6a7dd054d9c16454a93655f7, type: 3}
 --- !u!114 &555126172
 MonoBehaviour:

@@ -102,23 +102,23 @@ namespace VRT.Pilots.LoginManager
         [Header("JoinPanel")]
         [SerializeField] private GameObject joinPanel = null;
         [SerializeField][FormerlySerializedAs("backJoinButton")] private Button JoinPanelBackButton = null;
-        [SerializeField] private Dropdown sessionIdDrop = null;
-        [SerializeField] private Text sessionJoinMessage = null;
+        [SerializeField][FormerlySerializedAs("")] private Dropdown sessionIdDrop = null;
+        [SerializeField][FormerlySerializedAs("")] private Text sessionJoinMessage = null;
         [SerializeField][FormerlySerializedAs("doneJoinButton")] private Button JoinPanelJoinButton = null;
-        [SerializeField] private RectTransform orchestratorSessions = null;
+        [SerializeField][FormerlySerializedAs("")] private RectTransform orchestratorSessions = null;
         [SerializeField] private int refreshTimer = 5;
 
         [Header("LobbyPanel")]
         [SerializeField] private GameObject lobbyPanel = null;
-        [SerializeField] private Text sessionNameText = null;
-        [SerializeField] private Text sessionDescriptionText = null;
-        [SerializeField] private Text scenarioIdText = null;
-        [SerializeField] private Text sessionNumUsersText = null;
+        [SerializeField][FormerlySerializedAs("sessionNameText")] private Text LobbyPanelSessionName = null;
+        [SerializeField][FormerlySerializedAs("sessionDescriptionText")] private Text LobbyPanelSessionDescription = null;
+        [SerializeField][FormerlySerializedAs("scenarioIdText")] private Text LobbyPanelScenarioName = null;
+        [SerializeField][FormerlySerializedAs("sessionNumUsersText")] private Text LobbyPanelSessionNumUsers = null;
         [SerializeField][FormerlySerializedAs("readyButton")] private Button LobbyPanelStartButton = null;
         [SerializeField][FormerlySerializedAs("leaveButton")] private Button LobbyPanelLeaveButton = null;
-        [SerializeField] private RectTransform usersSession = null;
-        [SerializeField] private Text userRepresentationLobbyText = null;
-        [SerializeField] private Image userRepresentationLobbyImage = null;
+        [SerializeField][FormerlySerializedAs("usersSession")] private RectTransform LobbyPanelSessionUsers = null;
+        [SerializeField][FormerlySerializedAs("userRepresentationLobbyText")] private Text LobbyPanelUserRepresentationText = null;
+        [SerializeField][FormerlySerializedAs("userRepresentationLobbyImage")] private Image LobbyPanelUserRepresentationImage = null;
      
        
         #endregion
@@ -261,7 +261,7 @@ namespace VRT.Pilots.LoginManager
 
         private void UpdateUsersSession(Transform container)
         {
-            RemoveComponentsFromList(usersSession.transform);
+            RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
             Session session = OrchestratorController.Instance.CurrentSession;
             if (session == null)
             {
@@ -274,7 +274,7 @@ namespace VRT.Pilots.LoginManager
                 //AddTextComponentOnContent(container.transform, u.userName);
                 AddUserComponentOnContent(container.transform, u);
             }
-            sessionNumUsersText.text = sessionUsers.Length.ToString() /*+ "/" + "4"*/;
+            LobbyPanelSessionNumUsers.text = sessionUsers.Length.ToString() /*+ "/" + "4"*/;
             Debug.Log($"xxxjack OrchestratorLogin: UpdateUsersSession: {sessionUsers.Length} users in session");
             // We may be able to continue auto-starting
             if (VRTConfig.Instance.AutoStart != null)
@@ -400,26 +400,26 @@ namespace VRT.Pilots.LoginManager
 
         private void SetUserRepresentationGUI(UserRepresentationType _representationType)
         {
-            userRepresentationLobbyText.text = _representationType.ToString();
+            LobbyPanelUserRepresentationText.text = _representationType.ToString();
             // left change the icon 'userRepresentationLobbyImage'
          
             switch (_representationType)
             {
                 case UserRepresentationType.NoRepresentation:
                 case UserRepresentationType.AudioOnly:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                     break;
                 case UserRepresentationType.VideoAvatar:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                     break;
                 case UserRepresentationType.SimpleAvatar:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                     break;
                 case UserRepresentationType.PointCloud:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                     break;
                  case UserRepresentationType.NoRepresentationCamera:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
                     break;
               
             }
@@ -649,7 +649,7 @@ namespace VRT.Pilots.LoginManager
             }
             if (state == State.Lobby && autoState == AutoState.DidCompleteCreation && config.autoStartWith >= 1)
             {
-                if (sessionNumUsersText.text == config.autoStartWith.ToString())
+                if (LobbyPanelSessionNumUsers.text == config.autoStartWith.ToString())
                 {
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting with {config.autoStartWith} users");
                     Invoke(nameof(ReadyButton), config.autoDelay);
@@ -1232,11 +1232,11 @@ namespace VRT.Pilots.LoginManager
                 UpdateSessions(orchestratorSessions);
 
                 // Update the info in LobbyPanel
-                sessionNameText.text = session.sessionName;
-                sessionDescriptionText.text = session.sessionDescription;
+                LobbyPanelSessionName.text = session.sessionName;
+                LobbyPanelSessionDescription.text = session.sessionDescription;
           
                 // Update the list of session users
-                UpdateUsersSession(usersSession);
+                UpdateUsersSession(LobbyPanelSessionUsers);
 
                 state = State.Lobby;
                 PanelChanger();
@@ -1246,11 +1246,11 @@ namespace VRT.Pilots.LoginManager
             }
             else
             {
-                sessionNameText.text = "";
-                sessionDescriptionText.text = "";
-                scenarioIdText.text = "";
-                sessionNumUsersText.text = "";
-                RemoveComponentsFromList(usersSession.transform);
+                LobbyPanelSessionName.text = "";
+                LobbyPanelSessionDescription.text = "";
+                LobbyPanelScenarioName.text = "";
+                LobbyPanelSessionNumUsers.text = "";
+                RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
             }
         }
 
@@ -1259,18 +1259,18 @@ namespace VRT.Pilots.LoginManager
             if (session != null)
             {
                 // Update the info in LobbyPanel
-                sessionNameText.text = session.sessionName;
-                sessionDescriptionText.text = session.sessionDescription;
+                LobbyPanelSessionName.text = session.sessionName;
+                LobbyPanelSessionDescription.text = session.sessionDescription;
                 // Update the list of session users
-                UpdateUsersSession(usersSession);
+                UpdateUsersSession(LobbyPanelSessionUsers);
             }
             else
             {
-                sessionNameText.text = "";
-                sessionDescriptionText.text = "";
-                scenarioIdText.text = "";
-                sessionNumUsersText.text = "";
-                RemoveComponentsFromList(usersSession.transform);
+                LobbyPanelSessionName.text = "";
+                LobbyPanelSessionDescription.text = "";
+                LobbyPanelScenarioName.text = "";
+                LobbyPanelSessionNumUsers.text = "";
+                RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
             }
         }
         private void OnDeleteSessionHandler()
@@ -1326,22 +1326,22 @@ namespace VRT.Pilots.LoginManager
             if (session != null)
             {
                 // Update the info in LobbyPanel
-                sessionNameText.text = session.sessionName;
-                sessionDescriptionText.text = session.sessionDescription;
+                LobbyPanelSessionName.text = session.sessionName;
+                LobbyPanelSessionDescription.text = session.sessionDescription;
 
                 // Update the list of session users
-                UpdateUsersSession(usersSession);
+                UpdateUsersSession(LobbyPanelSessionUsers);
 
                 state = State.Lobby;
                 PanelChanger();
             }
             else
             {
-                sessionNameText.text = "";
-                sessionDescriptionText.text = "";
-                scenarioIdText.text = "";
-                sessionNumUsersText.text = "";
-                RemoveComponentsFromList(usersSession.transform);
+                LobbyPanelSessionName.text = "";
+                LobbyPanelSessionDescription.text = "";
+                LobbyPanelScenarioName.text = "";
+                LobbyPanelSessionNumUsers.text = "";
+                RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
             }
         }
 
@@ -1352,11 +1352,11 @@ namespace VRT.Pilots.LoginManager
 
         private void OnLeaveSessionHandler()
         {
-            sessionNameText.text = "";
-            sessionDescriptionText.text = "";
-            scenarioIdText.text = "";
-            sessionNumUsersText.text = "";
-            RemoveComponentsFromList(usersSession.transform);
+            LobbyPanelSessionName.text = "";
+            LobbyPanelSessionDescription.text = "";
+            LobbyPanelScenarioName.text = "";
+            LobbyPanelSessionNumUsers.text = "";
+            RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
 
             state = State.Play;
             PanelChanger();
