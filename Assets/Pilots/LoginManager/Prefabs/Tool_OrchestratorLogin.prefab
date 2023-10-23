@@ -12416,10 +12416,10 @@ MonoBehaviour:
   CreatePanelCreateButton: {fileID: 6457971033556758724}
   joinPanel: {fileID: 6457971032356984462}
   JoinPanelBackButton: {fileID: 2235418248480033197}
-  sessionIdDrop: {fileID: 6457971032597693187}
-  sessionJoinMessage: {fileID: 1983446077738297626}
+  JoinPanelSessionDropdown: {fileID: 6457971032597693187}
+  JoinPanelSessionDescription: {fileID: 1983446077738297626}
   JoinPanelJoinButton: {fileID: 6457971033399391678}
-  orchestratorSessions: {fileID: 6963007955771357401}
+  JoinPanelSessionList: {fileID: 6963007955771357401}
   refreshTimer: 5
   lobbyPanel: {fileID: 6457971032172637052}
   LobbyPanelSessionName: {fileID: 6963007955317777261}

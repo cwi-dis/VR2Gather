@@ -102,10 +102,10 @@ namespace VRT.Pilots.LoginManager
         [Header("JoinPanel")]
         [SerializeField] private GameObject joinPanel = null;
         [SerializeField][FormerlySerializedAs("backJoinButton")] private Button JoinPanelBackButton = null;
-        [SerializeField][FormerlySerializedAs("")] private Dropdown sessionIdDrop = null;
-        [SerializeField][FormerlySerializedAs("")] private Text sessionJoinMessage = null;
+        [SerializeField][FormerlySerializedAs("sessionIdDrop")] private Dropdown JoinPanelSessionDropdown = null;
+        [SerializeField][FormerlySerializedAs("sessionJoinMessage")] private Text JoinPanelSessionDescription = null;
         [SerializeField][FormerlySerializedAs("doneJoinButton")] private Button JoinPanelJoinButton = null;
-        [SerializeField][FormerlySerializedAs("")] private RectTransform orchestratorSessions = null;
+        [SerializeField][FormerlySerializedAs("orchestratorSessions")] private RectTransform JoinPanelSessionList = null;
         [SerializeField] private int refreshTimer = 5;
 
         [Header("LobbyPanel")]
@@ -291,23 +291,23 @@ namespace VRT.Pilots.LoginManager
 
             string selectedOption = "";
             // store selected option in dropdown
-            if (sessionIdDrop.options.Count > 0)
-                selectedOption = sessionIdDrop.options[sessionIdDrop.value].text;
+            if (JoinPanelSessionDropdown.options.Count > 0)
+                selectedOption = JoinPanelSessionDropdown.options[JoinPanelSessionDropdown.value].text;
             // update the dropdown
-            sessionIdDrop.ClearOptions();
+            JoinPanelSessionDropdown.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
             foreach (var sess in OrchestratorController.Instance.AvailableSessions)
             {
                 options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
             }
-            sessionIdDrop.AddOptions(options);
+            JoinPanelSessionDropdown.AddOptions(options);
             // re-assign selected option in dropdown
-            if (sessionIdDrop.options.Count > 0)
+            if (JoinPanelSessionDropdown.options.Count > 0)
             {
-                for (int i = 0; i < sessionIdDrop.options.Count; ++i)
+                for (int i = 0; i < JoinPanelSessionDropdown.options.Count; ++i)
                 {
-                    if (sessionIdDrop.options[i].text == selectedOption)
-                        sessionIdDrop.value = i;
+                    if (JoinPanelSessionDropdown.options[i].text == selectedOption)
+                        JoinPanelSessionDropdown.value = i;
                 }
             }
             SessionSelectionChanged();
@@ -520,7 +520,7 @@ namespace VRT.Pilots.LoginManager
             });
             CreatePanelScenarioDropdown.onValueChanged.AddListener(delegate { ScenarioSelectionChanged(); });
 
-            sessionIdDrop.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
+            JoinPanelSessionDropdown.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
 
             InitialiseControllerEvents();
 
@@ -534,7 +534,7 @@ namespace VRT.Pilots.LoginManager
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
                 statusText.color = connectedCol;
                 FillSelfUserData();
-                UpdateSessions(orchestratorSessions);
+                UpdateSessions(JoinPanelSessionList);
                 UpdateScenarios();
                 Debug.Log("OrchestratorLogin: Coming from another Scene");
 
@@ -658,14 +658,14 @@ namespace VRT.Pilots.LoginManager
             }
             if (state == State.Join && autoState == AutoState.DidJoin)
             {
-                var options = sessionIdDrop.options;
+                var options = JoinPanelSessionDropdown.options;
                 if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: look for {config.sessionName}");
                 for (int i = 0; i < options.Count; i++)
                 {
                     if (options[i].text.StartsWith(config.sessionName + " "))
                     {
                         if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: entry {i} is {config.sessionName}, joining");
-                        sessionIdDrop.value = i;
+                        JoinPanelSessionDropdown.value = i;
                         autoState = AutoState.Done;
                         Invoke(nameof(JoinSession), config.autoDelay);
                     }
@@ -1203,7 +1203,7 @@ namespace VRT.Pilots.LoginManager
             if (sessions != null)
             {
                 // update the list of available sessions
-                UpdateSessions(orchestratorSessions);
+                UpdateSessions(JoinPanelSessionList);
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
                     Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
@@ -1229,7 +1229,7 @@ namespace VRT.Pilots.LoginManager
             if (session != null)
             {
                 // update the list of available sessions
-                UpdateSessions(orchestratorSessions);
+                UpdateSessions(JoinPanelSessionList);
 
                 // Update the info in LobbyPanel
                 LobbyPanelSessionName.text = session.sessionName;
@@ -1280,7 +1280,7 @@ namespace VRT.Pilots.LoginManager
 
         private void SessionSelectionChanged()
         {
-            var idx = sessionIdDrop.value;
+            var idx = JoinPanelSessionDropdown.value;
             string description = "";
             bool ok = idx >= 0 && idx < OrchestratorController.Instance.AvailableSessions.Length;
             if (ok)
@@ -1306,17 +1306,17 @@ namespace VRT.Pilots.LoginManager
             {
                 description = "(no session selected)";
             }
-            sessionJoinMessage.text = description;
+            JoinPanelSessionDescription.text = description;
             JoinPanelJoinButton.interactable = ok;
         }
 
         private void JoinSession()
         {
-            if (sessionIdDrop.options.Count <= 0)
+            if (JoinPanelSessionDropdown.options.Count <= 0)
                 Debug.LogError($"JoinSession: There are no sessions to join.");
             else
             {
-                string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[sessionIdDrop.value].sessionId;
+                string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[JoinPanelSessionDropdown.value].sessionId;
                 OrchestratorController.Instance.JoinSession(sessionIdToJoin);
             }
         }
