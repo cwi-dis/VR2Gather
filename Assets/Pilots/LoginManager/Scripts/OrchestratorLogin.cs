@@ -55,9 +55,9 @@ namespace VRT.Pilots.LoginManager
       
         [Header("LoginPanel")]
         [SerializeField] private GameObject loginPanel = null;
-        [SerializeField] private InputField userNameLoginIF = null;
-        [SerializeField] private Button loginButton = null;
-        [SerializeField] private Toggle rememberMeButton = null;
+        [SerializeField][FormerlySerializedAs("userNameLoginIF")] private InputField LoginPanelUserName = null;
+        [SerializeField][FormerlySerializedAs("loginButton")] private Button LoginPanelLoginButton = null;
+        [SerializeField][FormerlySerializedAs("rememberMeButton")] private Toggle LoginPanelRememberMeToggle = null;
 
         [Header("HomePanel")]
         
@@ -493,7 +493,7 @@ namespace VRT.Pilots.LoginManager
             // Buttons listeners
             developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
             StatusPanelStartDeveloperSceneButton.onClick.AddListener(delegate { StartDeveloperSession(); });
-            loginButton.onClick.AddListener(delegate { Login(); });
+            LoginPanelLoginButton.onClick.AddListener(delegate { Login(); });
             HomePanelLogoutButton.onClick.AddListener(delegate { Logout(); });
             HomePanelPlayButton.onClick.AddListener(delegate { StateButton(State.Play); });
             HomePanelSettingsButton.onClick.AddListener(delegate {
@@ -1077,9 +1077,9 @@ namespace VRT.Pilots.LoginManager
         // Login from the main buttons Login & Logout
         private void Login()
         {
-            if (rememberMeButton.isOn)
+            if (LoginPanelRememberMeToggle.isOn)
             {
-                PlayerPrefs.SetString("userNameLoginIF", userNameLoginIF.text);
+                PlayerPrefs.SetString("userNameLoginIF", LoginPanelUserName.text);
             }
             else
             {
@@ -1088,23 +1088,23 @@ namespace VRT.Pilots.LoginManager
             // If we want to autoCreate or autoStart depending on username set the right config flags.
             if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
             {
-                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser == userNameLoginIF.text;
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={userNameLoginIF.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
+                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser == LoginPanelUserName.text;
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={LoginPanelUserName.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
                 VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
-            OrchestratorController.Instance.Login(userNameLoginIF.text, "");
+            OrchestratorController.Instance.Login(LoginPanelUserName.text, "");
         }
         // Check saved used credentials.
         private void CheckRememberMe()
         {
             if (PlayerPrefs.HasKey("userNameLoginIF") && PlayerPrefs.HasKey("userPasswordLoginIF"))
             {
-                rememberMeButton.isOn = true;
-                userNameLoginIF.text = PlayerPrefs.GetString("userNameLoginIF");
+                LoginPanelRememberMeToggle.isOn = true;
+                LoginPanelUserName.text = PlayerPrefs.GetString("userNameLoginIF");
             }
             else
-                rememberMeButton.isOn = false;
+                LoginPanelRememberMeToggle.isOn = false;
         }
 
         private void OnLogin(bool userLoggedSucessfully)

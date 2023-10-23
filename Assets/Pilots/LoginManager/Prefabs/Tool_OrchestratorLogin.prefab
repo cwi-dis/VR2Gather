@@ -12380,9 +12380,9 @@ MonoBehaviour:
   StatusPanelStartDeveloperSceneButton: {fileID: 2614710130514583428}
   connectPanel: {fileID: 3529967804447537619}
   loginPanel: {fileID: 8798074575742713247}
-  userNameLoginIF: {fileID: 8153449555847552914}
-  loginButton: {fileID: 6954466314744718302}
-  rememberMeButton: {fileID: 7238322160025449768}
+  LoginPanelUserName: {fileID: 8153449555847552914}
+  LoginPanelLoginButton: {fileID: 6954466314744718302}
+  LoginPanelRememberMeToggle: {fileID: 7238322160025449768}
   homePanel: {fileID: 5472630372440047248}
   HomePanelUserName: {fileID: 9057051396644799865}
   HomePanelLogoutButton: {fileID: 3098477522478754752}
