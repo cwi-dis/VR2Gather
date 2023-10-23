@@ -32,7 +32,7 @@ namespace VRT.Pilots.LoginManager
         {
         }
 
-        void InitializeSelfPlayer()
+        public void InitializeSelfPlayer()
         {
             User user = OrchestratorController.Instance.SelfUser;
             if (OrchestratorController.Instance?.SelfUser?.userData != null)

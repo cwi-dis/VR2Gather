@@ -37,11 +37,12 @@ namespace VRT.Pilots.LoginManager
         private State state = State.Offline;
         private AutoState autoState = AutoState.DidNone;
 
-        
-        [Header("Status and DeveloperStatus")]
         [SerializeField] private Toggle developerModeButton = null;
-        [SerializeField] private GameObject developerPanel = null;
         [SerializeField] private Text statusText = null;
+        [SerializeField] private SelfRepresentationPreview SelfRepresentationPreview = null;
+
+        [Header("Status and DeveloperStatus")]
+        [SerializeField] private GameObject developerPanel = null;
         [SerializeField] private Text StatusPanelUserId = null;
         [SerializeField] private Text StatusPanelUserName = null;
         [SerializeField] private Text StatusPanelOrchestratorURL = null;
@@ -78,7 +79,6 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private RectTransform SettingsPanelVUMeter = null;
         [SerializeField] private Button SettingsPanelSaveButton = null;
         [SerializeField] private Button SettingsPanelBackButton = null;
-        [SerializeField] private SelfRepresentationPreview SettingsPanelSelfRepresentationPreview = null;
         [SerializeField] private Text SettingsPanelSelfRepresentationDescription = null;
 
         [Header("PlayPanel")]
@@ -525,7 +525,7 @@ namespace VRT.Pilots.LoginManager
                 // xxxjack AllPanels_UpdateAfterStateChange();
             });
             SettingsPanelMicrophoneDropdown.onValueChanged.AddListener(delegate {
-                SettingsPanelSelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
+                SelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
             });
             CreatePanelScenarioDropdown.onValueChanged.AddListener(delegate { CreatePanel_ScenarioSelectionChanged(); });
 
@@ -563,12 +563,13 @@ namespace VRT.Pilots.LoginManager
         // Update is called once per frame
         void Update()
         {
-            if (SettingsPanelVUMeter && SettingsPanelSelfRepresentationPreview)
-                SettingsPanelVUMeter.sizeDelta = new Vector2(355 * Mathf.Min(1, SettingsPanelSelfRepresentationPreview.MicrophoneLevel), 20);
-
+            // Update the microphone VU meter, if it is visible.
+            if (SettingsPanelVUMeter && SettingsPanelVUMeter.gameObject.activeInHierarchy && SelfRepresentationPreview)
+                SettingsPanelVUMeter.sizeDelta = new Vector2(355 * Mathf.Min(1, SelfRepresentationPreview.MicrophoneLevel), 20);
+            // Allow tabbing between input fields, if needed
             _ImplementTabShortcut();
           
-            // Refresh Sessions
+            // Refresh Sessions, if needed
             if (state == State.Join)
             {
                 JoinPanelRefreshTimer += Time.deltaTime;
@@ -578,6 +579,18 @@ namespace VRT.Pilots.LoginManager
                     JoinPanelRefreshTimer = 0.0f;
                 }
             }
+        }
+
+        private void StartSelfRepresentationPreview()
+        {
+            if (SelfRepresentationPreview == null)
+            {
+                Debug.LogError("OrchestratorLogin: No self previww");
+                return;
+            }
+            SelfRepresentationPreview.gameObject.SetActive(true);
+            SelfRepresentationPreview.enabled = true;
+            SelfRepresentationPreview.InitializeSelfPlayer();
         }
 
         /// <summary>
@@ -800,11 +813,11 @@ namespace VRT.Pilots.LoginManager
             }
             // Preview
             SettingsPanel_SetRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
-            SettingsPanelSelfRepresentationPreview.ChangeRepresentation(
+            SelfRepresentationPreview.ChangeRepresentation(
                 (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
                 SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text
                 );
-            SettingsPanelSelfRepresentationPreview.ChangeMicrophone(
+            SelfRepresentationPreview.ChangeMicrophone(
                 SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
                 );
         }
@@ -888,7 +901,7 @@ namespace VRT.Pilots.LoginManager
 
         public void SettingsPanel_SaveButtonPressed()
         {
-            SettingsPanelSelfRepresentationPreview.StopMicrophone();
+            SelfRepresentationPreview.StopMicrophone();
             SettingsPanel_ExtractUserData();
             SaveUserData();
             state = State.LoggedIn;
@@ -897,7 +910,7 @@ namespace VRT.Pilots.LoginManager
 
         public void SettingsPanel_BackButtonPressed()
         {
-            SettingsPanelSelfRepresentationPreview.StopMicrophone();
+            SelfRepresentationPreview.StopMicrophone();
             state = State.LoggedIn;
             AllPanels_UpdateAfterStateChange();
         }
@@ -1135,8 +1148,12 @@ namespace VRT.Pilots.LoginManager
         {
             if (userLoggedSucessfully)
             {
+                // We can now load the user data and send it to the orchesrator.
+                // Also, we can start the self preview (because the user data is complete)
+
                 LoadUserData();
                 UploadUserData();
+                StartSelfRepresentationPreview();
                 state = State.LoggedIn;
             }
             else
