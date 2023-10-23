@@ -42,83 +42,83 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Toggle developerModeButton = null;
         [SerializeField] private GameObject developerPanel = null;
         [SerializeField] private Text statusText = null;
-        [SerializeField][FormerlySerializedAs("userId")] private Text StatusPanelUserId = null;
-        [SerializeField][FormerlySerializedAs("userName")] private Text StatusPanelUserName = null;
-        [SerializeField][FormerlySerializedAs("orchURLText")] private Text StatusPanelOrchestratorURL = null;
-        [SerializeField][FormerlySerializedAs("nativeVerText")] private Text StatusPanelNativeVersion = null;
-        [SerializeField][FormerlySerializedAs("playerVerText")] private Text StatusPanelPlayerVersion = null;
-        [SerializeField][FormerlySerializedAs("orchVerText")] private Text StatusPanelOrchestratorVersion = null;
-        [SerializeField][FormerlySerializedAs("developerSessionButton")] private Button StatusPanelStartDeveloperSceneButton = null;
+        [SerializeField] private Text StatusPanelUserId = null;
+        [SerializeField] private Text StatusPanelUserName = null;
+        [SerializeField] private Text StatusPanelOrchestratorURL = null;
+        [SerializeField] private Text StatusPanelNativeVersion = null;
+        [SerializeField] private Text StatusPanelPlayerVersion = null;
+        [SerializeField] private Text StatusPanelOrchestratorVersion = null;
+        [SerializeField] private Button StatusPanelStartDeveloperSceneButton = null;
 
         [Header("ConnectPanel")]
         [SerializeField] private GameObject connectPanel = null;
       
         [Header("LoginPanel")]
         [SerializeField] private GameObject loginPanel = null;
-        [SerializeField][FormerlySerializedAs("userNameLoginIF")] private InputField LoginPanelUserName = null;
-        [SerializeField][FormerlySerializedAs("loginButton")] private Button LoginPanelLoginButton = null;
-        [SerializeField][FormerlySerializedAs("rememberMeButton")] private Toggle LoginPanelRememberMeToggle = null;
+        [SerializeField] private InputField LoginPanelUserName = null;
+        [SerializeField] private Button LoginPanelLoginButton = null;
+        [SerializeField] private Toggle LoginPanelRememberMeToggle = null;
 
         [Header("HomePanel")]
         
-        [SerializeField][FormerlySerializedAs("vrtPanel")] private GameObject homePanel = null;
-        [SerializeField][FormerlySerializedAs("userNameVRTText")] private Text HomePanelUserName = null;
-        [SerializeField][FormerlySerializedAs("logoutButton")] private Button HomePanelLogoutButton = null;
-        [SerializeField][FormerlySerializedAs("playButton")] private Button HomePanelPlayButton = null;
-        [SerializeField][FormerlySerializedAs("configButton")] private Button HomePanelSettingsButton = null;
+        [SerializeField] private GameObject homePanel = null;
+        [SerializeField] private Text HomePanelUserName = null;
+        [SerializeField] private Button HomePanelLogoutButton = null;
+        [SerializeField] private Button HomePanelPlayButton = null;
+        [SerializeField] private Button HomePanelSettingsButton = null;
 
         [Header("SettingsPanel")]
-        [SerializeField][FormerlySerializedAs("configPanel")] private GameObject settingsPanel = null;
-        [SerializeField][FormerlySerializedAs("webcamInfoGO")] private GameObject SettingsPanelWebcamInfoGO = null;
-        [SerializeField][FormerlySerializedAs("tcpPointcloudURLConfigIF")] private InputField SettingsPanelTCPPointcloudURLField = null;
-        [SerializeField][FormerlySerializedAs("tcpAudioURLConfigIF")] private InputField SettingsPanelTCPAudioURLField = null;
-        [SerializeField][FormerlySerializedAs("representationTypeConfigDropdown")] private Dropdown SettingsPanelRepresentationDropdown = null;
-        [SerializeField][FormerlySerializedAs("webcamDropdown")] private Dropdown SettingsPanelWebcamDropdown = null;
-        [SerializeField][FormerlySerializedAs("microphoneDropdown")] private Dropdown SettingsPanelMicrophoneDropdown = null;
-        [SerializeField][FormerlySerializedAs("VUMeter")] private RectTransform SettingsPanelVUMeter = null;
-        [SerializeField][FormerlySerializedAs("saveConfigButton")] private Button SettingsPanelSaveButton = null;
-        [SerializeField][FormerlySerializedAs("exitConfigButton")] private Button SettingsPanelBackButton = null;
-        [SerializeField][FormerlySerializedAs("selfRepresentationPreview")] private SelfRepresentationPreview SettingsPanelSelfRepresentationPreview = null;
-        [SerializeField][FormerlySerializedAs("selfRepresentationDescription")] private Text SettingsPanelSelfRepresentationDescription = null;
+        [SerializeField] private GameObject settingsPanel = null;
+        [SerializeField] private GameObject SettingsPanelWebcamInfoGO = null;
+        [SerializeField] private InputField SettingsPanelTCPPointcloudURLField = null;
+        [SerializeField] private InputField SettingsPanelTCPAudioURLField = null;
+        [SerializeField] private Dropdown SettingsPanelRepresentationDropdown = null;
+        [SerializeField] private Dropdown SettingsPanelWebcamDropdown = null;
+        [SerializeField] private Dropdown SettingsPanelMicrophoneDropdown = null;
+        [SerializeField] private RectTransform SettingsPanelVUMeter = null;
+        [SerializeField] private Button SettingsPanelSaveButton = null;
+        [SerializeField] private Button SettingsPanelBackButton = null;
+        [SerializeField] private SelfRepresentationPreview SettingsPanelSelfRepresentationPreview = null;
+        [SerializeField] private Text SettingsPanelSelfRepresentationDescription = null;
 
         [Header("PlayPanel")]
         [SerializeField] private GameObject playPanel = null;
-        [SerializeField][FormerlySerializedAs("backPlayButton")] private Button PlayPanelBackButton = null;
-        [SerializeField][FormerlySerializedAs("createButton")] private Button PlayPanelCreateButton = null;
-        [SerializeField][FormerlySerializedAs("joinButton")] private Button PlayPanelJoinButton = null;
+        [SerializeField] private Button PlayPanelBackButton = null;
+        [SerializeField] private Button PlayPanelCreateButton = null;
+        [SerializeField] private Button PlayPanelJoinButton = null;
 
         [Header("CreatePanel")]
         [SerializeField] private GameObject createPanel = null;
-        [SerializeField][FormerlySerializedAs("backCreateButton")] private Button CreatePanelBackButton = null;
-        [SerializeField][FormerlySerializedAs("sessionNameIF")] private InputField CreatePanelSessionNameField = null;
-        [SerializeField][FormerlySerializedAs("sessionDescriptionIF")] private InputField CreatePanelSessionDescriptionField = null;
-        [SerializeField][FormerlySerializedAs("scenarioIdDrop")] private Dropdown CreatePanelScenarioDropdown = null;
-        [SerializeField][FormerlySerializedAs("scenarioDescription")] private Text CreatePanelScenarioDescription = null;
-        [SerializeField][FormerlySerializedAs("sessionProtocolDrop")] private Dropdown CreatePanelSessionProtocolDropdown = null;
-        [SerializeField][FormerlySerializedAs("uncompressedPointcloudsToggle")] private Toggle CreatePanelUncompressedPointcloudsToggle = null;
-        [SerializeField][FormerlySerializedAs("uncompressedAudioToggle")] private Toggle CreatePanelUncompressedAudioToggle = null;
-        [SerializeField][FormerlySerializedAs("doneCreateButton")] private Button CreatePanelCreateButton = null;
+        [SerializeField] private Button CreatePanelBackButton = null;
+        [SerializeField] private InputField CreatePanelSessionNameField = null;
+        [SerializeField] private InputField CreatePanelSessionDescriptionField = null;
+        [SerializeField] private Dropdown CreatePanelScenarioDropdown = null;
+        [SerializeField] private Text CreatePanelScenarioDescription = null;
+        [SerializeField] private Dropdown CreatePanelSessionProtocolDropdown = null;
+        [SerializeField] private Toggle CreatePanelUncompressedPointcloudsToggle = null;
+        [SerializeField] private Toggle CreatePanelUncompressedAudioToggle = null;
+        [SerializeField] private Button CreatePanelCreateButton = null;
 
         [Header("JoinPanel")]
         [SerializeField] private GameObject joinPanel = null;
-        [SerializeField][FormerlySerializedAs("backJoinButton")] private Button JoinPanelBackButton = null;
-        [SerializeField][FormerlySerializedAs("sessionIdDrop")] private Dropdown JoinPanelSessionDropdown = null;
-        [SerializeField][FormerlySerializedAs("sessionJoinMessage")] private Text JoinPanelSessionDescription = null;
-        [SerializeField][FormerlySerializedAs("doneJoinButton")] private Button JoinPanelJoinButton = null;
-        [SerializeField][FormerlySerializedAs("orchestratorSessions")] private RectTransform JoinPanelSessionList = null;
+        [SerializeField] private Button JoinPanelBackButton = null;
+        [SerializeField] private Dropdown JoinPanelSessionDropdown = null;
+        [SerializeField] private Text JoinPanelSessionDescription = null;
+        [SerializeField] private Button JoinPanelJoinButton = null;
+        [SerializeField] private RectTransform JoinPanelSessionList = null;
         [SerializeField] private int refreshTimer = 5;
 
         [Header("LobbyPanel")]
         [SerializeField] private GameObject lobbyPanel = null;
-        [SerializeField][FormerlySerializedAs("sessionNameText")] private Text LobbyPanelSessionName = null;
-        [SerializeField][FormerlySerializedAs("sessionDescriptionText")] private Text LobbyPanelSessionDescription = null;
-        [SerializeField][FormerlySerializedAs("scenarioIdText")] private Text LobbyPanelScenarioName = null;
-        [SerializeField][FormerlySerializedAs("sessionNumUsersText")] private Text LobbyPanelSessionNumUsers = null;
-        [SerializeField][FormerlySerializedAs("readyButton")] private Button LobbyPanelStartButton = null;
-        [SerializeField][FormerlySerializedAs("leaveButton")] private Button LobbyPanelLeaveButton = null;
-        [SerializeField][FormerlySerializedAs("usersSession")] private RectTransform LobbyPanelSessionUsers = null;
-        [SerializeField][FormerlySerializedAs("userRepresentationLobbyText")] private Text LobbyPanelUserRepresentationText = null;
-        [SerializeField][FormerlySerializedAs("userRepresentationLobbyImage")] private Image LobbyPanelUserRepresentationImage = null;
+        [SerializeField] private Text LobbyPanelSessionName = null;
+        [SerializeField] private Text LobbyPanelSessionDescription = null;
+        [SerializeField] private Text LobbyPanelScenarioName = null;
+        [SerializeField] private Text LobbyPanelSessionNumUsers = null;
+        [SerializeField] private Button LobbyPanelStartButton = null;
+        [SerializeField] private Button LobbyPanelLeaveButton = null;
+        [SerializeField] private RectTransform LobbyPanelSessionUsers = null;
+        [SerializeField] private Text LobbyPanelUserRepresentationText = null;
+        [SerializeField] private Image LobbyPanelUserRepresentationImage = null;
      
        
         #endregion
