@@ -62,10 +62,10 @@ namespace VRT.Pilots.LoginManager
         [Header("HomePanel")]
         
         [SerializeField][FormerlySerializedAs("vrtPanel")] private GameObject homePanel = null;
-        [SerializeField] private Text userNameVRTText = null;
-        [SerializeField] private Button logoutButton = null;
-        [SerializeField] private Button playButton = null;
-        [SerializeField] private Button configButton = null;
+        [SerializeField][FormerlySerializedAs("userNameVRTText")] private Text HomePanelUserName = null;
+        [SerializeField][FormerlySerializedAs("logoutButton")] private Button HomePanelLogoutButton = null;
+        [SerializeField][FormerlySerializedAs("playButton")] private Button HomePanelPlayButton = null;
+        [SerializeField][FormerlySerializedAs("configButton")] private Button HomePanelSettingsButton = null;
 
         [Header("SettingsPanel")]
         [SerializeField][FormerlySerializedAs("configPanel")] private GameObject settingsPanel = null;
@@ -494,9 +494,9 @@ namespace VRT.Pilots.LoginManager
             developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
             StatusPanelStartDeveloperSceneButton.onClick.AddListener(delegate { StartDeveloperSession(); });
             loginButton.onClick.AddListener(delegate { Login(); });
-            logoutButton.onClick.AddListener(delegate { Logout(); });
-            playButton.onClick.AddListener(delegate { StateButton(State.Play); });
-            configButton.onClick.AddListener(delegate {
+            HomePanelLogoutButton.onClick.AddListener(delegate { Logout(); });
+            HomePanelPlayButton.onClick.AddListener(delegate { StateButton(State.Play); });
+            HomePanelSettingsButton.onClick.AddListener(delegate {
                 FillSelfUserData();
                 StateButton(State.Config);
             });
@@ -684,7 +684,7 @@ namespace VRT.Pilots.LoginManager
             // UserID & Name
             StatusPanelUserId.text = user.userId;
             StatusPanelUserName.text = user.userName;
-            userNameVRTText.text = user.userName;
+            HomePanelUserName.text = user.userName;
             // Config Info
             UserData userData = user.userData;
             tcpPointcloudURLConfigIF.text = userData.userPCurl;
@@ -734,7 +734,7 @@ namespace VRT.Pilots.LoginManager
                     CheckRememberMe();
                     break;
                 case State.LoggedIn:
-                    userNameVRTText.text = uname;
+                    HomePanelUserName.text = uname;
                     StatusPanelUserName.text = uname;
                     break;
                 case State.Config:
@@ -1135,7 +1135,7 @@ namespace VRT.Pilots.LoginManager
             {
                 this.StatusPanelUserId.text = "";
                 StatusPanelUserName.text = "";
-                userNameVRTText.text = "";
+                HomePanelUserName.text = "";
 
                 state = State.Online;
             }
@@ -1169,7 +1169,7 @@ namespace VRT.Pilots.LoginManager
             {
                 StatusPanelUserId.text = "";
                 StatusPanelUserName.text = "";
-                userNameVRTText.text = "";
+                HomePanelUserName.text = "";
                 state = State.Online;
             }
             PanelChanger();

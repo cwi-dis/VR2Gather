@@ -12384,10 +12384,10 @@ MonoBehaviour:
   loginButton: {fileID: 6954466314744718302}
   rememberMeButton: {fileID: 7238322160025449768}
   homePanel: {fileID: 5472630372440047248}
-  userNameVRTText: {fileID: 9057051396644799865}
-  logoutButton: {fileID: 3098477522478754752}
-  playButton: {fileID: 6439520597403270058}
-  configButton: {fileID: 4324839371827238586}
+  HomePanelUserName: {fileID: 9057051396644799865}
+  HomePanelLogoutButton: {fileID: 3098477522478754752}
+  HomePanelPlayButton: {fileID: 6439520597403270058}
+  HomePanelSettingsButton: {fileID: 4324839371827238586}
   settingsPanel: {fileID: 6457971033183718167}
   webcamInfoGO: {fileID: 5916575847965431227}
   tcpPointcloudURLConfigIF: {fileID: 786090048598621773}
