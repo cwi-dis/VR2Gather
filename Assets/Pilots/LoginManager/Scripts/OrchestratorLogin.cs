@@ -31,7 +31,7 @@ namespace VRT.Pilots.LoginManager
 
         private static OrchestratorLogin instance;
         
-        #region GUI Components
+#region GUI Components
 
         
         private State state = State.Offline;
@@ -106,7 +106,8 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Text JoinPanelSessionDescription = null;
         [SerializeField] private Button JoinPanelJoinButton = null;
         [SerializeField] private RectTransform JoinPanelSessionList = null;
-        [SerializeField] private int refreshTimer = 5;
+        [SerializeField] private int JoinPanelRefreshInterval = 5;
+        private float JoinPanelRefreshTimer = 0.0f;
 
         [Header("LobbyPanel")]
         [SerializeField] private GameObject lobbyPanel = null;
@@ -117,25 +118,24 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Button LobbyPanelStartButton = null;
         [SerializeField] private Button LobbyPanelLeaveButton = null;
         [SerializeField] private RectTransform LobbyPanelSessionUsers = null;
-        [SerializeField] private Text LobbyPanelUserRepresentationText = null;
-        [SerializeField] private Image LobbyPanelUserRepresentationImage = null;
-     
-       
-        #endregion
+        [SerializeField] private Text LobbyPanelUserRepresentationText = null; // xxxjack can be removed
+        [SerializeField] private Image LobbyPanelUserRepresentationImage = null; // xxxjack can be removed
 
-        #region Utils
-        private Color connectedCol = new Color(0.15f, 0.78f, 0.15f); // Green
-        private Color connectingCol = new Color(0.85f, 0.5f, 0.2f); // Orange
-        private Color disconnectedCol = new Color(0.78f, 0.15f, 0.15f); // Red
-        public Font MenuFont = null;
-        private EventSystem system = null;
-        private float timer = 0.0f;
-        #endregion
 
-        #region GUI
+#endregion
 
-        // Fill a scroll view with a text item
-        private void AddTextComponentOnContent(Transform container, string value)
+#region Utils
+        [Header("Visual representation")]
+        [SerializeField] private Color colorConnected = new Color(0.15f, 0.78f, 0.15f); // Green
+        [SerializeField] private Color colorConnecting = new Color(0.85f, 0.5f, 0.2f); // Orange
+        [SerializeField] private Color colorDisconnecting = new Color(0.78f, 0.15f, 0.15f); // Red
+        [SerializeField] private Font MenuFont = null;
+#endregion
+
+#region GUI
+
+        // Helper method: add a text line to a scroll view.
+        private void _AddTextComponentOnScrollView(Transform container, string value)
         {
             GameObject textGO = new GameObject();
             textGO.name = "Text-" + value;
@@ -159,7 +159,8 @@ namespace VRT.Pilots.LoginManager
             item.text = value;
         }
 
-        private void AddUserComponentOnContent(Transform container, User user)
+        // Helper method: add a user description line to a scroll view
+        private void _AddUserComponentOnScrollView(Transform container, User user)
         {
             GameObject userGO = new GameObject();
             userGO.name = "User-" + user.userName;
@@ -249,7 +250,8 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void RemoveComponentsFromList(Transform container)
+        // Helper method: clear a scroll view.
+        private void _ClearScrollView(Transform container)
         {
             for (var i = container.childCount - 1; i >= 0; i--)
             {
@@ -259,9 +261,10 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void UpdateUsersSession(Transform container)
+        private void LobbyPanel_UpdateSessionUsers()
         {
-            RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
+            Transform container = LobbyPanelSessionUsers;
+            _ClearScrollView(LobbyPanelSessionUsers.transform);
             Session session = OrchestratorController.Instance.CurrentSession;
             if (session == null)
             {
@@ -271,8 +274,7 @@ namespace VRT.Pilots.LoginManager
             User[] sessionUsers = session.GetUsers();
             foreach (User u in sessionUsers)
             {
-                //AddTextComponentOnContent(container.transform, u.userName);
-                AddUserComponentOnContent(container.transform, u);
+                _AddUserComponentOnScrollView(container.transform, u);
             }
             LobbyPanelSessionNumUsers.text = sessionUsers.Length.ToString() /*+ "/" + "4"*/;
             Debug.Log($"xxxjack OrchestratorLogin: UpdateUsersSession: {sessionUsers.Length} users in session");
@@ -281,12 +283,13 @@ namespace VRT.Pilots.LoginManager
                 Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
         }
 
-        private void UpdateSessions(Transform container)
+        private void JoinPanel_UpdateSessions()
         {
-            RemoveComponentsFromList(container.transform);
+            Transform container = JoinPanelSessionList;
+            _ClearScrollView(container.transform);
             foreach (var session in OrchestratorController.Instance.AvailableSessions)
             {
-                AddTextComponentOnContent(container.transform, session.GetGuiRepresentation());
+                _AddTextComponentOnScrollView(container.transform, session.GetGuiRepresentation());
             }
 
             string selectedOption = "";
@@ -313,7 +316,7 @@ namespace VRT.Pilots.LoginManager
             SessionSelectionChanged();
         }
 
-        private void UpdateScenarios()
+        private void CreatePanel_UpdateScenarios()
         {
             // update the dropdown
             CreatePanelScenarioDropdown.ClearOptions();
@@ -324,10 +327,10 @@ namespace VRT.Pilots.LoginManager
             }
 
             CreatePanelScenarioDropdown.AddOptions(options);
-            ScenarioSelectionChanged();
+            CreatePanel_ScenarioSelectionChanged();
         }
 
-        private void ScenarioSelectionChanged()
+        private void CreatePanel_ScenarioSelectionChanged()
         {
             var idx = CreatePanelScenarioDropdown.value;
             bool ok = false;
@@ -351,8 +354,9 @@ namespace VRT.Pilots.LoginManager
             CreatePanelCreateButton.interactable = ok;
         }
 
-        private void UpdateRepresentations(Dropdown dd)
+        private void SettingsPanel_UpdateRepresentations()
         {
+            Dropdown dd = SettingsPanelRepresentationDropdown;
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
             // xxxjack this has the huge disadvantage that they are numerically sorted.
             // xxxjack and the order is difficult to change currently, because the values
@@ -362,7 +366,7 @@ namespace VRT.Pilots.LoginManager
             
         }
 
-        private void UpdateProtocols()
+        private void CreatePanel_UpdateProtocols()
         {
             CreatePanelSessionProtocolDropdown.ClearOptions();
             List<string> names = new List<string>();
@@ -374,8 +378,9 @@ namespace VRT.Pilots.LoginManager
             CreatePanelSessionProtocolDropdown.value = 0;
         }
 
-        private void UpdateWebcams(Dropdown dd)
+        private void SettingsPanel_UpdateWebcams()
         {
+            Dropdown dd = SettingsPanelWebcamDropdown;
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
             dd.ClearOptions();
             WebCamDevice[] devices = WebCamTexture.devices;
@@ -386,8 +391,9 @@ namespace VRT.Pilots.LoginManager
             dd.AddOptions(webcams);
         }
 
-        private void Updatemicrophones(Dropdown dd)
+        private void SettingsPanel_UpdateMicrophones()
         {
+            Dropdown dd = SettingsPanelMicrophoneDropdown;
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
             dd.ClearOptions();
             string[] devices = Microphone.devices;
@@ -398,6 +404,7 @@ namespace VRT.Pilots.LoginManager
             dd.AddOptions(microphones);
         }
 
+        // xxxjack can be removed...
         private void SetUserRepresentationGUI(UserRepresentationType _representationType)
         {
             LobbyPanelUserRepresentationText.text = _representationType.ToString();
@@ -425,7 +432,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void SetUserRepresentationDescription(UserRepresentationType _representationType)
+        private void SettingsPanel_SetRepresentation(UserRepresentationType _representationType)
         {
 
             // left change the icon 'userRepresentationLobbyImage'
@@ -469,7 +476,6 @@ namespace VRT.Pilots.LoginManager
 
             AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
 
-            system = EventSystem.current;
             // Developer mode settings
             developerMode = PlayerPrefs.GetInt("developerMode", 0) != 0;
             developerModeButton.isOn = developerMode;
@@ -483,12 +489,12 @@ namespace VRT.Pilots.LoginManager
             //MenuFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
             // Fill scenarios
-            UpdateScenarios();
+            CreatePanel_UpdateScenarios();
 
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
-            UpdateRepresentations(SettingsPanelRepresentationDropdown);
-            UpdateWebcams(SettingsPanelWebcamDropdown);
-            Updatemicrophones(SettingsPanelMicrophoneDropdown);
+            SettingsPanel_UpdateRepresentations();
+            SettingsPanel_UpdateWebcams();
+            SettingsPanel_UpdateMicrophones();
 
             // Buttons listeners
             developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
@@ -518,13 +524,13 @@ namespace VRT.Pilots.LoginManager
             SettingsPanelMicrophoneDropdown.onValueChanged.AddListener(delegate {
                 SettingsPanelSelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
             });
-            CreatePanelScenarioDropdown.onValueChanged.AddListener(delegate { ScenarioSelectionChanged(); });
+            CreatePanelScenarioDropdown.onValueChanged.AddListener(delegate { CreatePanel_ScenarioSelectionChanged(); });
 
             JoinPanelSessionDropdown.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
 
             InitialiseControllerEvents();
 
-            UpdateProtocols();
+            CreatePanel_UpdateProtocols();
             CreatePanelUncompressedPointcloudsToggle.isOn = SessionConfig.Instance.pointCloudCodec == "cwi0";
             CreatePanelUncompressedAudioToggle.isOn = SessionConfig.Instance.voiceCodec == "VR2a";
 
@@ -532,19 +538,17 @@ namespace VRT.Pilots.LoginManager
             { // Comes from another scene
               // Set status to online
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = connectedCol;
+                statusText.color = colorConnected;
                 FillSelfUserData();
-                UpdateSessions(JoinPanelSessionList);
-                UpdateScenarios();
-                Debug.Log("OrchestratorLogin: Coming from another Scene");
-
+                JoinPanel_UpdateSessions();
+           
                 OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), StatusPanelUserId.text);
             }
             else
             { // Enter for first time
               // Set status to offline
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = disconnectedCol;
+                statusText.color = colorDisconnecting;
                 state = State.Offline;
 
                 // Try to connect
@@ -564,11 +568,11 @@ namespace VRT.Pilots.LoginManager
             // Refresh Sessions
             if (state == State.Join)
             {
-                timer += Time.deltaTime;
-                if (timer >= refreshTimer)
+                JoinPanelRefreshTimer += Time.deltaTime;
+                if (JoinPanelRefreshTimer >= JoinPanelRefreshInterval)
                 {
                     GetSessions();
-                    timer = 0.0f;
+                    JoinPanelRefreshTimer = 0.0f;
                 }
             }
         }
@@ -778,9 +782,9 @@ namespace VRT.Pilots.LoginManager
                 SettingsPanelWebcamInfoGO.SetActive(true);
             }
             // Preview
-            SetUserRepresentationDescription((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
+            SettingsPanel_SetRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
             SettingsPanelSelfRepresentationPreview.ChangeRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value,
-                SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text);
+            SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text);
             SettingsPanelSelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
         }
 
@@ -800,9 +804,9 @@ namespace VRT.Pilots.LoginManager
                 InputField[] inputFields = FindObjectsOfType<InputField>();
                 if (inputFields != null)
                 {
-                    inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                    inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(EventSystem.current));  //if it's an input field, also set the text caret
                     inputFields[inputFields.Length - 1].caretWidth = 2;
-                    //system.SetSelectedGameObject(first.gameObject, new BaseEventData(system));
+                    //EventSystem.current.SetSelectedGameObject(first.gameObject, new BaseEventData(EventSystem.current));
                 }
             }
             catch { }
@@ -816,7 +820,7 @@ namespace VRT.Pilots.LoginManager
             {
                 try
                 {
-                    Selectable current = system.currentSelectedGameObject.GetComponent<Selectable>();
+                    Selectable current = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
                     if (current != null)
                     {
                         Selectable next = current.FindSelectableOnDown();
@@ -825,11 +829,11 @@ namespace VRT.Pilots.LoginManager
                             InputField inputfield = next.GetComponent<InputField>();
                             if (inputfield != null)
                             {
-                                inputfield.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                                inputfield.OnPointerClick(new PointerEventData(EventSystem.current));  //if it's an input field, also set the text caret
                                 inputfield.caretWidth = 2;
                             }
 
-                            system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
+                            EventSystem.current.SetSelectedGameObject(next.gameObject, new BaseEventData(EventSystem.current));
                         }
                         else
                         {
@@ -837,7 +841,7 @@ namespace VRT.Pilots.LoginManager
                             SelectFirstIF();
                         }
                     }
-                    //else Debug.Log("no selectable object selected in event system");
+                    //else Debug.Log("no selectable object selected in event EventSystem.current");
                 }
                 catch { }
             }
@@ -1028,7 +1032,7 @@ namespace VRT.Pilots.LoginManager
             if (pConnected)
             {
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = connectedCol;
+                statusText.color = colorConnected;
                 state = State.Online;
             }
             PanelChanger();
@@ -1047,7 +1051,7 @@ namespace VRT.Pilots.LoginManager
         private void OnConnecting()
         {
             statusText.text = OrchestratorController.orchestratorConnectionStatus.__CONNECTING__.ToString();
-            statusText.color = connectingCol;
+            statusText.color = colorConnecting;
         }
 
         private void OnDisconnect(bool pConnected)
@@ -1056,7 +1060,7 @@ namespace VRT.Pilots.LoginManager
             {
                 OnLogout(true);
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = disconnectedCol;
+                statusText.color = colorDisconnecting;
                 state = State.Offline;
             }
             PanelChanger();
@@ -1203,7 +1207,7 @@ namespace VRT.Pilots.LoginManager
             if (sessions != null)
             {
                 // update the list of available sessions
-                UpdateSessions(JoinPanelSessionList);
+                JoinPanel_UpdateSessions();
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
                     Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
@@ -1229,14 +1233,14 @@ namespace VRT.Pilots.LoginManager
             if (session != null)
             {
                 // update the list of available sessions
-                UpdateSessions(JoinPanelSessionList);
+                JoinPanel_UpdateSessions();
 
                 // Update the info in LobbyPanel
                 LobbyPanelSessionName.text = session.sessionName;
                 LobbyPanelSessionDescription.text = session.sessionDescription;
           
                 // Update the list of session users
-                UpdateUsersSession(LobbyPanelSessionUsers);
+                LobbyPanel_UpdateSessionUsers();
 
                 state = State.Lobby;
                 PanelChanger();
@@ -1250,7 +1254,7 @@ namespace VRT.Pilots.LoginManager
                 LobbyPanelSessionDescription.text = "";
                 LobbyPanelScenarioName.text = "";
                 LobbyPanelSessionNumUsers.text = "";
-                RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
+                _ClearScrollView(LobbyPanelSessionUsers.transform);
             }
         }
 
@@ -1262,7 +1266,7 @@ namespace VRT.Pilots.LoginManager
                 LobbyPanelSessionName.text = session.sessionName;
                 LobbyPanelSessionDescription.text = session.sessionDescription;
                 // Update the list of session users
-                UpdateUsersSession(LobbyPanelSessionUsers);
+                LobbyPanel_UpdateSessionUsers();
             }
             else
             {
@@ -1270,7 +1274,7 @@ namespace VRT.Pilots.LoginManager
                 LobbyPanelSessionDescription.text = "";
                 LobbyPanelScenarioName.text = "";
                 LobbyPanelSessionNumUsers.text = "";
-                RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
+                _ClearScrollView(LobbyPanelSessionUsers.transform);
             }
         }
         private void OnDeleteSessionHandler()
@@ -1330,7 +1334,7 @@ namespace VRT.Pilots.LoginManager
                 LobbyPanelSessionDescription.text = session.sessionDescription;
 
                 // Update the list of session users
-                UpdateUsersSession(LobbyPanelSessionUsers);
+                LobbyPanel_UpdateSessionUsers();
 
                 state = State.Lobby;
                 PanelChanger();
@@ -1341,7 +1345,7 @@ namespace VRT.Pilots.LoginManager
                 LobbyPanelSessionDescription.text = "";
                 LobbyPanelScenarioName.text = "";
                 LobbyPanelSessionNumUsers.text = "";
-                RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
+                _ClearScrollView(LobbyPanelSessionUsers.transform);
             }
         }
 
@@ -1356,7 +1360,7 @@ namespace VRT.Pilots.LoginManager
             LobbyPanelSessionDescription.text = "";
             LobbyPanelScenarioName.text = "";
             LobbyPanelSessionNumUsers.text = "";
-            RemoveComponentsFromList(LobbyPanelSessionUsers.transform);
+            _ClearScrollView(LobbyPanelSessionUsers.transform);
 
             state = State.Play;
             PanelChanger();

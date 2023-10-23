@@ -12420,7 +12420,7 @@ MonoBehaviour:
   JoinPanelSessionDescription: {fileID: 1983446077738297626}
   JoinPanelJoinButton: {fileID: 6457971033399391678}
   JoinPanelSessionList: {fileID: 6963007955771357401}
-  refreshTimer: 5
+  JoinPanelRefreshInterval: 5
   lobbyPanel: {fileID: 6457971032172637052}
   LobbyPanelSessionName: {fileID: 6963007955317777261}
   LobbyPanelSessionDescription: {fileID: 3039232443859429398}
@@ -12431,6 +12431,9 @@ MonoBehaviour:
   LobbyPanelSessionUsers: {fileID: 6963007956489862667}
   LobbyPanelUserRepresentationText: {fileID: 7890038468874615349}
   LobbyPanelUserRepresentationImage: {fileID: 6380644936749171119}
+  colorConnected: {r: 0.15, g: 0.78, b: 0.15, a: 1}
+  colorConnecting: {r: 0.85, g: 0.5, b: 0.2, a: 1}
+  colorDisconnecting: {r: 0.78, g: 0.15, b: 0.15, a: 1}
   MenuFont: {fileID: 12800000, guid: b30c1f4e6a7dd054d9c16454a93655f7, type: 3}
 --- !u!114 &555126172
 MonoBehaviour:
