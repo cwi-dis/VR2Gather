@@ -516,8 +516,14 @@ namespace VRT.Pilots.LoginManager
             LobbyPanelLeaveButton.onClick.AddListener(delegate { LeaveSession(); });
 
             // Dropdown listeners
-            SettingsPanelRepresentationDropdown.onValueChanged.AddListener(delegate { AllPanels_UpdateAfterStateChange(); });
-            SettingsPanelWebcamDropdown.onValueChanged.AddListener(delegate { AllPanels_UpdateAfterStateChange(); });
+            SettingsPanelRepresentationDropdown.onValueChanged.AddListener(delegate {
+                SettingsPanel_UpdateAfterRepresentationChange();
+                // xxxjack AllPanels_UpdateAfterStateChange();
+            });
+            SettingsPanelWebcamDropdown.onValueChanged.AddListener(delegate {
+                SettingsPanel_UpdateAfterRepresentationChange();
+                // xxxjack AllPanels_UpdateAfterStateChange();
+            });
             SettingsPanelMicrophoneDropdown.onValueChanged.AddListener(delegate {
                 SettingsPanelSelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
             });
@@ -794,9 +800,13 @@ namespace VRT.Pilots.LoginManager
             }
             // Preview
             SettingsPanel_SetRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
-            SettingsPanelSelfRepresentationPreview.ChangeRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value,
-            SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text);
-            SettingsPanelSelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
+            SettingsPanelSelfRepresentationPreview.ChangeRepresentation(
+                (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
+                SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text
+                );
+            SettingsPanelSelfRepresentationPreview.ChangeMicrophone(
+                SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
+                );
         }
 
         private void OnDestroy()
