@@ -280,7 +280,7 @@ namespace VRT.Pilots.LoginManager
             Debug.Log($"xxxjack OrchestratorLogin: UpdateUsersSession: {sessionUsers.Length} users in session");
             // We may be able to continue auto-starting
             if (VRTConfig.Instance.AutoStart != null)
-                Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
         }
 
         private void JoinPanel_UpdateSessions()
@@ -497,30 +497,30 @@ namespace VRT.Pilots.LoginManager
             SettingsPanel_UpdateMicrophones();
 
             // Buttons listeners
-            developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
-            StatusPanelStartDeveloperSceneButton.onClick.AddListener(delegate { StartDeveloperSession(); });
+            developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeToggleClicked(); });
+            StatusPanelStartDeveloperSceneButton.onClick.AddListener(delegate { StartDeveloperSceneButtonPressed(); });
             LoginPanelLoginButton.onClick.AddListener(delegate { Login(); });
             HomePanelLogoutButton.onClick.AddListener(delegate { Logout(); });
-            HomePanelPlayButton.onClick.AddListener(delegate { StateButton(State.Play); });
+            HomePanelPlayButton.onClick.AddListener(delegate { ChangeState(State.Play); });
             HomePanelSettingsButton.onClick.AddListener(delegate {
-                FillSelfUserData();
-                StateButton(State.Config);
+                AllPanels_UpdateUserData();
+                ChangeState(State.Config);
             });
-            SettingsPanelSaveButton.onClick.AddListener(delegate { SaveConfigButton(); });
-            SettingsPanelBackButton.onClick.AddListener(delegate { ExitConfigButton(); });
-            PlayPanelBackButton.onClick.AddListener(delegate { StateButton(State.LoggedIn); });
-            PlayPanelCreateButton.onClick.AddListener(delegate { StateButton(State.Create); });
-            PlayPanelJoinButton.onClick.AddListener(delegate { StateButton(State.Join); });
-            CreatePanelBackButton.onClick.AddListener(delegate { StateButton(State.Play); });
+            SettingsPanelSaveButton.onClick.AddListener(delegate { SettingsPanel_SaveButtonPressed(); });
+            SettingsPanelBackButton.onClick.AddListener(delegate { SettingsPanel_BackButtonPressed(); });
+            PlayPanelBackButton.onClick.AddListener(delegate { ChangeState(State.LoggedIn); });
+            PlayPanelCreateButton.onClick.AddListener(delegate { ChangeState(State.Create); });
+            PlayPanelJoinButton.onClick.AddListener(delegate { ChangeState(State.Join); });
+            CreatePanelBackButton.onClick.AddListener(delegate { ChangeState(State.Play); });
             CreatePanelCreateButton.onClick.AddListener(delegate { AddSession(); });
-            JoinPanelBackButton.onClick.AddListener(delegate { StateButton(State.Play); });
+            JoinPanelBackButton.onClick.AddListener(delegate { ChangeState(State.Play); });
             JoinPanelJoinButton.onClick.AddListener(delegate { JoinSession(); });
-            LobbyPanelStartButton.onClick.AddListener(delegate { ReadyButton(); });
+            LobbyPanelStartButton.onClick.AddListener(delegate { LobbyPanel_StartButtonPressed(); });
             LobbyPanelLeaveButton.onClick.AddListener(delegate { LeaveSession(); });
 
             // Dropdown listeners
-            SettingsPanelRepresentationDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
-            SettingsPanelWebcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
+            SettingsPanelRepresentationDropdown.onValueChanged.AddListener(delegate { AllPanels_UpdateAfterStateChange(); });
+            SettingsPanelWebcamDropdown.onValueChanged.AddListener(delegate { AllPanels_UpdateAfterStateChange(); });
             SettingsPanelMicrophoneDropdown.onValueChanged.AddListener(delegate {
                 SettingsPanelSelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
             });
@@ -539,7 +539,7 @@ namespace VRT.Pilots.LoginManager
               // Set status to online
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
                 statusText.color = colorConnected;
-                FillSelfUserData();
+                AllPanels_UpdateUserData();
                 JoinPanel_UpdateSessions();
            
                 OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), StatusPanelUserId.text);
@@ -577,7 +577,11 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        void AutoStateUpdate()
+        /// <summary>
+        /// This method implements AutoStart. It is called whenever something in the state has changed, so that we can
+        /// potentially get a bit further with autostart.
+        /// </summary>
+        private void AutoStart_StateUpdate()
         {
             VRTConfig._AutoStart config = VRTConfig.Instance.AutoStart;
             if (config == null) return;
@@ -591,14 +595,14 @@ namespace VRT.Pilots.LoginManager
                 {
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting");
                     autoState = AutoState.DidCreate;
-                    StateButton(State.Create);
+                    ChangeState(State.Create);
 
                 }
                 if (config.autoJoin)
                 {
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoJoin: starting");
                     autoState = AutoState.DidJoin;
-                    StateButton(State.Join);
+                    ChangeState(State.Join);
                 }
             }
             if (state == State.Create && autoState == AutoState.DidCreate)
@@ -656,7 +660,7 @@ namespace VRT.Pilots.LoginManager
                 if (LobbyPanelSessionNumUsers.text == config.autoStartWith.ToString())
                 {
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting with {config.autoStartWith} users");
-                    Invoke(nameof(ReadyButton), config.autoDelay);
+                    Invoke(nameof(LobbyPanel_StartButtonPressed), config.autoDelay);
                     autoState = AutoState.Done;
                 }
             }
@@ -677,7 +681,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        public void FillSelfUserData()
+        public void AllPanels_UpdateUserData()
         {
             if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null)
             {
@@ -715,7 +719,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        public void PanelChanger()
+        private void AllPanels_UpdateAfterStateChange()
         {
             // Get the user name (if we have one) it is used to initialize various fields.
             string uname = OrchestratorController.Instance?.SelfUser?.userName;
@@ -744,7 +748,7 @@ namespace VRT.Pilots.LoginManager
                 case State.Config:
                    
                     // Behaviour
-                    SelfRepresentationChanger();
+                    SettingsPanel_UpdateAfterRepresentationChange();
                     break;
                 case State.Play:
                     
@@ -771,7 +775,7 @@ namespace VRT.Pilots.LoginManager
             SelectFirstIF();
         }
 
-        public void SelfRepresentationChanger()
+        public void SettingsPanel_UpdateAfterRepresentationChange()
         {
             // Dropdown Logic
             SettingsPanelWebcamInfoGO.SetActive(false);
@@ -851,44 +855,44 @@ namespace VRT.Pilots.LoginManager
 
 #region Buttons
 
-        private void DeveloperModeButtonClicked()
+        private void DeveloperModeToggleClicked()
         {
             developerMode = developerModeButton.isOn;
             PlayerPrefs.SetInt("developerMode", developerMode?1:0);
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
         }
 
-        private void StartDeveloperSession()
+        private void StartDeveloperSceneButtonPressed()
         {
             PilotController.LoadScene("SoloPlayground");
         }
 
-        public void SaveConfigButton()
+        public void SettingsPanel_SaveButtonPressed()
         {
             SettingsPanelSelfRepresentationPreview.StopMicrophone();
             UpdateUserData();
             state = State.LoggedIn;
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
         }
 
-        public void ExitConfigButton()
+        public void SettingsPanel_BackButtonPressed()
         {
             SettingsPanelSelfRepresentationPreview.StopMicrophone();
             state = State.LoggedIn;
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
         }
 
-        public void StateButton(State _state)
+        public void ChangeState(State _state)
         {
             state = _state;
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
             if (state == State.Config)
             {
                 UpdateUserData();
             }
         }
 
-        public void ReadyButton()
+        public void LobbyPanel_StartButtonPressed()
         {
             SessionConfig cfg = SessionConfig.Instance;
             cfg.scenarioName = OrchestratorController.Instance.CurrentScenario.scenarioName;
@@ -1035,7 +1039,7 @@ namespace VRT.Pilots.LoginManager
                 statusText.color = colorConnected;
                 state = State.Online;
             }
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
             if (pConnected && autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoLogin)
             {
                 if (
@@ -1063,7 +1067,7 @@ namespace VRT.Pilots.LoginManager
                 statusText.color = colorDisconnecting;
                 state = State.Offline;
             }
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
         }
 
         private void OnGetOrchestratorVersionHandler(string pVersion)
@@ -1144,7 +1148,7 @@ namespace VRT.Pilots.LoginManager
                 state = State.Online;
             }
 
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
             if (userLoggedSucessfully
                 && autoState == AutoState.DidLogIn
                 && VRTConfig.Instance.AutoStart != null
@@ -1157,8 +1161,8 @@ namespace VRT.Pilots.LoginManager
                     ) return;
                 if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
                 autoState = AutoState.DidPlay;
-                StateButton(State.Play);
-                Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                ChangeState(State.Play);
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 
@@ -1176,7 +1180,7 @@ namespace VRT.Pilots.LoginManager
                 HomePanelUserName.text = "";
                 state = State.Online;
             }
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
         }
 
 #endregion
@@ -1210,7 +1214,7 @@ namespace VRT.Pilots.LoginManager
                 JoinPanel_UpdateSessions();
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
-                    Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 
@@ -1243,10 +1247,10 @@ namespace VRT.Pilots.LoginManager
                 LobbyPanel_UpdateSessionUsers();
 
                 state = State.Lobby;
-                PanelChanger();
+                AllPanels_UpdateAfterStateChange();
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
-                    Invoke(nameof(AutoStateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
             }
             else
             {
@@ -1337,7 +1341,7 @@ namespace VRT.Pilots.LoginManager
                 LobbyPanel_UpdateSessionUsers();
 
                 state = State.Lobby;
-                PanelChanger();
+                AllPanels_UpdateAfterStateChange();
             }
             else
             {
@@ -1363,7 +1367,7 @@ namespace VRT.Pilots.LoginManager
             _ClearScrollView(LobbyPanelSessionUsers.transform);
 
             state = State.Play;
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
         }
 
         private void OnUserJoinedSessionHandler(string userID)
