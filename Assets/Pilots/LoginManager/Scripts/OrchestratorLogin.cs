@@ -313,7 +313,7 @@ namespace VRT.Pilots.LoginManager
                         JoinPanelSessionDropdown.value = i;
                 }
             }
-            SessionSelectionChanged();
+            JoinPanel_SessionSelectionChanged();
         }
 
         private void CreatePanel_UpdateScenarios()
@@ -526,7 +526,7 @@ namespace VRT.Pilots.LoginManager
             });
             CreatePanelScenarioDropdown.onValueChanged.AddListener(delegate { CreatePanel_ScenarioSelectionChanged(); });
 
-            JoinPanelSessionDropdown.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
+            JoinPanelSessionDropdown.onValueChanged.AddListener(delegate { JoinPanel_SessionSelectionChanged(); });
 
             InitialiseControllerEvents();
 
@@ -563,7 +563,7 @@ namespace VRT.Pilots.LoginManager
             if (SettingsPanelVUMeter && SettingsPanelSelfRepresentationPreview)
                 SettingsPanelVUMeter.sizeDelta = new Vector2(355 * Mathf.Min(1, SettingsPanelSelfRepresentationPreview.MicrophoneLevel), 20);
 
-            TabShortcut();
+            _ImplementTabShortcut();
           
             // Refresh Sessions
             if (state == State.Join)
@@ -617,11 +617,11 @@ namespace VRT.Pilots.LoginManager
                     // xxxjack I don't understand the intended logic behind the toggles. But turning everything
                     // on and then simulating a button callback works.
                     
-                    SetProtocol(config.sessionTransportProtocol);
+                    CreatePanel_ProtocolChanged(config.sessionTransportProtocol);
                 }
                 else
                 {
-                    SetProtocol("socketio");
+                    CreatePanel_ProtocolChanged("socketio");
                 }
                 autoState = AutoState.DidPartialCreation;
             }
@@ -739,7 +739,7 @@ namespace VRT.Pilots.LoginManager
                 case State.Offline:
                     break;
                 case State.Online:
-                    CheckRememberMe();
+                    LoginPanel_UpdateRememberMe();
                     break;
                 case State.LoggedIn:
                     HomePanelUserName.text = uname;
@@ -772,7 +772,7 @@ namespace VRT.Pilots.LoginManager
                 default:
                     break;
             }
-            SelectFirstIF();
+            _SelectFirstIInputField();
         }
 
         public void SettingsPanel_UpdateAfterRepresentationChange()
@@ -801,7 +801,8 @@ namespace VRT.Pilots.LoginManager
 
 #region Input
 
-        void SelectFirstIF()
+        // Helper method to select first input field
+        private void _SelectFirstIInputField()
         {
             try
             {
@@ -816,7 +817,8 @@ namespace VRT.Pilots.LoginManager
             catch { }
         }
 
-        void TabShortcut()
+        // Helper method to use TAB to navitage between input fields.
+        private void _ImplementTabShortcut()
         {
             if (
             Keyboard.current.tabKey.wasPressedThisFrame
@@ -842,7 +844,7 @@ namespace VRT.Pilots.LoginManager
                         else
                         {
                             // Select the first IF because no more elements exists in the list
-                            SelectFirstIF();
+                            _SelectFirstIInputField();
                         }
                     }
                     //else Debug.Log("no selectable object selected in event EventSystem.current");
@@ -910,8 +912,10 @@ namespace VRT.Pilots.LoginManager
 #region Toggles 
 
       
-
-        public void SetCompression()
+        /// <summary>
+        /// Should be called whenever eith audio or pointcloud compression toggle has changed value.
+        /// </summary>
+        public void CreatePanel_UncompressedChanged()
         {
             if (CreatePanelUncompressedPointcloudsToggle.isOn)
             {
@@ -931,7 +935,11 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        public void SetProtocol(string protoString)
+        /// <summary>
+        /// Should be called when the protocol dropdown has changed value, or to force a specific protocol value.
+        /// </summary>
+        /// <param name="protoString"></param>
+        public void CreatePanel_ProtocolChanged(string protoString)
         {
             if (string.IsNullOrEmpty(protoString))
             {
@@ -965,21 +973,20 @@ namespace VRT.Pilots.LoginManager
         // Subscribe to Orchestrator Wrapper Events
         private void InitialiseControllerEvents()
         {
-            OrchestratorController.Instance.OnConnectionEvent += OnConnect;
-            OrchestratorController.Instance.OnConnectingEvent += OnConnecting;
-            OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
-            OrchestratorController.Instance.OnGetOrchestratorVersionEvent += OnGetOrchestratorVersionHandler;
-            OrchestratorController.Instance.OnLoginEvent += OnLogin;
-            OrchestratorController.Instance.OnLogoutEvent += OnLogout;
-            OrchestratorController.Instance.OnGetNTPTimeEvent += OnGetNTPTimeResponse;
-            OrchestratorController.Instance.OnSessionsEvent += OnSessionsHandler;
-            OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
-            OrchestratorController.Instance.OnSessionInfoEvent += OnSessionInfoHandler;
-            OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
-            OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
-            OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
-            OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
-            OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
+            OrchestratorController.Instance.OnConnectionEvent += UpdateStateOnConnectionEvent;
+            OrchestratorController.Instance.OnConnectingEvent += UpdateStateOnConnectingEvent;
+            OrchestratorController.Instance.OnGetOrchestratorVersionEvent += UpdateStateOnGetOrchestratorVersionEvent;
+            OrchestratorController.Instance.OnLoginEvent += UpdateStateOnLogin;
+            OrchestratorController.Instance.OnLogoutEvent += UpdateStateOnLogout;
+            OrchestratorController.Instance.OnGetNTPTimeEvent += UpdateStateOnGetNTPTime;
+            OrchestratorController.Instance.OnSessionsEvent += UpdateStateOnGetSessions;
+            OrchestratorController.Instance.OnAddSessionEvent += UpdateStateOnAddSession;
+            OrchestratorController.Instance.OnSessionInfoEvent += UpdateStateOnSessionInfoEvent;
+            OrchestratorController.Instance.OnJoinSessionEvent += UpdateStateOnJoinSession;
+            OrchestratorController.Instance.OnLeaveSessionEvent += UpdateStateOnLeaveSession;
+            OrchestratorController.Instance.OnDeleteSessionEvent += UpdateStateOnOnDeleteSessionEvent;
+            OrchestratorController.Instance.OnUserJoinSessionEvent += UpdateStateOnUserJoinedSessionEvent;
+            OrchestratorController.Instance.OnUserLeaveSessionEvent += UpdateStateOnUserLeftSessionEvent;
 
             OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
@@ -990,21 +997,20 @@ namespace VRT.Pilots.LoginManager
         // Un-Subscribe to Orchestrator Wrapper Events
         private void TerminateControllerEvents()
         {
-            OrchestratorController.Instance.OnConnectionEvent -= OnConnect;
-            OrchestratorController.Instance.OnConnectingEvent -= OnConnecting;
-            OrchestratorController.Instance.OnConnectionEvent -= OnDisconnect;
-            OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= OnGetOrchestratorVersionHandler;
-            OrchestratorController.Instance.OnLoginEvent -= OnLogin;
-            OrchestratorController.Instance.OnLogoutEvent -= OnLogout;
-            OrchestratorController.Instance.OnGetNTPTimeEvent -= OnGetNTPTimeResponse;
-            OrchestratorController.Instance.OnSessionsEvent -= OnSessionsHandler;
-            OrchestratorController.Instance.OnAddSessionEvent -= OnAddSessionHandler;
-            OrchestratorController.Instance.OnSessionInfoEvent -= OnSessionInfoHandler;
-            OrchestratorController.Instance.OnJoinSessionEvent -= OnJoinSessionHandler;
-            OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
-            OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
-            OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
-            OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
+            OrchestratorController.Instance.OnConnectionEvent -= UpdateStateOnConnectionEvent;
+            OrchestratorController.Instance.OnConnectingEvent -= UpdateStateOnConnectingEvent;
+            OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= UpdateStateOnGetOrchestratorVersionEvent;
+            OrchestratorController.Instance.OnLoginEvent -= UpdateStateOnLogin;
+            OrchestratorController.Instance.OnLogoutEvent -= UpdateStateOnLogout;
+            OrchestratorController.Instance.OnGetNTPTimeEvent -= UpdateStateOnGetNTPTime;
+            OrchestratorController.Instance.OnSessionsEvent -= UpdateStateOnGetSessions;
+            OrchestratorController.Instance.OnAddSessionEvent -= UpdateStateOnAddSession;
+            OrchestratorController.Instance.OnSessionInfoEvent -= UpdateStateOnSessionInfoEvent;
+            OrchestratorController.Instance.OnJoinSessionEvent -= UpdateStateOnJoinSession;
+            OrchestratorController.Instance.OnLeaveSessionEvent -= UpdateStateOnLeaveSession;
+            OrchestratorController.Instance.OnDeleteSessionEvent -= UpdateStateOnOnDeleteSessionEvent;
+            OrchestratorController.Instance.OnUserJoinSessionEvent -= UpdateStateOnUserJoinedSessionEvent;
+            OrchestratorController.Instance.OnUserLeaveSessionEvent -= UpdateStateOnUserLeftSessionEvent;
 
             OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
@@ -1018,7 +1024,7 @@ namespace VRT.Pilots.LoginManager
 
 #region Socket.io connect
 
-        public void SocketConnect()
+        private void SocketConnect()
         {
             switch (OrchestratorController.Instance.ConnectionStatus)
             {
@@ -1031,13 +1037,20 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void OnConnect(bool pConnected)
+        private void UpdateStateOnConnectionEvent(bool pConnected)
         {
             if (pConnected)
             {
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
                 statusText.color = colorConnected;
                 state = State.Online;
+            }
+            else
+            {
+                UpdateStateOnLogout(true);
+                statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+                statusText.color = colorDisconnecting;
+                state = State.Offline;
             }
             AllPanels_UpdateAfterStateChange();
             if (pConnected && autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoLogin)
@@ -1052,29 +1065,17 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void OnConnecting()
+        private void UpdateStateOnConnectingEvent()
         {
             statusText.text = OrchestratorController.orchestratorConnectionStatus.__CONNECTING__.ToString();
             statusText.color = colorConnecting;
         }
 
-        private void OnDisconnect(bool pConnected)
-        {
-            if (!pConnected)
-            {
-                OnLogout(true);
-                statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = colorDisconnecting;
-                state = State.Offline;
-            }
-            AllPanels_UpdateAfterStateChange();
-        }
-
-        private void OnGetOrchestratorVersionHandler(string pVersion)
+        private void UpdateStateOnGetOrchestratorVersionEvent(string pVersion)
         {
             Debug.Log("Orchestration Service: " + pVersion);
             StatusPanelOrchestratorVersion.text = pVersion;
-            OrchestratorController.Instance.GetNTPTime();
+            GetNTPTime();
         }
 
 #endregion
@@ -1103,8 +1104,9 @@ namespace VRT.Pilots.LoginManager
             }
             OrchestratorController.Instance.Login(LoginPanelUserName.text, "");
         }
+
         // Check saved used credentials.
-        private void CheckRememberMe()
+        private void LoginPanel_UpdateRememberMe()
         {
             if (PlayerPrefs.HasKey("userNameLoginIF") && PlayerPrefs.HasKey("userPasswordLoginIF"))
             {
@@ -1115,7 +1117,7 @@ namespace VRT.Pilots.LoginManager
                 LoginPanelRememberMeToggle.isOn = false;
         }
 
-        private void OnLogin(bool userLoggedSucessfully)
+        private void UpdateStateOnLogin(bool userLoggedSucessfully)
         {
             if (userLoggedSucessfully)
             {
@@ -1171,7 +1173,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.Logout();
         }
 
-        private void OnLogout(bool userLogoutSucessfully)
+        private void UpdateStateOnLogout(bool userLogoutSucessfully)
         {
             if (userLogoutSucessfully)
             {
@@ -1187,7 +1189,12 @@ namespace VRT.Pilots.LoginManager
 
 #region NTP clock
 
-        private void OnGetNTPTimeResponse(NtpClock ntpTime)
+        private void GetNTPTime()
+        {
+            OrchestratorController.Instance.GetNTPTime();
+        }
+
+        private void UpdateStateOnGetNTPTime(NtpClock ntpTime)
         {
             double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
             if (developerMode) Debug.Log("OrchestratorLogin: OnGetNTPTimeResponse: Difference: " + difference);
@@ -1206,7 +1213,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.GetSessions();
         }
 
-        private void OnSessionsHandler(Session[] sessions)
+        private void UpdateStateOnGetSessions(Session[] sessions)
         {
             if (sessions != null)
             {
@@ -1231,7 +1238,7 @@ namespace VRT.Pilots.LoginManager
                                                         protocol);
         }
 
-        private void OnAddSessionHandler(Session session)
+        private void UpdateStateOnAddSession(Session session)
         {
             // Is equal to AddSession + Join Session, except that session is returned (not on JoinSession)
             if (session != null)
@@ -1262,7 +1269,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void OnSessionInfoHandler(Session session)
+        private void UpdateStateOnSessionInfoEvent(Session session)
         {
             if (session != null)
             {
@@ -1281,12 +1288,12 @@ namespace VRT.Pilots.LoginManager
                 _ClearScrollView(LobbyPanelSessionUsers.transform);
             }
         }
-        private void OnDeleteSessionHandler()
+        private void UpdateStateOnOnDeleteSessionEvent()
         {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnDeleteSessionHandler: Session deleted");
+            if (developerMode) Debug.Log("OrchestratorLogin: UpdateStateOnOnDeleteSessionEvent: Session deleted");
         }
 
-        private void SessionSelectionChanged()
+        private void JoinPanel_SessionSelectionChanged()
         {
             var idx = JoinPanelSessionDropdown.value;
             string description = "";
@@ -1329,7 +1336,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void OnJoinSessionHandler(Session session)
+        private void UpdateStateOnJoinSession(Session session)
         {
             if (session != null)
             {
@@ -1358,7 +1365,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.LeaveSession();
         }
 
-        private void OnLeaveSessionHandler()
+        private void UpdateStateOnLeaveSession()
         {
             LobbyPanelSessionName.text = "";
             LobbyPanelSessionDescription.text = "";
@@ -1370,11 +1377,11 @@ namespace VRT.Pilots.LoginManager
             AllPanels_UpdateAfterStateChange();
         }
 
-        private void OnUserJoinedSessionHandler(string userID)
+        private void UpdateStateOnUserJoinedSessionEvent(string userID)
         {
         }
 
-        private void OnUserLeftSessionHandler(string userID)
+        private void UpdateStateOnUserLeftSessionEvent(string userID)
         {
         }
 
