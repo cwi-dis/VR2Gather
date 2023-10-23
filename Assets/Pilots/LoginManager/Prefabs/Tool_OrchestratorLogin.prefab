@@ -12389,30 +12389,30 @@ MonoBehaviour:
   HomePanelPlayButton: {fileID: 6439520597403270058}
   HomePanelSettingsButton: {fileID: 4324839371827238586}
   settingsPanel: {fileID: 6457971033183718167}
-  webcamInfoGO: {fileID: 5916575847965431227}
-  tcpPointcloudURLConfigIF: {fileID: 786090048598621773}
-  tcpAudioURLConfigIF: {fileID: 3096292403496545405}
-  representationTypeConfigDropdown: {fileID: 845156337131251218}
-  webcamDropdown: {fileID: 5916575848221921211}
-  microphoneDropdown: {fileID: 5916575848051990048}
-  VUMeter: {fileID: 861818860071689431}
+  SettingsPanelWebcamInfoGO: {fileID: 5916575847965431227}
+  SettingsPanelTCPPointcloudURLField: {fileID: 786090048598621773}
+  SettingsPanelTCPAudioURLField: {fileID: 3096292403496545405}
+  SettingsPanelRepresentationDropdown: {fileID: 845156337131251218}
+  SettingsPanelWebcamDropdown: {fileID: 5916575848221921211}
+  SettingsPanelMicrophoneDropdown: {fileID: 5916575848051990048}
+  SettingsPanelVUMeter: {fileID: 861818860071689431}
   SettingsPanelSaveButton: {fileID: 985680599381232975}
   SettingsPanelBackButton: {fileID: 6535750279288028468}
-  selfRepresentationPreview: {fileID: 300757396}
-  selfRepresentationDescription: {fileID: 3017215135372394653}
+  SettingsPanelSelfRepresentationPreview: {fileID: 300757396}
+  SettingsPanelSelfRepresentationDescription: {fileID: 3017215135372394653}
   playPanel: {fileID: 5546505954573061395}
   PlayPanelBackButton: {fileID: 8203536086151598511}
   PlayPanelCreateButton: {fileID: 7582815140763733459}
   PlayPanelJoinButton: {fileID: 8506713961127630960}
   createPanel: {fileID: 6457971033769258985}
   CreatePanelBackButton: {fileID: 7869143600626671204}
-  sessionNameIF: {fileID: 6457971033247036048}
-  sessionDescriptionIF: {fileID: 6457971033459605558}
-  scenarioIdDrop: {fileID: 6457971032236005372}
-  scenarioDescription: {fileID: 4530608513733183371}
-  sessionProtocolDrop: {fileID: 5563265398217327997}
-  uncompressedPointcloudsToggle: {fileID: 387389570}
-  uncompressedAudioToggle: {fileID: 694705610}
+  CreatePanelSessionNameField: {fileID: 6457971033247036048}
+  CreatePanelSessionDescriptionField: {fileID: 6457971033459605558}
+  CreatePanelScenarioDropdown: {fileID: 6457971032236005372}
+  CreatePanelScenarioDescription: {fileID: 4530608513733183371}
+  CreatePanelSessionProtocolDropdown: {fileID: 5563265398217327997}
+  CreatePanelUncompressedPointcloudsToggle: {fileID: 387389570}
+  CreatePanelUncompressedAudioToggle: {fileID: 694705610}
   CreatePanelCreateButton: {fileID: 6457971033556758724}
   joinPanel: {fileID: 6457971032356984462}
   JoinPanelBackButton: {fileID: 2235418248480033197}

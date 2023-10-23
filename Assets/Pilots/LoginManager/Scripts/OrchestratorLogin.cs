@@ -69,17 +69,17 @@ namespace VRT.Pilots.LoginManager
 
         [Header("SettingsPanel")]
         [SerializeField][FormerlySerializedAs("configPanel")] private GameObject settingsPanel = null;
-        [SerializeField] private GameObject webcamInfoGO = null;
-        [SerializeField] private InputField tcpPointcloudURLConfigIF = null;
-        [SerializeField] private InputField tcpAudioURLConfigIF = null;
-        [SerializeField] private Dropdown representationTypeConfigDropdown = null;
-        [SerializeField] private Dropdown webcamDropdown = null;
-        [SerializeField] private Dropdown microphoneDropdown = null;
-        [SerializeField] private RectTransform VUMeter = null;
+        [SerializeField][FormerlySerializedAs("webcamInfoGO")] private GameObject SettingsPanelWebcamInfoGO = null;
+        [SerializeField][FormerlySerializedAs("tcpPointcloudURLConfigIF")] private InputField SettingsPanelTCPPointcloudURLField = null;
+        [SerializeField][FormerlySerializedAs("tcpAudioURLConfigIF")] private InputField SettingsPanelTCPAudioURLField = null;
+        [SerializeField][FormerlySerializedAs("representationTypeConfigDropdown")] private Dropdown SettingsPanelRepresentationDropdown = null;
+        [SerializeField][FormerlySerializedAs("webcamDropdown")] private Dropdown SettingsPanelWebcamDropdown = null;
+        [SerializeField][FormerlySerializedAs("microphoneDropdown")] private Dropdown SettingsPanelMicrophoneDropdown = null;
+        [SerializeField][FormerlySerializedAs("VUMeter")] private RectTransform SettingsPanelVUMeter = null;
         [SerializeField][FormerlySerializedAs("saveConfigButton")] private Button SettingsPanelSaveButton = null;
         [SerializeField][FormerlySerializedAs("exitConfigButton")] private Button SettingsPanelBackButton = null;
-        [SerializeField] private SelfRepresentationPreview selfRepresentationPreview = null;
-        [SerializeField] private Text selfRepresentationDescription = null;
+        [SerializeField][FormerlySerializedAs("selfRepresentationPreview")] private SelfRepresentationPreview SettingsPanelSelfRepresentationPreview = null;
+        [SerializeField][FormerlySerializedAs("selfRepresentationDescription")] private Text SettingsPanelSelfRepresentationDescription = null;
 
         [Header("PlayPanel")]
         [SerializeField] private GameObject playPanel = null;
@@ -90,13 +90,13 @@ namespace VRT.Pilots.LoginManager
         [Header("CreatePanel")]
         [SerializeField] private GameObject createPanel = null;
         [SerializeField][FormerlySerializedAs("backCreateButton")] private Button CreatePanelBackButton = null;
-        [SerializeField] private InputField sessionNameIF = null;
-        [SerializeField] private InputField sessionDescriptionIF = null;
-        [SerializeField] private Dropdown scenarioIdDrop = null;
-        [SerializeField] private Text scenarioDescription = null;
-        [SerializeField] private Dropdown sessionProtocolDrop = null;
-        [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
-        [SerializeField] private Toggle uncompressedAudioToggle = null;
+        [SerializeField][FormerlySerializedAs("sessionNameIF")] private InputField CreatePanelSessionNameField = null;
+        [SerializeField][FormerlySerializedAs("sessionDescriptionIF")] private InputField CreatePanelSessionDescriptionField = null;
+        [SerializeField][FormerlySerializedAs("scenarioIdDrop")] private Dropdown CreatePanelScenarioDropdown = null;
+        [SerializeField][FormerlySerializedAs("scenarioDescription")] private Text CreatePanelScenarioDescription = null;
+        [SerializeField][FormerlySerializedAs("sessionProtocolDrop")] private Dropdown CreatePanelSessionProtocolDropdown = null;
+        [SerializeField][FormerlySerializedAs("uncompressedPointcloudsToggle")] private Toggle CreatePanelUncompressedPointcloudsToggle = null;
+        [SerializeField][FormerlySerializedAs("uncompressedAudioToggle")] private Toggle CreatePanelUncompressedAudioToggle = null;
         [SerializeField][FormerlySerializedAs("doneCreateButton")] private Button CreatePanelCreateButton = null;
 
         [Header("JoinPanel")]
@@ -316,20 +316,20 @@ namespace VRT.Pilots.LoginManager
         private void UpdateScenarios()
         {
             // update the dropdown
-            scenarioIdDrop.ClearOptions();
+            CreatePanelScenarioDropdown.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
             foreach (var sc in ScenarioRegistry.Instance.Scenarios)
             {
                 options.Add(new Dropdown.OptionData(sc.scenarioName));
             }
 
-            scenarioIdDrop.AddOptions(options);
+            CreatePanelScenarioDropdown.AddOptions(options);
             ScenarioSelectionChanged();
         }
 
         private void ScenarioSelectionChanged()
         {
-            var idx = scenarioIdDrop.value;
+            var idx = CreatePanelScenarioDropdown.value;
             bool ok = false;
             string message = "(no scenario selected)";
             var scenarios = ScenarioRegistry.Instance.Scenarios;
@@ -344,9 +344,9 @@ namespace VRT.Pilots.LoginManager
 
                 }
             }
-            if (scenarioDescription != null)
+            if (CreatePanelScenarioDescription != null)
             {
-                scenarioDescription.text = message;
+                CreatePanelScenarioDescription.text = message;
             }
             CreatePanelCreateButton.interactable = ok;
         }
@@ -364,14 +364,14 @@ namespace VRT.Pilots.LoginManager
 
         private void UpdateProtocols()
         {
-            sessionProtocolDrop.ClearOptions();
+            CreatePanelSessionProtocolDropdown.ClearOptions();
             List<string> names = new List<string>();
             foreach(string protocolName in Enum.GetNames(typeof(SessionConfig.ProtocolType))) {
                 if(protocolName == "None") continue;
                 names.Add(protocolName);
             }
-            sessionProtocolDrop.AddOptions(names);
-            sessionProtocolDrop.value = 0;
+            CreatePanelSessionProtocolDropdown.AddOptions(names);
+            CreatePanelSessionProtocolDropdown.value = 0;
         }
 
         private void UpdateWebcams(Dropdown dd)
@@ -432,22 +432,22 @@ namespace VRT.Pilots.LoginManager
             switch (_representationType)
             {
                 case UserRepresentationType.NoRepresentation:
-                    selfRepresentationDescription.text = "No representation, no audio. The user can only watch.";
+                    SettingsPanelSelfRepresentationDescription.text = "No representation, no audio. The user can only watch.";
                     break;
                 case UserRepresentationType.VideoAvatar:
-                    selfRepresentationDescription.text = "Avatar with video window from your camera.";
+                    SettingsPanelSelfRepresentationDescription.text = "Avatar with video window from your camera.";
                     break;
                 case UserRepresentationType.SimpleAvatar:
-                    selfRepresentationDescription.text = "3D Synthetic Avatar.";
+                    SettingsPanelSelfRepresentationDescription.text = "3D Synthetic Avatar.";
                     break;
                 case UserRepresentationType.PointCloud:
-                    selfRepresentationDescription.text = "Realistic point cloud user representation, captured live.";
+                    SettingsPanelSelfRepresentationDescription.text = "Realistic point cloud user representation, captured live.";
                     break;
                 case UserRepresentationType.AudioOnly:
-                    selfRepresentationDescription.text = "No visual representation, only audio communication.";
+                    SettingsPanelSelfRepresentationDescription.text = "No visual representation, only audio communication.";
                     break;
                 case UserRepresentationType.NoRepresentationCamera:
-                    selfRepresentationDescription.text = "Local video recorder.";
+                    SettingsPanelSelfRepresentationDescription.text = "Local video recorder.";
                     break;
                 default:
                     Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {_representationType}");
@@ -486,9 +486,9 @@ namespace VRT.Pilots.LoginManager
             UpdateScenarios();
 
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
-            UpdateRepresentations(representationTypeConfigDropdown);
-            UpdateWebcams(webcamDropdown);
-            Updatemicrophones(microphoneDropdown);
+            UpdateRepresentations(SettingsPanelRepresentationDropdown);
+            UpdateWebcams(SettingsPanelWebcamDropdown);
+            Updatemicrophones(SettingsPanelMicrophoneDropdown);
 
             // Buttons listeners
             developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
@@ -513,20 +513,20 @@ namespace VRT.Pilots.LoginManager
             LobbyPanelLeaveButton.onClick.AddListener(delegate { LeaveSession(); });
 
             // Dropdown listeners
-            representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
-            webcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
-            microphoneDropdown.onValueChanged.AddListener(delegate {
-                selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
+            SettingsPanelRepresentationDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
+            SettingsPanelWebcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
+            SettingsPanelMicrophoneDropdown.onValueChanged.AddListener(delegate {
+                SettingsPanelSelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
             });
-            scenarioIdDrop.onValueChanged.AddListener(delegate { ScenarioSelectionChanged(); });
+            CreatePanelScenarioDropdown.onValueChanged.AddListener(delegate { ScenarioSelectionChanged(); });
 
             sessionIdDrop.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
 
             InitialiseControllerEvents();
 
             UpdateProtocols();
-            uncompressedPointcloudsToggle.isOn = SessionConfig.Instance.pointCloudCodec == "cwi0";
-            uncompressedAudioToggle.isOn = SessionConfig.Instance.voiceCodec == "VR2a";
+            CreatePanelUncompressedPointcloudsToggle.isOn = SessionConfig.Instance.pointCloudCodec == "cwi0";
+            CreatePanelUncompressedAudioToggle.isOn = SessionConfig.Instance.voiceCodec == "VR2a";
 
             if (OrchestratorController.Instance.UserIsLogged)
             { // Comes from another scene
@@ -556,8 +556,8 @@ namespace VRT.Pilots.LoginManager
         // Update is called once per frame
         void Update()
         {
-            if (VUMeter && selfRepresentationPreview)
-                VUMeter.sizeDelta = new Vector2(355 * Mathf.Min(1, selfRepresentationPreview.MicrophoneLevel), 20);
+            if (SettingsPanelVUMeter && SettingsPanelSelfRepresentationPreview)
+                SettingsPanelVUMeter.sizeDelta = new Vector2(355 * Mathf.Min(1, SettingsPanelSelfRepresentationPreview.MicrophoneLevel), 20);
 
             TabShortcut();
           
@@ -600,9 +600,9 @@ namespace VRT.Pilots.LoginManager
             if (state == State.Create && autoState == AutoState.DidCreate)
             {
                 if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionName={config.sessionName}");
-                sessionNameIF.text = config.sessionName;
-                uncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
-                uncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
+                CreatePanelSessionNameField.text = config.sessionName;
+                CreatePanelUncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
+                CreatePanelUncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
                 if (config.sessionTransportProtocol != null && config.sessionTransportProtocol != "")
                 {
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
@@ -617,18 +617,18 @@ namespace VRT.Pilots.LoginManager
                 }
                 autoState = AutoState.DidPartialCreation;
             }
-            if (state == State.Create && autoState == AutoState.DidPartialCreation && scenarioIdDrop.options.Count > 0)
+            if (state == State.Create && autoState == AutoState.DidPartialCreation && CreatePanelScenarioDropdown.options.Count > 0)
             {
                 if (config.sessionScenario != null && config.sessionScenario != "")
                 {
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionScenario={config.sessionScenario}");
                     bool found = false;
                     int idx = 0;
-                    foreach (var entry in scenarioIdDrop.options)
+                    foreach (var entry in CreatePanelScenarioDropdown.options)
                     {
                         if (entry.text == config.sessionScenario)
                         {
-                            scenarioIdDrop.value = idx;
+                            CreatePanelScenarioDropdown.value = idx;
                             found = true;
                         }
                         idx++;
@@ -687,25 +687,25 @@ namespace VRT.Pilots.LoginManager
             HomePanelUserName.text = user.userName;
             // Config Info
             UserData userData = user.userData;
-            tcpPointcloudURLConfigIF.text = userData.userPCurl;
-            tcpAudioURLConfigIF.text = userData.userAudioUrl;
-            representationTypeConfigDropdown.value = (int)userData.userRepresentationType;
-            webcamDropdown.value = 0;
+            SettingsPanelTCPPointcloudURLField.text = userData.userPCurl;
+            SettingsPanelTCPAudioURLField.text = userData.userAudioUrl;
+            SettingsPanelRepresentationDropdown.value = (int)userData.userRepresentationType;
+            SettingsPanelWebcamDropdown.value = 0;
 
-            for (int i = 0; i < webcamDropdown.options.Count; ++i)
+            for (int i = 0; i < SettingsPanelWebcamDropdown.options.Count; ++i)
             {
-                if (webcamDropdown.options[i].text == userData.webcamName)
+                if (SettingsPanelWebcamDropdown.options[i].text == userData.webcamName)
                 {
-                    webcamDropdown.value = i;
+                    SettingsPanelWebcamDropdown.value = i;
                     break;
                 }
             }
-            microphoneDropdown.value = 0;
-            for (int i = 0; i < microphoneDropdown.options.Count; ++i)
+            SettingsPanelMicrophoneDropdown.value = 0;
+            for (int i = 0; i < SettingsPanelMicrophoneDropdown.options.Count; ++i)
             {
-                if (microphoneDropdown.options[i].text == userData.microphoneName)
+                if (SettingsPanelMicrophoneDropdown.options[i].text == userData.microphoneName)
                 {
-                    microphoneDropdown.value = i;
+                    SettingsPanelMicrophoneDropdown.value = i;
                     break;
                 }
             }
@@ -746,10 +746,10 @@ namespace VRT.Pilots.LoginManager
                     
                     break;
                 case State.Create:
-                    if (string.IsNullOrEmpty(sessionNameIF.text))
+                    if (string.IsNullOrEmpty(CreatePanelSessionNameField.text))
                     {
                          string time = DateTime.Now.ToString("hhmmss");
-                        sessionNameIF.text = $"{uname}_{time}";
+                        CreatePanelSessionNameField.text = $"{uname}_{time}";
                     }
                     break;
                 case State.Join:
@@ -770,18 +770,18 @@ namespace VRT.Pilots.LoginManager
         public void SelfRepresentationChanger()
         {
             // Dropdown Logic
-            webcamInfoGO.SetActive(false);
+            SettingsPanelWebcamInfoGO.SetActive(false);
           
          
-            if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.VideoAvatar)
+            if ((UserRepresentationType)SettingsPanelRepresentationDropdown.value == UserRepresentationType.VideoAvatar)
             {
-                webcamInfoGO.SetActive(true);
+                SettingsPanelWebcamInfoGO.SetActive(true);
             }
             // Preview
-            SetUserRepresentationDescription((UserRepresentationType)representationTypeConfigDropdown.value);
-            selfRepresentationPreview.ChangeRepresentation((UserRepresentationType)representationTypeConfigDropdown.value,
-                webcamDropdown.options[webcamDropdown.value].text);
-            selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
+            SetUserRepresentationDescription((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
+            SettingsPanelSelfRepresentationPreview.ChangeRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value,
+                SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text);
+            SettingsPanelSelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
         }
 
         private void OnDestroy()
@@ -861,7 +861,7 @@ namespace VRT.Pilots.LoginManager
 
         public void SaveConfigButton()
         {
-            selfRepresentationPreview.StopMicrophone();
+            SettingsPanelSelfRepresentationPreview.StopMicrophone();
             UpdateUserData();
             state = State.LoggedIn;
             PanelChanger();
@@ -869,7 +869,7 @@ namespace VRT.Pilots.LoginManager
 
         public void ExitConfigButton()
         {
-            selfRepresentationPreview.StopMicrophone();
+            SettingsPanelSelfRepresentationPreview.StopMicrophone();
             state = State.LoggedIn;
             PanelChanger();
         }
@@ -905,7 +905,7 @@ namespace VRT.Pilots.LoginManager
 
         public void SetCompression()
         {
-            if (uncompressedPointcloudsToggle.isOn)
+            if (CreatePanelUncompressedPointcloudsToggle.isOn)
             {
                 SessionConfig.Instance.pointCloudCodec = "cwi0";
             }
@@ -913,7 +913,7 @@ namespace VRT.Pilots.LoginManager
             {
                 SessionConfig.Instance.pointCloudCodec = "cwi1";
             }
-            if (uncompressedAudioToggle.isOn)
+            if (CreatePanelUncompressedAudioToggle.isOn)
             {
                 SessionConfig.Instance.voiceCodec = "VR2a";
             }
@@ -928,16 +928,16 @@ namespace VRT.Pilots.LoginManager
             if (string.IsNullOrEmpty(protoString))
             {
                 // Empty string means we're called from the dropdown callback. Get the value from there.
-                protoString = sessionProtocolDrop.options[sessionProtocolDrop.value].text;
+                protoString = CreatePanelSessionProtocolDropdown.options[CreatePanelSessionProtocolDropdown.value].text;
             }
             SessionConfig.ProtocolType proto = SessionConfig.ProtocolFromString(protoString);
             bool done = false;
-            for (int i = 0; i < sessionProtocolDrop.options.Count; i++)
+            for (int i = 0; i < CreatePanelSessionProtocolDropdown.options.Count; i++)
             {
-                if (protoString.ToLower() == sessionProtocolDrop.options[i].text.ToLower())
+                if (protoString.ToLower() == CreatePanelSessionProtocolDropdown.options[i].text.ToLower())
                 {
                     done = true;
-                    sessionProtocolDrop.value = i;
+                    CreatePanelSessionProtocolDropdown.value = i;
                 }
             }
             if (!done)
@@ -1214,12 +1214,12 @@ namespace VRT.Pilots.LoginManager
         {
             string protocol = SessionConfig.ProtocolToString(SessionConfig.Instance.protocolType);
 
-            ScenarioRegistry.ScenarioInfo scenarioInfo = ScenarioRegistry.Instance.Scenarios[scenarioIdDrop.value];
+            ScenarioRegistry.ScenarioInfo scenarioInfo = ScenarioRegistry.Instance.Scenarios[CreatePanelScenarioDropdown.value];
             Scenario scenario = scenarioInfo.AsScenario();
             OrchestratorController.Instance.AddSession(scenarioInfo.scenarioId,
                                                         scenario,
-                                                        sessionNameIF.text,
-                                                        sessionDescriptionIF.text,
+                                                        CreatePanelSessionNameField.text,
+                                                        CreatePanelSessionDescriptionField.text,
                                                         protocol);
         }
 
@@ -1381,11 +1381,11 @@ namespace VRT.Pilots.LoginManager
             // UserData info in Config
             UserData lUserData = new UserData
             {
-                userPCurl = tcpPointcloudURLConfigIF.text,
-                userAudioUrl = tcpAudioURLConfigIF.text,
-                userRepresentationType = (UserRepresentationType)representationTypeConfigDropdown.value,
-                webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
-                microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
+                userPCurl = SettingsPanelTCPPointcloudURLField.text,
+                userAudioUrl = SettingsPanelTCPAudioURLField.text,
+                userRepresentationType = (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
+                webcamName = (SettingsPanelWebcamDropdown.options.Count <= 0) ? "None" : SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
+                microphoneName = (SettingsPanelMicrophoneDropdown.options.Count <= 0) ? "None" : SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
             };
             // And also save a local copy, if wanted
             if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
