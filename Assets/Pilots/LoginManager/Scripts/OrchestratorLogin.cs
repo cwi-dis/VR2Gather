@@ -9,6 +9,7 @@ using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Pilots.Common;
 using static System.Collections.Specialized.BitVector32;
+using UnityEngine.Serialization;
 
 namespace VRT.Pilots.LoginManager
 {
@@ -59,14 +60,15 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Toggle rememberMeButton = null;
 
         [Header("HomePanel")]
-        [SerializeField] private GameObject vrtPanel = null;
+        
+        [SerializeField][FormerlySerializedAs("vrtPanel")] private GameObject homePanel = null;
         [SerializeField] private Text userNameVRTText = null;
         [SerializeField] private Button logoutButton = null;
         [SerializeField] private Button playButton = null;
         [SerializeField] private Button configButton = null;
 
         [Header("SettingsPanel")]
-        [SerializeField] private GameObject configPanel = null;
+        [SerializeField][FormerlySerializedAs("configPanel")] private GameObject settingsPanel = null;
         [SerializeField] private GameObject webcamInfoGO = null;
         [SerializeField] private InputField tcpPointcloudURLConfigIF = null;
         [SerializeField] private InputField tcpAudioURLConfigIF = null;
@@ -93,17 +95,17 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Dropdown scenarioIdDrop = null;
         [SerializeField] private Text scenarioDescription = null;
         [SerializeField] private Dropdown sessionProtocolDrop = null;
-//        [SerializeField] private Toggle socketProtocolToggle = null;
-//        [SerializeField] private Toggle dashProtocolToggle = null;
-//        [SerializeField] private Toggle tcpProtocolToggle = null;
         [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
         [SerializeField] private Toggle uncompressedAudioToggle = null;
+        [SerializeField] private Button doneCreateButton = null;
 
         [Header("JoinPanel")]
         [SerializeField] private GameObject joinPanel = null;
         [SerializeField] private Button backJoinButton = null;
         [SerializeField] private Dropdown sessionIdDrop = null;
         [SerializeField] private Text sessionJoinMessage = null;
+        [SerializeField] private Button doneJoinButton = null;
+        [SerializeField] private RectTransform orchestratorSessions = null;
         [SerializeField] private int refreshTimer = 5;
 
         [Header("LobbyPanel")]
@@ -112,20 +114,13 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Text sessionDescriptionText = null;
         [SerializeField] private Text scenarioIdText = null;
         [SerializeField] private Text sessionNumUsersText = null;
-        [SerializeField] private Text userRepresentationLobbyText = null;
-        [SerializeField] private Image userRepresentationLobbyImage = null;
-        private string sessionMasterID = null;
-
-        [Header("Buttons")]
-        [SerializeField] private Button doneCreateButton = null;
-        [SerializeField] private Button doneJoinButton = null;
         [SerializeField] private Button readyButton = null;
         [SerializeField] private Button leaveButton = null;
-      
-        [Header("Content")]
-        [SerializeField] private RectTransform orchestratorSessions = null;
         [SerializeField] private RectTransform usersSession = null;
-
+        [SerializeField] private Text userRepresentationLobbyText = null;
+        [SerializeField] private Image userRepresentationLobbyImage = null;
+     
+       
         #endregion
 
         #region Utils
@@ -724,8 +719,8 @@ namespace VRT.Pilots.LoginManager
             developerPanel.SetActive(developerMode);
             connectPanel.gameObject.SetActive(state == State.Offline);
             loginPanel.SetActive(state == State.Online);
-            vrtPanel.SetActive(state == State.LoggedIn);
-            configPanel.SetActive(state == State.Config);
+            homePanel.SetActive(state == State.LoggedIn);
+            settingsPanel.SetActive(state == State.Config);
             playPanel.SetActive(state == State.Play);
             createPanel.SetActive(state == State.Create);
             joinPanel.SetActive(state == State.Join);
@@ -1239,8 +1234,7 @@ namespace VRT.Pilots.LoginManager
                 // Update the info in LobbyPanel
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
-                sessionMasterID = session.GetUser(session.sessionMaster).userName;
-
+          
                 // Update the list of session users
                 UpdateUsersSession(usersSession);
 
@@ -1256,7 +1250,6 @@ namespace VRT.Pilots.LoginManager
                 sessionDescriptionText.text = "";
                 scenarioIdText.text = "";
                 sessionNumUsersText.text = "";
-                sessionMasterID = "";
                 RemoveComponentsFromList(usersSession.transform);
             }
         }
@@ -1268,8 +1261,6 @@ namespace VRT.Pilots.LoginManager
                 // Update the info in LobbyPanel
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
-                if (session.sessionMaster != "")
-                    sessionMasterID = session.GetUser(session.sessionMaster).userName;
                 // Update the list of session users
                 UpdateUsersSession(usersSession);
             }
@@ -1279,7 +1270,6 @@ namespace VRT.Pilots.LoginManager
                 sessionDescriptionText.text = "";
                 scenarioIdText.text = "";
                 sessionNumUsersText.text = "";
-                sessionMasterID = "";
                 RemoveComponentsFromList(usersSession.transform);
             }
         }
@@ -1338,7 +1328,6 @@ namespace VRT.Pilots.LoginManager
                 // Update the info in LobbyPanel
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
-                sessionMasterID = session.GetUser(session.sessionMaster).userName;
 
                 // Update the list of session users
                 UpdateUsersSession(usersSession);
@@ -1352,7 +1341,6 @@ namespace VRT.Pilots.LoginManager
                 sessionDescriptionText.text = "";
                 scenarioIdText.text = "";
                 sessionNumUsersText.text = "";
-                sessionMasterID = "";
                 RemoveComponentsFromList(usersSession.transform);
             }
         }

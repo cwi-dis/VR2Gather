@@ -12103,7 +12103,7 @@ GameObject:
   - component: {fileID: 6457971032356984459}
   - component: {fileID: 6457971032356984460}
   m_Layer: 5
-  m_Name: JoinSessionPanel
+  m_Name: JoinPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12383,12 +12383,12 @@ MonoBehaviour:
   userNameLoginIF: {fileID: 8153449555847552914}
   loginButton: {fileID: 6954466314744718302}
   rememberMeButton: {fileID: 7238322160025449768}
-  vrtPanel: {fileID: 5472630372440047248}
+  homePanel: {fileID: 5472630372440047248}
   userNameVRTText: {fileID: 9057051396644799865}
   logoutButton: {fileID: 3098477522478754752}
   playButton: {fileID: 6439520597403270058}
   configButton: {fileID: 4324839371827238586}
-  configPanel: {fileID: 6457971033183718167}
+  settingsPanel: {fileID: 6457971033183718167}
   webcamInfoGO: {fileID: 5916575847965431227}
   tcpPointcloudURLConfigIF: {fileID: 786090048598621773}
   tcpAudioURLConfigIF: {fileID: 3096292403496545405}
@@ -12413,24 +12413,24 @@ MonoBehaviour:
   sessionProtocolDrop: {fileID: 5563265398217327997}
   uncompressedPointcloudsToggle: {fileID: 387389570}
   uncompressedAudioToggle: {fileID: 694705610}
+  doneCreateButton: {fileID: 6457971033556758724}
   joinPanel: {fileID: 6457971032356984462}
   backJoinButton: {fileID: 2235418248480033197}
   sessionIdDrop: {fileID: 6457971032597693187}
   sessionJoinMessage: {fileID: 1983446077738297626}
+  doneJoinButton: {fileID: 6457971033399391678}
+  orchestratorSessions: {fileID: 6963007955771357401}
   refreshTimer: 5
   lobbyPanel: {fileID: 6457971032172637052}
   sessionNameText: {fileID: 6963007955317777261}
   sessionDescriptionText: {fileID: 3039232443859429398}
   scenarioIdText: {fileID: 6457971032909827202}
   sessionNumUsersText: {fileID: 6457971033508907615}
-  userRepresentationLobbyText: {fileID: 7890038468874615349}
-  userRepresentationLobbyImage: {fileID: 6380644936749171119}
-  doneCreateButton: {fileID: 6457971033556758724}
-  doneJoinButton: {fileID: 6457971033399391678}
   readyButton: {fileID: 6457971032624323591}
   leaveButton: {fileID: 6457971032860003685}
-  orchestratorSessions: {fileID: 6963007955771357401}
   usersSession: {fileID: 6963007956489862667}
+  userRepresentationLobbyText: {fileID: 7890038468874615349}
+  userRepresentationLobbyImage: {fileID: 6380644936749171119}
   MenuFont: {fileID: 12800000, guid: b30c1f4e6a7dd054d9c16454a93655f7, type: 3}
 --- !u!114 &555126172
 MonoBehaviour:
@@ -14180,7 +14180,7 @@ GameObject:
   - component: {fileID: 6457971033769258982}
   - component: {fileID: 6457971033769258983}
   m_Layer: 5
-  m_Name: CreateSessionPanel
+  m_Name: CreatePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14265,7 +14265,7 @@ GameObject:
   - component: {fileID: 1671130002300114425}
   - component: {fileID: 2614710130514583428}
   m_Layer: 5
-  m_Name: DeveloperSceneButton
+  m_Name: DevStatus_DeveloperSceneButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16755,7 +16755,7 @@ GameObject:
   - component: {fileID: 6963007955771357407}
   - component: {fileID: 6963007955771357400}
   m_Layer: 5
-  m_Name: JoinSession_AllSessions
+  m_Name: JoinPanel_AllSessions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18071,7 +18071,7 @@ GameObject:
   - component: {fileID: 6963007956489862665}
   - component: {fileID: 6963007956489862666}
   m_Layer: 5
-  m_Name: Lobby_AllUsers
+  m_Name: LobbyPanel_AllUsers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21053,7 +21053,7 @@ GameObject:
   - component: {fileID: 4086653982185703777}
   - component: {fileID: 7890038468874615349}
   m_Layer: 5
-  m_Name: label
+  m_Name: LobbyPanel_UserRepresentationText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
