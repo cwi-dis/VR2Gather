@@ -179,11 +179,10 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
+      "version": "file:nl.cwi.dis.cwipc",
       "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "2cd41553666520e4660ecca4e8fd3598790ebbeb"
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
