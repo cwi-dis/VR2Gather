@@ -1461,10 +1461,11 @@ MonoBehaviour:
   cameraOffset: {fileID: 4470724064542958035}
   player: {fileID: 1935332283100515003}
   pointCloudGO: {fileID: 6341382799821854084}
+  pointCloudCenterOfGravityIndicator: {fileID: 8470371473343670730}
   playerCamera: {fileID: 1790764940407382550}
   cameraZFudgeFactor: -0.1
   heightFactor: 0.001
-  resetHeightWithPosition: 0
+  resetHeightWithPosition: 1
   viewAdjusted:
     m_PersistentCalls:
       m_Calls:
@@ -1521,8 +1522,10 @@ MonoBehaviour:
       type: 3}
   positionIndicator: {fileID: 8331748099356273066}
   forwardIndicator: {fileID: 2752953324859522846}
+  forwardIndicatorInstructions: {fileID: 1098397037044109866}
   forwardIndicatorCountdown: {fileID: 3725691343677338914}
   positionIndicatorDuration: 5
+  stage: 0
   debug: 0
 --- !u!1 &7004479241362984629
 GameObject:
@@ -2764,6 +2767,18 @@ PrefabInstance:
       objectReference: {fileID: 1790764940407382550}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 227de687db1b6674683b4b0bd8aaf7c4, type: 3}
+--- !u!114 &1098397037044109866 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8053126322149057178, guid: 227de687db1b6674683b4b0bd8aaf7c4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6988524425202233520}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2752953324859522846 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5100411818319974318, guid: 227de687db1b6674683b4b0bd8aaf7c4,
@@ -2788,6 +2803,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &8470371473343670730 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1545002996982716794, guid: 227de687db1b6674683b4b0bd8aaf7c4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6988524425202233520}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7563790233389192539
 PrefabInstance:
   m_ObjectHideFlags: 0
