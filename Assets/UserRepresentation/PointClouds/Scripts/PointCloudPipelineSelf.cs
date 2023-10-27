@@ -342,14 +342,24 @@ namespace VRT.UserRepresentation.PointCloud
             return rv;
         }
 
-        public Vector3 GetPosition()
+        public Vector3? GetPosition()
         {
             AsyncPointCloudReader pcReader = reader as AsyncPointCloudReader;
             if (pcReader == null)
             {
-                return Vector3.zero;
+                return null;
             }
             return pcReader.GetPosition();
+        }
+
+        public int GetCameraCount()
+        {
+            AsyncPointCloudReader pcReader = reader as AsyncPointCloudReader;
+            if (pcReader == null)
+            {
+                return 0;
+            }
+            return pcReader.GetCameraCount();
         }
     }
 }
