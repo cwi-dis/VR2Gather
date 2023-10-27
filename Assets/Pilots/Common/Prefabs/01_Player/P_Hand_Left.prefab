@@ -597,7 +597,7 @@ MonoBehaviour:
       m_Name: Is Tracked
       m_Type: 1
       m_ExpectedControlType: 
-      m_Id: ce3a9d72-e425-47ea-923a-21481bc1a00b
+      m_Id: c5d12536-d710-4a04-aa35-b1f7692805b7
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -700,7 +700,7 @@ MonoBehaviour:
       m_Name: UI Scroll
       m_Type: 0
       m_ExpectedControlType: Vector2
-      m_Id: affabe88-771c-473d-a3bc-f1b575347285
+      m_Id: 3b4e1f41-e6d8-412d-9696-379d53162225
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
