@@ -1024,6 +1024,14 @@ namespace VRT.Pilots.LoginManager
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
                     textItem.text += " - (Cameraman)";
                     break;
+                case UserRepresentationType.AppDefinedRepresentationOne:
+                    imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                    textItem.text += " - (AppDefined 1)";
+                    break;
+                case UserRepresentationType.AppDefinedRepresentationTwo:
+                    imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                    textItem.text += " - (AppDefined 2)";
+                    break;
                 default:
                     Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {user.userData.userRepresentationType}");
                     break;
