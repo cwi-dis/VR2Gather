@@ -23,6 +23,7 @@ namespace VRT.Pilots.Common
 			public Vector3 RightHandPosition;
 			public Quaternion RightHandOrientation;
 			public UserRepresentationType representation;
+			public float BodySize;
 		}
 		#endregion
 
@@ -85,7 +86,21 @@ namespace VRT.Pilots.Common
 					Debug.Log($"{Name()}: Representation changed to {data.representation}");
 					playerController.SetRepresentation(data.representation);
 				}
-				_PreviousReceivedData = _LastReceivedData;
+                // Adjust size, if needed
+                if (data.BodySize != 0)
+                {
+					float newSize = data.BodySize;
+					GameObject currentRepresentation = playerController.GetRepresentationGameObject();
+					if (currentRepresentation != null && currentRepresentation.activeInHierarchy)
+					{
+						float oldSize = currentRepresentation.transform.transform.localScale.y;
+						if (newSize != oldSize) {
+							Debug.Log($"{Name()}: Change size from {oldSize} to {newSize}");
+							currentRepresentation.transform.transform.localScale = new Vector3(newSize, newSize, newSize);
+                        }
+                    }
+                }
+                _PreviousReceivedData = _LastReceivedData;
 				_LastReceivedData = data;
 				_LastReceiveTime = Time.realtimeSinceStartup;
 
@@ -120,6 +135,7 @@ namespace VRT.Pilots.Common
 						RightHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.RightHandOrientation, _LastReceivedData.RightHandOrientation, t);
 					}
 				}
+				
 			}
 		}
 
