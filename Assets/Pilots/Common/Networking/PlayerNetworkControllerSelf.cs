@@ -44,12 +44,16 @@ namespace VRT.Pilots.Common
 			}
 			float BodySize = 0;
 			GameObject currentRepresentation = playerController.GetRepresentationGameObject();
-			if (currentRepresentation != null && currentRepresentation.activeInHierarchy)
-			{
-				BodySize = currentRepresentation.transform.localScale.y;
-			}
-			// For debugging mainly: also copy head position/orientation for the self user
-			if (Head3TransformAlsoMove != null)
+            if (currentRepresentation != null && currentRepresentation.activeInHierarchy)
+            {
+                BodySize = currentRepresentation.transform.localScale.y;
+            }
+            if (AlternativeUserRepresentation != null && AlternativeUserRepresentation.activeInHierarchy)
+            {
+                BodySize = AlternativeUserRepresentation.transform.localScale.y;
+            }
+            // For debugging mainly: also copy head position/orientation for the self user
+            if (Head3TransformAlsoMove != null)
 			{
 				Head3TransformAlsoMove.rotation = camTransform.rotation;
 				Head3TransformAlsoMove.position = camTransform.position;
