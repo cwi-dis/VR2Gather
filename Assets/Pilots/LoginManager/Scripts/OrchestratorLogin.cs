@@ -584,6 +584,12 @@ namespace VRT.Pilots.LoginManager
                 case UserRepresentationType.NoRepresentationCamera:
                     SettingsPanelSelfRepresentationDescription.text = "Local video recorder.";
                     break;
+                case UserRepresentationType.AppDefinedRepresentationOne:
+                    SettingsPanelSelfRepresentationDescription.text = "Application-defined representation 1.";
+                    break;
+                case UserRepresentationType.AppDefinedRepresentationTwo:
+                    SettingsPanelSelfRepresentationDescription.text = "Application-defined representation 2.";
+                    break;
                 default:
                     Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {_representationType}");
                     break;
