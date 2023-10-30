@@ -176,12 +176,12 @@ PrefabInstance:
         type: 3}
       propertyPath: head.vrTarget
       value: 
-      objectReference: {fileID: 5504959611765076590}
+      objectReference: {fileID: 3026611673761083865}
     - target: {fileID: 4024455705769473861, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: neck.vrTarget
       value: 
-      objectReference: {fileID: 5504959611765076590}
+      objectReference: {fileID: 915107465087601270}
     - target: {fileID: 4024455705769473861, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: leftHand.vrTarget
@@ -345,6 +345,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 7100607609113673326}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &915107465087601270 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7942504332362855448, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 7100607609113673326}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2719070805392156290 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5131421326051842284, guid: 21abad33e8196954b8f19e6b888a67a4,
@@ -354,6 +360,12 @@ Transform:
 --- !u!1 &2719070805392156413 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5131421326051842195, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 7100607609113673326}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3026611673761083865 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5227205512041566135, guid: 21abad33e8196954b8f19e6b888a67a4,
     type: 3}
   m_PrefabInstance: {fileID: 7100607609113673326}
   m_PrefabAsset: {fileID: 0}
