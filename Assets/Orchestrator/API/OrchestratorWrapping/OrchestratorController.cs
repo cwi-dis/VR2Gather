@@ -107,8 +107,7 @@ namespace VRT.Orchestrator.Wrapping
         // Orchestrator Login Events
         public Action<bool> OnLoginEvent;
         public Action<bool> OnLogoutEvent;
-        public Action OnSignInEvent;
-
+        
         // Orchestrator NTP clock Events
         public Action<NtpClock> OnGetNTPTimeEvent;
 
@@ -156,7 +155,6 @@ namespace VRT.Orchestrator.Wrapping
         private void Awake() {
             
             if (instance == null) {
-                Debug.Log($"xxxjack OrchestratorController.Awake from {gameObject.name}");
                 DontDestroyOnLoad(this);
                 instance = this;
             } else if (instance != this) {
@@ -217,7 +215,6 @@ namespace VRT.Orchestrator.Wrapping
 
         // Abort Socket connection
         public void Abort() {
-            Debug.Log("OrchestratorController: xxxjack Abort()");
             orchestratorWrapper.Disconnect();
             OnDisconnect();
         }
@@ -734,21 +731,6 @@ namespace VRT.Orchestrator.Wrapping
 
 #endregion
 
-#region Utils
-
-        public string GetIPAddress() {
-            var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
-            foreach (var ip in host.AddressList) {
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) {
-                    if (enableLogging) Debug.Log("OrchestratorController: GetIPAdress: IPv4 adress: " + ip.ToString());
-                    return ip.ToString();
-                }
-            }
-            Debug.LogError("OrchestratorController: GetIPAdress: Cannot retrieve IPv4 adress of the network adapater.");
-            return "";
-        }
-
-#endregion
 
 
 #region Errors
