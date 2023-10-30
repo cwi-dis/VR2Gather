@@ -1101,7 +1101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3382176271600897024}
   m_Layer: 0
-  m_Name: HeadPositionOrientation
+  m_Name: CameraPositionOrientation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1366,7 +1366,7 @@ PrefabInstance:
         type: 3}
       propertyPath: SourceTop
       value: 
-      objectReference: {fileID: 1663129390789642957}
+      objectReference: {fileID: 7094661404004276844}
     - target: {fileID: 412927981794100017, guid: 66f26d0ca28284407ac0857d0fc08dcb,
         type: 3}
       propertyPath: SourceBottom
@@ -1441,12 +1441,12 @@ PrefabInstance:
         type: 3}
       propertyPath: head.vrTarget
       value: 
-      objectReference: {fileID: 4311645287905124984}
+      objectReference: {fileID: 3382176271600897024}
     - target: {fileID: 8337406300393679913, guid: 66f26d0ca28284407ac0857d0fc08dcb,
         type: 3}
       propertyPath: neck.vrTarget
       value: 
-      objectReference: {fileID: 4311645287905124984}
+      objectReference: {fileID: 3382176271600897024}
     - target: {fileID: 8337406300393679913, guid: 66f26d0ca28284407ac0857d0fc08dcb,
         type: 3}
       propertyPath: leftHand.vrTarget
@@ -1751,7 +1751,7 @@ PrefabInstance:
         type: 3}
       propertyPath: SourceTop
       value: 
-      objectReference: {fileID: 1663129390789642957}
+      objectReference: {fileID: 7094661404004276844}
     - target: {fileID: 6040715544508562796, guid: 641a517337c3b4b3b8e9e4a50d4501a6,
         type: 3}
       propertyPath: SourceBottom
@@ -1761,12 +1761,12 @@ PrefabInstance:
         type: 3}
       propertyPath: head.vrTarget
       value: 
-      objectReference: {fileID: 4311645287905124984}
+      objectReference: {fileID: 3382176271600897024}
     - target: {fileID: 8337406300393679913, guid: 641a517337c3b4b3b8e9e4a50d4501a6,
         type: 3}
       propertyPath: neck.vrTarget
       value: 
-      objectReference: {fileID: 4311645287905124984}
+      objectReference: {fileID: 3382176271600897024}
     - target: {fileID: 8337406300393679913, guid: 641a517337c3b4b3b8e9e4a50d4501a6,
         type: 3}
       propertyPath: playerTransform
