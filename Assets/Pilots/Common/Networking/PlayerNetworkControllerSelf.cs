@@ -48,11 +48,17 @@ namespace VRT.Pilots.Common
 			{
 				BodySize = currentRepresentation.transform.localScale.y;
 			}
+			// For debugging mainly: also copy head position/orientation for the self user
+			if (Head3TransformAlsoMove != null)
+			{
+				Head3TransformAlsoMove.rotation = camTransform.rotation;
+				Head3TransformAlsoMove.position = camTransform.position;
+			}
 			var data = new NetworkPlayerData
 			{
 				BodyPosition = BodyTransform.position,
 				BodyOrientation = BodyTransform.rotation,
-				//HeadPosition = camTransform.position,
+				HeadPosition = camTransform.position,
 				HeadOrientation = camTransform.rotation,
 				LeftHandPosition = LeftHandTransform.position,
 				LeftHandOrientation = LeftHandTransform.rotation,

@@ -16,7 +16,7 @@ namespace VRT.Pilots.Common
 		{
 			public Vector3 BodyPosition;
 			public Quaternion BodyOrientation;
-			// bad idea, leads to detached heads. public Vector3 HeadPosition;
+			public Vector3 HeadPosition;
 			public Quaternion HeadOrientation;
 			public Vector3 LeftHandPosition;
 			public Quaternion LeftHandOrientation;
@@ -34,9 +34,11 @@ namespace VRT.Pilots.Common
 		public Transform BodyTransform;
 		[Tooltip("The virtual head to rotate")]
 		public Transform HeadTransform;
-		[Tooltip("Another virtual head to rotate")]
-		public Transform Head2Transform;
-		[Tooltip("Left hand for which to synchronise position/orientation")]
+        [Tooltip("Another virtual head to rotate")]
+        public Transform Head2Transform;
+        [Tooltip("Another virtual head to rotate and also move")]
+        public Transform Head3TransformAlsoMove;
+        [Tooltip("Left hand for which to synchronise position/orientation")]
 		public Transform LeftHandTransform;
 		[Tooltip("Right hand for which to synchronise position/orientation")]
 		public Transform RightHandTransform;
@@ -119,12 +121,17 @@ namespace VRT.Pilots.Common
 						//HeadTransform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
 						HeadTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
 					}
-					if (Head2Transform != null)
+                    if (Head2Transform != null)
                     {
-						//Head2Transform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
-						Head2Transform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
-					}
-					if (LeftHandTransform != null)
+                        //Head2Transform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
+                        Head2Transform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
+                    }
+                    if (Head3TransformAlsoMove != null)
+                    {
+                        Head3TransformAlsoMove.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
+                        Head3TransformAlsoMove.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
+                    }
+                    if (LeftHandTransform != null)
                     {
 						LeftHandTransform.position = Vector3.Lerp(_PreviousReceivedData.LeftHandPosition, _LastReceivedData.LeftHandPosition, t);
 						LeftHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.LeftHandOrientation, _LastReceivedData.LeftHandOrientation, t);
