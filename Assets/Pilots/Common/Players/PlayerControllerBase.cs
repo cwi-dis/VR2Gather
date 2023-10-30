@@ -195,6 +195,28 @@ namespace VRT.Pilots.Common
             }
         }
 
+        public GameObject GetRepresentationGameObject()
+        {
+            switch (userRepresentation)
+            {
+                case UserRepresentationType.NoRepresentation:
+                    return null;
+                case UserRepresentationType.VideoAvatar:
+                    return webcam;
+                case UserRepresentationType.SimpleAvatar:
+                    return avatar;
+                case UserRepresentationType.PointCloud: // PC
+                    return pointcloud;
+                case UserRepresentationType.AppDefinedRepresentationOne:
+                    return altRepOne;
+                case UserRepresentationType.AppDefinedRepresentationTwo:
+                    return altRepTwo;
+                default:
+                    Debug.LogError($"{Name()}: Unknown UserRepresentationType {userRepresentation}");
+                    return null;
+            }
+        }
+
         public void LoadAudio(VRT.Orchestrator.Wrapping.User user)
         {
             if (isPreviewPlayer) return;

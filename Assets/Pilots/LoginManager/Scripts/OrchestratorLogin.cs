@@ -584,6 +584,12 @@ namespace VRT.Pilots.LoginManager
                 case UserRepresentationType.NoRepresentationCamera:
                     SettingsPanelSelfRepresentationDescription.text = "Local video recorder.";
                     break;
+                case UserRepresentationType.AppDefinedRepresentationOne:
+                    SettingsPanelSelfRepresentationDescription.text = "Application-defined representation 1.";
+                    break;
+                case UserRepresentationType.AppDefinedRepresentationTwo:
+                    SettingsPanelSelfRepresentationDescription.text = "Application-defined representation 2.";
+                    break;
                 default:
                     Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {_representationType}");
                     break;
@@ -1023,6 +1029,14 @@ namespace VRT.Pilots.LoginManager
                 case UserRepresentationType.NoRepresentationCamera:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
                     textItem.text += " - (Cameraman)";
+                    break;
+                case UserRepresentationType.AppDefinedRepresentationOne:
+                    imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                    textItem.text += " - (AppDefined 1)";
+                    break;
+                case UserRepresentationType.AppDefinedRepresentationTwo:
+                    imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                    textItem.text += " - (AppDefined 2)";
                     break;
                 default:
                     Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {user.userData.userRepresentationType}");

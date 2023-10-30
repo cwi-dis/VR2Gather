@@ -49,21 +49,25 @@ MonoBehaviour:
     rigTarget: {fileID: 5152070896775454124}
     rigSource: {fileID: 0}
     positionOnly: 0
+    includeYRotation: 0
   neck:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 425248171957617992}
     rigSource: {fileID: 8983016818132538033}
     positionOnly: 1
+    includeYRotation: 0
   leftHand:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 6712339557575232786}
     rigSource: {fileID: 0}
     positionOnly: 0
+    includeYRotation: 0
   rightHand:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 5224393445221029532}
     rigSource: {fileID: 0}
     positionOnly: 0
+    includeYRotation: 0
   turnSmoothness: 3
   mannequinTransform: {fileID: 425248171957617992}
 --- !u!1 &646612256834869448
@@ -373,10 +377,24 @@ MonoBehaviour:
   DestinationTop: {fileID: 3217419243018584959}
   DestinationBottom: {fileID: 1057528258240405490}
   setHeightOnStart: 0
+  setHeightOnHMDTracking: 0
+  m_hmdTrackingAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Hmd Tracking
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: aabf978d-d5a7-4bf3-af35-1ca349378c32
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 0}
   nativeHeight: 1
   actualHeight: 0
   nativeSize: {x: 0, y: 0, z: 0}
   currentSize: {x: 0, y: 0, z: 0}
+  debug: 1
 --- !u!1 &3365872230021866516
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,6 +529,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootObject: {fileID: 2771220398156754783}
+  debug: 0
 --- !u!1 &6732361863954411081
 GameObject:
   m_ObjectHideFlags: 0
@@ -728,6 +747,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootObject: {fileID: 2771220398156754783}
+  debug: 0
 --- !u!1 &7764698444162688422
 GameObject:
   m_ObjectHideFlags: 0
@@ -1077,6 +1097,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &186085695036266943
 MonoBehaviour:
   m_ObjectHideFlags: 0
