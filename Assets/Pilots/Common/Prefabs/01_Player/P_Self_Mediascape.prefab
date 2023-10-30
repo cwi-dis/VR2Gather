@@ -113,6 +113,16 @@ PrefabInstance:
       propertyPath: m_trackingAction.m_Action.m_Name
       value: Tracking
       objectReference: {fileID: 0}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: m_hmdTrackingAction.m_Action.m_Id
+      value: f87298e8-1a67-426b-bffa-7cd83f963201
+      objectReference: {fileID: 0}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: m_hmdTrackingAction.m_Action.m_Name
+      value: Hmd Tracking
+      objectReference: {fileID: 0}
     - target: {fileID: 1849690324003306691, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: pcPipelineParent
@@ -255,6 +265,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 191711544589689159, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1004242608409261724, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1935332283100515003, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_Name
@@ -330,10 +350,15 @@ PrefabInstance:
       propertyPath: drawGizmoHeadcube
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3673924254292886361, guid: fceec8934b5ae4fdaa36454e0b30346f,
+    - target: {fileID: 3093521855537840509, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
       value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 3673924254292886361, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 4185150392795127551, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
@@ -358,17 +383,57 @@ PrefabInstance:
     - target: {fileID: 6094539924294276110, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
-      value: 18
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 6111656368764997799, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6479188801789254803, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
       value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825110016853729052, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825110016853729052, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.data[3].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825110016853729052, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 3258149079692206027}
+    - target: {fileID: 6825110016853729052, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825110016853729052, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: AdjustHeight
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825110016853729052, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: VRT.Pilots.Common.SizeAdjust, Pilots
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825110016853729052, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825110016853729053, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7054828939141986616, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
