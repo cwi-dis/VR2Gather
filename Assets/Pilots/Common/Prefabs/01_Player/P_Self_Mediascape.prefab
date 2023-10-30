@@ -247,12 +247,18 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 2416881662977172665}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8221417267100451299}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &8221417267100451299 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6021922257278985562, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2416881662977172665}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3020625101201365157
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -375,6 +381,11 @@ PrefabInstance:
       propertyPath: Head3TransformAlsoMove
       value: 
       objectReference: {fileID: 6550867290896254605}
+    - target: {fileID: 4177976052428464234, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: AlternativeUserRepresentation
+      value: 
+      objectReference: {fileID: 8221417267100451299}
     - target: {fileID: 4185150392795127551, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
