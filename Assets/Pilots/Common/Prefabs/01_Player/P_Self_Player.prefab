@@ -1814,6 +1814,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3536275966832614511, guid: 38346b54d1d6bda4d9a7bb0d5fcd4b9f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 5503449293659493529, guid: 38346b54d1d6bda4d9a7bb0d5fcd4b9f,
         type: 3}
       propertyPath: m_Name
@@ -2726,6 +2731,7 @@ MonoBehaviour:
   Head3TransformAlsoMove: {fileID: 0}
   LeftHandTransform: {fileID: 4247113684348723594}
   RightHandTransform: {fileID: 7630850262051204802}
+  AlternativeUserRepresentation: {fileID: 0}
   SendRate: 10
   _IsLocalPlayer: 1
   playerController: {fileID: 0}

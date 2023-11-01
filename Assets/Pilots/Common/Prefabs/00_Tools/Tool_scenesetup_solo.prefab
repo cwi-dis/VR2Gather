@@ -147,6 +147,7 @@ MonoBehaviour:
       capturerTypeName: 
       CameraReaderConfig:
         configFilename: 
+        wantedSkeleton: 0
       RemoteCameraReaderConfig:
         url: 
         isCompressed: 0
