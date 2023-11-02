@@ -356,6 +356,26 @@ PrefabInstance:
       propertyPath: drawGizmoHeadcube
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3037014250523190874, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_UIScrollAction.m_Action.m_Id
+      value: bdcbb22c-2682-4848-a5db-5dec6a7a4cce
+      objectReference: {fileID: 0}
+    - target: {fileID: 3037014250523190874, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_IsTrackedAction.m_Action.m_Id
+      value: 79daee1e-11ed-4290-bb3b-cbbd1489fd83
+      objectReference: {fileID: 0}
+    - target: {fileID: 3037014250523190874, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_UIScrollAction.m_Action.m_Name
+      value: UI Scroll
+      objectReference: {fileID: 0}
+    - target: {fileID: 3037014250523190874, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_IsTrackedAction.m_Action.m_Name
+      value: Is Tracked
+      objectReference: {fileID: 0}
     - target: {fileID: 3093521855537840509, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
