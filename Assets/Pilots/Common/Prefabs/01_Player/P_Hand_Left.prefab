@@ -1791,7 +1791,7 @@ MonoBehaviour:
     m_Reference: {fileID: 8248158260566104461, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_IsTrackedAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Is Tracked
       m_Type: 1
@@ -1894,7 +1894,7 @@ MonoBehaviour:
     m_Reference: {fileID: 71106601250685021, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_UIScrollAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: UI Scroll
       m_Type: 0
@@ -1932,7 +1932,7 @@ MonoBehaviour:
     m_Reference: {fileID: -7363382999065477798, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_DirectionalAnchorRotationAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Directional Anchor Rotation
       m_Type: 0
