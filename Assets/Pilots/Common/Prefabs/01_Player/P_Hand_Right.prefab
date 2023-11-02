@@ -2042,12 +2042,12 @@ MonoBehaviour:
     m_Reference: {fileID: 5101698808175986029, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_IsTrackedAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
-      m_Name: 
+      m_Name: Is Tracked
       m_Type: 1
       m_ExpectedControlType: 
-      m_Id: 
+      m_Id: 6462cb49-d54d-4233-8c26-cc90c90038e6
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -2145,12 +2145,12 @@ MonoBehaviour:
     m_Reference: {fileID: -5908353012961274365, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_UIScrollAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
-      m_Name: 
+      m_Name: UI Scroll
       m_Type: 0
       m_ExpectedControlType: Vector2
-      m_Id: 
+      m_Id: 266278c6-2c80-4c01-bcb9-badfc8f0df78
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -2183,7 +2183,7 @@ MonoBehaviour:
     m_Reference: {fileID: -5913262927076077117, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_DirectionalAnchorRotationAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Directional Anchor Rotation
       m_Type: 0
