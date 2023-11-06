@@ -119,17 +119,6 @@ namespace VRT.Pilots.Common
 
         public virtual void SetRepresentation(UserRepresentationType type, bool onlyIfVisible = false, bool permanent = false)
         {
-            switch(type)
-            {
-                case UserRepresentationType.Deprecated__PCC_SYNTH__:
-                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
-                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
-                case UserRepresentationType.Deprecated__PCC_PROXY__:
-                    Debug.LogWarning($"{Name()}: Deprecated type {type} changed to PointCloud");
-                    type = UserRepresentationType.PointCloud;
-                    break;
-
-            }
             if (isInitialized && type == userRepresentation) return;
             if (isInitialized && onlyIfVisible && !isVisible) return;
             isInitialized = true;
@@ -182,6 +171,7 @@ namespace VRT.Pilots.Common
                     }
                     catch (Exception e)
                     {
+                        Debug.Log($"Cannot set representation {userRepresentation}. Exception {e}");
                         Debug.LogError($"Cannot set representation {userRepresentation}. Revert to avatar.");
                         userRepresentation = UserRepresentationType.SimpleAvatar;
                         avatar.SetActive(true);
@@ -202,6 +192,28 @@ namespace VRT.Pilots.Common
                     Debug.LogError($"{Name()}: Unknown UserRepresentationType {userRepresentation}");
                     isVisible = false;
                     break;
+            }
+        }
+
+        public GameObject GetRepresentationGameObject()
+        {
+            switch (userRepresentation)
+            {
+                case UserRepresentationType.NoRepresentation:
+                    return null;
+                case UserRepresentationType.VideoAvatar:
+                    return webcam;
+                case UserRepresentationType.SimpleAvatar:
+                    return avatar;
+                case UserRepresentationType.PointCloud: // PC
+                    return pointcloud;
+                case UserRepresentationType.AppDefinedRepresentationOne:
+                    return altRepOne;
+                case UserRepresentationType.AppDefinedRepresentationTwo:
+                    return altRepTwo;
+                default:
+                    Debug.LogError($"{Name()}: Unknown UserRepresentationType {userRepresentation}");
+                    return null;
             }
         }
 
