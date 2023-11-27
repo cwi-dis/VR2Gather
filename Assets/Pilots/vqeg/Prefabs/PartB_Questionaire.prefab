@@ -44,8 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b1b7e61553cf1f4b94af51471bc3c18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvases: []
-  nextButtons: []
+  canvases:
+  - {fileID: 2570509760925767703}
+  - {fileID: 8394304310408523354}
+  nextButtons:
+  - {fileID: 3464238696264843278}
+  - {fileID: 7476455820063864387}
 --- !u!1 &2570509760349020735
 GameObject:
   m_ObjectHideFlags: 0
@@ -878,6 +882,24 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2636524150926586110}
   m_PrefabAsset: {fileID: 0}
+--- !u!223 &2570509760925767703 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 520897744849610985, guid: 31049bd03ee69614898ed0ea6867f5a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 2636524150926586110}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3464238696264843278 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1478766184243458288, guid: 31049bd03ee69614898ed0ea6867f5a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 2636524150926586110}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8305788861422634675
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1032,9 +1054,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 31049bd03ee69614898ed0ea6867f5a3, type: 3}
+--- !u!114 &7476455820063864387 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1478766184243458288, guid: 31049bd03ee69614898ed0ea6867f5a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 8305788861422634675}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8394304310408523353 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 520897744849610986, guid: 31049bd03ee69614898ed0ea6867f5a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 8305788861422634675}
+  m_PrefabAsset: {fileID: 0}
+--- !u!223 &8394304310408523354 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 520897744849610985, guid: 31049bd03ee69614898ed0ea6867f5a3,
     type: 3}
   m_PrefabInstance: {fileID: 8305788861422634675}
   m_PrefabAsset: {fileID: 0}
