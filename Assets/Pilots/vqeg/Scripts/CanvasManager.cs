@@ -3,43 +3,52 @@ using UnityEngine.UI;
 
 public class CanvasManager : MonoBehaviour
 {
-    public Canvas canvas1;
-    public Canvas canvas2;
-
-    public Button[] canvas1Buttons;
-    public Button canvas2Button;
+    public Canvas[] canvases;
+    public Button[] nextButtons;
+    private int currentCanvasIndex = 0;
 
     private void Start()
     {
-        // Set up button click listeners
-        foreach (Button button in canvas1Buttons)
+        if (canvases == null || canvases.Length == 0)
         {
-            button.onClick.AddListener(() => OnCanvas1ButtonClick(button));
+            Debug.LogError("Canvases array is not initialized or empty.");
+            return;
         }
 
-        canvas2Button.onClick.AddListener(OnCanvas2ButtonClick);
+        if (nextButtons == null || nextButtons.Length == 0)
+        {
+            Debug.LogError("NextButtons array is not initialized or empty.");
+            return;
+        }
 
-        // Show initial state
-        ShowCanvas1();
+        InitializeCanvases();
+
+        for (int i = 0; i < nextButtons.Length; i++)
+        {
+            int index = i;
+            nextButtons[i].onClick.AddListener(() => OnNextButtonClick(index));
+        }
     }
 
-    private void OnCanvas1ButtonClick(Button clickedButton)
+    private void InitializeCanvases()
     {
-        // Hide canvas1 and show canvas2
-        canvas1.gameObject.SetActive(false);
-        canvas2.gameObject.SetActive(true);
+        foreach (Canvas canvas in canvases)
+        {
+            canvas.gameObject.SetActive(false);
+        }
+        canvases[0].gameObject.SetActive(true);
     }
 
-    private void OnCanvas2ButtonClick()
+    private void OnNextButtonClick(int buttonIndex)
     {
-        // Hide canvas2 and show canvas1
-        canvas2.gameObject.SetActive(false);
-        canvas1.gameObject.SetActive(true);
-    }
+        canvases[currentCanvasIndex].gameObject.SetActive(false);
 
-    private void ShowCanvas1()
-    {
-        canvas1.gameObject.SetActive(true);
-        canvas2.gameObject.SetActive(false);
+        currentCanvasIndex++;
+        if (currentCanvasIndex >= canvases.Length)
+        {
+            currentCanvasIndex = 0; // Reset to the first canvas or handle end of array differently
+        }
+
+        canvases[currentCanvasIndex].gameObject.SetActive(true);
     }
 }

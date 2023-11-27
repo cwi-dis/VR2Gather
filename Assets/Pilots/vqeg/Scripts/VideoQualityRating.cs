@@ -1,84 +1,44 @@
-
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
-using TMPro;
-using System;
-using System.Collections.Generic;
 
 public class VideoQualityRating : MonoBehaviour
 {
-    public TextMeshProUGUI questionText;
-    public Button[] ratingButtons;
-    private int selectedRating = -1; // Default value to indicate no selection
+    public Button[] ratingButtons; // Array of buttons for ratings
+    public Button nextButton;      // The next button
+    private int currentRating = -1; // Invalid default value to ensure selection
+    private string fileName;
 
-    private List<string> userResponses = new List<string>();
-
-    private string filePath; // Path to save the user responses
-
-    private void Start()
+    void Start()
     {
-        // Set the file path for saving user responses
-        filePath = Path.Combine(Application.dataPath, "UserResponses.txt");
-
-        // Set up button click listeners
-        for (int i = 0; i < ratingButtons.Length; i++)
+        InitializeRating();
+        nextButton.onClick.AddListener(SaveRatingAndProceed);
+        foreach (var button in ratingButtons)
         {
-            int ratingValue = i + 1;
-            ratingButtons[i].onClick.AddListener(() => OnRatingButtonClick(ratingValue));
+            button.onClick.AddListener(() => SetRating(button));
         }
     }
 
-    public void OnRatingButtonClick(int rating)
+    void InitializeRating()
     {
-        selectedRating = rating;
-        SaveUserResponseToList();
-        UpdateButtonHighlighting(rating);
+        fileName = "Rating_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".txt";
+        nextButton.interactable = false; // Disable next button initially
     }
 
-    private void SaveUserResponseToList()
+    public void SetRating(Button clickedButton) // setrating int 
     {
-        if (selectedRating == -1)
-        {
-            Debug.LogWarning("No rating selected.");
-            return;
-        }
-
-        var button = ratingButtons[selectedRating - 1];
-        var comp = button.GetComponentInChildren<TextMeshProUGUI>();
-        string ratingText = comp.text;
-        string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        string response = $"{timestamp} - Video Quality Rating: {ratingText}";
-
-        userResponses.Add(response);
-
-        Debug.Log("User response added: " + response);
+        currentRating = int.Parse(clickedButton.name); // Assuming button names are set to their respective rating values
+        nextButton.interactable = true; // Enable next button when a rating is selected
     }
 
-    public void SaveResponsesToFile()
+    public void SaveRatingAndProceed()
     {
-        using (StreamWriter writer = new StreamWriter(filePath, false))
+        if (currentRating != -1)
         {
-            foreach (string response in userResponses)
-            {
-                writer.WriteLine(response);
-            }
-        }
-
-        Debug.Log("All user responses saved to file.");
-    }
-
-
-
-    private void UpdateButtonHighlighting(int selectedRating)
-    {
-        for (int i = 0; i < ratingButtons.Length; i++)
-        {
-            bool isSelected = (i + 1) == selectedRating;
-            ColorBlock colors = ratingButtons[i].colors;
-            colors.normalColor = isSelected ? Color.yellow : Color.white;
-            ratingButtons[i].colors = colors;
+            File.AppendAllText(fileName, currentRating.ToString() + "\n");
+            // Load the next question or handle the end of the questionnaire
+            currentRating = -1; // Reset rating for the next question
+            nextButton.interactable = false; // Disable next button until new rating is chosen
         }
     }
-
 }
