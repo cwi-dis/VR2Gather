@@ -24,6 +24,7 @@ public class VideoQualityRating : MonoBehaviour
     {
         currentRating = rating; // int.Parse(clickedButton.name); // Assuming button names are set to their respective rating values
         Debug.Log($"VideoQualityRating:rating={rating}");
+        Debug.Log($"VideoQualityRating:rating={currentRating}");
         nextButton.interactable = true; // Enable next button when a rating is selected
     }
 
@@ -38,7 +39,7 @@ public class VideoQualityRating : MonoBehaviour
         }
         else
         {
-            Debug.LogError("VideoQualityRating: Rating = -1");      
+           // Debug.LogError("VideoQualityRating: Rating = -1");      
 
         }
     }
