@@ -10,9 +10,13 @@ public class VideoQualityRating : MonoBehaviour
     public int currentRating = -1; // Invalid default value to ensure selection
     private static string fileName;
     public TMP_Text canvasText;
+    private string currentText;
     // Mainly for debug messages:
     static int instanceCounter = 0;
     int instanceNumber = instanceCounter++;
+
+    private static int saveRatingAndProceedCounter = 0; // I want to check how many times my SaveRatingAndProceed function is being called. 
+
 
     public string Name()
     {
@@ -34,7 +38,7 @@ public class VideoQualityRating : MonoBehaviour
         
         if (canvasText != null)
         {
-            string currentText = canvasText.text;
+            currentText = canvasText.text;
             Debug.Log($"{Name()}: Current Canvas Text: {currentText}");
         }
         else
@@ -52,7 +56,7 @@ public class VideoQualityRating : MonoBehaviour
         nextButton.interactable = false; // Disable next button initially
     }
 
-    public void SetRating(int rating) // setrating int 
+    public void SetRating(int rating) 
     {
         currentRating = rating; // int.Parse(clickedButton.name); // Assuming button names are set to their respective rating values
         Debug.Log($"{Name()}: rating={rating}");
@@ -61,13 +65,16 @@ public class VideoQualityRating : MonoBehaviour
         
     public void SaveRatingAndProceed()
     {
+        saveRatingAndProceedCounter++;
+        Debug.Log($"{Name()}: SaveRatingAndProceed called, invocation count: {saveRatingAndProceedCounter}");  // want to know how many times this function is called. 
+
         if (currentRating == -1)
         {
-            Debug.LogError($"{Name()}: Rating = -1"); // need to fix  this.
+            Debug.LogError($"{Name()}: Rating = -1"); 
         }
         else
         {
-            string ratingText = $"canvasText.text: {currentRating}\n";
+            string ratingText = $"canvasText: {currentText} {currentRating}\n";
             Statistics.Output(Name(), $"question={ratingText}, rating={currentRating}");
 
             File.AppendAllText(fileName, ratingText);
