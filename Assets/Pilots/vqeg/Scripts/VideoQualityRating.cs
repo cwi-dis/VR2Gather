@@ -20,6 +20,9 @@ public class VideoQualityRating : MonoBehaviour
 
     public string Name()
     {
+        //saveRatingAndProceedCounter++;        
+        //var stackTrace = new System.Diagnostics.StackTrace();
+        //Debug.Log($"{Name()}: SaveRatingAndProceed called, invocation count: {saveRatingAndProceedCounter}, called from: {stackTrace}");
         return $"{GetType().Name}#{instanceNumber}";
     }
 
@@ -66,7 +69,11 @@ public class VideoQualityRating : MonoBehaviour
     public void SaveRatingAndProceed()
     {
         saveRatingAndProceedCounter++;
-        Debug.Log($"{Name()}: SaveRatingAndProceed called, invocation count: {saveRatingAndProceedCounter}");  // want to know how many times this function is called. 
+        Debug.Log($"{Name()}: SaveRatingAndProceed called: {saveRatingAndProceedCounter}");  // want to know how many times this function is called. 
+
+        //var stackTrace = new System.Diagnostics.StackTrace();
+        //Debug.Log($"{Name()}: SaveRatingAndProceed called, invocation count: {saveRatingAndProceedCounter}, called from: {stackTrace}");
+
 
         if (currentRating == -1)
         {
