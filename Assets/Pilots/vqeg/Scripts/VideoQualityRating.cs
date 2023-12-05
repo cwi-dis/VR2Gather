@@ -13,16 +13,14 @@ public class VideoQualityRating : MonoBehaviour
     private string currentText;
     // Mainly for debug messages:
     static int instanceCounter = 0;
-    int instanceNumber = instanceCounter++;
-
+    int instanceNumber = 0;
+    
     private static int saveRatingAndProceedCounter = 0; // I want to check how many times my SaveRatingAndProceed function is being called. 
 
 
     public string Name()
     {
-        //saveRatingAndProceedCounter++;        
-        //var stackTrace = new System.Diagnostics.StackTrace();
-        //Debug.Log($"{Name()}: SaveRatingAndProceed called, invocation count: {saveRatingAndProceedCounter}, called from: {stackTrace}");
+        instanceNumber = instanceCounter++;
         return $"{GetType().Name}#{instanceNumber}";
     }
 
@@ -54,8 +52,6 @@ public class VideoQualityRating : MonoBehaviour
 
     void InitializeRating()
     {
-        // I dont want to have a seperate file for each rating. 
-        //fileName = "Rating_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".txt";
         nextButton.interactable = false; // Disable next button initially
     }
 
@@ -71,8 +67,8 @@ public class VideoQualityRating : MonoBehaviour
         saveRatingAndProceedCounter++;
         Debug.Log($"{Name()}: SaveRatingAndProceed called: {saveRatingAndProceedCounter}");  // want to know how many times this function is called. 
 
-        //var stackTrace = new System.Diagnostics.StackTrace();
-        //Debug.Log($"{Name()}: SaveRatingAndProceed called, invocation count: {saveRatingAndProceedCounter}, called from: {stackTrace}");
+      //  var stackTrace = new System.Diagnostics.StackTrace();
+      //  Debug.Log($"{Name()}: SaveRatingAndProceed called, invocation count: {saveRatingAndProceedCounter}, called from: {stackTrace}");
 
 
         if (currentRating == -1)
