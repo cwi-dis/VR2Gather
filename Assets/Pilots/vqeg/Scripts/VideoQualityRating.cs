@@ -77,9 +77,13 @@ public class VideoQualityRating : MonoBehaviour
         }
         else
         {
-            string ratingText = $"canvasText: {currentText} {currentRating}\n";
-            Statistics.Output(Name(), $"question={ratingText}, rating={currentRating}");
+            //string ratingText = $"canvasText: {currentText} {currentRating}\n";
+            //Statistics.Output(Name(), $"question={ratingText}, rating={currentRating}");
 
+            string ratingText = $"{currentText} {currentRating}\n";
+            //string ratingText_File = $"{currentText} {currentRating}\n";
+
+            Statistics.Output(Name(), $"question={currentText}, rating={currentRating}");
             File.AppendAllText(fileName, ratingText);
             // Load the next question or handle the end of the questionnaire
             currentRating = -1; // Reset rating for the next question

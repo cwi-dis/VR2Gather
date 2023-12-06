@@ -1,6 +1,6 @@
 {
   "_unused_orchestratorURL" : "http://www.jackjansen.nl:8080/socket.io/",
-  "statsOutputFile" : "",
+  "statsOutputFile" : "VQEG_Experiment.txt",
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "ashu-test",
