@@ -385,6 +385,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextButton: {fileID: 1478766184243458288}
+  currentRating: -1
+  canvasText: {fileID: 0}
 --- !u!1001 &2636524151563927734
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1259,11 +1261,6 @@ PrefabInstance:
       objectReference: {fileID: 2636524152486276736}
     - target: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
-        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: SaveRatingAndProceed
       objectReference: {fileID: 0}
@@ -1271,6 +1268,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: VideoQualityRating, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
         type: 3}
@@ -1435,6 +1437,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextButton: {fileID: 0}
+  currentRating: -1
+  canvasText: {fileID: 0}
 --- !u!224 &1478766184243458317 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5737346916966455143, guid: 24b8626008a25e34db4e9abff54d379b,
