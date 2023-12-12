@@ -1,0 +1,784 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>com.Tivadar.Best.SocketIO</name>
+    </assembly>
+    <members>
+        <member name="T:Best.SocketIO.TransportEventTypes">
+            <summary>
+            Possible event types on the transport level.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.SocketIOEventTypes">
+            <summary>
+            Event types of the SocketIO protocol.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketIOEventTypes.Connect">
+            <summary>
+            Connect to a namespace, or we connected to a namespace
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketIOEventTypes.Disconnect">
+            <summary>
+            Disconnect a namespace, or we disconnected from a namespace.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketIOEventTypes.Event">
+            <summary>
+            A general event. The event's name is in the payload.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketIOEventTypes.Ack">
+            <summary>
+            Acknowledgment of an event.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketIOEventTypes.Error">
+            <summary>
+            Error sent by the server, or by the plugin
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketIOEventTypes.BinaryEvent">
+            <summary>
+            A general event with binary attached to the packet. The event's name is in the payload.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketIOEventTypes.BinaryAck">
+            <summary>
+            Acknowledgment of a binary event.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.Events.EventNames">
+            <summary>
+            Helper class to provide functions to an easy Enum->string conversation of the transport and SocketIO evenet types.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Events.EventNames.IsBlacklisted(System.String)">
+            <summary>
+            Checks an event name whether it's blacklisted or not.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.Events.TypedEventTable">
+            <summary>
+            Manages subscriptions for a <see cref="P:Best.SocketIO.Events.TypedEventTable.Socket"/>.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Events.TypedEventTable.Socket">
+            <summary>
+            The Socket that this EventTable is bound to.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.Events.TypedEventTable.subscriptions">
+            <summary>
+            This is where we store the methodname => callback mapping.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Events.TypedEventTable.#ctor(Best.SocketIO.Socket)">
+            <summary>
+            Constructor to create an instance and bind it to a socket.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.HandshakeData">
+            <summary>
+            Helper class to parse and hold handshake information.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.HandshakeData.Sid">
+            <summary>
+            Session ID of this connection.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.HandshakeData.Upgrades">
+            <summary>
+            List of possible upgrades.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.HandshakeData.PingInterval">
+            <summary>
+            What interval we have to set a ping message.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.HandshakeData.PingTimeout">
+            <summary>
+            What time have to pass without an answer to our ping request when we can consider the connection disconnected.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.HandshakeData.MaxPayload">
+            <summary>
+            This defines how many bytes a single message can be, before the server closes the socket.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.IncomingPacket">
+            <summary>
+            Represents a packet received from the the Socket.IO server.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.IncomingPacket.Empty">
+            <summary>
+            Represents an uninitialized packet.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.TransportEvent">
+            <summary>
+            Event type of this packet on the transport layer.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.SocketIOEvent">
+            <summary>
+            The packet's type in the Socket.IO protocol.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.Id">
+            <summary>
+            The internal ack-id of this packet.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.Namespace">
+            <summary>
+            The sender namespace's name.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.AttachementCount">
+            <summary>
+            Count of binary data expected after the current packet.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.Attachements">
+            <summary>
+            list of binary data received.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.EventName">
+            <summary>
+            The decoded event name from the payload string.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.DecodedArgs">
+            <summary>
+            The decoded arguments by the parser.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.DecodedArg">
+            <summary>
+            Decoded argument if there's only one. Otherwise they are in the DecodedArgs property.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.IncomingPacket.Payload">
+            <summary>
+            In case of JSon serialization, it's the json payload sent by the server.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.IncomingPacket.ToString">
+            <summary>
+            Returns with the Payload of this packet.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.IManager">
+            <summary>
+            Interface to hide internal functions from the user by implementing it as an explicit interface.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.ISocket">
+            <summary>
+            Interface to hide internal functions from the user by implementing it as an explicit interface.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.Socket">
+            <summary>
+            This class represents a Socket.IO namespace.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Socket.Manager">
+            <summary>
+            The SocketManager instance that created this socket.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Socket.Namespace">
+            <summary>
+            The namespace that this socket is bound to.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Socket.Id">
+            <summary>
+            Unique Id of the socket.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Socket.IsOpen">
+            <summary>
+            True if the socket is connected and open to the server. False otherwise.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.#ctor(System.String,Best.SocketIO.SocketManager)">
+            <summary>
+            Internal constructor.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Best#SocketIO#ISocket#Open">
+            <summary>
+            Internal function to start opening the socket.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Disconnect">
+            <summary>
+            Disconnects this socket/namespace.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Best#SocketIO#ISocket#Disconnect(System.Boolean)">
+            <summary>
+            Disconnects this socket/namespace.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Volatile">
+            <summary>
+            By emitting a volatile event, if the transport isn't ready the event is going to be discarded.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Off">
+            <summary>
+            Remove all callbacks for all events.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Off(System.String)">
+            <summary>
+            Removes all callbacks to the given event.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Off(Best.SocketIO.SocketIOEventTypes)">
+            <summary>
+            Removes all callbacks to the given event.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Best#SocketIO#ISocket#OnPacket(Best.SocketIO.IncomingPacket)">
+            <summary>
+            Last call of the OnPacket chain(Transport -> Manager -> Socket), we will dispatch the event if there is any callback
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Best#SocketIO#ISocket#EmitEvent(Best.SocketIO.SocketIOEventTypes,System.Object[])">
+            <summary>
+            Emits an internal packet-less event to the user level.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.Best#SocketIO#ISocket#EmitEvent(System.String,System.Object[])">
+            <summary>
+            Emits an internal packet-less event to the user level.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Socket.OnTransportOpen">
+            <summary>
+            Called when the underlying transport is connected
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.States">
+            <summary>
+            Possible states of a SocketManager instance.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.States.Initial">
+            <summary>
+            Initial state of the SocketManager
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.States.Opening">
+            <summary>
+            The SocketManager is currently opening.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.States.Open">
+            <summary>
+            The SocketManager is open, events can be sent to the server.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.States.Paused">
+            <summary>
+            Paused for transport upgrade
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.States.Reconnecting">
+            <summary>
+            An error occurred, the SocketManager now trying to connect again to the server.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.States.Closed">
+            <summary>
+            The SocketManager is closed, initiated by the user or by the server
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.SocketManager">
+            <summary>
+            Manages the connection and associated sockets for a Socket.IO server.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.ProtocolVersion">
+            <summary>
+            Supported Socket.IO protocol version
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.State">
+            <summary>
+            The current state of this Socket.IO manager.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Options">
+            <summary>
+            The SocketOptions instance that this manager will use.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Uri">
+            <summary>
+            The Uri to the Socket.IO endpoint.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Handshake">
+            <summary>
+            The server sent and parsed Handshake data.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Transport">
+            <summary>
+            The currently used main transport instance.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.RequestCounter">
+            <summary>
+            The Request counter for request-based transports.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Socket">
+            <summary>
+            The root("/") Socket.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Item(System.String)">
+            <summary>
+            Indexer to access socket associated to the given namespace.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.ReconnectAttempts">
+            <summary>
+            How many reconnect attempts made.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Parser">
+            <summary>
+            Parser to encode and decode messages and create strongly typed objects.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Context">
+            <summary>
+            Logging context of this socket.io connection.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.OnIncomingPacket">
+            <summary>
+            Called for every packet received from the server.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.Timestamp">
+            <summary>
+            Timestamp support to the request based transports.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.NextAckId">
+            <summary>
+            Auto-incrementing property to return Ack ids.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.PreviousState">
+            <summary>
+            Internal property to store the previous state of the manager.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketManager.UpgradingTransport">
+            <summary>
+            Transport currently upgrading.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.Namespaces">
+            <summary>
+            Namespace name -> Socket mapping
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.Sockets">
+            <summary>
+            List of the sockets to able to iterate over them easily.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.OfflinePackets">
+            <summary>
+            List of unsent packets. Only instantiated when we have to use it.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.LastHeartbeat">
+            <summary>
+            When we sent out the last heartbeat(Ping) message.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.ReconnectAt">
+            <summary>
+            When we have to try to do a reconnect attempt
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.ConnectionStarted">
+            <summary>
+            When we started to connect to the server.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.closing">
+            <summary>
+            Private flag to avoid multiple Close call
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketManager.lastPingReceived">
+            <summary>
+            In Engine.io v4 / socket.io v3 the server sends the ping messages, not the client.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.#ctor(System.Uri)">
+            <summary>
+            Constructor to create a SocketManager instance that will connect to the given uri.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.#ctor(System.Uri,Best.SocketIO.Parsers.IParser,Best.SocketIO.SocketOptions)">
+            <summary>
+            Constructor to create a SocketManager instance.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.GetSocket">
+            <summary>
+            Returns with the "/" namespace, the same as the Socket property.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.GetSocket(System.String)">
+            <summary>
+            Returns with the specified namespace
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#SocketIO#IManager#Remove(Best.SocketIO.Socket)">
+            <summary>
+            Internal function to remove a Socket instance from this manager.
+            </summary>
+            <param name="socket"></param>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Open">
+            <summary>
+            This function will begin to open the Socket.IO connection by sending out the handshake request.
+            If the Options' AutoConnect is true, it will be called automatically.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Close">
+            <summary>
+            Closes this Socket.IO connection.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#SocketIO#IManager#Close(System.Boolean)">
+            <summary>
+            Closes this Socket.IO connection.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#SocketIO#IManager#TryToReconnect">
+            <summary>
+            Called from a ITransport implementation when an error occurs and we may have to try to reconnect.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#SocketIO#IManager#OnTransportConnected(Best.SocketIO.Transports.ITransport)">
+            <summary>
+            Called by transports when they are connected to the server.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.SelectTransport">
+            <summary>
+            Select the best transport to send out packets.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.SendOfflinePackets">
+            <summary>
+            Will select the best transport and sends out all packets that are in the OfflinePackets list.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#SocketIO#IManager#SendPacket(Best.SocketIO.OutgoingPacket)">
+            <summary>
+            Internal function that called from the Socket class. It will send out the packet instantly, or if no transport is available it will store
+            the packet in the OfflinePackets list.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#SocketIO#IManager#OnPacket(Best.SocketIO.IncomingPacket)">
+            <summary>
+            Called from the currently operating Transport. Will pass forward to the Socket that has to call the callbacks.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.EmitAll(System.String,System.Object[])">
+            <summary>
+            Sends an event to all available namespaces.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#SocketIO#IManager#EmitEvent(System.String,System.Object[])">
+            <summary>
+            Emits an internal packet-less event to the root namespace without creating it if it isn't exists yet.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#SocketIO#IManager#EmitEvent(Best.SocketIO.SocketIOEventTypes,System.Object[])">
+            <summary>
+            Emits an internal packet-less event to the root namespace without creating it if it isn't exists yet.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketManager.Best#HTTP#Shared#Extensions#IHeartbeat#OnHeartbeatUpdate(System.DateTime,System.TimeSpan)">
+            <summary>
+            Called from the HTTPManager's OnUpdate function every frame. It's main function is to send out heartbeat messages.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.SocketOptions">
+            <summary>
+            Contains settings for a <see cref="T:Best.SocketIO.SocketManager"/>.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.ConnectWith">
+            <summary>
+            The SocketManager will try to connect with this transport.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.Reconnection">
+            <summary>
+            Whether to reconnect automatically after a disconnect (default true)
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.ReconnectionAttempts">
+            <summary>
+            Number of attempts before giving up (default Int.MaxValue)
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.ReconnectionDelay">
+            <summary>
+            How long to initially wait before attempting a new reconnection (default 1000ms).
+            Affected by +/- RandomizationFactor, for example the default initial delay will be between 500ms to 1500ms.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.ReconnectionDelayMax">
+            <summary>
+            Maximum amount of time to wait between reconnections (default 5000ms).
+            Each attempt increases the reconnection delay along with a randomization as above.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.RandomizationFactor">
+            <summary>
+            (default 0.5`), [0..1]
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.Timeout">
+            <summary>
+            Connection timeout before a connect_error and connect_timeout events are emitted (default 20000ms)
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.AutoConnect">
+            <summary>
+            By setting this false, you have to call SocketManager's Open() whenever you decide it's appropriate.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.AdditionalQueryParams">
+            <summary>
+            Additional query parameters that will be passed for accessed uris. If the value is null, or an empty string it will be not appended to the query only the key.
+            <remarks>The keys and values must be escaped properly, as the plugin will not escape these. </remarks>
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.QueryParamsOnlyForHandshake">
+            <summary>
+            If it's false, the parameters in the AdditionalQueryParams will be passed for all HTTP requests. Its default value is true.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.HTTPRequestCustomizationCallback">
+            <summary>
+            A callback that called for every HTTPRequest the socket.io protocol sends out. It can be used to further customize (add additional request for example) requests.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketOptions.Auth">
+            <summary>
+            Starting with Socket.IO v3, connecting to a namespace a client can send payload data. When the Auth callback function is set, the plugin going to call it when connecting to a namespace. Its return value must be a json string!
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.SocketOptions.WebsocketOptions">
+            <summary>
+            Customization options for the websocket transport.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.SocketOptions.BuiltQueryParams">
+            <summary>
+            The cached value of the result of the BuildQueryParams() call.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketOptions.#ctor">
+            <summary>
+            Constructor, setting the default option values.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketOptions.BuildQueryParams">
+            <summary>
+            Builds the keys and values from the AdditionalQueryParams to an key=value form. If AdditionalQueryParams is null or empty, it will return an empty string.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.SocketOptions.AdditionalQueryParams_CollectionChanged(System.Object,PlatformSupport.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            This event will be called when the AdditonalQueryPrams dictionary changed. We have to reset the cached values.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.Transports.TransportStates">
+            <summary>
+            Possible states of an ITransport implementation.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.Transports.TransportStates.Connecting">
+            <summary>
+            The transport is connecting to the server.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.Transports.TransportStates.Opening">
+            <summary>
+            The transport is connected, and started the opening process.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.Transports.TransportStates.Open">
+            <summary>
+            The transport is open, can send and receive packets.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.Transports.TransportStates.Closed">
+            <summary>
+            The transport is closed.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.Transports.TransportStates.Paused">
+            <summary>
+            The transport is paused.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.Transports.ITransport">
+            <summary>
+            An interface that a Socket.IO transport must implement.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Transports.ITransport.Type">
+            <summary>
+            Type of this transport.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Transports.ITransport.State">
+            <summary>
+            Current state of the transport
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Transports.ITransport.Manager">
+            <summary>
+            SocketManager instance that this transport is bound to.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Transports.ITransport.IsRequestInProgress">
+            <summary>
+            True if the transport is busy with sending messages.
+            </summary>
+        </member>
+        <member name="P:Best.SocketIO.Transports.ITransport.IsPollingInProgress">
+            <summary>
+            True if the transport is busy with a poll request.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.ITransport.Open">
+            <summary>
+            Start open/upgrade the transport.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.ITransport.Poll">
+            <summary>
+            Do a poll for available messages on the server.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.ITransport.Send(Best.SocketIO.OutgoingPacket)">
+            <summary>
+            Send a single packet to the server.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.ITransport.Send(System.Collections.Generic.List{Best.SocketIO.OutgoingPacket})">
+            <summary>
+            Send a list of packets to the server.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.ITransport.Close">
+            <summary>
+            Close this transport.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.Transports.PollingTransport">
+            <summary>
+            Implements an HTTP long-polling transport.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.Transports.PollingTransport.LastRequest">
+            <summary>
+            The last POST request we sent to the server.
+            </summary>
+        </member>
+        <member name="F:Best.SocketIO.Transports.PollingTransport.PollRequest">
+            <summary>
+            Last GET request we sent to the server.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.PollingTransport.Close">
+            <summary>
+            Closes the transport and cleans up resources.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.PollingTransport.OnPacket(Best.SocketIO.IncomingPacket)">
+            <summary>
+            Preprocessing and sending out packets to the manager.
+            </summary>
+        </member>
+        <member name="T:Best.SocketIO.Transports.WebSocketTransport">
+            <summary>
+            A transport implementation that can communicate with a SocketIO server.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.Close">
+            <summary>
+            Closes the transport and cleans up resources.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.Poll">
+            <summary>
+            Polling implementation. With WebSocket it's just a skeleton.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.OnOpen(Best.WebSockets.WebSocket)">
+            <summary>
+            WebSocket implementation OnOpen event handler.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.OnMessage(Best.WebSockets.WebSocket,System.String)">
+            <summary>
+            WebSocket implementation OnMessage event handler.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.OnBinaryNoAlloc(Best.WebSockets.WebSocket,Best.HTTP.Shared.PlatformSupport.Memory.BufferSegment)">
+            <summary>
+            WebSocket implementation OnBinary event handler.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.OnClosed(Best.WebSockets.WebSocket,Best.WebSockets.WebSocketStatusCodes,System.String)">
+            <summary>
+            WebSocket implementation OnClosed event handler.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.Send(Best.SocketIO.OutgoingPacket)">
+            <summary>
+            A WebSocket implementation of the packet sending.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.Send(System.Collections.Generic.List{Best.SocketIO.OutgoingPacket})">
+            <summary>
+            A WebSocket implementation of the packet sending.
+            </summary>
+        </member>
+        <member name="M:Best.SocketIO.Transports.WebSocketTransport.OnPacket(Best.SocketIO.IncomingPacket)">
+            <summary>
+            Will only process packets that need to upgrade. All other packets are passed to the Manager.
+            </summary>
+        </member>
+    </members>
+</doc>

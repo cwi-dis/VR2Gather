@@ -1,0 +1,23 @@
+{
+    "name": "com.Tivadar.Best.SocketIO",
+    "rootNamespace": "Best.SocketIO",
+    "references": [
+        "com.Tivadar.Best.HTTP",
+        "com.Tivadar.Best.WebSockets"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.nuget.newtonsoft-json",
+            "expression": "1.0.0",
+            "define": "BEST_SOCKETIO_ENABLE_NEWTONSOFT_JSON_DOTNET_ENCODER"
+        }
+    ],
+    "noEngineReferences": false
+}
