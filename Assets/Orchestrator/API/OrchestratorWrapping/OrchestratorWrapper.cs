@@ -25,8 +25,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using LitJson;
-using BestHTTP.SocketIO;
+using Best.SocketIO;
+using Best.HTTP.JSON.LitJson;
 using System.Text;
 using VRT.Orchestrator.WSManagement;
 
@@ -502,30 +502,30 @@ namespace VRT.Orchestrator.Wrapping
 #region remote response
 
         // messages from the orchestrator
-        private void OnMessageSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
+        private void OnMessageSentFromOrchestrator(IncomingPacket packet)
         {
-            if (MessagesListener != null) MessagesListener.OnOrchestratorResponse(-1, 0, packet.Payload);
+            MessagesListener?.OnOrchestratorResponse(-1, 0, packet.Payload);
 
             JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
             UserMessage messageReceived = new UserMessage(jsonResponse[1]["messageFrom"].ToString(), jsonResponse[1]["messageFromName"].ToString(), jsonResponse[1]["message"].ToString());
 
-            if (UserMessagesListener != null) UserMessagesListener.OnUserMessageReceived(messageReceived);
+            UserMessagesListener?.OnUserMessageReceived(messageReceived);
         }
 
         // bit-stream packets from the orchestrator
-        private void OnUserDataReceived(Socket socket, Packet packet, params object[] args)
+        private void OnUserDataReceived(IncomingPacket packet)
         {
             JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
             string lUserID = jsonResponse[1].ToString();
             string lType = jsonResponse[2].ToString();
             string lDescription = jsonResponse[3].ToString();
 
-            UserDataStreamPacket packetReceived = new UserDataStreamPacket(lUserID, lType, lDescription, packet.Attachments[0]);
+            UserDataStreamPacket packetReceived = new UserDataStreamPacket(lUserID, lType, lDescription, packet.Attachements[0]);
             OnDataStreamReceived?.Invoke(packetReceived);
         }
 
         // sessions update events from the orchestrator
-        private void OnSessionUpdated(Socket socket, Packet packet, params object[] args)
+        private void OnSessionUpdated(IncomingPacket packet)
         {
             if (MessagesListener != null) MessagesListener.OnOrchestratorResponse(-1, 0, packet.Payload);
 
@@ -565,13 +565,13 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         // events packets from master user through the orchestrator
-        private void OnMasterEventReceived(Socket socket, Packet packet, params object[] args)
+        private void OnMasterEventReceived(IncomingPacket packet)
         {
             if (UserMessagesListener != null)
             {
                 JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
                 string lUserID = jsonResponse[1]["sceneEventFrom"].ToString();
-                string lData = Encoding.ASCII.GetString(packet.Attachments[0]);
+                string lData = Encoding.ASCII.GetString(packet.Attachements[0]);
                 UserEvent lUserEvent = new UserEvent(lUserID, lData);
 
                 UserMessagesListener.OnMasterEventReceived(lUserEvent);
@@ -579,13 +579,13 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         // events packets from users through the orchestrator
-        private void OnUserEventReceived(Socket socket, Packet packet, params object[] args)
+        private void OnUserEventReceived(IncomingPacket packet)
         {
             if (UserMessagesListener != null)
             {
                 JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
                 string lUserID = jsonResponse[1]["sceneEventFrom"].ToString();
-                string lData = Encoding.ASCII.GetString(packet.Attachments[0]);
+                string lData = Encoding.ASCII.GetString(packet.Attachements[0]);
                 UserEvent lUserEvent = new UserEvent(lUserID, lData);
 
                 UserMessagesListener.OnUserEventReceived(lUserEvent);
