@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5374466510791139668}
   - component: {fileID: 5374466510791139671}
   - component: {fileID: 5374466510791139670}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TableLeg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 5374466510870055350}
   - component: {fileID: 164917521}
   - component: {fileID: 164917518}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TableTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -222,7 +222,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5374466511482497581}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Table
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238,7 +238,7 @@ Transform:
   m_GameObject: {fileID: 5374466511482497580}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5374466510791139665}
@@ -259,7 +259,7 @@ GameObject:
   - component: {fileID: 5374466512620223683}
   - component: {fileID: 5374466512620223682}
   - component: {fileID: 5374466512620223693}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TableFoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
