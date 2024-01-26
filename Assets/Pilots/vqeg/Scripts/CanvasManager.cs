@@ -1,14 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class CanvasManager : MonoBehaviour
 {
     public Canvas[] canvases;
     public Button[] nextButtons;
     private int currentCanvasIndex = 0;
-    public Button endOfQuestionsButton;
-
+    
     private void Start()
     {
         if (canvases == null || canvases.Length == 0)
@@ -48,8 +46,7 @@ public class CanvasManager : MonoBehaviour
         currentCanvasIndex++;
         if (currentCanvasIndex >= canvases.Length)
         {
-            currentCanvasIndex = 0; // Reset to the first canvas or handle end of array differently
-            //endOfQuestionsButton.onClick.Invoke();
+            currentCanvasIndex = 0; // Reset to the first canvas or handle end of array differently            
         }
         else
         {
