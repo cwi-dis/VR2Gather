@@ -5,6 +5,8 @@ namespace VRT.Pilots.Common
 	public class PlayerLocation : NetworkIdBehaviour
 	{
 		public PlayerNetworkControllerBase CurrentPlayer;
+		public Camera cam;
+
 
 		public bool IsEmpty
 		{
