@@ -46,7 +46,6 @@ public class QuestionManager : MonoBehaviour
             Debug.LogError($"{Name()}: CanvasText is not assigned!");
         }
         InitializeRating();
-        nextButton.onClick.AddListener(SaveRatingAndProceed);
     }
 
     void InitializeRating()
@@ -64,7 +63,7 @@ public class QuestionManager : MonoBehaviour
     public void SaveRatingAndProceed()
     {
         saveRatingAndProceedCounter++;
-        Debug.Log($"{Name()}: SaveRatingAndProceed called: {saveRatingAndProceedCounter}");  // want to know how many times this function is called. 
+        Debug.Log($"{Name()}: SaveRatingAndProceed: rating={currentRating}, counter={saveRatingAndProceedCounter}");  // want to know how many times this function is called. 
 
       //  var stackTrace = new System.Diagnostics.StackTrace();
       //  Debug.Log($"{Name()}: SaveRatingAndProceed called, invocation count: {saveRatingAndProceedCounter}, called from: {stackTrace}");
@@ -72,7 +71,7 @@ public class QuestionManager : MonoBehaviour
 
         if (currentRating == -1)
         {
-            Debug.LogError($"{Name()}: SaveRatingAndProceed: Rating = -1"); 
+            Debug.LogError($"{Name()}: SaveRatingAndProceed: Rating = {currentRating}"); 
         }
         else
         {
