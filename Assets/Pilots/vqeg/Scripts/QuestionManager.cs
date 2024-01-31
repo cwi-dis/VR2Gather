@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using Cwipc;
 
-public class VideoQualityRating : MonoBehaviour
+public class QuestionManager : MonoBehaviour
 {
     public Button nextButton;      // The next button
     public int currentRating = -1; // Invalid default value to ensure selection
@@ -13,14 +13,13 @@ public class VideoQualityRating : MonoBehaviour
     private string currentText;
     // Mainly for debug messages:
     static int instanceCounter = 0;
-    int instanceNumber = 0;
-    
+    int instanceNumber = instanceCounter++;
+
     private static int saveRatingAndProceedCounter = 0; // I want to check how many times my SaveRatingAndProceed function is being called. 
 
 
     public string Name()
     {
-        instanceNumber = instanceCounter++;
         return $"{GetType().Name}#{instanceNumber}";
     }
 
@@ -58,7 +57,7 @@ public class VideoQualityRating : MonoBehaviour
     public void SetRating(int rating) 
     {
         currentRating = rating; // int.Parse(clickedButton.name); // Assuming button names are set to their respective rating values
-        Debug.Log($"{Name()}: rating={rating}");
+        Debug.Log($"{Name()}: SetRating: rating={rating}");
         nextButton.interactable = true; // Enable next button when a rating is selected
     }
         
@@ -73,7 +72,7 @@ public class VideoQualityRating : MonoBehaviour
 
         if (currentRating == -1)
         {
-            Debug.LogError($"{Name()}: Rating = -1"); 
+            Debug.LogError($"{Name()}: SaveRatingAndProceed: Rating = -1"); 
         }
         else
         {

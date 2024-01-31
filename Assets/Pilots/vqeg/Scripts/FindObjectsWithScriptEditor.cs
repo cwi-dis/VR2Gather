@@ -8,7 +8,7 @@ public class FindObjectsWithScriptEditor : EditorWindow
     private static void FindObjectsWithScript()
     {
         List<GameObject> foundObjects = new List<GameObject>();
-        foreach (VideoQualityRating script in GameObject.FindObjectsOfType<VideoQualityRating>())
+        foreach (QuestionManager script in GameObject.FindObjectsOfType<QuestionManager>())
         {
             foundObjects.Add(script.gameObject);
         }

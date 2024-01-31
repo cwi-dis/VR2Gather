@@ -1,10 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CanvasManager : MonoBehaviour
+public class QuestionnaireManager : MonoBehaviour
 {
+    [Tooltip("Array of per-question canvases")]
     public Canvas[] canvases;
+    [Tooltip("Array of per-question Next buttons")]
     public Button[] nextButtons;
+    [Tooltip("Will go to next scene after all questions have been answered")]
+    public SceneTransition endOfQuestionnaireTransition;
     private int currentCanvasIndex = 0;
     
     private void Start()
@@ -46,7 +50,13 @@ public class CanvasManager : MonoBehaviour
         currentCanvasIndex++;
         if (currentCanvasIndex >= canvases.Length)
         {
-            currentCanvasIndex = 0; // Reset to the first canvas or handle end of array differently            
+            if (endOfQuestionnaireTransition != null)
+            {
+                endOfQuestionnaireTransition.GoToNextScene();
+            } else
+            {
+                Debug.LogWarning("Questionnaire finished, but no end scene transition specified");
+            }
         }
         else
         {
