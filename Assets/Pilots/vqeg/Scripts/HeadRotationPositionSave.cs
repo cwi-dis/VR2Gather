@@ -8,7 +8,7 @@ using System.IO;
 public class HeadRotationPositionSave : MonoBehaviour
 {
     private string logUrl;
-    
+    private static string fileName;
     private string state;
 
 
