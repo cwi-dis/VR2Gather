@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using Cwipc;
 
 
 public class HeadRotationPositionSave : MonoBehaviour
@@ -37,6 +38,7 @@ public class HeadRotationPositionSave : MonoBehaviour
         {
             sw.WriteLine("Log started on " + DateTime.Now.ToLongDateString());
         }
+        Statistics.Output("HeadRotationPositionSave", $"logFile={logUrl},millis={DateTime.Now.TimeOfDay.TotalMilliseconds}");
     }
 
     void RecordCameraPositionAndOrientation()
@@ -60,7 +62,7 @@ public class HeadRotationPositionSave : MonoBehaviour
             // Append record to the log file
             using (StreamWriter sw = File.AppendText(logUrl))
             {
-                string logEntry = $"{DateTime.Now.TimeOfDay.TotalMilliseconds * 1000000};{state};LOOK_AT;{head.x};{head.y};{head.z};POSITION;{position.x};{position.y};{position.z}";
+                string logEntry = $"{DateTime.Now.TimeOfDay.TotalMilliseconds};LOOK_AT;{head.x};{head.y};{head.z};POSITION;{position.x};{position.y};{position.z}";
                 sw.WriteLine(logEntry);
             }
         }
