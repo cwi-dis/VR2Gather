@@ -18,10 +18,7 @@ public class QuestionManager : MonoBehaviour
 
     private static int saveRatingAndProceedCounter = 0; // I want to check how many times my SaveRatingAndProceed function is being called. 
 
-    public int totalQuestions = 3; 
-    public int currentQuestionIndex = 0;
-
-    public NetworkTrigger networkTriggerScript;
+    
 
     public string Name()
     {
@@ -93,23 +90,7 @@ public class QuestionManager : MonoBehaviour
             nextButton.interactable = false; // Disable next button until new rating is chosen
 
 
-            if (currentQuestionIndex >= totalQuestions)
-            {
-                // This is the last question, so trigger the network event
-                if (networkTriggerScript != null)
-                {
-                    networkTriggerScript.Trigger(); 
-                }
-                else
-                {
-                    Debug.LogError("NetworkTriggerScript is not assigned or found.");
-                }                
-            }
-            else
-            {
-                // Not the last question, proceed as usual
-                currentQuestionIndex++; 
-            }
+            
 
         }
 
