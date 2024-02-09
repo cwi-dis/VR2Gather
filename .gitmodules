@@ -6,4 +6,4 @@
 	url = ../VR2G-nativeLibraries
 [submodule "Assets/PilotsExternal/5dculture"]
 	path = Assets/PilotsExternal/5dculture
-	url = ../VR2G-5Dculture
+	url = ../VRTApp-5Dculture
