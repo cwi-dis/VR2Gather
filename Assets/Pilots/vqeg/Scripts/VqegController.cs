@@ -12,6 +12,8 @@ public class VqegController : PilotController
     [Tooltip("Are we the confederate?")]
     public bool weAreConfederate;
 
+    
+
     public virtual void Start()
     {
         base.Start();
@@ -21,5 +23,4 @@ public class VqegController : PilotController
             obj.SetActive(weAreConfederate);
         }
     }
-  
 }
