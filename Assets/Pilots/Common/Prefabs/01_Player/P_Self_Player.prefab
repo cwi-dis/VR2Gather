@@ -2726,6 +2726,7 @@ MonoBehaviour:
   Head3TransformAlsoMove: {fileID: 0}
   LeftHandTransform: {fileID: 4247113684348723594}
   RightHandTransform: {fileID: 7630850262051204802}
+  AlternativeUserRepresentation: {fileID: 0}
   SendRate: 10
   _IsLocalPlayer: 1
   playerController: {fileID: 0}

@@ -121,7 +121,8 @@ namespace VRT.Orchestrator.WSManagement
             // Listen to the messages received
             messagesToManage.ForEach((OrchestratorMessageReceiver messageReceiver) =>
             {
-                Manager.Socket.On(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
+                Debug.Log("Installing handler for " + messageReceiver.SocketEventName);
+                Manager.Socket.On<Socket>(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
             });
             
             // Open the socket

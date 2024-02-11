@@ -130,11 +130,11 @@ namespace VRT.Orchestrator.WSManagement
         public string SocketEventName;
 
         // the function that will be used to process the response
-        public Action<IncomingPacket> OrchestratorMessageCallback;
+        public Action<Socket> OrchestratorMessageCallback;
 
         // Constructors
         public OrchestratorMessageReceiver(string socketEventName,
-            Action<IncomingPacket> orchestratorMessageCallback)
+            Action<Socket> orchestratorMessageCallback)
         {
             this.SocketEventName = socketEventName;
             this.OrchestratorMessageCallback = orchestratorMessageCallback;
