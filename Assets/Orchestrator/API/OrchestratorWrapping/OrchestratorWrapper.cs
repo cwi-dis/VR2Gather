@@ -576,7 +576,8 @@ namespace VRT.Orchestrator.Wrapping
                 var packet = socket.CurrentPacket;
                 JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
                 string lUserID = jsonResponse[1]["sceneEventFrom"].ToString();
-                string lData = Encoding.ASCII.GetString(packet.Attachements[0]);
+                string lData = jsonResponse[1]["sceneEventData"].ToJson();
+                Debug.Log("DATA:" + lData);
                 UserEvent lUserEvent = new UserEvent(lUserID, lData);
 
                 UserMessagesListener.OnMasterEventReceived(lUserEvent);
@@ -591,7 +592,7 @@ namespace VRT.Orchestrator.Wrapping
                 var packet = socket.CurrentPacket;
                 JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
                 string lUserID = jsonResponse[1]["sceneEventFrom"].ToString();
-                string lData = Encoding.ASCII.GetString(packet.Attachements[0]);
+                string lData = jsonResponse[1]["sceneEventData"].ToJson();
                 UserEvent lUserEvent = new UserEvent(lUserID, lData);
 
                 UserMessagesListener.OnUserEventReceived(lUserEvent);
