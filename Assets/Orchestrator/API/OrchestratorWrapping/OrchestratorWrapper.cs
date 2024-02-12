@@ -555,7 +555,7 @@ namespace VRT.Orchestrator.Wrapping
                     }
 
                     break;
-                case "USER_LEAVED_SESSION":
+                case "USER_LEFT_SESSION":
 
                     foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
