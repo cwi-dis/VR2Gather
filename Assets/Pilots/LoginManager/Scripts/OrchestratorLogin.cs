@@ -456,8 +456,8 @@ namespace VRT.Pilots.LoginManager
                     StatusPanelUserName.text = uname;
                     break;
                 case State.Settings:
-                    SettingsPanel_UpdateAfterRepresentationChange();
                     SettingsPanel_UpdateUserData();
+                    SettingsPanel_UpdateAfterRepresentationChange();
                     break;
                 case State.Play:
                     break;
