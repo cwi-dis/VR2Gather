@@ -322,7 +322,14 @@ namespace VRT.Orchestrator.Wrapping
         private void OnGetSessionsResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            List<Session> list = Helper.ParseElementsList<Session>(response.body);
+            List<Session> list;
+
+            if (response.body.Keys.Count != 0) {
+                list = Helper.ParseElementsList<Session>(response.body);
+            } else {
+                list = new List<Session>();
+            }
+
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetSessionsResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetSessionsResponse(status, list);
         }
