@@ -1,16 +1,17 @@
 {
   "dependencies": {
-    "com.unity.animation.rigging": "1.1.1",
+    "com.unity.ai.navigation": "1.1.4",
+    "com.unity.animation.rigging": "1.2.1",
     "com.unity.ide.visualstudio": "2.0.18",
-    "com.unity.inputsystem": "1.6.3",
+    "com.unity.inputsystem": "1.7.0",
     "com.unity.postprocessing": "3.2.2",
-    "com.unity.recorder": "3.0.3",
+    "com.unity.recorder": "4.0.1",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.ugui": "1.0.0",
-    "com.unity.xr.interaction.toolkit": "2.4.0",
-    "com.unity.xr.management": "4.3.3",
-    "com.unity.xr.oculus": "3.3.0",
-    "com.unity.xr.openxr": "1.8.1",
+    "com.unity.xr.interaction.toolkit": "2.5.0",
+    "com.unity.xr.management": "4.4.0",
+    "com.unity.xr.oculus": "4.0.0",
+    "com.unity.xr.openxr": "1.8.2",
     "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
@@ -21,6 +22,7 @@
     "com.unity.modules.terrain": "1.0.0",
     "com.unity.modules.ui": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
+	"com.unity.modules.unityanalytics": "1.0.0",
     "com.unity.modules.video": "1.0.0"
   }
 }
