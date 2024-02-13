@@ -529,7 +529,11 @@ namespace VRT.Orchestrator.Wrapping
             string lType = jsonResponse[2].ToString();
             string lDescription = jsonResponse[3].ToString();
 
-            UserDataStreamPacket packetReceived = new UserDataStreamPacket(lUserID, lType, lDescription, packet.Attachements[0]);
+            var attachment = packet.Attachements[0];
+            byte[] buffer = new byte[attachment.Count];
+            attachment.CopyTo(buffer);
+
+            UserDataStreamPacket packetReceived = new UserDataStreamPacket(lUserID, lType, lDescription, buffer);
             OnDataStreamReceived?.Invoke(packetReceived);
         }
 
