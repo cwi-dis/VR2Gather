@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.unity.ai.navigation": {
-      "version": "1.1.4",
+      "version": "1.1.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -36,7 +36,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.18",
+      "version": "2.0.22",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -70,7 +70,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.recorder": {
-      "version": "4.0.1",
+      "version": "4.0.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -90,7 +90,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.textmeshpro": {
-      "version": "3.0.6",
+      "version": "3.0.8",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -129,11 +129,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.interaction.toolkit": {
-      "version": "2.5.0",
+      "version": "2.5.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.inputsystem": "1.5.0",
+        "com.unity.inputsystem": "1.7.0",
         "com.unity.mathematics": "1.2.6",
         "com.unity.ugui": "1.0.0",
         "com.unity.xr.core-utils": "2.2.3",
@@ -155,7 +155,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.management": {
-      "version": "4.4.0",
+      "version": "4.4.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -192,7 +192,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "160f35ddd513d81e573b21785fb2e6d077423e51"
+      "hash": "ae71fad35f9a256d819fe57ad36bb43dda3bf33f"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
