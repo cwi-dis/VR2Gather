@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.tivadar.best.http": {
-      "version": "file:com.tivadar.best.http",
+      "version": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.http",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
@@ -10,7 +10,7 @@
       }
     },
     "com.tivadar.best.socketio": {
-      "version": "file:com.tivadar.best.socketio",
+      "version": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.socketio",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
@@ -20,7 +20,7 @@
       }
     },
     "com.tivadar.best.tlssecurity": {
-      "version": "file:com.tivadar.best.tlssecurity",
+      "version": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.tlssecurity",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
@@ -29,7 +29,7 @@
       }
     },
     "com.tivadar.best.websockets": {
-      "version": "file:com.tivadar.best.websockets",
+      "version": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.websockets",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
