@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+using static VRT.Core.NTPTools;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -187,6 +188,9 @@ namespace VRT.Orchestrator.Wrapping
         // Connect to the orchestrator
         public void SocketConnect(string pUrl) {
             if (enableLogging) Debug.Log($"OrchestratorController: connect to {pUrl}");
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
+#endif
             orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this, this);
             orchestratorWrapper.Connect();
         }
@@ -225,6 +229,9 @@ namespace VRT.Orchestrator.Wrapping
                 OnErrorEvent?.Invoke(status);
                 return;
             }
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_version={version}");
+#endif
             OnGetOrchestratorVersionEvent?.Invoke(version);
         }
 
