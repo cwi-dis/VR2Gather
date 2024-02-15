@@ -8,7 +8,7 @@ Most of the functionality described in this section is part of the `Assets/Pilot
 
 The VR2Gather virtual objects are more complex than "normal" Unity virtual objects, because they need to behave consistently for the different participants in an experience: if one participant moves an object the other partiipants should see that move.
 
-> We are investigating using some standard Unity shared game packages for this, but most seem to be server-based. But this section may change in the future.
+> We are investigating using some standard Unity shared game package like `netcode` for this, but most seem to be server-based. But this section may change in the future.
 
 ### PFB_Button
 
@@ -35,8 +35,7 @@ There is no special VR2Gather code needed.
 
 ### MudBall
 
-> Note: this object doesn't currently work as it should.
-> Also note that grabbable objects (below) that are thrown don't currently behave as they should.
+> Note: grabbable objects (below) that are thrown don't currently behave as they should. When thrown, only the person that did the throwing will see the object behave logically. Other session participants will simply see it dropping on the floor.
 
 This is an object that behaves consistently among participants. The idea is that the master instance will control the behaviour and the other instances will simply follow.
 
