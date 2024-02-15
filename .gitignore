@@ -24,3 +24,7 @@ bin2dash.so
 signals-unity-bridge.so
 bin2dash.dylib
 signals-unity-bridge.dylib
+/[Pp]ackages/*
+!/[Pp]ackages/*.json
+com.Tivadar.Best.*
+Assets/Best\ Socket.IO\ Bundle/

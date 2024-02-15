@@ -23,9 +23,8 @@
 
 using System;
 using System.Collections.Generic;
-using BestHTTP;
-using BestHTTP.SocketIO.Events;
-using LitJson;
+using Best.SocketIO;
+using Best.HTTP.JSON.LitJson;
 
 // class used as a convenience to represent the commands and the responses
 namespace VRT.Orchestrator.WSManagement
@@ -131,11 +130,11 @@ namespace VRT.Orchestrator.WSManagement
         public string SocketEventName;
 
         // the function that will be used to process the response
-        public SocketIOCallback OrchestratorMessageCallback;
+        public Action<Socket> OrchestratorMessageCallback;
 
         // Constructors
         public OrchestratorMessageReceiver(string socketEventName,
-            SocketIOCallback orchestratorMessageCallback)
+            Action<Socket> orchestratorMessageCallback)
         {
             this.SocketEventName = socketEventName;
             this.OrchestratorMessageCallback = orchestratorMessageCallback;
