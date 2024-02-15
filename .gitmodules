@@ -3,4 +3,4 @@
   url = https://github.com/cwi-dis/VR2G-nativeLibraries
 [submodule "Packages/External/VR2G-besthttp"]
 	path = Packages/External/VR2G-besthttp
-	url = github:cwi-dis/VR2G-besthttp
+	url = git@github.com:cwi-dis/VR2G-besthttp
