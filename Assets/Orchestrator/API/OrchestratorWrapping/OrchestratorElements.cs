@@ -21,7 +21,7 @@
 //  concession of any license over these patents, trademarks, copyrights or 
 //  other intellectual property.
 
-using LitJson;
+using Best.HTTP.JSON.LitJson;
 using VRT.Core;
 using System.Collections.Generic;
 

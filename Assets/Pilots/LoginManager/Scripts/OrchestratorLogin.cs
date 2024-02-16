@@ -456,8 +456,8 @@ namespace VRT.Pilots.LoginManager
                     StatusPanelUserName.text = uname;
                     break;
                 case State.Settings:
-                    SettingsPanel_UpdateAfterRepresentationChange();
                     SettingsPanel_UpdateUserData();
+                    SettingsPanel_UpdateAfterRepresentationChange();
                     break;
                 case State.Play:
                     break;
@@ -1270,6 +1270,12 @@ namespace VRT.Pilots.LoginManager
             {
                 PlayerPrefs.DeleteKey("userNameLoginIF");
             }
+            var userName = LoginPanelUserName.text;
+            if (userName == "")
+            {
+                Debug.LogError("Cannot login if no username specified");
+                return;
+            }
             // If we want to autoCreate or autoStart depending on username set the right config flags.
             if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
             {
@@ -1278,7 +1284,7 @@ namespace VRT.Pilots.LoginManager
                 VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
-            OrchestratorController.Instance.Login(LoginPanelUserName.text, "");
+            OrchestratorController.Instance.Login(userName, "");
         }
 
         private void UpdateStateOnLogin(bool userLoggedSucessfully)
