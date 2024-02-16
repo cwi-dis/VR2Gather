@@ -148,4 +148,4 @@ Generally, if you create a new interactable object you do this in a prefab. You 
 
 You should now have a basic understanding of the overall structure of a VR2Gather experience.
 
-The [Prefabs](04-prefabs.md) section is a good continuation point, or the [Differences](11-differences.md) section, or go back to the [Developer Overview](01-overview.md)
+The [Prefabs](04-prefabs.md) section is a good continuation point, or the [Comparison to standard Unity VR](11-differences.md) section, or go back to the [Developer Overview](01-overview.md)
