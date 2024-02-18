@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 520897744849610983}
   - component: {fileID: 520897744185549118}
   m_Layer: 5
-  m_Name: Questionaire_Question
+  m_Name: Questionaire_Question 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
