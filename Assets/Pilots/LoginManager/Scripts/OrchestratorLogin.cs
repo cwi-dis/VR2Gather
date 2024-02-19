@@ -1117,7 +1117,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnConnectionEvent += UpdateStateOnConnectionEvent;
             OrchestratorController.Instance.OnConnectingEvent += UpdateStateOnConnectingEvent;
             OrchestratorController.Instance.OnGetOrchestratorVersionEvent += UpdateStateOnGetOrchestratorVersionEvent;
-            OrchestratorController.Instance.OnLoginEvent += UpdateStateOnLogin;
+            OrchestratorController.Instance.OnLoginEvent += UpdateStateOnLoginEvent;
             OrchestratorController.Instance.OnLogoutEvent += UpdateStateOnLogout;
             OrchestratorController.Instance.OnGetNTPTimeEvent += UpdateStateOnGetNTPTime;
             OrchestratorController.Instance.OnSessionsEvent += UpdateStateOnGetSessions;
@@ -1141,7 +1141,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnConnectionEvent -= UpdateStateOnConnectionEvent;
             OrchestratorController.Instance.OnConnectingEvent -= UpdateStateOnConnectingEvent;
             OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= UpdateStateOnGetOrchestratorVersionEvent;
-            OrchestratorController.Instance.OnLoginEvent -= UpdateStateOnLogin;
+            OrchestratorController.Instance.OnLoginEvent -= UpdateStateOnLoginEvent;
             OrchestratorController.Instance.OnLogoutEvent -= UpdateStateOnLogout;
             OrchestratorController.Instance.OnGetNTPTimeEvent -= UpdateStateOnGetNTPTime;
             OrchestratorController.Instance.OnSessionsEvent -= UpdateStateOnGetSessions;
@@ -1196,8 +1196,12 @@ namespace VRT.Pilots.LoginManager
                 statusText.color = colorDisconnecting;
                 state = State.Offline;
             }
-            AllPanels_UpdateAfterStateChange();
-            if (pConnected && autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoLogin)
+            OptionalAutoLogin();
+        }
+
+        private void OptionalAutoLogin()
+        {
+            if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoLogin)
             {
                 if (
                     Keyboard.current.shiftKey.isPressed
@@ -1287,7 +1291,47 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.Login(userName, "");
         }
 
-        private void UpdateStateOnLogin(bool userLoggedSucessfully)
+        private void UpdateStateOnLoginEvent(bool userLoggedSucessfully)
+        {
+            if (userLoggedSucessfully)
+            {
+                // We can now load the user data and send it to the orchesrator.
+                // Also, we can start the self preview (because the user data is complete)
+
+                LoadUserData();
+                UploadUserData();
+                StartSelfRepresentationPreview();
+                state = State.LoggedIn;
+            }
+            else
+            {
+                // User has logged out, or login failed.
+                this.StatusPanelUserId.text = "";
+                StatusPanelUserName.text = "";
+                HomePanelUserName.text = "";
+
+                state = State.Online;
+            }
+
+            AllPanels_UpdateAfterStateChange();
+            if (userLoggedSucessfully
+                && autoState == AutoState.DidLogIn
+                && VRTConfig.Instance.AutoStart != null
+                && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin)
+                )
+            {
+                if (
+                    Keyboard.current.shiftKey.isPressed
+
+                    ) return;
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
+                autoState = AutoState.DidPlay;
+                ChangeState(State.Play);
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+            }
+        }
+
+        private void UpdateStateOnLoginFullyComplete()
         {
             if (userLoggedSucessfully)
             {
@@ -1357,6 +1401,7 @@ namespace VRT.Pilots.LoginManager
             {
                 Debug.LogError($"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {VRTConfig.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.");
             }
+            OptionalAutoLogin();
         }
 
         private void GetSessions()
