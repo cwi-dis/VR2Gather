@@ -238,8 +238,12 @@ namespace VRT.Orchestrator.Wrapping
 
         private void OnLoginResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
-            try { myUserID = response.body["userId"].ToString(); }
-            catch { myUserID = "";  }
+            try {
+                myUserID = response.body["userId"].ToString();
+            }
+            catch {
+                myUserID = "";
+            }
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLoginResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), myUserID);
         }
