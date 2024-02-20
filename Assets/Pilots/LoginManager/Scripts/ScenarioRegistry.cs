@@ -105,6 +105,8 @@ namespace VRT.Pilots.LoginManager
                     return null;
                 case "Development3":
                     return null;
+                case "ExerciseScene":
+                    return "ExerciseScene";
                 case "Mediascape":
                     return null;
                 case "MedicalExamination":

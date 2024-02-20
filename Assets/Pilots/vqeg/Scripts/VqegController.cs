@@ -2,6 +2,8 @@
 using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
+using UnityEngine.XR;
+using UnityEditor.Recorder.AOV;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -21,7 +23,13 @@ public class VqegController : PilotController
     [Tooltip("Requested voice latency for this scene")]
     public int voice_latency_ms;
 
-
+    void Update()
+    {
+        if (Input.GetButtonDown("X Button"))
+        {
+            PilotController.LoadScene("Vqeg");
+        }
+    }
 
     public override void Start()
     {
