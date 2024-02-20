@@ -4,7 +4,7 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "ashu-test",
-  	"sessionScenario" : "ExerciseScene",
+  	"sessionScenario" : "VQEG",
   	"sessionTransportProtocol" : "tcp",
   	"sessionUncompressed" : true,
   	"sessionUncompressedAudio" : true,
