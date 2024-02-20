@@ -23,13 +23,7 @@ public class VqegController : PilotController
     [Tooltip("Requested voice latency for this scene")]
     public int voice_latency_ms;
 
-    void Update()
-    {
-        if (Input.GetButtonDown("X Button"))
-        {
-            PilotController.LoadScene("Vqeg");
-        }
-    }
+    
 
     public override void Start()
     {
