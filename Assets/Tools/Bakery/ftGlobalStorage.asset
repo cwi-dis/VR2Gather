@@ -693,7 +693,175 @@ MonoBehaviour:
   - Assets/PilotsExternal/5dculture/5Dculture/5dculture/Models/Kinderjurk/kinderjurk20638.obj
   - Assets/PilotsExternal/5dculture/5Dculture/3d model/costume/NewVersionCostume/123.fbx
   - Assets/PilotsExternal/5dculture/5Dculture/5dculture/Models/Robe/baked_mesh.obj
-  uvOverlapAssetList: 00000000ffffffff0000000001010000000000000101000000000000010100000101000000000000000000000101000000000000010100000101000001010000000000000101000001010000000000000101000001010000000000000101000000000000000000000101000001010000000000000000000000000000010100000000000000000000010100000000000000000000000000000101000001010000000000000000000000000000000000000101000000000000010100000101000001010000000000000000000001010000010100000101000001010000010100000000000000000000000000000000000001010000000000000000000001010000000000000000000000000000000000000000000000000000000000000000000001010000000000000101000001010000000000000000000001010000000000000000000001010000010100000000000000000000000000000101000000000000000000000101000001010000000000000000000000000000010100000101000000000000000000000000000000000000010100000000000001010000010100000000000001010000000000000101000000000000000000000101000000000000000000000101000001010000000000000000000001010000010100000000000000000000010100000000000000000000010100000101000000000000010100000101000000000000000000000000000000000000000000000000000001010000000000000000000000000000000000000000000001010000010100000101000001010000010100000000000001010000010100000000000001010000000000000101000000000000000000000000000001010000000000000101000001010000000000000000000001010000000000000101000000000000010100000101000001010000000000000000000000000000000000000000000001010000010100000000000001010000010100000101000000000000000000000101000000000000000000000000000000000000010100000000000000000000010100000101000000000000010100000101000001010000010100000101000000000000000000000101000001010000010100000000000000000000000000000101000001010000010100000101000001010000000000000101000001010000010100000101000000000000000000000000000001010000010100000101000001010000
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Truss01_Circle5m.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/StageCurtain02_2.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Stands/GuitarStand.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DiscoLight03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/AvatarHead2.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/SpeakerTripod01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Floor02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/_Television_set/Sources/Televisor_00.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Drums/Drums_solid.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Truss01_8m.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Jambe/Jambe.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Metronome/Metronome.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Decor_Hands03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Wall02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/PanelLed01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Wall05.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/FlightCase01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/StageBase01_2.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Wall06.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/MirrorBall01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/costume/rigging try.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/StageCurtain01_1.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Vase_05.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/_Television_set/Sources/Tv_3_4.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/TOPPOP.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LedDanceFloor01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/button_anti_clockwise.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/PanelLight02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/Arrow_Guide2.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Decor_Pot01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Monitor/Monitor.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Truss01_4m.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Lamp_02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Stand01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LaserBeams01_250.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/PanelLight01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/costume/Skeleton_new_costume/rigging_0512_hifi_cloth_2.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/StageBase01Stairs.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LaserBeams01_150.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/Utility/Models/DoorFrameLight.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Wall01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DiscoLight01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DJControl01_1.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/FlameMachine01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Table_Round.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LaserBeams01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LaserBeams01_300.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/SmokeMachine01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/BassGuitar/BassGuitar.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Vase_02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Stands/SynthStand.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Truss01_2m.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Mic/Mic.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Frame_05.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DiscoLight02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LightBeam01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LightBeam02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DJTable01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Speakers04.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/_Television_set/Sources/Tv_1_2.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Truss01_3m.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/arrow.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Headphones01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/PanelLight04.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/FrameStand01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DJControl02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/button_clockwise.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Bench_01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/GuitarStack/GuitarStack.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/letsgo.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/1979.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Pillar04.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/whynot.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Truss01_Angle90.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/TGEnvironment/Vegetation/Models/Hedge02_3.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Pillar01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Speakers01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DJControlHolder01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/Title.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DMXController01_2.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/nextTask.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Combo/Combo.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/hide_button.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DJControl01_2.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Frame_02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DiscoLight05.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Frame_03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/StageCurtain02_1.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/MicrophoneStand01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Decor_02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/AvatarHead2-.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/Arrow_Guide.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Decor_Hands02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Decor_Pot02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Frame_08.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/Utility/Models/Chair.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/AvatarHead-.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LaserBeams01_400.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Truss01_Circle15m.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/GuitarE/GuitarE.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Chimes/Chimes.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Synth/Synth.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Violin/Violin.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/costume/rigging_try_0225.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/button_switchonfbx
+    1.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/Old_Radio/Mesh/Radio.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DMXController01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Frame_01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Vase_03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Stand02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Microphone01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/StageBase01_1.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/button_switchonfbx.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Stands/MicStand.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Wall03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Frame_06.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/reset.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Lamp_01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/AvatarHead.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Pillar02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LaserBeams01_200.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/costume/0126_try.obj
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Trombone/Trombone.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Lamp_03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Ceiling02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Maracas/Maracas.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DiscoLight04.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Vase_04.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Xylophone/Xylophone.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Drums/Drums_separate.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/StageCurtain01_2.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/unlock.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/_Television_set/Sources/Televisor_90.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Frame_07.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/5dculture/Models/GreenHat/CM002 voor
+    Suzanne2.obj
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Decor_01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/5dculture/Models/GreenHat/CM002 voor
+    Suzanne.blend
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Floor01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/UI Assets/Button/show_button.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/PanelLight03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/PianoE/PianoElectro.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Speakers02.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Vase_01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DJControl02_2.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Ceiling01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Frame_04.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/costume/humanFigure.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/LaserProjector01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/costume/NewVersionCostume/bangs.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DJMidiKeyboard01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/_Television_set/Sources/Televisor_80.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/Buiding/flythrough_beng_Ed_v3.fbx
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/_Television_set/Sources/Televisor_70.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/DJControl01_3.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Decor_Hands01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Wall04.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Ceiling03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Fork/Fork.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/GuitarA/GuitarA.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Pedestal01.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Vase_06.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/ModernGalleryPBR/Models/Pillar03.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/3d model/OldRadio, by Tobiesen/Mesh/rd2.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/MusicalInstrumentsPack/ModelsAndTextures/Stands/MusicStand.FBX
+  - Assets/PilotsExternal/5dculture/5Dculture/TirgamesAssets/PBRStageEquipment/Models/Speakers03.FBX
+  uvOverlapAssetList: 00000000ffffffff0000000001010000000000000101000000000000010100000101000000000000000000000101000000000000010100000101000001010000000000000101000001010000000000000101000001010000000000000101000000000000000000000101000001010000000000000000000000000000010100000000000000000000010100000000000000000000000000000101000001010000000000000000000000000000000000000101000000000000010100000101000001010000000000000000000001010000010100000101000001010000010100000000000000000000000000000000000001010000000000000000000001010000000000000000000000000000000000000000000000000000000000000000000001010000000000000101000001010000000000000000000001010000000000000000000001010000010100000000000000000000000000000101000000000000000000000101000001010000000000000000000000000000010100000101000000000000000000000000000000000000010100000000000001010000010100000000000001010000000000000101000000000000000000000101000000000000000000000101000001010000000000000000000001010000010100000000000000000000010100000000000000000000010100000101000000000000010100000101000000000000000000000000000000000000000000000000000001010000000000000000000000000000000000000000000001010000010100000101000001010000010100000000000001010000010100000000000001010000000000000101000000000000000000000000000001010000000000000101000001010000000000000000000001010000000000000101000000000000010100000101000001010000000000000000000000000000000000000000000001010000010100000000000001010000010100000101000000000000000000000101000000000000000000000000000000000000010100000101000001010000010100000101000000000000010100000101000001010000010100000101000000000000000000000101000001010000010100000000000000000000000000000101000001010000010100000101000001010000000000000101000001010000010100000101000000000000000000000000000001010000010100000101000001010000010100000000000001010000010100000101000000000000000000000101000001010000010100000101000001010000000000000000000000000000000000000101000000000000000000000101000000000000000000000000000000000000000000000000000000000000000000000101000000000000010100000101000000000000000000000101000000000000000000000101000001010000000000000000000000000000010100000000000000000000010100000101000000000000000000000000000001010000010100000000000000000000000000000000000000000000010100000101000000000000010100000000000001010000000000000000000001010000000000000000000001010000010100000000000000000000010100000101000000000000000000000101000000000000000000000101000001010000000000000101000001010000000000000000000000000000000000000000000000000000010100000000000000000000000000000000000000000000010100000101000001010000010100000000000001010000010100000000000001010000000000000101000000000000000000000000000001010000000000000101000001010000000000000000000001010000000000000101000000000000010100000101000001010000000000000000000000000000000000000000000001010000010100000000000001010000010100000000000000000000000000000000000000000000010100000000000001010000000000000000000001010000000000000000000001010000010100000000000001010000010100000101000001010000010100000000000000000000010100000101000001010000000000000000000000000000010100000101000001010000
   xatlasWarningShown: 0
   checkerPreviewOn: 0
   rtSceneViewPreviewOn: 0
