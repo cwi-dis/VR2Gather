@@ -1,10 +1,10 @@
 {
   "_unused_orchestratorURL" : "http://sap.local:8080/socket.io/",
   "statsOutputFile" : "",
-  "AutoStart": {
+  "_not_AutoStart": {
     "autoLogin": true,
-    "sessionName": "mediascape",
-    "sessionScenario": "Mediascape",
+    "sessionName": "5Dculture",
+    "sessionScenario": "5Dculture",
     "sessionTransportProtocol": "tcp",
     "autoCreateForUser": "topinambur",
     "autoCreate": false,
