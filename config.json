@@ -1,7 +1,7 @@
 {
   "_unused_orchestratorURL" : "http://sap.local:8080/socket.io/",
   "statsOutputFile" : "",
-  "AutoStart": {
+  "_AutoStart": {
     "autoLogin": true,
     "sessionName": "mediascape",
     "sessionScenario": "Mediascape",
@@ -23,7 +23,7 @@
   "LocalUser": {
     "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
-	  "capturerTypeName" : "auto",
+	  "capturerTypeName" : "developer",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },
