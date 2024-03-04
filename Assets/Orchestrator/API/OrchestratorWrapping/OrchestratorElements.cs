@@ -24,6 +24,8 @@
 using Best.HTTP.JSON.LitJson;
 using VRT.Core;
 using System.Collections.Generic;
+using System.Diagnostics;
+using UnityEngine;
 
 namespace VRT.Orchestrator.Wrapping
 {
@@ -45,7 +47,18 @@ namespace VRT.Orchestrator.Wrapping
         // Parse a JSonData to a C# object
         public static T ParseJsonData<T>(JsonData data)
         {
-            return JsonMapper.ToObject<T>(data.ToJson());
+            try
+            {
+                return JsonMapper.ToObject<T>(data.ToJson());
+
+            }
+            catch (JsonException ex)
+            {
+                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON reply. See log message.");
+                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
+                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data.ToJson()}");
+                return default(T);
+            }
         }
     }
 
@@ -65,7 +78,18 @@ namespace VRT.Orchestrator.Wrapping
         // Parse a JSonData to a C# object
         public static User ParseJsonData(JsonData data)
         {
-            return JsonMapper.ToObject<User>(data.ToJson());
+            try
+            {
+                return JsonMapper.ToObject<User>(data.ToJson());
+
+            }
+            catch (JsonException ex)
+            {
+                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON reply. See log message.");
+                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
+                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data.ToJson()}");
+                return null;
+            }
         }
 
         public override string GetId()
@@ -95,7 +119,18 @@ namespace VRT.Orchestrator.Wrapping
 
         public static UserData ParseJsonData(JsonData data)
         {
-            return JsonMapper.ToObject<UserData>(data.ToJson());
+            try
+            {
+                return JsonMapper.ToObject<UserData>(data.ToJson());
+
+            }
+            catch (JsonException ex)
+            {
+                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON reply. See log message.");
+                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
+                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data.ToJson()}");
+                return null;
+            }
         }
 
         public string AsJsonString()
@@ -182,8 +217,18 @@ namespace VRT.Orchestrator.Wrapping
 
         public static Session ParseJsonData(JsonData data)
         {
-            Session rv = JsonMapper.ToObject<Session>(data.ToJson());
-            return rv;
+            try
+            {
+                Session rv = JsonMapper.ToObject<Session>(data.ToJson());
+                return rv;
+
+            } catch(JsonException ex)
+            {
+                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON reply. See log message.");
+                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
+                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data.ToJson()}");
+                return null;
+            }
         }
 
         public override string GetId()
