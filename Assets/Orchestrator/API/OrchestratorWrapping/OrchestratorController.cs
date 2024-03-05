@@ -386,7 +386,11 @@ namespace VRT.Orchestrator.Wrapping
                 OnErrorEvent?.Invoke(status);
                 return;
             }
-
+            int nRemoved = sessions.RemoveAll(item => item == null);
+            if (nRemoved > 0)
+            {
+                Debug.LogWarning($"OrchestratorController: Removed {nRemoved} null sessions");
+            }
             if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionsResponse: Number of available sessions:" + sessions.Count);
 
             // update the list of available sessions
