@@ -14,9 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LayerNames:
   - Default
-  - Grabbable
-  - Pointable
-  - Teleportable
   - 
   - 
   - 
@@ -45,3 +42,6 @@ MonoBehaviour:
   - 
   - 
   - 
+  - 
+  - 
+  - Teleport

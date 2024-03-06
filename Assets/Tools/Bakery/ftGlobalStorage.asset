@@ -512,7 +512,24 @@ MonoBehaviour:
   - Assets/Pilots/Common/Prefabs/01_Player/Models/Vive/HTC_Vive_controller.obj
   - Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/UnityMaterialBall.fbx
   - Packages/com.unity.render-pipelines.core/Editor/Resources/DebugProbe.fbx
-  uvOverlapAssetList: 00000000ffffffff0000000001010000000000000101000000000000010100000101000000000000000000000101000000000000010100000101000001010000000000000101000001010000000000000101000001010000000000000101000000000000000000000101000001010000000000000000000000000000010100000000000000000000010100000000000000000000000000000101000001010000000000000000000000000000000000000000000000000000
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/HandsDemoSceneAssets/Models/Primitives/Cone.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/Models/Pinch_Pointer_LOD0.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Starter Assets/DemoSceneAssets/Models/Primitive_Torus.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Starter Assets/Models/XRControllerRight.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/HandsDemoSceneAssets/Models/Chess/Chess_Board.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Starter Assets/DemoSceneAssets/Models/Primitive_Pyramid.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/HandsDemoSceneAssets/Models/Primitives/Disc.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/HandsDemoSceneAssets/Models/Chess/Chess_Pawn.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/HandsDemoSceneAssets/Models/VirtualTabletop.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/HandsDemoSceneAssets/Models/Frame.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Starter Assets/Tunneling Vignette/TunnelingVignetteHemisphere.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Starter Assets/DemoSceneAssets/Models/PushButton.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Starter Assets/Models/Primitive_Wedge.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/HandsDemoSceneAssets/Models/Primitives/Cube.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Starter Assets/Models/XRControllerLeft.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Starter Assets/Models/Reticle_Torus.fbx
+  - Assets/Samples/XR Interaction Toolkit/2.5.3/Hands Interaction Demo/HandsDemoSceneAssets/Models/Primitives/Cylinder.fbx
+  uvOverlapAssetList: 00000000ffffffff00000000010100000000000001010000000000000101000001010000000000000000000001010000000000000101000001010000010100000000000001010000010100000000000001010000010100000000000001010000000000000000000001010000010100000000000000000000000000000101000000000000000000000101000000000000000000000000000001010000010100000000000000000000000000000000000000000000000000000000000000000000000000000101000001010000000000000101000000000000010100000101000000000000000000000000000000000000010100000000000000000000
   xatlasWarningShown: 0
   checkerPreviewOn: 0
   rtSceneViewPreviewOn: 0
