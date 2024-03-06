@@ -14,6 +14,9 @@
 - Add new scenario to `LoginManager` -> `Tool_ScenarioRegistry`
 	- Ensure you get a new UUID!
 	- Put it at the top of the list
+- Play through the LOginManager with one player.
 - At this point you play with `git submodule add` and such until your `.gitmodules` and `git status` output look correct. :-)
-- 
+- commit, push
+- Checkout on another machine
+- Play with two players.
 
