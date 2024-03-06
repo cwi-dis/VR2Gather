@@ -4,3 +4,6 @@
 [submodule "Packages/External/VR2G-besthttp"]
 	path = Packages/External/VR2G-besthttp
 	url = git@github.com:cwi-dis/VR2G-besthttp
+[submodule "Assets/PilotsExternal/VRTApp_transmixr_ch_mvp"]
+	path = Assets/PilotsExternal/VRTApp_transmixr_ch_mvp
+	url = ../VRTApp_transmixr_ch_mvp

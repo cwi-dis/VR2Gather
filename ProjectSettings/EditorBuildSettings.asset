@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pilots/SoloPlayground/SoloPlayground.unity
     guid: 08a15cfc0df42104784fe067f5ea895b
+  - enabled: 1
+    path: Assets/PilotsExternal/VRTApp_transmixr_ch_mvp/transmixr_ch_mvp/Scenes/transmixr_ch_mvp.unity
+    guid: 1bc258b4ea6b14a18b2d5dbba026c71e
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b916857db71260845a232a451a163c3b,
       type: 2}
