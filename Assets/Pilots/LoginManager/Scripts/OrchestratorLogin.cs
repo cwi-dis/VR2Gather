@@ -463,7 +463,7 @@ namespace VRT.Pilots.LoginManager
                 case State.Offline:
                     break;
                 case State.Online:
-                    LoginPanel_UpdateRememberMe();
+                    LoginPanel_UpdateUserName();
                     break;
                 case State.LoggedIn:
                     HomePanelUserName.text = uname;
@@ -521,12 +521,18 @@ namespace VRT.Pilots.LoginManager
         #region UI: LoginPanel
 
         // Check saved used credentials.
-        private void LoginPanel_UpdateRememberMe()
+        private void LoginPanel_UpdateUserName()
         {
-            if (PlayerPrefs.HasKey("userNameLoginIF") && PlayerPrefs.HasKey("userPasswordLoginIF"))
+            if (PlayerPrefs.HasKey("userNameLoginIF"))
             {
-                LoginPanelRememberMeToggle.isOn = true;
-                LoginPanelUserName.text = PlayerPrefs.GetString("userNameLoginIF");
+                string userName = PlayerPrefs.GetString("userNameLoginIF");
+                if (string.IsNullOrEmpty(userName)) {
+                    LoginPanelRememberMeToggle.isOn = false;
+                } else
+                {
+                    LoginPanelRememberMeToggle.isOn = true;
+                    LoginPanelUserName.text = userName;
+                }
             }
             else
                 LoginPanelRememberMeToggle.isOn = false;
