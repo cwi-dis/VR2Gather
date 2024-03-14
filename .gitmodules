@@ -1,6 +1,3 @@
-[submodule "Assets/ExternalAssets/VR2G-nativeLibraries"]
-  path = Assets/ExternalAssets/VR2G-nativeLibraries
-  url = https://github.com/cwi-dis/VR2G-nativeLibraries
 [submodule "Packages/External/VR2G-besthttp"]
 	path = Packages/External/VR2G-besthttp
 	url = git@github.com:cwi-dis/VR2G-besthttp
