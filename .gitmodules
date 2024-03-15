@@ -1,3 +1,6 @@
 [submodule "Assets/PilotsExternal/5dculture"]
 	path = Assets/PilotsExternal/5dculture
 	url = ../VRTApp-5Dculture
+[submodule "Packages/External/VR2G-besthttp"]
+    path = Packages/External/VR2G-besthttp
+    url = ../VR2G-besthttp.git
