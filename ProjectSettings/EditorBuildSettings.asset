@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PilotsExternal/5dculture/5Dculture/Scenes/5DcultureMuseum.unity
     guid: a83f3e0aae70a4547a36d316c6404229
+  - enabled: 1
+    path: Assets/PilotsExternal/5dculture/5Dculture/Scenes/5DCultureHistorical.unity
+    guid: 25514d72303f6f748a39898cd8c8b7de
+  - enabled: 1
+    path: Assets/PilotsExternal/5dculture/5Dculture/Scenes/5DCultureNeutral.unity
+    guid: d3bf805c98a6954428aa201c0070caeb
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b916857db71260845a232a451a163c3b,
       type: 2}
