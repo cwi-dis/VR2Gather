@@ -2,12 +2,13 @@
     "name": "SocketIO",
     "rootNamespace": "",
     "references": [
-        "BestHTTP",
-        "Dash",
-        "VRTCore",
-        "Orchestrator",
-        "Cwipc",
-        "VRTStatistics"
+        "GUID:30bd862cd7044fd4484784b07598041d",
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:483ef9d2ea25bb34cb9cdc48962c5283",
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee",
+        "VRTStatistics",
+        "GUID:9c640a58f2e0db141b0e87cea61a002e",
+        "GUID:9069ac25d95ca17448a247f3bb1c769f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
