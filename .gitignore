@@ -28,3 +28,4 @@ signals-unity-bridge.dylib
 !/[Pp]ackages/*.json
 com.Tivadar.Best.*
 Assets/Best\ Socket.IO\ Bundle/
+cameraconfig.json~
