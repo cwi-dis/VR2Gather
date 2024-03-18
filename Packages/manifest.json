@@ -10,6 +10,7 @@
     "com.unity.inputsystem": "1.7.0",
     "com.unity.postprocessing": "3.4.0",
     "com.unity.recorder": "4.0.2",
+    "com.unity.render-pipelines.universal": "14.0.10",
     "com.unity.textmeshpro": "3.0.8",
     "com.unity.ugui": "1.0.0",
     "com.unity.xr.interaction.toolkit": "2.5.2",
