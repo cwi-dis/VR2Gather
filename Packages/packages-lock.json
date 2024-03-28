@@ -120,7 +120,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.interaction.toolkit": {
-      "version": "2.4.0",
+      "version": "2.4.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -183,7 +183,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "ae71fad35f9a256d819fe57ad36bb43dda3bf33f"
+      "hash": "bf8c223ce6490d04ca97a1189d4a34328645f635"
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
