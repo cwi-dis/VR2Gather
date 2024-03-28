@@ -240,7 +240,7 @@
       "hash": "bf8c223ce6490d04ca97a1189d4a34328645f635"
     },
     "nl.cwi.dis.vr2gather": {
-      "version": "file:/Users/jack/src/VRTogether/VR2Gather-142/nl.cwi.dis.vr2gather",
+      "version": "file:../../nl.cwi.dis.vr2gather",
       "depth": 0,
       "source": "local",
       "dependencies": {}
