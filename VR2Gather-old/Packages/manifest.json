@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "com.tivadar.best.http": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.http",
-    "com.tivadar.best.socketio": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.socketio",
-    "com.tivadar.best.tlssecurity": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.tlssecurity",
-    "com.tivadar.best.websockets": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.websockets",
+    "com.tivadar.best.http": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.http",
+    "com.tivadar.best.socketio": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.socketio",
+    "com.tivadar.best.tlssecurity": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.tlssecurity",
+    "com.tivadar.best.websockets": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.websockets",
     "com.unity.ai.navigation": "1.1.5",
     "com.unity.animation.rigging": "1.2.1",
     "com.unity.ide.visualstudio": "2.0.22",
