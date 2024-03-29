@@ -308,6 +308,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
+        "nl.cwi.dis.vr2gather.nativelibraries": "0.9.1",
         "nl.cwi.dis.cwipc": "7.5.1",
         "com.tivadar.best.http": "3.0.0",
         "com.tivadar.best.socketio": "3.0.0",
@@ -321,6 +322,13 @@
         "com.unity.xr.oculus": "4.2.0",
         "com.unity.xr.openxr": "1.10.0"
       }
+    },
+    "nl.cwi.dis.vr2gather.nativelibraries": {
+      "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "cd233771f01ae85fe54ee4ff31470e133b756b91"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

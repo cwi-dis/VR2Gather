@@ -20,57 +20,28 @@ The orchestrator also handles creation and advertisement of sessions.
 
 For some actions in the experience (think: creating a new virtual object) it is important that the action is coordinated. This is implemented by having one application instance designated the _master instance_, and have such actions always done first on the master. Currently, the master instance is always the instance that created the session.
 
-## Github Repository Structure
+## Unity Package Structure
 
-The core of VR2Gather is open source, but obviously this is not the case for the experiences: a VR2Gather experience will usually contain content that can not be made available as open source.
-
-For this reason VR2Gather uses [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to structure the project into manageable parts.
-
-The `VR2Gather` repository is the main repository, and should not contain anything that can not be open sourced.
-
-> Let us repeat this statement, in bold: **The main VR2Gather repository should not contain any material that cannot be distributed as open source**.
-> 
-> So even if you fork the VR2Gather repository it is probably still a good idea to create a submodule repository for content you know you will probably never want to open source.
-
-There is a submodule `Assets/ExternalAssets/VR2G-nativeLibraries` that contains a couple of native DLLs (and `.so` for Linux, and `.dylib` for Mac). Specifically, these are the DLLs for the Motion Spell low-latency DASH implementation. This code is not open source, but the DLLs may be used and redistributed by VR2Gather.
-
-Each new experience will get its own branch in the main repository and its own git submodule. So, if you are developing an experience `MyGreatExperience` you will have a branch `develop/MyGreatExperience`, and later a branch `deployment/MyGreatExperience` and on that branch (_only on that branch!_) there will be a submodule `Assets/ExternalPilots/VR2G-MyGreatExperience`.
-
-### Branch names
-
-A quick note on branch names, to keep things manageable:
-
-- Experiences under development have a branch name starting with `development/`.
-- The `master` branch should almost always be in a runnable state, and should almost never get individual commits. 
-- Most other branches should have a corresponding issue in Github, and the branch name should be called after the issue number. So, I was typing this on branch `54-documentation`, which has been merged into `master` when complete, and then deleted.
-- Temporary branches should start with `exp-` and have an indication about the owner. So I would create a branch `exp-jack-wildidea` for something I would work on without an issue, and eventually either throw that branch away (if it was a bad idea) or merge it into an issue branch (if it was a good idea).
-
-
-## Unity Project Structure
-
-The Unity project is structured into a number of _assemblies_, each with a toplevel folder (or near-toplevel folder), and each with its own substructure of `Scripts`, `Prefabs`, etc. There is also one external package that is indispensible.
-
-> The plan is to turn this assembly-based structure into a package-based structure at some point in the future.
+The`nl.cwi.dis.vr2gather` package is structured into a number of _assemblies_, each with a toplevel folder (or near-toplevel folder), and each with its own substructure of `Scripts`, `Prefabs`, etc. There is also one external package that is indispensible.
 
 In a roughly bottom-to-top order of dependencies these are:
 
-- `cwipc_unity` is a package that contains the point cloud capturers, renderers and compressors. But: in addition it contains a few classes for memory management, shared thread-safe queues and other infrastructure that is used throughout VR2Gather.
-- `XR` and `XRI` are part of the Unity XR and XR Interaction toolkits.
 - `VRTCore` has base classes and interfaces for general infrastructure, configuration storage and some things that didn't have anywhere else to go.
 - `VRTInitializer` has a few more such classes, but is separate because of assembly dependency issues in Unity.
-- `VRTMedia`, `VRTVideo` and `VRTProfiler` are probably hisotirc artefacts.
-- `UserRepresentation/PointClouds` has everything that has to do with using point clouds as your user representation (think: avatar).
-- `UserRepresentation/WebCam` is the implementation of an avatar that has a "screen" that shows the image from your webcam.
-- `UserRepresentation/Voice` has the code that allows participants to talk to each other in an experience.
-- `Transport/SocketIO`, `Transport/Dash` and `Transport/TCP` handle streaming of the user representation streams (from the previous set of assemblies) over the net, so that participants can see and hear each other.
-- `Orchestrator` has the communication code and the stubs to allow VR2Gather application instances to communicate via the orchestrator.
-- `Pilots/Common` has most of the implementation of the VR2Gather framework. The functionality and components here are described in the [Prefabs](04-prefabs.md) section.
-- The other assemblies under `Pilots` have things that are specific to a certain experience (for an experience that is included in the base repository), they are described in the _Scene Overview_ subsection, below.
-- `PilotsExternal` is where the git repository for the experience under development should live.
+- `VRTMedia`, `VRTVideo` and `VRTProfiler` are probably historic artefacts.
+- `VRTUI` has some user interface elements used in various places.
+- `VRTUserPointClouds` has everything that has to do with using point clouds as your user representation (think: avatar).
+- `VRTUserWebCam` is the implementation of an avatar that has a "screen" that shows the image from your webcam.
+- `VRTUserVoice` has the code that allows participants to talk to each other in an experience.
+- `VRTTransportSocketIO`, `VRTTransportDash` and `VRTTransportTCP` handle streaming of the user representation streams (from the previous set of assemblies) over the net, so that participants can see and hear each other.
+- `VRTOrchestrator` has the communication code and the stubs to allow VR2Gather application instances to communicate via the orchestrator.
+- `VRTCommon` has most of the implementation of the VR2Gather framework. The functionality and components here are described in the [Prefabs](04-prefabs.md) section.
+
+You should have imported `VRT Essential Assets` into your `Samples`. This has things that are specific to a certain experience (for an experience that is included in the base repository), they are described in the _Scene Overview_ subsection, below.
 
 ## Scene Overview
 
-The VR2Gather repository contains 4 main scenes:
+The VR2Gather essential assets contains 4 main scenes:
 
 - `LoginManager` is the first scene of any VR2Gather experience.
 - `Pilot0` is the "Hello World" of VR2Gather experiences: a near-minimal example.

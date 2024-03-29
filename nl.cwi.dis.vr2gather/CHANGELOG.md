@@ -1,5 +1,5 @@
 # Changelog
 
-## [0.1] - Unreleased
+## [0.9.2] - Unreleased
 
-Content to be supplied
+First restructuring that is ready for testing.

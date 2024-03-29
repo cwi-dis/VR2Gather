@@ -15,11 +15,6 @@ Mac works, with two caveats:
 
 ## Software
 
-You need `git`, with LFS support. On Windows install the official Git distribution, and install the `bash` terminal window too. Ensure you check in files with Unix line feeds and check out with Windows line feeds.
-It is best to use git over SSH: create an ssh key and add it to your github profile. Test that it works by typing `ssh git@github.com` in a `bash` window.
-
-You probably want to install [Sourcetree](https://www.sourcetreeapp.com) unless you are a git command line wizard. Ensure it uses OpenSSH as its ssh client.
-
 You need Unity. Install the Unity Hub. Don't manually install Unity Editor versions: this will lead to no end of pain in the future.
 
 You need Visual Studio. 2022 is current but 2019 should work. Install the Unity development additions. When you install a Unity Editor from the Unity Hub it can install VS for you, that is fine. You want the Unity additions because it makes debugging a _lot_ easier.
@@ -34,10 +29,10 @@ You probably need the [CWI Point Cloud](https://github.com/cwi-dis/cwipc) packag
 
 If you don't have an RGBD camera you need not bother with Intel Realsense or Microsoft Kinect support, but you still want `cwipc` to be able to see participants that do have a camera.
 
-The VR2Gather Unity project will automatically obtain the `cwipc_unity` package, but this package still requires the `cwipc` package to be installed on your machine.
+You will later add the `cwipc_unity` package to your Unity project, but this package still requires the `cwipc` native package to be installed on your machine.
 
 ## Next steps
 
-You should now be able to open the VR2Gather project in the Unity Editor (through the Unity Hub).
+You can now create a Unity skeleton 3D project, or use an existing project. The [toplevel README file](../README.md) has the currently valid set of steps you need to take.
 
 The [Walkthrough](03-walkthrough.md) is a good continuation point, or go back to the [Developer Overview](01-overview.md)

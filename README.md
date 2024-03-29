@@ -24,12 +24,54 @@ But to use the current version of VR2Gather (as of February 2024) you need two p
 
 - A VR2Gather orchestrator, running somewhere on a public IP address. For light use and development, you can use our CWI-DIS orchestrator (the address of which is pre-configured in the code). But at some point you will have to run your own copy. The new version 2 orchestrator is open source, and can be built from the sources at <https://github.com/cwi-dis/vr2gather-orchestrator-v2>.
 - You need a copy of the **Best Socket.IO Bundle** (the successor to BestHTTP) by Tivadar György Nagy. There are a number of ways to get this:
-	- We have a license for a limited number of seats. If you are a member of the CWI DIS group you will have access to our copy. It will be automatically pulled in as a `git submodule` into `Packages/External/VR2G-besthttp`.
+	- We have a license for a limited number of seats. If you are a member of the CWI DIS group you will have access to our copy. It will be automatically pulled in as a Unity git package from a repository you should have access to.
 	- If you are a close collaborator with the CWI DIS group: we may have a seat license to share. Contact us, and we will give you access to the private git submodule.
 	- Otherwise you will have to buy your own seat license and install it through the Unity Package Manager.
 
-A potential issue with the current state of the code is that VR2Gather is currently structured as a framework, not as a set of packages: the VR2Gather repository should be the top-level repository, with your application-specific code as a git submodule. We are working on restructuring this, but at the moment it is probably easiest to fork the VR2Gather repository and then create a branch and a submodule for your work.
+## Installing the VR2Gather package
+
+It is assumed you already have a Unity 3D project, otherwise create one.
+
+In the Unity Package Manager do the following:
+
+- Add the 4 **Best Socket.IO Bundle** mentioned above to your project.
+- Add the `nl.cwi.dis.cwipc` package, by github url:
+
+  ```
+  git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc
+  ```
+- Add the `nl.cwi.dis.vr2gather` package, by github url:
+
+  ```
+  git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather#142-restructure
+  ```
+- Add the `nl.cwi.dis.vr2gather.nativelibraries` package, by github url:
+ 
+  ```
+  git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries
+  ```
+
+- For the VR2Gather project, Add the _VR2Gather Essential Assets_ from the Samples tab. These are some essential assets, the most important one being the `LoginManager` scene that must be used as the first scene in your application (because it creates the shared session).
+
+Next, in _Project Settings_, you probably want to add an XR plugin (for example _OpenXR_) and you probably want to add at least one Interaction Profile (for example Oculus Touch Controller).
+
+You may also need to add all the scenes you need to the _Build Settings_.
+
+You should now be able to run the two "default experiences": _Pilot 0_ and _Technical Playground_. To add new experiences, or adapt your existing scenes for VR2Gather, see the documentation below.
 
 ## Developer documentation
 
-There is some preliminary documentation in [Documentation/01-overview.md](Documentation/01-overview.md)
+There is some preliminary documentation in [Documentation/01-overview.md](Documentation/01-overview.md) explaining how to develop your own VR experiences using VR2Gather.
+
+### Developing on VR2Gather itself
+
+If you want to make changes to VR2Gather you should check out this repository, <https://github.com/cwi-dis/VR2Gather>. But really only then: otherwise just install the Unity package through the package manager.
+
+At the toplevel folder you will find the source of the Unity package, `nl.cwi.dis.vr2gather`.
+
+You will also find 3 Unity projects:
+
+- `VRTApp-Develop` is a pretty empty project that imports `nl.cwi.dis.vr2gather` by relative pathname. This has the advantage that as you make changes to any of the files from the package these changes will be made in-place, so you can then commit and push them later. There is also a trick with a symlink used to include the Samples into this project.
+- `VRTApp-TestGitPackage` imports the package normally, i.e. using the github URL. So after you have made changes using VRTApp-Develop and pushed those changes you can open VRTApp-TestGitPackage, update the package, re-install the samples, and check that your changes actually work and have been pushed.
+
+After making changes, and before pushing or testing with VRTApp-TestGitPackage you should _always_ change the package version number in `package.json`. Otherwise the Unity package manager will think that package has not changed and it will not re-import it.

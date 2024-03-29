@@ -18,4 +18,6 @@ EditorBuildSettings:
     path: Assets/Samples/VR2Gather/0.1.0/VRT Essential Assets/Scenes/TechnicalPlayground/TechnicalPlayground.unity
     guid: 8d7c2248902f944f78d3799d2a8f1dba
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f19d5a3ccedd5495897c3ef24a993559, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: cfaaa2ad5c48d43dbb143f0bc00363b6, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 871e4f5ee709747b7af485f3fcec5c5b, type: 2}
