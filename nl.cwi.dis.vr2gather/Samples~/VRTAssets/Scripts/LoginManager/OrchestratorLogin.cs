@@ -398,12 +398,14 @@ namespace VRT.Pilots.LoginManager
             if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
             {
                 Debug.LogError("OrchestratorLogin.LoadUserData: orchestratorConfigFilename is empty");
+                OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }
             var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
             if (!System.IO.File.Exists(fullName))
             {
                 Debug.LogWarning($"OrchestratorLogin.LoadUserData: Cannot open {fullName}");
+                OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }
 
@@ -635,7 +637,12 @@ namespace VRT.Pilots.LoginManager
             User user = OrchestratorController.Instance.SelfUser;
 
             // Config Info
+            if (user.userData == null)
+            {
+                user.userData = new UserData();
+            }
             UserData userData = user.userData;
+
             SettingsPanelTCPPointcloudURLField.text = userData.userPCurl;
             SettingsPanelTCPAudioURLField.text = userData.userAudioUrl;
             SettingsPanelRepresentationDropdown.value = (int)userData.userRepresentationType;
