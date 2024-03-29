@@ -23,7 +23,7 @@
 		{
 			"displayName": "VRT Essential Assets",
 			"description": "A set of assets that are essential when using VR2Gather",
-			"path": "Samples~/VRT Essential Assets"
+			"path": "Samples~/VRTAssets"
 		}
 	]
 }
