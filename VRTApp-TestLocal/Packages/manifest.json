@@ -1,5 +1,9 @@
 {
   "dependencies": {
+    "com.tivadar.best.http": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.http",
+    "com.tivadar.best.socketio": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.socketio",
+    "com.tivadar.best.tlssecurity": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.tlssecurity",
+    "com.tivadar.best.websockets": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.websockets",
     "com.unity.collab-proxy": "2.3.1",
     "com.unity.feature.development": "1.0.1",
     "com.unity.textmeshpro": "3.0.6",
@@ -11,6 +15,7 @@
     "com.unity.xr.oculus": "4.2.0",
     "com.unity.xr.openxr": "1.10.0",
     "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
+    "nl.cwi.dis.vr2gather": "file:/Users/jack/src/VRTogether/VR2Gather-142/nl.cwi.dis.vr2gather",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
