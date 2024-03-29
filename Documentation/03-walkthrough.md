@@ -20,6 +20,12 @@ The orchestrator also handles creation and advertisement of sessions.
 
 For some actions in the experience (think: creating a new virtual object) it is important that the action is coordinated. This is implemented by having one application instance designated the _master instance_, and have such actions always done first on the master. Currently, the master instance is always the instance that created the session.
 
+Here is a diagram that paints a picture of how things fit together:
+
+![](./VR2Gather-software-structure.pdf)
+
+> We need to ensure that the picture above and the description of the modules below use the same naming convention.
+
 ## Unity Package Structure
 
 The`nl.cwi.dis.vr2gather` package is structured into a number of _assemblies_, each with a toplevel folder (or near-toplevel folder), and each with its own substructure of `Scripts`, `Prefabs`, etc. There is also one external package that is indispensible.
