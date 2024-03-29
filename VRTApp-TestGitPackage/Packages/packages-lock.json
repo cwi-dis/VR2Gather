@@ -1,41 +1,45 @@
 {
   "dependencies": {
     "com.tivadar.best.http": {
-      "version": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.http",
+      "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.http",
       "depth": 0,
-      "source": "local",
+      "source": "git",
       "dependencies": {
         "com.unity.burst": "1.8.7",
         "com.unity.profiling.core": "1.0.0"
-      }
+      },
+      "hash": "52c88582db141dfe98ecaae48151fcef425ec526"
     },
     "com.tivadar.best.socketio": {
-      "version": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.socketio",
+      "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.socketio",
       "depth": 0,
-      "source": "local",
+      "source": "git",
       "dependencies": {
         "com.unity.burst": "1.8.7",
         "com.tivadar.best.http": "3.0.0",
         "com.tivadar.best.websockets": "3.0.0"
-      }
+      },
+      "hash": "52c88582db141dfe98ecaae48151fcef425ec526"
     },
     "com.tivadar.best.tlssecurity": {
-      "version": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.tlssecurity",
+      "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.tlssecurity",
       "depth": 0,
-      "source": "local",
+      "source": "git",
       "dependencies": {
         "com.unity.burst": "1.8.7",
         "com.tivadar.best.http": "3.0.0"
-      }
+      },
+      "hash": "52c88582db141dfe98ecaae48151fcef425ec526"
     },
     "com.tivadar.best.websockets": {
-      "version": "file:External/VR2G-besthttp/BestHTTP/com.tivadar.best.websockets",
+      "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.websockets",
       "depth": 0,
-      "source": "local",
+      "source": "git",
       "dependencies": {
         "com.unity.burst": "1.8.7",
         "com.tivadar.best.http": "3.0.0"
-      }
+      },
+      "hash": "52c88582db141dfe98ecaae48151fcef425ec526"
     },
     "com.unity.animation.rigging": {
       "version": "1.2.1",
