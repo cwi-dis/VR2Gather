@@ -36,7 +36,7 @@ public class VRTInitializer : MonoBehaviour
     {
         Debug.Log("VRTInitializer: Start");
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-        if (XRGeneralSettings.Instance.Manager.activeLoader != null)
+        if (XRGeneralSettings.Instance?.Manager?.activeLoader != null)
         {
             XRGeneralSettings.Instance.Manager.StopSubsystems();
             XRGeneralSettings.Instance.Manager.DeinitializeLoader();
