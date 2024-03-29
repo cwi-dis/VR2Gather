@@ -1,0 +1,34 @@
+fileFormatVersion: 2
+guid: d0fb48a1c3eef4746a6ee00cf6319bf4
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 40
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Brandon Grotesque
+  fontNames:
+  - Brandon Grotesque
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: ddc743c050ee81146be69bd74a7cade6, type: 3}
+  - {fileID: 12800000, guid: 97906602b544048458d0e2d83aa99339, type: 3}
+  - {fileID: 12800000, guid: 30d2b232a00331047851ef687a425c2c, type: 3}
+  - {fileID: 12800000, guid: 29a0e333af2cfea41a3883596409019a, type: 3}
+  - {fileID: 12800000, guid: 426c4f24d74b3aa409700b69c1c8f0fa, type: 3}
+  - {fileID: 12800000, guid: 68ea78c44aa65174a9cc05af7ccf0369, type: 3}
+  - {fileID: 12800000, guid: 3afb8055a1dc9a942b9115cf27db0cc1, type: 3}
+  - {fileID: 12800000, guid: 41546d95e520ff9479d51645254ee783, type: 3}
+  - {fileID: 12800000, guid: 1eccf3b7774846c429b2f9c40d238dd1, type: 3}
+  - {fileID: 12800000, guid: d71c5bc7a7251f747a107e0b097005b7, type: 3}
+  - {fileID: 12800000, guid: e84c0a9eaef059e46a1bcf9d9837e220, type: 3}
+  - {fileID: 12800000, guid: 00e33cce9023e5346b491bd65a8f478f, type: 3}
+  customCharacters: 
+  fontRenderingMode: 3
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
