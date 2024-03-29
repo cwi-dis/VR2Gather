@@ -4,6 +4,18 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Samples/VR2Gather/0.1.0/VRT Essential Assets/Scenes/LoginManager/LoginManager.unity
+    guid: 29732a909b44f204db3708ba9a91c2fc
+  - enabled: 1
+    path: Assets/Samples/VR2Gather/0.1.0/VRT Essential Assets/Scenes/Pilot0/Pilot0.unity
+    guid: 01e8d4050e184da48aba95c97a697601
+  - enabled: 1
+    path: Assets/Samples/VR2Gather/0.1.0/VRT Essential Assets/Scenes/SoloPlayground/SoloPlayground.unity
+    guid: 08a15cfc0df42104784fe067f5ea895b
+  - enabled: 1
+    path: Assets/Samples/VR2Gather/0.1.0/VRT Essential Assets/Scenes/TechnicalPlayground/TechnicalPlayground.unity
+    guid: 8d7c2248902f944f78d3799d2a8f1dba
   m_configObjects:
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 871e4f5ee709747b7af485f3fcec5c5b, type: 2}
