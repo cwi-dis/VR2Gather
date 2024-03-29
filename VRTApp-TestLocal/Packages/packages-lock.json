@@ -37,6 +37,16 @@
         "com.tivadar.best.http": "3.0.0"
       }
     },
+    "com.unity.animation.rigging": {
+      "version": "1.2.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.4.1",
+        "com.unity.test-framework": "1.1.24"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.burst": {
       "version": "1.8.12",
       "depth": 1,
@@ -299,6 +309,7 @@
         "com.tivadar.best.socketio": "3.0.0",
         "com.tivadar.best.tlssecurity": "3.0.0",
         "com.tivadar.best.websockets": "3.0.0",
+        "com.unity.animation.rigging": "1.2.1",
         "com.unity.recorder": "4.0.2",
         "com.unity.textmeshpro": "3.0.8",
         "com.unity.xr.interaction.toolkit": "2.5.2",
