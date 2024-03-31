@@ -42,17 +42,34 @@ namespace VRT.Pilots.Common
 				Debug.LogError($"{Name()}: SendPlayerData with no playerController. Probably SetupPlayerNetworkController was not called.");
 				return;
 			}
+			float BodySize = 0;
+			GameObject currentRepresentation = playerController.GetRepresentationGameObject();
+            if (currentRepresentation != null && currentRepresentation.activeInHierarchy)
+            {
+                BodySize = currentRepresentation.transform.localScale.y;
+            }
+            if (AlternativeUserRepresentation != null && AlternativeUserRepresentation.activeInHierarchy)
+            {
+                BodySize = AlternativeUserRepresentation.transform.localScale.y;
+            }
+            // For debugging mainly: also copy head position/orientation for the self user
+            if (Head3TransformAlsoMove != null)
+			{
+				Head3TransformAlsoMove.rotation = camTransform.rotation;
+				Head3TransformAlsoMove.position = camTransform.position;
+			}
 			var data = new NetworkPlayerData
 			{
 				BodyPosition = BodyTransform.position,
 				BodyOrientation = BodyTransform.rotation,
-				//HeadPosition = camTransform.position,
+				HeadPosition = camTransform.position,
 				HeadOrientation = camTransform.rotation,
 				LeftHandPosition = LeftHandTransform.position,
 				LeftHandOrientation = LeftHandTransform.rotation,
 				RightHandPosition = RightHandTransform.position,
 				RightHandOrientation = RightHandTransform.rotation,
-				representation = playerController.userRepresentation
+				representation = playerController.userRepresentation,
+				BodySize = BodySize
 			};
 
 			if (OrchestratorController.Instance.UserIsMaster)

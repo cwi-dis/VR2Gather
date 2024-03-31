@@ -9,13 +9,14 @@ using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Pilots.Common;
 using static System.Collections.Specialized.BitVector32;
+using UnityEngine.Serialization;
 
 namespace VRT.Pilots.LoginManager
 {
 
     public enum State
     {
-        Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame
+        Offline, Online, LoggedIn, Settings, Play, Create, Join, Lobby, InGame
     }
 
     public enum AutoState
@@ -29,131 +30,918 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private bool developerMode = true;
 
         private static OrchestratorLogin instance;
-
-        #region GUI Components
-
-        [Tooltip("This user is the master of the session")]
-        [DisableEditing] public bool isMaster = false;
-        [DisableEditing] public string userID = "";
-
         private State state = State.Offline;
         private AutoState autoState = AutoState.DidNone;
 
-        
-        [Header("Developer")]
         [SerializeField] private Toggle developerModeButton = null;
-        [SerializeField] private GameObject developerPanel = null;
         [SerializeField] private Text statusText = null;
-        [SerializeField] private Text userId = null;
-        [SerializeField] private Text userName = null;
-        [SerializeField] private Text orchURLText = null;
-        [SerializeField] private Text nativeVerText = null;
-        [SerializeField] private Text playerVerText = null;
-        [SerializeField] private Text orchVerText = null;
-        [SerializeField] private Text ntpText = null;
-        [SerializeField] private Button developerSessionButton = null;
+        [SerializeField] private SelfRepresentationPreview SelfRepresentationPreview = null;
 
-        [Header("Connect")]
+        [Header("Status and DeveloperStatus")]
+        [SerializeField] private GameObject developerPanel = null;
+        [SerializeField] private Text StatusPanelUserId = null;
+        [SerializeField] private Text StatusPanelUserName = null;
+        [SerializeField] private Text StatusPanelOrchestratorURL = null;
+        [SerializeField] private Text StatusPanelNativeVersion = null;
+        [SerializeField] private Text StatusPanelPlayerVersion = null;
+        [SerializeField] private Text StatusPanelOrchestratorVersion = null;
+        [SerializeField] private Button StatusPanelStartDeveloperSceneButton = null;
+
+        [Header("ConnectPanel")]
         [SerializeField] private GameObject connectPanel = null;
       
-        [Header("Login")]
+        [Header("LoginPanel")]
         [SerializeField] private GameObject loginPanel = null;
-        [SerializeField] private InputField userNameLoginIF = null;
-        [SerializeField] private InputField userPasswordLoginIF = null;
-        [SerializeField] private Button loginButton = null;
-        [SerializeField] private Button signinButton = null;
-        [SerializeField] private Toggle rememberMeButton = null;
+        [SerializeField] private InputField LoginPanelUserName = null;
+        [SerializeField] private Button LoginPanelLoginButton = null;
+        [SerializeField] private Toggle LoginPanelRememberMeToggle = null;
 
-        [Header("Signin")]
-        [SerializeField] private GameObject signinPanel = null;
-        [SerializeField] private InputField userNameRegisterIF = null;
-        [SerializeField] private InputField userPasswordRegisterIF = null;
-        [SerializeField] private InputField confirmPasswordRegisterIF = null;
-        [SerializeField] private Button registerButton = null;
+        [Header("HomePanel")]
+        
+        [SerializeField] private GameObject homePanel = null;
+        [SerializeField] private Text HomePanelUserName = null;
+        [SerializeField] private Button HomePanelLogoutButton = null;
+        [SerializeField] private Button HomePanelPlayButton = null;
+        [SerializeField] private Button HomePanelSettingsButton = null;
 
-        [Header("VRT")]
-        [SerializeField] private GameObject vrtPanel = null;
-        [SerializeField] private Text userNameVRTText = null;
-        [SerializeField] private Button logoutButton = null;
-        [SerializeField] private Button playButton = null;
-        [SerializeField] private Button configButton = null;
+        [Header("SettingsPanel")]
+        [SerializeField] private GameObject settingsPanel = null;
+        [SerializeField] private GameObject SettingsPanelWebcamInfoGO = null;
+        [SerializeField] private InputField SettingsPanelTCPPointcloudURLField = null;
+        [SerializeField] private InputField SettingsPanelTCPAudioURLField = null;
+        [SerializeField] private Dropdown SettingsPanelRepresentationDropdown = null;
+        [SerializeField] private Dropdown SettingsPanelWebcamDropdown = null;
+        [SerializeField] private Dropdown SettingsPanelMicrophoneDropdown = null;
+        [SerializeField] private RectTransform SettingsPanelVUMeter = null;
+        [SerializeField] private Button SettingsPanelSaveButton = null;
+        [SerializeField] private Button SettingsPanelBackButton = null;
+        [SerializeField] private Text SettingsPanelSelfRepresentationDescription = null;
 
-        [Header("Config")]
-        [SerializeField] private GameObject configPanel = null;
-        [SerializeField] private GameObject webcamInfoGO = null;
-        [SerializeField] private InputField tcpPointcloudURLConfigIF = null;
-        [SerializeField] private InputField tcpAudioURLConfigIF = null;
-        [SerializeField] private Dropdown representationTypeConfigDropdown = null;
-        [SerializeField] private Dropdown webcamDropdown = null;
-        [SerializeField] private Dropdown microphoneDropdown = null;
-        [SerializeField] private RectTransform VUMeter = null;
-        [SerializeField] private Button saveConfigButton = null;
-        [SerializeField] private Button exitConfigButton = null;
-        [SerializeField] private SelfRepresentationPreview selfRepresentationPreview = null;
-        [SerializeField] private Text selfRepresentationDescription = null;
-
-        [Header("Play")]
+        [Header("PlayPanel")]
         [SerializeField] private GameObject playPanel = null;
-        [SerializeField] private Button backPlayButton = null;
-        [SerializeField] private Button createButton = null;
-        [SerializeField] private Button joinButton = null;
+        [SerializeField] private Button PlayPanelBackButton = null;
+        [SerializeField] private Button PlayPanelCreateButton = null;
+        [SerializeField] private Button PlayPanelJoinButton = null;
 
-        [Header("Create")]
+        [Header("CreatePanel")]
         [SerializeField] private GameObject createPanel = null;
-        [SerializeField] private Button backCreateButton = null;
-        [SerializeField] private InputField sessionNameIF = null;
-        [SerializeField] private InputField sessionDescriptionIF = null;
-        [SerializeField] private Dropdown scenarioIdDrop = null;
-        [SerializeField] private Text scenarioDescription = null;
-        [SerializeField] private Toggle socketProtocolToggle = null;
-        [SerializeField] private Toggle dashProtocolToggle = null;
-        [SerializeField] private Toggle tcpProtocolToggle = null;
-        [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
-        [SerializeField] private Toggle uncompressedAudioToggle = null;
+        [SerializeField] private Button CreatePanelBackButton = null;
+        [SerializeField] private InputField CreatePanelSessionNameField = null;
+        [SerializeField] private InputField CreatePanelSessionDescriptionField = null;
+        [SerializeField] private Dropdown CreatePanelScenarioDropdown = null;
+        [SerializeField] private Text CreatePanelScenarioDescription = null;
+        [SerializeField] private Dropdown CreatePanelSessionProtocolDropdown = null;
+        [SerializeField] private Toggle CreatePanelUncompressedPointcloudsToggle = null;
+        [SerializeField] private Toggle CreatePanelUncompressedAudioToggle = null;
+        [SerializeField] private Button CreatePanelCreateButton = null;
 
-        [Header("Join")]
+        [Header("JoinPanel")]
         [SerializeField] private GameObject joinPanel = null;
-        [SerializeField] private Button backJoinButton = null;
-        [SerializeField] private Dropdown sessionIdDrop = null;
-        [SerializeField] private Text sessionJoinMessage = null;
-        [SerializeField] private int refreshTimer = 5;
+        [SerializeField] private Button JoinPanelBackButton = null;
+        [SerializeField] private Dropdown JoinPanelSessionDropdown = null;
+        [SerializeField] private Text JoinPanelSessionDescription = null;
+        [SerializeField] private Button JoinPanelJoinButton = null;
+        [SerializeField] private RectTransform JoinPanelSessionList = null;
+        [SerializeField] private int JoinPanelRefreshInterval = 5;
+        private float JoinPanelRefreshTimer = 0.0f;
 
-        [Header("Lobby")]
+        [Header("LobbyPanel")]
         [SerializeField] private GameObject lobbyPanel = null;
-        [SerializeField] private Text sessionNameText = null;
-        [SerializeField] private Text sessionDescriptionText = null;
-        [SerializeField] private Text scenarioIdText = null;
-        [SerializeField] private Text sessionNumUsersText = null;
-        [SerializeField] private Text userRepresentationLobbyText = null;
-        [SerializeField] private Image userRepresentationLobbyImage = null;
-        private string sessionMasterID = null;
+        [SerializeField] private Text LobbyPanelSessionName = null;
+        [SerializeField] private Text LobbyPanelSessionDescription = null;
+        [SerializeField] private Text LobbyPanelScenarioName = null;
+        [SerializeField] private Text LobbyPanelSessionNumUsers = null;
+        [SerializeField] private Button LobbyPanelStartButton = null;
+        [SerializeField] private Button LobbyPanelLeaveButton = null;
+        [SerializeField] private RectTransform LobbyPanelSessionUsers = null;
+        [SerializeField] private Text LobbyPanelUserRepresentationText = null; // xxxjack can be removed
+        [SerializeField] private Image LobbyPanelUserRepresentationImage = null; // xxxjack can be removed
 
-        [Header("Buttons")]
-        [SerializeField] private Button doneCreateButton = null;
-        [SerializeField] private Button doneJoinButton = null;
-        [SerializeField] private Button readyButton = null;
-        [SerializeField] private Button leaveButton = null;
-        [SerializeField] private Button refreshSessionsButton = null;
+        [Header("Visual representation")]
+        [SerializeField] private Color colorConnected = new Color(0.15f, 0.78f, 0.15f); // Green
+        [SerializeField] private Color colorConnecting = new Color(0.85f, 0.5f, 0.2f); // Orange
+        [SerializeField] private Color colorDisconnecting = new Color(0.78f, 0.15f, 0.15f); // Red
+        [SerializeField] private Font MenuFont = null;
 
-        [Header("Content")]
-        [SerializeField] private RectTransform orchestratorSessions = null;
-        [SerializeField] private RectTransform usersSession = null;
+        #region Unity
+
+        // Start is called before the first frame update
+        void Start()
+        {
+            if (instance == null)
+            {
+                instance = this;
+            }
+
+            AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
+
+            // Developer mode settings
+            developerMode = PlayerPrefs.GetInt("developerMode", 0) != 0;
+            developerModeButton.isOn = developerMode;
+            // Update Application version
+            StatusPanelOrchestratorURL.text = VRTConfig.Instance.orchestratorURL;
+            if (VersionLog.Instance != null) StatusPanelNativeVersion.text = VersionLog.Instance.NativeClient;
+            StatusPanelPlayerVersion.text = "v" + Application.version;
+            StatusPanelOrchestratorVersion.text = "";
+
+            // Font to build gui components for logs!
+            //MenuFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+
+            // Fill scenarios
+            CreatePanel_UpdateScenarios();
+
+            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
+            SettingsPanel_UpdateRepresentations();
+            SettingsPanel_UpdateWebcams();
+            SettingsPanel_UpdateMicrophones();
+
+            // Buttons listeners
+            developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeToggleClicked(); });
+            StatusPanelStartDeveloperSceneButton.onClick.AddListener(delegate { StartDeveloperSceneButtonPressed(); });
+            LoginPanelLoginButton.onClick.AddListener(delegate { Login(); });
+            HomePanelLogoutButton.onClick.AddListener(delegate { Logout(); });
+            HomePanelPlayButton.onClick.AddListener(delegate { ChangeState(State.Play); });
+            HomePanelSettingsButton.onClick.AddListener(delegate { ChangeState(State.Settings); });
+            SettingsPanelSaveButton.onClick.AddListener(delegate { SettingsPanel_SaveButtonPressed(); });
+            SettingsPanelBackButton.onClick.AddListener(delegate { SettingsPanel_BackButtonPressed(); });
+            PlayPanelBackButton.onClick.AddListener(delegate { ChangeState(State.LoggedIn); });
+            PlayPanelCreateButton.onClick.AddListener(delegate { ChangeState(State.Create); });
+            PlayPanelJoinButton.onClick.AddListener(delegate { ChangeState(State.Join); });
+            CreatePanelBackButton.onClick.AddListener(delegate { ChangeState(State.Play); });
+            CreatePanelCreateButton.onClick.AddListener(delegate { AddSession(); });
+            JoinPanelBackButton.onClick.AddListener(delegate { ChangeState(State.Play); });
+            JoinPanelJoinButton.onClick.AddListener(delegate { JoinSession(); });
+            LobbyPanelStartButton.onClick.AddListener(delegate { LobbyPanel_StartButtonPressed(); });
+            LobbyPanelLeaveButton.onClick.AddListener(delegate { LeaveSession(); });
+
+            // Dropdown listeners
+            SettingsPanelRepresentationDropdown.onValueChanged.AddListener(delegate {
+                SettingsPanel_UpdateAfterRepresentationChange();
+                // xxxjack AllPanels_UpdateAfterStateChange();
+            });
+            SettingsPanelWebcamDropdown.onValueChanged.AddListener(delegate {
+                SettingsPanel_UpdateAfterRepresentationChange();
+                // xxxjack AllPanels_UpdateAfterStateChange();
+            });
+            SettingsPanelMicrophoneDropdown.onValueChanged.AddListener(delegate {
+                SelfRepresentationPreview.ChangeMicrophone(SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text);
+            });
+            CreatePanelScenarioDropdown.onValueChanged.AddListener(delegate { CreatePanel_ScenarioSelectionChanged(); });
+
+            JoinPanelSessionDropdown.onValueChanged.AddListener(delegate { JoinPanel_SessionSelectionChanged(); });
+
+            InitialiseControllerEvents();
+
+            CreatePanel_UpdateProtocols();
+            CreatePanelUncompressedPointcloudsToggle.isOn = SessionConfig.Instance.pointCloudCodec == "cwi0";
+            CreatePanelUncompressedAudioToggle.isOn = SessionConfig.Instance.voiceCodec == "VR2a";
+
+            if (OrchestratorController.Instance.UserIsLogged)
+            { // Comes from another scene
+              // Set status to online
+                statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+                statusText.color = colorConnected;
+                AllPanels_UpdateUserData();
+                JoinPanel_UpdateSessions();
+           
+                OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), StatusPanelUserId.text);
+            }
+            else
+            { // Enter for first time
+              // Set status to offline
+                statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+                statusText.color = colorDisconnecting;
+                state = State.Offline;
+
+                // Try to connect
+                SocketConnect();
+            }
+        }
+
+      
+        // Update is called once per frame
+        void Update()
+        {
+            // Update the microphone VU meter, if it is visible.
+            if (SettingsPanelVUMeter && SettingsPanelVUMeter.gameObject.activeInHierarchy && SelfRepresentationPreview)
+                SettingsPanelVUMeter.sizeDelta = new Vector2(355 * Mathf.Min(1, SelfRepresentationPreview.MicrophoneLevel), 20);
+            // Allow tabbing between input fields, if needed
+            _ImplementTabShortcut();
+          
+            // Refresh Sessions, if needed
+            if (state == State.Join)
+            {
+                JoinPanelRefreshTimer += Time.deltaTime;
+                if (JoinPanelRefreshTimer >= JoinPanelRefreshInterval)
+                {
+                    GetSessions();
+                    JoinPanelRefreshTimer = 0.0f;
+                }
+            }
+        }
+
+        private void OnDestroy()
+        {
+            TerminateControllerEvents();
+        }
+        #endregion
+
+        #region Global logic
+        private void StartSelfRepresentationPreview()
+        {
+            if (SelfRepresentationPreview == null)
+            {
+                Debug.LogError("OrchestratorLogin: No self previww");
+                return;
+            }
+            SelfRepresentationPreview.gameObject.SetActive(true);
+            SelfRepresentationPreview.enabled = true;
+            SelfRepresentationPreview.InitializeSelfPlayer();
+        }
+
+        /// <summary>
+        /// This method implements AutoStart. It is called whenever something in the state has changed, so that we can
+        /// potentially get a bit further with autostart.
+        /// </summary>
+        private void AutoStart_StateUpdate()
+        {
+            // We do a quick exit if we don't have an autostart config, or if shift is pressed.
+            VRTConfig._AutoStart config = VRTConfig.Instance.AutoStart;
+            if (config == null) return;
+            if (Keyboard.current.shiftKey.isPressed) return;
+
+            if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart.autoLogin)
+            {
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
+                autoState = AutoState.DidLogIn;
+                Login();
+                return;
+            }
+            if (autoState == AutoState.DidLogIn && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin))
+            {
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
+                autoState = AutoState.DidPlay;
+                ChangeState(State.Play);
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                return;
+            }
+            if (state == State.Play && autoState == AutoState.DidPlay)
+            {
+                if (config.autoCreate)
+                {
+                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting");
+                    autoState = AutoState.DidCreate;
+                    ChangeState(State.Create);
+
+                }
+                if (config.autoJoin)
+                {
+                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoJoin: starting");
+                    autoState = AutoState.DidJoin;
+                    ChangeState(State.Join);
+                }
+            }
+            if (state == State.Create && autoState == AutoState.DidCreate)
+            {
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionName={config.sessionName}");
+                CreatePanelSessionNameField.text = config.sessionName;
+                CreatePanelUncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
+                CreatePanelUncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
+                if (config.sessionTransportProtocol != null && config.sessionTransportProtocol != "")
+                {
+                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
+                    // xxxjack I don't understand the intended logic behind the toggles. But turning everything
+                    // on and then simulating a button callback works.
+                    
+                    CreatePanel_ProtocolChanged(config.sessionTransportProtocol);
+                }
+                else
+                {
+                    CreatePanel_ProtocolChanged("socketio");
+                }
+                autoState = AutoState.DidPartialCreation;
+            }
+            if (state == State.Create && autoState == AutoState.DidPartialCreation && CreatePanelScenarioDropdown.options.Count > 0)
+            {
+                if (config.sessionScenario != null && config.sessionScenario != "")
+                {
+                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionScenario={config.sessionScenario}");
+                    bool found = false;
+                    int idx = 0;
+                    foreach (var entry in CreatePanelScenarioDropdown.options)
+                    {
+                        if (entry.text == config.sessionScenario)
+                        {
+                            CreatePanelScenarioDropdown.value = idx;
+                            found = true;
+                        }
+                        idx++;
+                    }
+                    if (!found)
+                    {
+                        Debug.LogError($"OrchestratorLogin: AutoStart: No scenarios match {config.sessionScenario}");
+
+                    }
+                }
+                if (config.autoCreate)
+                {
+                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: creating");
+                    Invoke(nameof(AddSession), config.autoDelay);
+                }
+                autoState = AutoState.DidCompleteCreation;
+
+            }
+            if (state == State.Lobby && autoState == AutoState.DidCompleteCreation && config.autoStartWith >= 1)
+            {
+                if (LobbyPanelSessionNumUsers.text == config.autoStartWith.ToString())
+                {
+                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting with {config.autoStartWith} users");
+                    Invoke(nameof(LobbyPanel_StartButtonPressed), config.autoDelay);
+                    autoState = AutoState.Done;
+                }
+            }
+            if (state == State.Join && autoState == AutoState.DidJoin)
+            {
+                var options = JoinPanelSessionDropdown.options;
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: look for {config.sessionName}");
+                for (int i = 0; i < options.Count; i++)
+                {
+                    if (options[i].text.StartsWith(config.sessionName + " "))
+                    {
+                        if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: entry {i} is {config.sessionName}, joining");
+                        JoinPanelSessionDropdown.value = i;
+                        autoState = AutoState.Done;
+                        Invoke(nameof(JoinSession), config.autoDelay);
+                    }
+                }
+            }
+        }
+
+        private void SaveUserData()
+        {
+            // And also save a local copy, if wanted
+            if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            {
+                Debug.LogError("OrchestratorLogin.SaveUserData: orchestratorConfigFilename is empty");
+                return;
+            }
+            var configData = OrchestratorController.Instance.SelfUser.userData.AsJsonString();
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            System.IO.File.WriteAllText(fullName, configData);
+            Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
+
+        }
+
+        private void LoadUserData()
+        {
+            // Load locally save user data
+            if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            {
+                Debug.LogError("OrchestratorLogin.LoadUserData: orchestratorConfigFilename is empty");
+                return;
+            }
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            if (!System.IO.File.Exists(fullName))
+            {
+                Debug.LogWarning($"OrchestratorLogin.LoadUserData: Cannot open {fullName}");
+                return;
+            }
+
+            Debug.Log($"OrchestratorLogin: load UserData from {fullName}");
+            var configData = System.IO.File.ReadAllText(fullName);
+            UserData lUserData = new UserData();
+            JsonUtility.FromJsonOverwrite(configData, lUserData);
+            OrchestratorController.Instance.SelfUser.userData = lUserData;
+        }
+
+        private void UploadUserData()
+        {
+            // Also send to orchestrator. This is mainly so that the orchestrator can tell
+            // other participants our self-representation.
+            OrchestratorController.Instance.UpdateFullUserData(OrchestratorController.Instance.SelfUser.userData);
+            Debug.Log($"OrchestratorLogin: uploaded UserData to orchestrator");
+        }
+        #endregion
+
+        #region UI: global
+
+        public void AllPanels_UpdateUserData()
+        {
+            if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null)
+            {
+                Debug.LogWarning($"OrchestratorLogin: FillSelfUserData: no SelfUser data yet");
+            }
+            User user = OrchestratorController.Instance.SelfUser;
+
+            // UserID & Name
+            StatusPanelUserId.text = user.userId;
+            StatusPanelUserName.text = user.userName;
+            HomePanelUserName.text = user.userName;
+            if (state == State.Settings)
+            {
+                SettingsPanel_UpdateUserData();
+            }
+        }
+
+        private void AllPanels_UpdateAfterStateChange()
+        {
+            // Get the user name (if we have one) it is used to initialize various fields.
+            string uname = OrchestratorController.Instance?.SelfUser?.userName;
+
+            developerPanel.SetActive(developerMode);
+            connectPanel.gameObject.SetActive(state == State.Offline);
+            loginPanel.SetActive(state == State.Online);
+            homePanel.SetActive(state == State.LoggedIn);
+            settingsPanel.SetActive(state == State.Settings);
+            playPanel.SetActive(state == State.Play);
+            createPanel.SetActive(state == State.Create);
+            joinPanel.SetActive(state == State.Join);
+            lobbyPanel.SetActive(state == State.Lobby);
+            // We have to (re)initialize some fields for some of the panels.
+            switch (state)
+            {
+                case State.Offline:
+                    break;
+                case State.Online:
+                    LoginPanel_UpdateUserName();
+                    break;
+                case State.LoggedIn:
+                    HomePanelUserName.text = uname;
+                    StatusPanelUserName.text = uname;
+                    break;
+                case State.Settings:
+                    SettingsPanel_UpdateUserData();
+                    SettingsPanel_UpdateAfterRepresentationChange();
+                    break;
+                case State.Play:
+                    break;
+                case State.Create:
+                    // Ensure we always have a default sesssion name (for running without access to a keyboard)
+                    if (string.IsNullOrEmpty(CreatePanelSessionNameField.text))
+                    {
+                         string time = DateTime.Now.ToString("hhmmss");
+                        CreatePanelSessionNameField.text = $"{uname}_{time}";
+                    }
+                    break;
+                case State.Join:
+                    // Refresh the list of sessions
+                    GetSessions();
+                    break;
+                case State.Lobby:
+                    // Ensure only the session master has the Start button.
+                    LobbyPanelStartButton.gameObject.SetActive(OrchestratorController.Instance.UserIsMaster);
+                    break;
+                case State.InGame:
+                    break;
+                default:
+                    break;
+            }
+            _SelectFirstIInputField();
+        }
+
+        private void DeveloperModeToggleClicked()
+        {
+            developerMode = developerModeButton.isOn;
+            PlayerPrefs.SetInt("developerMode", developerMode ? 1 : 0);
+            AllPanels_UpdateAfterStateChange();
+        }
+
+        private void StartDeveloperSceneButtonPressed()
+        {
+            PilotController.LoadScene("SoloPlayground");
+        }
+
+        public void ChangeState(State _state)
+        {
+            state = _state;
+            AllPanels_UpdateAfterStateChange();
+        }
+        #endregion
+
+        #region UI: LoginPanel
+
+        // Check saved used credentials.
+        private void LoginPanel_UpdateUserName()
+        {
+            if (PlayerPrefs.HasKey("userNameLoginIF"))
+            {
+                string userName = PlayerPrefs.GetString("userNameLoginIF");
+                if (string.IsNullOrEmpty(userName)) {
+                    LoginPanelRememberMeToggle.isOn = false;
+                } else
+                {
+                    LoginPanelRememberMeToggle.isOn = true;
+                    LoginPanelUserName.text = userName;
+                }
+            }
+            else
+                LoginPanelRememberMeToggle.isOn = false;
+        }
 
         #endregion
 
-        #region Utils
-        private Color connectedCol = new Color(0.15f, 0.78f, 0.15f); // Green
-        private Color connectingCol = new Color(0.85f, 0.5f, 0.2f); // Orange
-        private Color disconnectedCol = new Color(0.78f, 0.15f, 0.15f); // Red
-        public Font MenuFont = null;
-        private EventSystem system = null;
-        private float timer = 0.0f;
+        #region UI: SettingsPanel
+
+        private void SettingsPanel_UpdateRepresentations()
+        {
+            Dropdown dd = SettingsPanelRepresentationDropdown;
+            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
+            // xxxjack this has the huge disadvantage that they are numerically sorted.
+            // xxxjack and the order is difficult to change currently, because the values
+            // xxxjack are stored by the orchestrator in the user record, in numerical form...
+            dd.ClearOptions();
+            dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
+
+        }
+
+        private void SettingsPanel_UpdateWebcams()
+        {
+            Dropdown dd = SettingsPanelWebcamDropdown;
+            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
+            dd.ClearOptions();
+            WebCamDevice[] devices = WebCamTexture.devices;
+            List<string> webcams = new List<string>();
+            webcams.Add("None");
+            foreach (WebCamDevice device in devices)
+                webcams.Add(device.name);
+            dd.AddOptions(webcams);
+        }
+
+        private void SettingsPanel_UpdateMicrophones()
+        {
+            Dropdown dd = SettingsPanelMicrophoneDropdown;
+            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
+            dd.ClearOptions();
+            string[] devices = Microphone.devices;
+            List<string> microphones = new List<string>();
+            microphones.Add("None");
+            foreach (string device in devices)
+                microphones.Add(device);
+            dd.AddOptions(microphones);
+        }
+
+        private void SettingsPanel_SetRepresentation(UserRepresentationType _representationType)
+        {
+
+            // left change the icon 'userRepresentationLobbyImage'
+            switch (_representationType)
+            {
+                case UserRepresentationType.NoRepresentation:
+                    SettingsPanelSelfRepresentationDescription.text = "No representation, no audio. The user can only watch.";
+                    break;
+                case UserRepresentationType.VideoAvatar:
+                    SettingsPanelSelfRepresentationDescription.text = "Avatar with video window from your camera.";
+                    break;
+                case UserRepresentationType.SimpleAvatar:
+                    SettingsPanelSelfRepresentationDescription.text = "3D Synthetic Avatar.";
+                    break;
+                case UserRepresentationType.PointCloud:
+                    SettingsPanelSelfRepresentationDescription.text = "Realistic point cloud user representation, captured live.";
+                    break;
+                case UserRepresentationType.AudioOnly:
+                    SettingsPanelSelfRepresentationDescription.text = "No visual representation, only audio communication.";
+                    break;
+                case UserRepresentationType.NoRepresentationCamera:
+                    SettingsPanelSelfRepresentationDescription.text = "Local video recorder.";
+                    break;
+                case UserRepresentationType.AppDefinedRepresentationOne:
+                    SettingsPanelSelfRepresentationDescription.text = "Application-defined representation 1.";
+                    break;
+                case UserRepresentationType.AppDefinedRepresentationTwo:
+                    SettingsPanelSelfRepresentationDescription.text = "Application-defined representation 2.";
+                    break;
+                default:
+                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {_representationType}");
+                    break;
+            }
+        }
+
+        private void SettingsPanel_ExtractUserData()
+        {
+            // UserData info in Config
+            UserData lUserData = new UserData
+            {
+                userPCurl = SettingsPanelTCPPointcloudURLField.text,
+                userAudioUrl = SettingsPanelTCPAudioURLField.text,
+                userRepresentationType = (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
+                webcamName = (SettingsPanelWebcamDropdown.options.Count <= 0) ? "None" : SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
+                microphoneName = (SettingsPanelMicrophoneDropdown.options.Count <= 0) ? "None" : SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
+            };
+            OrchestratorController.Instance.SelfUser.userData = lUserData;
+        }
+
+        public void SettingsPanel_UpdateUserData()
+        {
+            User user = OrchestratorController.Instance.SelfUser;
+
+            // Config Info
+            UserData userData = user.userData;
+            SettingsPanelTCPPointcloudURLField.text = userData.userPCurl;
+            SettingsPanelTCPAudioURLField.text = userData.userAudioUrl;
+            SettingsPanelRepresentationDropdown.value = (int)userData.userRepresentationType;
+            SettingsPanelWebcamDropdown.value = 0;
+
+            for (int i = 0; i < SettingsPanelWebcamDropdown.options.Count; ++i)
+            {
+                if (SettingsPanelWebcamDropdown.options[i].text == userData.webcamName)
+                {
+                    SettingsPanelWebcamDropdown.value = i;
+                    break;
+                }
+            }
+            SettingsPanelMicrophoneDropdown.value = 0;
+            for (int i = 0; i < SettingsPanelMicrophoneDropdown.options.Count; ++i)
+            {
+                if (SettingsPanelMicrophoneDropdown.options[i].text == userData.microphoneName)
+                {
+                    SettingsPanelMicrophoneDropdown.value = i;
+                    break;
+                }
+            }
+        }
+
+        public void SettingsPanel_UpdateAfterRepresentationChange()
+        {
+            // Dropdown Logic
+            SettingsPanelWebcamInfoGO.SetActive(false);
+
+
+            if ((UserRepresentationType)SettingsPanelRepresentationDropdown.value == UserRepresentationType.VideoAvatar)
+            {
+                SettingsPanelWebcamInfoGO.SetActive(true);
+            }
+            // Preview
+            SettingsPanel_SetRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
+            SelfRepresentationPreview.ChangeRepresentation(
+                (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
+                SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text
+                );
+            SelfRepresentationPreview.ChangeMicrophone(
+                SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
+                );
+        }
+
+        public void SettingsPanel_SaveButtonPressed()
+        {
+            SelfRepresentationPreview.StopMicrophone();
+            SettingsPanel_ExtractUserData();
+            SaveUserData();
+            state = State.LoggedIn;
+            AllPanels_UpdateAfterStateChange();
+        }
+
+        public void SettingsPanel_BackButtonPressed()
+        {
+            SelfRepresentationPreview.StopMicrophone();
+            state = State.LoggedIn;
+            AllPanels_UpdateAfterStateChange();
+        }
+
         #endregion
 
-        #region GUI
+        #region UI: CreatePanel
 
-        // Fill a scroll view with a text item
-        private void AddTextComponentOnContent(Transform container, string value)
+        private void CreatePanel_UpdateScenarios()
+        {
+            // update the dropdown
+            CreatePanelScenarioDropdown.ClearOptions();
+            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+            foreach (var sc in ScenarioRegistry.Instance.Scenarios)
+            {
+                options.Add(new Dropdown.OptionData(sc.scenarioName));
+            }
+
+            CreatePanelScenarioDropdown.AddOptions(options);
+            CreatePanel_ScenarioSelectionChanged();
+        }
+
+        private void CreatePanel_ScenarioSelectionChanged()
+        {
+            var idx = CreatePanelScenarioDropdown.value;
+            bool ok = false;
+            string message = "(no scenario selected)";
+            var scenarios = ScenarioRegistry.Instance.Scenarios;
+            if (idx >= 0 && idx < scenarios.Count)
+            {
+                var sc = scenarios[idx];
+                // Empty entries can be used as separators
+                if (!string.IsNullOrEmpty(sc.scenarioId))
+                {
+                    ok = true;
+                    message = sc.scenarioDescription;
+
+                }
+            }
+            if (CreatePanelScenarioDescription != null)
+            {
+                CreatePanelScenarioDescription.text = message;
+            }
+            CreatePanelCreateButton.interactable = ok;
+        }
+
+        private void CreatePanel_UpdateProtocols()
+        {
+            CreatePanelSessionProtocolDropdown.ClearOptions();
+            List<string> names = new List<string>();
+            foreach (string protocolName in Enum.GetNames(typeof(SessionConfig.ProtocolType)))
+            {
+                if (protocolName == "None") continue;
+                names.Add(protocolName);
+            }
+            CreatePanelSessionProtocolDropdown.AddOptions(names);
+            CreatePanelSessionProtocolDropdown.value = 0;
+        }
+
+        /// <summary>
+        /// Should be called whenever eith audio or pointcloud compression toggle has changed value.
+        /// </summary>
+        public void CreatePanel_UncompressedChanged()
+        {
+            if (CreatePanelUncompressedPointcloudsToggle.isOn)
+            {
+                SessionConfig.Instance.pointCloudCodec = "cwi0";
+            }
+            else
+            {
+                SessionConfig.Instance.pointCloudCodec = "cwi1";
+            }
+            if (CreatePanelUncompressedAudioToggle.isOn)
+            {
+                SessionConfig.Instance.voiceCodec = "VR2a";
+            }
+            else
+            {
+                SessionConfig.Instance.voiceCodec = "VR2A";
+            }
+        }
+
+        /// <summary>
+        /// Should be called when the protocol dropdown has changed value, or to force a specific protocol value.
+        /// </summary>
+        /// <param name="protoString"></param>
+        public void CreatePanel_ProtocolChanged(string protoString)
+        {
+            if (string.IsNullOrEmpty(protoString))
+            {
+                // Empty string means we're called from the dropdown callback. Get the value from there.
+                protoString = CreatePanelSessionProtocolDropdown.options[CreatePanelSessionProtocolDropdown.value].text;
+            }
+            SessionConfig.ProtocolType proto = SessionConfig.ProtocolFromString(protoString);
+            bool done = false;
+            for (int i = 0; i < CreatePanelSessionProtocolDropdown.options.Count; i++)
+            {
+                if (protoString.ToLower() == CreatePanelSessionProtocolDropdown.options[i].text.ToLower())
+                {
+                    done = true;
+                    CreatePanelSessionProtocolDropdown.value = i;
+                }
+            }
+            if (!done)
+            {
+                Debug.LogError($"OrchestratorLogin: unknown protocol \"protoString\"");
+            }
+
+            SessionConfig.Instance.protocolType = proto;
+        }
+
+        #endregion
+
+        #region UI: JoinPanel
+
+        private void JoinPanel_UpdateSessions()
+        {
+            Transform container = JoinPanelSessionList;
+            _ClearScrollView(container.transform);
+            foreach (var session in OrchestratorController.Instance.AvailableSessions)
+            {
+                _AddTextComponentOnScrollView(container.transform, session.GetGuiRepresentation());
+            }
+
+            string selectedOption = "";
+            // store selected option in dropdown
+            if (JoinPanelSessionDropdown.options.Count > 0)
+                selectedOption = JoinPanelSessionDropdown.options[JoinPanelSessionDropdown.value].text;
+            // update the dropdown
+            JoinPanelSessionDropdown.ClearOptions();
+            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+            foreach (var sess in OrchestratorController.Instance.AvailableSessions)
+            {
+                options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
+            }
+            JoinPanelSessionDropdown.AddOptions(options);
+            // re-assign selected option in dropdown
+            if (JoinPanelSessionDropdown.options.Count > 0)
+            {
+                for (int i = 0; i < JoinPanelSessionDropdown.options.Count; ++i)
+                {
+                    if (JoinPanelSessionDropdown.options[i].text == selectedOption)
+                        JoinPanelSessionDropdown.value = i;
+                }
+            }
+            JoinPanel_SessionSelectionChanged();
+        }
+
+        private void JoinPanel_SessionSelectionChanged()
+        {
+            var idx = JoinPanelSessionDropdown.value;
+            string description = "";
+            bool ok = idx >= 0 && idx < OrchestratorController.Instance.AvailableSessions.Length;
+            if (ok)
+            {
+                var sessionSelected = OrchestratorController.Instance.AvailableSessions[idx];
+                var scenarioSelected = sessionSelected.scenarioId;
+                var sessionMaster = sessionSelected.sessionMaster;
+                var masterUser = sessionSelected.GetUser(sessionMaster);
+                var masterName = masterUser == null ? sessionMaster : masterUser.userName;
+                var scenarioInfo = ScenarioRegistry.Instance.GetScenarioById(scenarioSelected);
+                description = $"{sessionSelected.sessionName} by {masterName}\n{sessionSelected.sessionDescription}\n";
+                if (scenarioInfo == null)
+                {
+                    description += "Cannot join: not implemented in this VR2Gather player.";
+                    ok = false;
+                }
+                else
+                {
+                    description += scenarioInfo.scenarioDescription;
+                }
+            }
+            else
+            {
+                description = "(no session selected)";
+            }
+            JoinPanelSessionDescription.text = description;
+            JoinPanelJoinButton.interactable = ok;
+        }
+
+        #endregion
+
+        #region UI: LobbyPanel
+        public void LobbyPanel_StartButtonPressed()
+        {
+            SessionConfig cfg = SessionConfig.Instance;
+            cfg.scenarioName = OrchestratorController.Instance.CurrentScenario.scenarioName;
+            cfg.scenarioVariant = null;
+            // protocolType already set
+            // pointCloudCodec, voiceCodec and videoCodec already set
+            string message = JsonUtility.ToJson(cfg);
+            SendMessageToAll("START_" + message);
+        }
+
+        private void LobbyPanel_UpdateSessionUsers()
+        {
+            Transform container = LobbyPanelSessionUsers;
+            _ClearScrollView(LobbyPanelSessionUsers.transform);
+            Session session = OrchestratorController.Instance.CurrentSession;
+            if (session == null)
+            {
+                Debug.Log("xxxjack OrchestratorLogin: UpdateUsersSession: no current session");
+                return;
+            }
+            User[] sessionUsers = session.GetUsers();
+            foreach (User u in sessionUsers)
+            {
+                _AddUserComponentOnScrollView(container.transform, u);
+            }
+            LobbyPanelSessionNumUsers.text = sessionUsers.Length.ToString() /*+ "/" + "4"*/;
+            Debug.Log($"xxxjack OrchestratorLogin: UpdateUsersSession: {sessionUsers.Length} users in session");
+            // We may be able to continue auto-starting
+            if (VRTConfig.Instance.AutoStart != null)
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+        }
+
+        // xxxjack is not currently called...
+        private void LobbyPanel_SetUserRepresentationGUI(UserRepresentationType _representationType)
+        {
+            LobbyPanelUserRepresentationText.text = _representationType.ToString();
+            // left change the icon 'userRepresentationLobbyImage'
+
+            switch (_representationType)
+            {
+                case UserRepresentationType.NoRepresentation:
+                case UserRepresentationType.AudioOnly:
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                    break;
+                case UserRepresentationType.VideoAvatar:
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
+                    break;
+                case UserRepresentationType.SimpleAvatar:
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                    break;
+                case UserRepresentationType.PointCloud:
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                    break;
+                case UserRepresentationType.NoRepresentationCamera:
+                    LobbyPanelUserRepresentationImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
+                    break;
+
+            }
+        }
+        #endregion
+
+        #region UI: helpers
+
+        // Helper method: add a text line to a scroll view.
+        private void _AddTextComponentOnScrollView(Transform container, string value)
         {
             GameObject textGO = new GameObject();
             textGO.name = "Text-" + value;
@@ -177,7 +965,8 @@ namespace VRT.Pilots.LoginManager
             item.text = value;
         }
 
-        private void AddUserComponentOnContent(Transform container, User user)
+        // Helper method: add a user description line to a scroll view
+        private void _AddUserComponentOnScrollView(Transform container, User user)
         {
             GameObject userGO = new GameObject();
             userGO.name = "User-" + user.userName;
@@ -234,17 +1023,7 @@ namespace VRT.Pilots.LoginManager
             rectImage.sizeDelta = new Vector2(30, 30);
             rectImage.localScale = Vector3.one;
             // IMAGE
-            switch (user.userData.userRepresentationType)
-            {
-                case UserRepresentationType.Deprecated__PCC_SYNTH__:
-                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
-                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
-                case UserRepresentationType.Deprecated__PCC_PROXY__:
-                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {user.userData.userRepresentationType} changed to PointCloud");
-                    user.userData.userRepresentationType = UserRepresentationType.PointCloud;
-                    break;
 
-            }
             switch (user.userData.userRepresentationType)
             {
                 case UserRepresentationType.NoRepresentation:
@@ -260,10 +1039,10 @@ namespace VRT.Pilots.LoginManager
                     textItem.text += " - (3D Avatar)";
                     break;
                 case UserRepresentationType.PointCloud:
-                   imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                    imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                     textItem.text += " - (Simple PC)";
                     break;
-               case UserRepresentationType.AudioOnly:
+                case UserRepresentationType.AudioOnly:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                     textItem.text += " - (Spectator)";
                     break;
@@ -271,13 +1050,22 @@ namespace VRT.Pilots.LoginManager
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
                     textItem.text += " - (Cameraman)";
                     break;
+                case UserRepresentationType.AppDefinedRepresentationOne:
+                    imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                    textItem.text += " - (AppDefined 1)";
+                    break;
+                case UserRepresentationType.AppDefinedRepresentationTwo:
+                    imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                    textItem.text += " - (AppDefined 2)";
+                    break;
                 default:
                     Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {user.userData.userRepresentationType}");
                     break;
             }
         }
 
-        private void RemoveComponentsFromList(Transform container)
+        // Helper method: clear a scroll view.
+        private void _ClearScrollView(Transform container)
         {
             for (var i = container.childCount - 1; i >= 0; i--)
             {
@@ -287,598 +1075,24 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void UpdateUsersSession(Transform container)
-        {
-            RemoveComponentsFromList(usersSession.transform);
-            if (OrchestratorController.Instance.ConnectedUsers != null)
-            {
-                foreach (User u in OrchestratorController.Instance.ConnectedUsers)
-                {
-                    //AddTextComponentOnContent(container.transform, u.userName);
-                    AddUserComponentOnContent(container.transform, u);
-                }
-                sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
-                // We may be able to continue auto-starting
-                if (VRTConfig.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
-            }
-            else
-            {
-                if (developerMode) Debug.Log("OrchestratorLogin: UpdateUsersSession: ConnectedUsers was null");
-            }
-        }
-
-        private void UpdateSessions(Transform container)
-        {
-            RemoveComponentsFromList(container.transform);
-            foreach (var session in OrchestratorController.Instance.AvailableSessions)
-            {
-                AddTextComponentOnContent(container.transform, session.GetGuiRepresentation());
-            }
-
-            string selectedOption = "";
-            // store selected option in dropdown
-            if (sessionIdDrop.options.Count > 0)
-                selectedOption = sessionIdDrop.options[sessionIdDrop.value].text;
-            // update the dropdown
-            sessionIdDrop.ClearOptions();
-            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-            foreach (var sess in OrchestratorController.Instance.AvailableSessions)
-            {
-                options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
-            }
-            sessionIdDrop.AddOptions(options);
-            // re-assign selected option in dropdown
-            if (sessionIdDrop.options.Count > 0)
-            {
-                for (int i = 0; i < sessionIdDrop.options.Count; ++i)
-                {
-                    if (sessionIdDrop.options[i].text == selectedOption)
-                        sessionIdDrop.value = i;
-                }
-            }
-            SessionSelectionChanged();
-        }
-
-        private void UpdateScenarios()
-        {
-            // update the dropdown
-            scenarioIdDrop.ClearOptions();
-            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-            foreach (var sc in ScenarioRegistry.Instance.Scenarios)
-            {
-                options.Add(new Dropdown.OptionData(sc.scenarioName));
-            }
-#if old_scenarios
-            // Add scenarios we have implemented first, others afterwards after a blank line
-            scenarioIDs = new List<string>();
-            foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
-            {
-
-                if (ScenarioRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
-                {
-                    options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
-                    scenarioIDs.Add(scenario.scenarioId);
-                }
-            }
-            options.Add(new Dropdown.OptionData(""));
-            scenarioIDs.Add("");
-            foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
-            {
-
-                if (ScenarioRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
-                {
-                    options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
-                    scenarioIDs.Add(scenario.scenarioId);
-                }
-            }
-#endif
-            scenarioIdDrop.AddOptions(options);
-            ScenarioSelectionChanged();
-        }
-
-        private void ScenarioSelectionChanged()
-        {
-            var idx = scenarioIdDrop.value;
-            bool ok = false;
-            string message = "(no scenario selected)";
-            var scenarios = ScenarioRegistry.Instance.Scenarios;
-            if (idx >= 0 && idx < scenarios.Count)
-            {
-                var sc = scenarios[idx];
-                // Empty entries can be used as separators
-                if (!string.IsNullOrEmpty(sc.scenarioId))
-                {
-                    ok = true;
-                    message = sc.scenarioDescription;
-
-                }
-            }
-            if (scenarioDescription != null)
-            {
-                scenarioDescription.text = message;
-            }
-            doneCreateButton.interactable = ok;
-        }
-
-        private void UpdateRepresentations(Dropdown dd)
-        {
-            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
-            // xxxjack this has the huge disadvantage that they are numerically sorted.
-            // xxxjack and the order is difficult to change currently, because the values
-            // xxxjack are stored by the orchestrator in the user record, in numerical form...
-            dd.ClearOptions();
-            dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
-            
-        }
-
-        private void UpdateWebcams(Dropdown dd)
-        {
-            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
-            dd.ClearOptions();
-            WebCamDevice[] devices = WebCamTexture.devices;
-            List<string> webcams = new List<string>();
-            webcams.Add("None");
-            foreach (WebCamDevice device in devices)
-                webcams.Add(device.name);
-            dd.AddOptions(webcams);
-        }
-
-        private void Updatemicrophones(Dropdown dd)
-        {
-            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
-            dd.ClearOptions();
-            string[] devices = Microphone.devices;
-            List<string> microphones = new List<string>();
-            microphones.Add("None");
-            foreach (string device in devices)
-                microphones.Add(device);
-            dd.AddOptions(microphones);
-        }
-
-        private void SetUserRepresentationGUI(UserRepresentationType _representationType)
-        {
-            userRepresentationLobbyText.text = _representationType.ToString();
-            // left change the icon 'userRepresentationLobbyImage'
-            switch (_representationType)
-            {
-                case UserRepresentationType.Deprecated__PCC_SYNTH__:
-                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
-                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
-                case UserRepresentationType.Deprecated__PCC_PROXY__:
-                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {_representationType} changed to PointCloud");
-                    _representationType = UserRepresentationType.PointCloud;
-                    break;
-
-            }
-            switch (_representationType)
-            {
-                case UserRepresentationType.NoRepresentation:
-                case UserRepresentationType.AudioOnly:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
-                    break;
-                case UserRepresentationType.VideoAvatar:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
-                    break;
-                case UserRepresentationType.SimpleAvatar:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                    break;
-                case UserRepresentationType.PointCloud:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                    break;
-                 case UserRepresentationType.NoRepresentationCamera:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
-                    break;
-              
-            }
-        }
-
-        private void SetUserRepresentationDescription(UserRepresentationType _representationType)
-        {
-            switch (_representationType)
-            {
-                case UserRepresentationType.Deprecated__PCC_SYNTH__:
-                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
-                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
-                case UserRepresentationType.Deprecated__PCC_PROXY__:
-                    Debug.LogWarning($"OrchestratorLogin: Deprecated type {_representationType} changed to PointCloud");
-                    _representationType = UserRepresentationType.PointCloud;
-                    break;
-
-            }
-            // left change the icon 'userRepresentationLobbyImage'
-            switch (_representationType)
-            {
-                case UserRepresentationType.NoRepresentation:
-                    selfRepresentationDescription.text = "No representation, no audio. The user can only watch.";
-                    break;
-                case UserRepresentationType.VideoAvatar:
-                    selfRepresentationDescription.text = "Avatar with video window from your camera.";
-                    break;
-                case UserRepresentationType.SimpleAvatar:
-                    selfRepresentationDescription.text = "3D Synthetic Avatar.";
-                    break;
-                case UserRepresentationType.PointCloud:
-                    selfRepresentationDescription.text = "Realistic point cloud user representation, captured live.";
-                    break;
-                           case UserRepresentationType.AudioOnly:
-                    selfRepresentationDescription.text = "No visual representation, only audio communication.";
-                    break;
-                case UserRepresentationType.NoRepresentationCamera:
-                    selfRepresentationDescription.text = "Local video recorder.";
-                    break;
-                default:
-                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {_representationType}");
-                    break;
-            }
-        }
-
-#endregion
-
-#region Unity
-
-        // Start is called before the first frame update
-        void Start()
-        {
-            if (instance == null)
-            {
-                instance = this;
-            }
-
-            AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
-
-            system = EventSystem.current;
-            // Developer mode settings
-            developerMode = PlayerPrefs.GetInt("developerMode", 0) != 0;
-            developerModeButton.isOn = developerMode;
-            // Update Application version
-            orchURLText.text = VRTConfig.Instance.orchestratorURL;
-            if (VersionLog.Instance != null) nativeVerText.text = VersionLog.Instance.NativeClient;
-            playerVerText.text = "v" + Application.version;
-            orchVerText.text = "";
-
-            // Font to build gui components for logs!
-            //MenuFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
-
-            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
-            UpdateRepresentations(representationTypeConfigDropdown);
-            UpdateWebcams(webcamDropdown);
-            Updatemicrophones(microphoneDropdown);
-
-            // Buttons listeners
-            developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
-            developerSessionButton.onClick.AddListener(delegate { StartDeveloperSession(); });
-            loginButton.onClick.AddListener(delegate { Login(); });
-            signinButton.onClick.AddListener(delegate { SigninButton(); });
-            registerButton.onClick.AddListener(delegate { RegisterButton(true); });
-            logoutButton.onClick.AddListener(delegate { Logout(); });
-            playButton.onClick.AddListener(delegate { StateButton(State.Play); });
-            configButton.onClick.AddListener(delegate {
-                FillSelfUserData();
-                StateButton(State.Config);
-            });
-            saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
-            exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
-            refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
-            backPlayButton.onClick.AddListener(delegate { StateButton(State.Logged); });
-            createButton.onClick.AddListener(delegate { StateButton(State.Create); });
-            joinButton.onClick.AddListener(delegate { StateButton(State.Join); });
-            backCreateButton.onClick.AddListener(delegate { StateButton(State.Play); });
-            doneCreateButton.onClick.AddListener(delegate { AddSession(); });
-            backJoinButton.onClick.AddListener(delegate { StateButton(State.Play); });
-            doneJoinButton.onClick.AddListener(delegate { JoinSession(); });
-            readyButton.onClick.AddListener(delegate { ReadyButton(); });
-            leaveButton.onClick.AddListener(delegate { LeaveSession(); });
-
-            // Dropdown listeners
-            representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
-            webcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
-            microphoneDropdown.onValueChanged.AddListener(delegate {
-                selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
-            });
-            scenarioIdDrop.onValueChanged.AddListener(delegate { ScenarioSelectionChanged(); });
-
-            sessionIdDrop.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
-
-            InitialiseControllerEvents();
-
-            socketProtocolToggle.isOn = true;
-            dashProtocolToggle.isOn = false;
-            tcpProtocolToggle.isOn = false;
-            uncompressedPointcloudsToggle.isOn = SessionConfig.Instance.pointCloudCodec == "cwi0";
-            uncompressedAudioToggle.isOn = SessionConfig.Instance.voiceCodec == "VR2a";
-
-            if (OrchestratorController.Instance.UserIsLogged)
-            { // Comes from another scene
-              // Set status to online
-                statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = connectedCol;
-                FillSelfUserData();
-                UpdateSessions(orchestratorSessions);
-                UpdateScenarios();
-                Debug.Log("OrchestratorLogin: Coming from another Scene");
-
-                OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
-            }
-            else
-            { // Enter for first time
-              // Set status to offline
-                statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = disconnectedCol;
-                state = State.Offline;
-
-                // Try to connect
-                SocketConnect();
-            }
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (VUMeter && selfRepresentationPreview)
-                VUMeter.sizeDelta = new Vector2(355 * Mathf.Min(1, selfRepresentationPreview.MicrophoneLevel), 20);
-
-            TabShortcut();
-            if (state == State.Create)
-            {
-                AudioToggle();
-            }
-            // Refresh Sessions
-            if (state == State.Join)
-            {
-                timer += Time.deltaTime;
-                if (timer >= refreshTimer)
-                {
-                    GetSessions();
-                    timer = 0.0f;
-                }
-            }
-        }
-
-        void AutoStateUpdate()
-        {
-            VRTConfig._AutoStart config = VRTConfig.Instance.AutoStart;
-            if (config == null) return;
-            if (
-                    Keyboard.current.shiftKey.isPressed
-
-                ) return;
-            if (state == State.Play && autoState == AutoState.DidPlay)
-            {
-                if (config.autoCreate)
-                {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting");
-                    autoState = AutoState.DidCreate;
-                    StateButton(State.Create);
-
-                }
-                if (config.autoJoin)
-                {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoJoin: starting");
-                    autoState = AutoState.DidJoin;
-                    StateButton(State.Join);
-                }
-            }
-            if (state == State.Create && autoState == AutoState.DidCreate)
-            {
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionName={config.sessionName}");
-                sessionNameIF.text = config.sessionName;
-                uncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
-                uncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
-                if (config.sessionTransportProtocol != null && config.sessionTransportProtocol != "")
-                {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
-                    // xxxjack I don't understand the intended logic behind the toggles. But turning everything
-                    // on and then simulating a button callback works.
-                    switch (config.sessionTransportProtocol)
-                    {
-                        case "socketio":
-                            socketProtocolToggle.isOn = true;
-                            break;
-                        case "dash":
-                            dashProtocolToggle.isOn = true;
-                            break;
-                        case "tcp":
-                            tcpProtocolToggle.isOn = true;
-                            break;
-                        default:
-                            Debug.LogError($"OrchestratorLogin: AutoStart: Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
-                            break;
-                    }
-                    SetProtocol(config.sessionTransportProtocol);
-                }
-                else
-                {
-                    // No default set. Use socketio.
-                    socketProtocolToggle.isOn = true;
-                    SetProtocol("socketio");
-                }
-                autoState = AutoState.DidPartialCreation;
-            }
-            if (state == State.Create && autoState == AutoState.DidPartialCreation && scenarioIdDrop.options.Count > 0)
-            {
-                if (config.sessionScenario != null && config.sessionScenario != "")
-                {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionScenario={config.sessionScenario}");
-                    bool found = false;
-                    int idx = 0;
-                    foreach (var entry in scenarioIdDrop.options)
-                    {
-                        if (entry.text == config.sessionScenario)
-                        {
-                            scenarioIdDrop.value = idx;
-                            found = true;
-                        }
-                        idx++;
-                    }
-                    if (!found)
-                    {
-                        Debug.LogError($"OrchestratorLogin: AutoStart: No scenarios match {config.sessionScenario}");
-
-                    }
-                }
-                if (config.autoCreate)
-                {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: creating");
-                    Invoke("AddSession", config.autoDelay);
-                }
-                autoState = AutoState.DidCompleteCreation;
-
-            }
-            if (state == State.Lobby && autoState == AutoState.DidCompleteCreation && config.autoStartWith >= 1)
-            {
-                if (sessionNumUsersText.text == config.autoStartWith.ToString())
-                {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting with {config.autoStartWith} users");
-                    Invoke("ReadyButton", config.autoDelay);
-                    autoState = AutoState.Done;
-                }
-            }
-            if (state == State.Join && autoState == AutoState.DidJoin)
-            {
-                var options = sessionIdDrop.options;
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: look for {config.sessionName}");
-                for (int i = 0; i < options.Count; i++)
-                {
-                    if (options[i].text.StartsWith(config.sessionName + " "))
-                    {
-                        if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: entry {i} is {config.sessionName}, joining");
-                        sessionIdDrop.value = i;
-                        autoState = AutoState.Done;
-                        Invoke("JoinSession", config.autoDelay);
-                    }
-                }
-            }
-        }
-
-        public void FillSelfUserData()
-        {
-            if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null)
-            {
-                Debug.LogWarning($"OrchestratorLogin: FillSelfUserData: no SelfUser data yet");
-            }
-            User user = OrchestratorController.Instance.SelfUser;
-
-            // UserID & Name
-            userId.text = user.userId;
-            userName.text = user.userName;
-            userNameVRTText.text = user.userName;
-            // Config Info
-            UserData userData = user.userData;
-            tcpPointcloudURLConfigIF.text = userData.userPCurl;
-            tcpAudioURLConfigIF.text = userData.userAudioUrl;
-            representationTypeConfigDropdown.value = (int)userData.userRepresentationType;
-            webcamDropdown.value = 0;
-
-            for (int i = 0; i < webcamDropdown.options.Count; ++i)
-            {
-                if (webcamDropdown.options[i].text == userData.webcamName)
-                {
-                    webcamDropdown.value = i;
-                    break;
-                }
-            }
-            microphoneDropdown.value = 0;
-            for (int i = 0; i < microphoneDropdown.options.Count; ++i)
-            {
-                if (microphoneDropdown.options[i].text == userData.microphoneName)
-                {
-                    microphoneDropdown.value = i;
-                    break;
-                }
-            }
-        }
-
-        public void PanelChanger()
-        {
-            developerPanel.SetActive(developerMode);
-            connectPanel.gameObject.SetActive(state == State.Offline);
-            loginPanel.SetActive(state == State.Online);
-            vrtPanel.SetActive(state == State.Logged);
-            configPanel.SetActive(state == State.Config);
-            playPanel.SetActive(state == State.Play);
-            createPanel.SetActive(state == State.Create);
-            joinPanel.SetActive(state == State.Join);
-            lobbyPanel.SetActive(state == State.Lobby);
-            // Buttons
-            switch (state)
-            {
-                case State.Offline:
-                    break;
-                case State.Online:
-                    CheckRememberMe();
-                    break;
-                case State.Logged:
-                   
-                    break;
-                case State.Config:
-                   
-                    // Behaviour
-                    SelfRepresentationChanger();
-                    break;
-                case State.Play:
-                    
-                    break;
-                case State.Create:
-                   
-                    break;
-                case State.Join:
-                    // Behaviour
-                    GetSessions();
-                    break;
-                case State.Lobby:
-                    readyButton.gameObject.SetActive(OrchestratorController.Instance.UserIsMaster);
-                    break;
-                case State.InGame:
-                    break;
-                default:
-                    break;
-            }
-            SelectFirstIF();
-        }
-
-        public void SelfRepresentationChanger()
-        {
-            // Dropdown Logic
-            webcamInfoGO.SetActive(false);
-          
-         
-            if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.VideoAvatar)
-            {
-                webcamInfoGO.SetActive(true);
-            }
-            // Preview
-            SetUserRepresentationDescription((UserRepresentationType)representationTypeConfigDropdown.value);
-            selfRepresentationPreview.ChangeRepresentation((UserRepresentationType)representationTypeConfigDropdown.value,
-                webcamDropdown.options[webcamDropdown.value].text);
-            selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
-        }
-
-        private void OnDestroy()
-        {
-            TerminateControllerEvents();
-        }
-
-#endregion
-
-#region Input
-
-        void SelectFirstIF()
+        // Helper method to select first input field
+        private void _SelectFirstIInputField()
         {
             try
             {
                 InputField[] inputFields = FindObjectsOfType<InputField>();
                 if (inputFields != null)
                 {
-                    inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                    inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(EventSystem.current));  //if it's an input field, also set the text caret
                     inputFields[inputFields.Length - 1].caretWidth = 2;
-                    //system.SetSelectedGameObject(first.gameObject, new BaseEventData(system));
+                    //EventSystem.current.SetSelectedGameObject(first.gameObject, new BaseEventData(EventSystem.current));
                 }
             }
             catch { }
         }
 
-        void TabShortcut()
+        // Helper method to use TAB to navitage between input fields.
+        private void _ImplementTabShortcut()
         {
             if (
             Keyboard.current.tabKey.wasPressedThisFrame
@@ -886,7 +1100,7 @@ namespace VRT.Pilots.LoginManager
             {
                 try
                 {
-                    Selectable current = system.currentSelectedGameObject.GetComponent<Selectable>();
+                    Selectable current = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
                     if (current != null)
                     {
                         Selectable next = current.FindSelectableOnDown();
@@ -895,215 +1109,46 @@ namespace VRT.Pilots.LoginManager
                             InputField inputfield = next.GetComponent<InputField>();
                             if (inputfield != null)
                             {
-                                inputfield.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                                inputfield.OnPointerClick(new PointerEventData(EventSystem.current));  //if it's an input field, also set the text caret
                                 inputfield.caretWidth = 2;
                             }
 
-                            system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
+                            EventSystem.current.SetSelectedGameObject(next.gameObject, new BaseEventData(EventSystem.current));
                         }
                         else
                         {
                             // Select the first IF because no more elements exists in the list
-                            SelectFirstIF();
+                            _SelectFirstIInputField();
                         }
                     }
-                    //else Debug.Log("no selectable object selected in event system");
+                    //else Debug.Log("no selectable object selected in event EventSystem.current");
                 }
                 catch { }
             }
         }
 
-#endregion
+        #endregion
 
-#region Buttons
-
-        private void DeveloperModeButtonClicked()
-        {
-            developerMode = developerModeButton.isOn;
-            PlayerPrefs.SetInt("developerMode", developerMode?1:0);
-            PanelChanger();
-        }
-
-        private void StartDeveloperSession()
-        {
-            PilotController.LoadScene("SoloPlayground");
-        }
-
-        private void SigninButton()
-        {
-            loginPanel.SetActive(false);
-            signinPanel.SetActive(true);
-        }
-
-        public void RegisterButton(bool register)
-        {
-            if (register)
-            {
-                if (userPasswordRegisterIF.text == confirmPasswordRegisterIF.text)
-                {
-                    SignIn();
-                    confirmPasswordRegisterIF.textComponent.color = Color.white;
-                }
-                else
-                {
-                    confirmPasswordRegisterIF.textComponent.color = Color.red;
-                }
-            }
-            else
-            {
-                loginPanel.SetActive(true);
-                signinPanel.SetActive(false);
-                confirmPasswordRegisterIF.textComponent.color = Color.white;
-            }
-        }
-
-        public void SaveConfigButton()
-        {
-            selfRepresentationPreview.StopMicrophone();
-            UpdateUserData();
-            state = State.Logged;
-            PanelChanger();
-        }
-
-        public void ExitConfigButton()
-        {
-            selfRepresentationPreview.StopMicrophone();
-            GetUserInfo();
-            state = State.Logged;
-            PanelChanger();
-        }
-
-        public void StateButton(State _state)
-        {
-            state = _state;
-            PanelChanger();
-            if (state == State.Config)
-            {
-                UpdateUserData();
-            }
-        }
-
-        public void ReadyButton()
-        {
-            SessionConfig cfg = SessionConfig.Instance;
-            cfg.scenarioName = OrchestratorController.Instance.MyScenario.scenarioName;
-            cfg.scenarioVariant = null;
-            // protocolType already set
-            // pointCloudCodec, voiceCodec and videoCodec already set
-            string message = JsonUtility.ToJson(cfg);
-            SendMessageToAll("START_" + message);
-        }
-
-     
-
-#endregion
-
-#region Toggles 
-
-        private void AudioToggle()
-        {
-            socketProtocolToggle.interactable = !socketProtocolToggle.isOn;
-            dashProtocolToggle.interactable = !dashProtocolToggle.isOn;
-            tcpProtocolToggle.interactable = !tcpProtocolToggle.isOn;
-        }
-
-        public void SetCompression()
-        {
-            if (uncompressedPointcloudsToggle.isOn)
-            {
-                SessionConfig.Instance.pointCloudCodec = "cwi0";
-            }
-            else
-            {
-                SessionConfig.Instance.pointCloudCodec = "cwi1";
-            }
-            if (uncompressedAudioToggle.isOn)
-            {
-                SessionConfig.Instance.voiceCodec = "VR2a";
-            }
-            else
-            {
-                SessionConfig.Instance.voiceCodec = "VR2A";
-            }
-        }
-
-        public void SetProtocol(string proto)
-        {
-            switch (proto)
-            {
-                case "socketio": // Socket
-                    if (socketProtocolToggle.isOn)
-                    {
-                        // Set AudioType
-                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.SocketIO;
-                        // Set Toggles
-                        dashProtocolToggle.isOn = false;
-                        tcpProtocolToggle.isOn = false;
-                    }
-                    break;
-                case "dash": // Dash
-                    if (dashProtocolToggle.isOn)
-                    {
-                        // Set AudioType
-                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.Dash;
-                        // Set Toggles
-                        socketProtocolToggle.isOn = false;
-                        tcpProtocolToggle.isOn = false;
-                    }
-                    break;
-                case "tcp": // Dash
-                    if (tcpProtocolToggle.isOn)
-                    {
-                        // Set AudioType
-                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.TCP;
-                        // Set Toggles
-                        socketProtocolToggle.isOn = false;
-                        dashProtocolToggle.isOn = false;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-
-
-#endregion
-
-#region Events listeners
+        #region Orchestrator: API event listeners
 
         // Subscribe to Orchestrator Wrapper Events
         private void InitialiseControllerEvents()
         {
-            OrchestratorController.Instance.OnConnectionEvent += OnConnect;
-            OrchestratorController.Instance.OnConnectingEvent += OnConnecting;
-            OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
-            OrchestratorController.Instance.OnGetOrchestratorVersionEvent += OnGetOrchestratorVersionHandler;
-            OrchestratorController.Instance.OnLoginEvent += OnLogin;
-            OrchestratorController.Instance.OnLogoutEvent += OnLogout;
-            OrchestratorController.Instance.OnSignInEvent += OnSignIn;
-            OrchestratorController.Instance.OnGetNTPTimeEvent += OnGetNTPTimeResponse;
-            OrchestratorController.Instance.OnSessionsEvent += OnSessionsHandler;
-            OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
-            OrchestratorController.Instance.OnSessionInfoEvent += OnSessionInfoHandler;
-            OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
-            OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
-            OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
-            OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
-            OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
-            OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioInstanceInfoHandler;
-            OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
-#if outdated_orchestrator
-            OrchestratorController.Instance.OnGetLiveDataEvent += OnGetLivePresenterDataHandler;
-#endif
-            OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
-            OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
-            OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
-#if outdated_orchestrator
-            OrchestratorController.Instance.OnGetRoomsEvent += OnGetRoomsHandler;
-            OrchestratorController.Instance.OnJoinRoomEvent += OnJoinRoomHandler;
-            OrchestratorController.Instance.OnLeaveRoomEvent += OnLeaveRoomHandler;
-#endif
+            OrchestratorController.Instance.OnConnectionEvent += UpdateStateOnConnectionEvent;
+            OrchestratorController.Instance.OnConnectingEvent += UpdateStateOnConnectingEvent;
+            OrchestratorController.Instance.OnGetOrchestratorVersionEvent += UpdateStateOnGetOrchestratorVersionEvent;
+            OrchestratorController.Instance.OnLoginEvent += UpdateStateOnLoginEvent;
+            OrchestratorController.Instance.OnLogoutEvent += UpdateStateOnLogout;
+            OrchestratorController.Instance.OnGetNTPTimeEvent += UpdateStateOnGetNTPTime;
+            OrchestratorController.Instance.OnSessionsEvent += UpdateStateOnGetSessions;
+            OrchestratorController.Instance.OnAddSessionEvent += UpdateStateOnAddSession;
+            OrchestratorController.Instance.OnSessionInfoEvent += UpdateStateOnSessionInfoEvent;
+            OrchestratorController.Instance.OnJoinSessionEvent += UpdateStateOnJoinSession;
+            OrchestratorController.Instance.OnLeaveSessionEvent += UpdateStateOnLeaveSession;
+            OrchestratorController.Instance.OnDeleteSessionEvent += UpdateStateOnOnDeleteSessionEvent;
+            OrchestratorController.Instance.OnUserJoinSessionEvent += UpdateStateOnUserJoinedSessionEvent;
+            OrchestratorController.Instance.OnUserLeaveSessionEvent += UpdateStateOnUserLeftSessionEvent;
+
             OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
             OrchestratorController.Instance.OnUserEventReceivedEvent += OnUserEventReceivedHandler;
@@ -1113,49 +1158,38 @@ namespace VRT.Pilots.LoginManager
         // Un-Subscribe to Orchestrator Wrapper Events
         private void TerminateControllerEvents()
         {
-            OrchestratorController.Instance.OnConnectionEvent -= OnConnect;
-            OrchestratorController.Instance.OnConnectingEvent -= OnConnecting;
-            OrchestratorController.Instance.OnConnectionEvent -= OnDisconnect;
-            OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= OnGetOrchestratorVersionHandler;
-            OrchestratorController.Instance.OnLoginEvent -= OnLogin;
-            OrchestratorController.Instance.OnLogoutEvent -= OnLogout;
-            OrchestratorController.Instance.OnSignInEvent -= OnSignIn;
-            OrchestratorController.Instance.OnGetNTPTimeEvent -= OnGetNTPTimeResponse;
-            OrchestratorController.Instance.OnSessionsEvent -= OnSessionsHandler;
-            OrchestratorController.Instance.OnAddSessionEvent -= OnAddSessionHandler;
-            OrchestratorController.Instance.OnSessionInfoEvent -= OnSessionInfoHandler;
-            OrchestratorController.Instance.OnJoinSessionEvent -= OnJoinSessionHandler;
-            OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
-            OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
-            OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
-            OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
-            OrchestratorController.Instance.OnGetScenarioEvent -= OnGetScenarioInstanceInfoHandler;
-            OrchestratorController.Instance.OnGetScenariosEvent -= OnGetScenariosHandler;
-#if outdated_orchestrator
-            OrchestratorController.Instance.OnGetLiveDataEvent -= OnGetLivePresenterDataHandler;
-#endif
-            OrchestratorController.Instance.OnGetUsersEvent -= OnGetUsersHandler;
-            OrchestratorController.Instance.OnAddUserEvent -= OnAddUserHandler;
-            OrchestratorController.Instance.OnGetUserInfoEvent -= OnGetUserInfoHandler;
-#if outdated_orchestrator
+            OrchestratorController.Instance.OnConnectionEvent -= UpdateStateOnConnectionEvent;
+            OrchestratorController.Instance.OnConnectingEvent -= UpdateStateOnConnectingEvent;
+            OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= UpdateStateOnGetOrchestratorVersionEvent;
+            OrchestratorController.Instance.OnLoginEvent -= UpdateStateOnLoginEvent;
+            OrchestratorController.Instance.OnLogoutEvent -= UpdateStateOnLogout;
+            OrchestratorController.Instance.OnGetNTPTimeEvent -= UpdateStateOnGetNTPTime;
+            OrchestratorController.Instance.OnSessionsEvent -= UpdateStateOnGetSessions;
+            OrchestratorController.Instance.OnAddSessionEvent -= UpdateStateOnAddSession;
+            OrchestratorController.Instance.OnSessionInfoEvent -= UpdateStateOnSessionInfoEvent;
+            OrchestratorController.Instance.OnJoinSessionEvent -= UpdateStateOnJoinSession;
+            OrchestratorController.Instance.OnLeaveSessionEvent -= UpdateStateOnLeaveSession;
+            OrchestratorController.Instance.OnDeleteSessionEvent -= UpdateStateOnOnDeleteSessionEvent;
+            OrchestratorController.Instance.OnUserJoinSessionEvent -= UpdateStateOnUserJoinedSessionEvent;
+            OrchestratorController.Instance.OnUserLeaveSessionEvent -= UpdateStateOnUserLeftSessionEvent;
 
-            OrchestratorController.Instance.OnGetRoomsEvent -= OnGetRoomsHandler;
-            OrchestratorController.Instance.OnJoinRoomEvent -= OnJoinRoomHandler;
-            OrchestratorController.Instance.OnLeaveRoomEvent -= OnLeaveRoomHandler;
-#endif
             OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
             OrchestratorController.Instance.OnUserEventReceivedEvent -= OnUserEventReceivedHandler;
             OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
         }
 
-#endregion
+        #endregion
 
-#region Commands
+        #region Orchestrator: Unsolicited events
 
-#region Socket.io connect
+        private void OnErrorHandler(ResponseStatus status)
+        {
+            Debug.Log("OrchestratorLogin: OnError: Error code: " + status.Error + ", Error message: " + status.Message);
+            ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
+        }
 
-        public void SocketConnect()
+        private void SocketConnect()
         {
             switch (OrchestratorController.Instance.ConnectionStatus)
             {
@@ -1168,176 +1202,136 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void OnConnect(bool pConnected)
+        private void UpdateStateOnConnectionEvent(bool pConnected)
         {
             if (pConnected)
             {
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = connectedCol;
+                statusText.color = colorConnected;
                 state = State.Online;
+                AllPanels_UpdateAfterStateChange();
+                // We may want to login automatically.
+                AutoStart_StateUpdate();
             }
-            PanelChanger();
-            if (pConnected && autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoLogin)
+            else
             {
-                if (
-                    Keyboard.current.shiftKey.isPressed
-
-                    ) return;
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
-                autoState = AutoState.DidLogIn;
-                Login();
-            }
-        }
-
-        private void OnConnecting()
-        {
-            statusText.text = OrchestratorController.orchestratorConnectionStatus.__CONNECTING__.ToString();
-            statusText.color = connectingCol;
-        }
-
-        private void OnDisconnect(bool pConnected)
-        {
-            if (!pConnected)
-            {
-                OnLogout(true);
+                UpdateStateOnLogout(true);
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
-                statusText.color = disconnectedCol;
+                statusText.color = colorDisconnecting;
+                AllPanels_UpdateAfterStateChange();
                 state = State.Offline;
             }
-            PanelChanger();
         }
 
-        private void OnGetOrchestratorVersionHandler(string pVersion)
+        private void UpdateStateOnConnectingEvent()
         {
+            statusText.text = OrchestratorController.orchestratorConnectionStatus.__CONNECTING__.ToString();
+            statusText.color = colorConnecting;
+        }
+
+        private void UpdateStateOnGetOrchestratorVersionEvent(string pVersion)
+        {
+            // After login we ask the orchestrator for its version.
+            // When we get here we now know the version, and we ask the orchestrator for
+            // the NTP time.
             Debug.Log("Orchestration Service: " + pVersion);
-            orchVerText.text = pVersion;
-            OrchestratorController.Instance.GetNTPTime();
+            StatusPanelOrchestratorVersion.text = pVersion;
+            GetNTPTime();
         }
 
-#endregion
 
-      
-#region Login/Logout
-
-        private void SignIn()
+        private void UpdateStateOnSessionInfoEvent(Session session)
         {
-            if (developerMode) Debug.Log("OrchestratorLogin: SignIn: Send SignIn registration for user " + userNameRegisterIF.text);
-            OrchestratorController.Instance.SignIn(userNameRegisterIF.text, userPasswordRegisterIF.text);
+            if (session != null)
+            {
+                // Update the info in LobbyPanel
+                LobbyPanelSessionName.text = session.sessionName;
+                LobbyPanelSessionDescription.text = session.sessionDescription;
+                // Update the list of session users
+                LobbyPanel_UpdateSessionUsers();
+            }
+            else
+            {
+                LobbyPanelSessionName.text = "";
+                LobbyPanelSessionDescription.text = "";
+                LobbyPanelScenarioName.text = "";
+                LobbyPanelSessionNumUsers.text = "";
+                _ClearScrollView(LobbyPanelSessionUsers.transform);
+            }
         }
 
-        private void OnSignIn()
+        private void UpdateStateOnOnDeleteSessionEvent()
         {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnSignIn: User " + userNameLoginIF.text + " successfully registered.");
-            userNameLoginIF.text = userNameRegisterIF.text;
-            userPasswordLoginIF.text = userPasswordRegisterIF.text;
-            loginPanel.SetActive(true);
-            signinPanel.SetActive(false);
+            if (developerMode) Debug.Log("OrchestratorLogin: UpdateStateOnOnDeleteSessionEvent: Session deleted");
         }
+
+        private void UpdateStateOnUserJoinedSessionEvent(string userID)
+        {
+        }
+
+        private void UpdateStateOnUserLeftSessionEvent(string userID)
+        {
+        }
+        #endregion
+
+        #region Orchestrator: Commands and responses
 
         // Login from the main buttons Login & Logout
         private void Login()
         {
-            if (rememberMeButton.isOn)
+            if (LoginPanelRememberMeToggle.isOn)
             {
-                PlayerPrefs.SetString("userNameLoginIF", userNameLoginIF.text);
-                PlayerPrefs.SetString("userPasswordLoginIF", userPasswordLoginIF.text);
+                PlayerPrefs.SetString("userNameLoginIF", LoginPanelUserName.text);
             }
             else
             {
                 PlayerPrefs.DeleteKey("userNameLoginIF");
-                PlayerPrefs.DeleteKey("userPasswordLoginIF");
+            }
+            var userName = LoginPanelUserName.text;
+            if (userName == "")
+            {
+                Debug.LogError("Cannot login if no username specified");
+                return;
             }
             // If we want to autoCreate or autoStart depending on username set the right config flags.
             if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
             {
-                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser == userNameLoginIF.text;
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={userNameLoginIF.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
+                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser == LoginPanelUserName.text;
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={LoginPanelUserName.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
                 VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
-            OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
-            ForwardScenariosToOrchestrator();
+            OrchestratorController.Instance.Login(userName, "");
         }
 
-        private void ForwardScenariosToOrchestrator()
+        private void UpdateStateOnLoginEvent(bool userLoggedSucessfully)
         {
-            foreach(var sc in ScenarioRegistry.Instance.Scenarios)
+            if (!userLoggedSucessfully)
             {
-                Scenario scOrch = new Scenario();
-                scOrch.scenarioId = sc.scenarioId;
-                scOrch.scenarioName = sc.scenarioName;
-                scOrch.scenarioDescription = sc.scenarioDescription;
-                OrchestratorController.Instance.AddScenario(scOrch);
+                // User login has failed. Treat as logout.
+                UpdateStateOnLogout(true);
+                return;
             }
-        }
-        // Check saved used credentials.
-        private void CheckRememberMe()
-        {
-            if (PlayerPrefs.HasKey("userNameLoginIF") && PlayerPrefs.HasKey("userPasswordLoginIF"))
-            {
-                rememberMeButton.isOn = true;
-                userNameLoginIF.text = PlayerPrefs.GetString("userNameLoginIF");
-                userPasswordLoginIF.text = PlayerPrefs.GetString("userPasswordLoginIF");
-            }
-            else
-                rememberMeButton.isOn = false;
+
+            AllPanels_UpdateAfterStateChange();
+            // After successful login we ask the Orchestrator for its version
+            OrchestratorController.Instance.GetVersion();
         }
 
-        private void OnLogin(bool userLoggedSucessfully)
+        private void UpdateStateOnLoginFullyComplete()
         {
-            if (userLoggedSucessfully)
-            {
-                // Load locally save user data for orchestrator, if wanted
-                if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
-                {
-                    var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
-                    if (System.IO.File.Exists(fullName))
-                    {
-                        Debug.Log($"OrchestratorLogin: load UserData from {fullName}");
-                        var configData = System.IO.File.ReadAllText(fullName);
-                        UserData lUserData = new UserData(); // = UserData.ParseJsonData(configData);
-                        JsonUtility.FromJsonOverwrite(configData, lUserData);
-                        OrchestratorController.Instance.UpdateFullUserData(lUserData);
-                        Debug.Log($"OrchestratorLogin: uploaded UserData to orchestrator");
-                    }
-                }
+            // We can now load the user data and send it to the orchesrator.
+            // Also, we can start the self preview (because the user data is complete)
 
-                OrchestratorController.Instance.StartRetrievingData();
+            LoadUserData();
+            UploadUserData();
+            StartSelfRepresentationPreview();
+            state = State.LoggedIn;
+            
 
-                // UserData info in Login
-                //UserData lUserData = new UserData {
-                //    userMQexchangeName = exchangeNameLoginIF.text,
-                //    userMQurl = connectionURILoginIF.text,
-                //    userRepresentationType = (UserRepresentationType)representationTypeLoginDropdown.value
-                //};
-                //OrchestratorController.Instance.UpdateUserData(lUserData);
-                state = State.Logged;
-            }
-            else
-            {
-                this.userId.text = "";
-                userName.text = "";
-                userNameVRTText.text = "";
-
-                state = State.Online;
-            }
-
-            PanelChanger();
-            if (userLoggedSucessfully
-                && autoState == AutoState.DidLogIn
-                && VRTConfig.Instance.AutoStart != null
-                && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin)
-                )
-            {
-                if (
-                    Keyboard.current.shiftKey.isPressed
-
-                    ) return;
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
-                autoState = AutoState.DidPlay;
-                StateButton(State.Play);
-                Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
-            }
+            AllPanels_UpdateAfterStateChange();
+            AutoStart_StateUpdate();
+           
         }
 
         private void Logout()
@@ -1345,217 +1339,129 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.Logout();
         }
 
-        private void OnLogout(bool userLogoutSucessfully)
+        private void UpdateStateOnLogout(bool userLogoutSucessfully)
         {
             if (userLogoutSucessfully)
             {
-                userId.text = "";
-                userName.text = "";
-                userNameVRTText.text = "";
+                StatusPanelUserId.text = "";
+                StatusPanelUserName.text = "";
+                HomePanelUserName.text = "";
                 state = State.Online;
             }
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
         }
 
-#endregion
-
-#region NTP clock
-
-        private void OnGetNTPTimeResponse(NtpClock ntpTime)
+        private void GetNTPTime()
         {
+            OrchestratorController.Instance.GetNTPTime();
+        }
+
+        private void UpdateStateOnGetNTPTime(NtpClock ntpTime)
+        {
+            // The final step in connecting to the orchestrator and logging in: we have the NTP time.
+            // We are now fully logged in.
             double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
             if (developerMode) Debug.Log("OrchestratorLogin: OnGetNTPTimeResponse: Difference: " + difference);
             if (Math.Abs(difference) >= VRTConfig.Instance.ntpSyncThreshold)
             {
                 Debug.LogError($"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {VRTConfig.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.");
             }
+            UpdateStateOnLoginFullyComplete();
         }
-
-#endregion
-
-#region Sessions
 
         private void GetSessions()
         {
             OrchestratorController.Instance.GetSessions();
         }
 
-        private void OnSessionsHandler(Session[] sessions)
+        private void UpdateStateOnGetSessions(Session[] sessions)
         {
             if (sessions != null)
             {
                 // update the list of available sessions
-                UpdateSessions(orchestratorSessions);
+                JoinPanel_UpdateSessions();
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
+                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 
         private void AddSession()
         {
-            string protocol = "";
-            switch(SessionConfig.Instance.protocolType)
-            {
-                case SessionConfig.ProtocolType.SocketIO:
-                    protocol = "socketio";
-                    break;
-                case SessionConfig.ProtocolType.Dash:
-                    protocol = "dash";
-                    break;
-                case SessionConfig.ProtocolType.TCP:
-                    protocol = "tcp";
-                    break;
-            }
-            OrchestratorController.Instance.AddSession(ScenarioRegistry.Instance.Scenarios[scenarioIdDrop.value].scenarioId,
-                                                        sessionNameIF.text,
-                                                        sessionDescriptionIF.text,
+            string protocol = SessionConfig.ProtocolToString(SessionConfig.Instance.protocolType);
+
+            ScenarioRegistry.ScenarioInfo scenarioInfo = ScenarioRegistry.Instance.Scenarios[CreatePanelScenarioDropdown.value];
+            Scenario scenario = scenarioInfo.AsScenario();
+            OrchestratorController.Instance.AddSession(scenarioInfo.scenarioId,
+                                                        scenario,
+                                                        CreatePanelSessionNameField.text,
+                                                        CreatePanelSessionDescriptionField.text,
                                                         protocol);
         }
 
-        private void OnAddSessionHandler(Session session)
+        private void UpdateStateOnAddSession(Session session)
         {
             // Is equal to AddSession + Join Session, except that session is returned (not on JoinSession)
             if (session != null)
             {
                 // update the list of available sessions
-                UpdateSessions(orchestratorSessions);
+                JoinPanel_UpdateSessions();
 
                 // Update the info in LobbyPanel
-                isMaster = OrchestratorController.Instance.UserIsMaster;
-                sessionNameText.text = session.sessionName;
-                sessionDescriptionText.text = session.sessionDescription;
-                sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
-
+                LobbyPanelSessionName.text = session.sessionName;
+                LobbyPanelSessionDescription.text = session.sessionDescription;
+          
                 // Update the list of session users
-                UpdateUsersSession(usersSession);
+                LobbyPanel_UpdateSessionUsers();
 
                 state = State.Lobby;
-                PanelChanger();
+                AllPanels_UpdateAfterStateChange();
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
+                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
             }
             else
             {
-                isMaster = false;
-                sessionNameText.text = "";
-                sessionDescriptionText.text = "";
-                scenarioIdText.text = "";
-                sessionNumUsersText.text = "";
-                sessionMasterID = "";
-                RemoveComponentsFromList(usersSession.transform);
+                LobbyPanelSessionName.text = "";
+                LobbyPanelSessionDescription.text = "";
+                LobbyPanelScenarioName.text = "";
+                LobbyPanelSessionNumUsers.text = "";
+                _ClearScrollView(LobbyPanelSessionUsers.transform);
             }
-        }
-
-        private void OnSessionInfoHandler(Session session)
-        {
-            if (session != null)
-            {
-                // Update the info in LobbyPanel
-                isMaster = OrchestratorController.Instance.UserIsMaster;
-                sessionNameText.text = session.sessionName;
-                sessionDescriptionText.text = session.sessionDescription;
-                if (session.sessionMaster != "")
-                    sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
-                // Update the list of session users
-                UpdateUsersSession(usersSession);
-            }
-            else
-            {
-                isMaster = false;
-                sessionNameText.text = "";
-                sessionDescriptionText.text = "";
-                scenarioIdText.text = "";
-                sessionNumUsersText.text = "";
-                sessionMasterID = "";
-                RemoveComponentsFromList(usersSession.transform);
-            }
-        }
-
-        private void OnGetScenarioInstanceInfoHandler(ScenarioInstance scenario)
-        {
-            if (scenario != null)
-            {
-                scenarioIdText.text = scenario.scenarioName;
-                // Update the list of session users
-                UpdateUsersSession(usersSession);
-            }
-        }
-
-        private void OnDeleteSessionHandler()
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnDeleteSessionHandler: Session deleted");
-        }
-
-        private void SessionSelectionChanged()
-        {
-            var idx = sessionIdDrop.value;
-            string description = "";
-            bool ok = idx >= 0 && idx < OrchestratorController.Instance.AvailableSessions.Length;
-            if (ok)
-            {
-                var sessionSelected = OrchestratorController.Instance.AvailableSessions[idx];
-                var scenarioSelected = sessionSelected.scenarioId;
-                var sessionMaster = sessionSelected.sessionMaster;
-                var masterUser = OrchestratorController.Instance.GetUser(sessionMaster);
-                var masterName = masterUser == null ? sessionMaster : masterUser.userName;
-                var scenarioInfo = ScenarioRegistry.Instance.GetScenarioById(scenarioSelected);
-                description = $"{sessionSelected.sessionName} by {masterName}\n{sessionSelected.sessionDescription}\n";
-                if (scenarioInfo == null)
-                {
-                    description += "Cannot join: not implemented in this VR2Gather player.";
-                    ok = false;
-                }
-                else
-                {
-                    description += scenarioInfo.scenarioDescription;
-                }
-          }
-            else
-            {
-                description = "(no session selected)";
-            }
-            sessionJoinMessage.text = description;
-            doneJoinButton.interactable = ok;
         }
 
         private void JoinSession()
         {
-            if (sessionIdDrop.options.Count <= 0)
+            if (JoinPanelSessionDropdown.options.Count <= 0)
                 Debug.LogError($"JoinSession: There are no sessions to join.");
             else
             {
-                string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[sessionIdDrop.value].sessionId;
+                string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[JoinPanelSessionDropdown.value].sessionId;
                 OrchestratorController.Instance.JoinSession(sessionIdToJoin);
             }
         }
 
-        private void OnJoinSessionHandler(Session session)
+        private void UpdateStateOnJoinSession(Session session)
         {
             if (session != null)
             {
-                isMaster = OrchestratorController.Instance.UserIsMaster;
                 // Update the info in LobbyPanel
-                sessionNameText.text = session.sessionName;
-                sessionDescriptionText.text = session.sessionDescription;
-                sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
+                LobbyPanelSessionName.text = session.sessionName;
+                LobbyPanelSessionDescription.text = session.sessionDescription;
 
                 // Update the list of session users
-                UpdateUsersSession(usersSession);
+                LobbyPanel_UpdateSessionUsers();
 
                 state = State.Lobby;
-                PanelChanger();
+                AllPanels_UpdateAfterStateChange();
             }
             else
             {
-                isMaster = false;
-                sessionNameText.text = "";
-                sessionDescriptionText.text = "";
-                scenarioIdText.text = "";
-                sessionNumUsersText.text = "";
-                sessionMasterID = "";
-                RemoveComponentsFromList(usersSession.transform);
+                LobbyPanelSessionName.text = "";
+                LobbyPanelSessionDescription.text = "";
+                LobbyPanelScenarioName.text = "";
+                LobbyPanelSessionNumUsers.text = "";
+                _ClearScrollView(LobbyPanelSessionUsers.transform);
             }
         }
 
@@ -1564,226 +1470,20 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.LeaveSession();
         }
 
-        private void OnLeaveSessionHandler()
+        private void UpdateStateOnLeaveSession()
         {
-            isMaster = false;
-            sessionNameText.text = "";
-            sessionDescriptionText.text = "";
-            scenarioIdText.text = "";
-            sessionNumUsersText.text = "";
-            RemoveComponentsFromList(usersSession.transform);
+            LobbyPanelSessionName.text = "";
+            LobbyPanelSessionDescription.text = "";
+            LobbyPanelScenarioName.text = "";
+            LobbyPanelSessionNumUsers.text = "";
+            _ClearScrollView(LobbyPanelSessionUsers.transform);
 
             state = State.Play;
-            PanelChanger();
+            AllPanels_UpdateAfterStateChange();
         }
+        #endregion
 
-        private void OnUserJoinedSessionHandler(string userID)
-        {
-            if (!string.IsNullOrEmpty(userID))
-            {
-                OrchestratorController.Instance.GetUsers();
-            }
-        }
-
-        private void OnUserLeftSessionHandler(string userID)
-        {
-            if (!string.IsNullOrEmpty(userID))
-            {
-                OrchestratorController.Instance.GetUsers();
-            }
-        }
-
-#endregion
-
-#region Scenarios
-
-        private void OnGetScenariosHandler(Scenario[] scenarios)
-        {
-            if (scenarios != null && scenarios.Length > 0)
-            {
-                //update the data in the dropdown
-                UpdateScenarios();
-                // We may be able to advance auto-connection
-                if (VRTConfig.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
-            }
-        }
-
-#endregion
-
-#if outdated_orchestrator
-
-#region Live
-
-        private void OnGetLivePresenterDataHandler(LivePresenterData liveData)
-        {
-            //Debug.Log("[OrchestratorLogin][OnGetLivePresenterDataHandler] Not implemented");
-        }
-
-#endregion
-#endif
-#region Users
-
-        private void GetUsers()
-        {
-            OrchestratorController.Instance.GetUsers();
-        }
-
-        private void OnGetUsersHandler(User[] users)
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnGetUsersHandler: Users Updated");
-
-            // Update the sfuData if is in session.
-            if (OrchestratorController.Instance.ConnectedUsers != null)
-            {
-                for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i)
-                {
-                    foreach (User u in users)
-                    {
-                        if (OrchestratorController.Instance.ConnectedUsers[i].userId == u.userId)
-                        {
-                            OrchestratorController.Instance.ConnectedUsers[i].sfuData = u.sfuData;
-                            OrchestratorController.Instance.ConnectedUsers[i].userData = u.userData;
-                        }
-                    }
-                }
-            }
-
-            UpdateUsersSession(usersSession);
-        }
-
-        private void OnAddUserHandler(User user)
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnAddUserHandler: User " + user.userName + " registered with exit.");
-            loginPanel.SetActive(true);
-            signinPanel.SetActive(false);
-            userNameLoginIF.text = userNameRegisterIF.text;
-        }
-
-        private void UpdateUserData()
-        {
-            // UserData info in Config
-            UserData lUserData = new UserData
-            {
-                userPCurl = tcpPointcloudURLConfigIF.text,
-                userAudioUrl = tcpAudioURLConfigIF.text,
-                userRepresentationType = (UserRepresentationType)representationTypeConfigDropdown.value,
-                webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
-                microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
-            };
-            // Send new UserData to the orchestrator
-            OrchestratorController.Instance.UpdateFullUserData(lUserData);
-            // And also save a local copy, if wanted
-            if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
-            {
-                var configData = lUserData.AsJsonString();
-                var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
-                System.IO.File.WriteAllText(fullName, configData);
-                Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
-            }
-        }
-
-        private void GetUserInfo()
-        {
-            OrchestratorController.Instance.GetUserInfo(OrchestratorController.Instance.SelfUser.userId);
-        }
-
-        private void OnGetUserInfoHandler(User user)
-        {
-            if (user == null)
-            {
-                Debug.LogWarning($"OrchestratorLogin: OnGetUserInfoHander: null user");
-                return;
-            }
-            if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
-            {
-                if (developerMode) Debug.Log($"OrchestratorLogin: OnGetUserInfoHandler: set SelfUser to {user.userId}");
-                OrchestratorController.Instance.SelfUser = user;
-
-                userId.text = user.userId;
-                userName.text = user.userName;
-                userNameVRTText.text = user.userName;
-
-                //UserData
-                tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
-                tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
-                representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
-
-                SetUserRepresentationGUI(user.userData.userRepresentationType);
-                // Session name
-                if (string.IsNullOrEmpty(sessionNameIF.text))
-                {
-                    string time = DateTime.Now.ToString("hhmmss");
-                    sessionNameIF.text = $"{user.userName}_{time}";
-                }
-            }
-
-            GetUsers(); // To update the user representation
-
-            // Update the sfuData and UserData if is in session.
-            if (OrchestratorController.Instance.ConnectedUsers != null)
-            {
-                for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i)
-                {
-                    if (OrchestratorController.Instance.ConnectedUsers[i].userId == user.userId)
-                    {
-                        // sfuData
-                        OrchestratorController.Instance.ConnectedUsers[i].sfuData = user.sfuData;
-                        // UserData
-                        OrchestratorController.Instance.ConnectedUsers[i].userData = user.userData;
-                    }
-                }
-            }
-        }
-#if outdated_orchestrator
-
-        private void DeleteUser()
-        {
-            Debug.LogError("OrchestratorLogin: DeleteUser: Not implemented");
-        }
-#endif
-#endregion
-#if outdated_orchestrator
-
-#region Rooms
-
-        private void GetRooms()
-        {
-            OrchestratorController.Instance.GetRooms();
-        }
-
-        private void OnGetRoomsHandler(RoomInstance[] rooms)
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnGetRoomsHandler: Send GetUsers command");
-
-            OrchestratorController.Instance.GetUsers();
-        }
-
-        private void JoinRoom()
-        {
-            Debug.LogError("OrchestratorLogin: JoinRoom: Not implemented");
-        }
-
-        private void OnJoinRoomHandler(bool hasJoined)
-        {
-            Debug.LogError("OrchestratorLogin: OnJoinRoomHandler: Not implemented");
-        }
-
-        private void LeaveRoom()
-        {
-            OrchestratorController.Instance.LeaveRoom();
-        }
-
-        private void OnLeaveRoomHandler()
-        {
-            Debug.LogError("OrchestratorLogin: OnLeaveRoomHandler: Not implemented");
-        }
-
-#endregion
-#endif
-#region Messages
-
-
+        #region Orchstrator: Handling of messages within the session
         private void SendMessageToAll(string message)
         {
             OrchestratorController.Instance.SendMessageToAll(message);
@@ -1794,8 +1494,6 @@ namespace VRT.Pilots.LoginManager
             LoginController.Instance.OnUserMessageReceived(userMessage.message);
         }
 
-#endregion
-
         private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
         {
             Debug.LogError("OrchestratorLogin: OnMasterEventReceivedHandler: Unexpected message from " + pMasterEventData.fromId + ": " + pMasterEventData.message);
@@ -1805,33 +1503,6 @@ namespace VRT.Pilots.LoginManager
         {
             Debug.LogError("OrchestratorLogin: OnUserEventReceivedHandler: Unexpected message from " + pUserEventData.fromId + ": " + pUserEventData.message);
         }
-#endregion
-
-#region Data Stream
-#if outdated_orchestrator
-
-        private void GetAvailableDataStreams()
-        {
-            Debug.Log("[OrchestratorLogin][GetAvailableDataStreams] Not implemented");
-        }
-
-        private void GetRegisteredDataStreams()
-        {
-            OrchestratorController.Instance.GetRegisteredDataStreams();
-        }
-#endif
-#endregion
-
-#region Errors
-
-        private void OnErrorHandler(ResponseStatus status)
-        {
-            Debug.Log("OrchestratorLogin: OnError: Error code: " + status.Error + ", Error message: " + status.Message);
-            ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
-        }
-
-#endregion
-
+        #endregion
     }
-
 }

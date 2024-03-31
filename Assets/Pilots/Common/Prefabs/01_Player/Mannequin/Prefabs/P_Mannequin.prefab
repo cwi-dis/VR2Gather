@@ -611,10 +611,24 @@ MonoBehaviour:
   DestinationTop: {fileID: 5045754960848621452}
   DestinationBottom: {fileID: 8404687700662320404}
   setHeightOnStart: 0
+  setHeightOnHMDTracking: 0
+  m_hmdTrackingAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Hmd Tracking
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 19aea7dd-6a30-4f67-b1ca-549dff394a71
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 0}
   nativeHeight: 1
   actualHeight: 0
   nativeSize: {x: 0, y: 0, z: 0}
   currentSize: {x: 0, y: 0, z: 0}
+  debug: 1
 --- !u!1 &3823806113544286675
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,6 +736,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootObject: {fileID: 2771220398156754783}
+  debug: 0
 --- !u!1 &6522839989498706810
 GameObject:
   m_ObjectHideFlags: 0
@@ -856,6 +871,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootObject: {fileID: 2771220398156754783}
+  debug: 0
 --- !u!1 &7914937806327539907
 GameObject:
   m_ObjectHideFlags: 0
@@ -1339,6 +1355,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &762515913
 MonoBehaviour:
   m_ObjectHideFlags: 0

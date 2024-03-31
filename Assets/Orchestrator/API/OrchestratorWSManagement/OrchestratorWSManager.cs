@@ -21,11 +21,10 @@
 //  concession of any license over these patents, trademarks, copyrights or 
 //  other intellectual property.
 
-using BestHTTP.SocketIO;
-using LitJson;
+using Best.SocketIO;
+using Best.HTTP.JSON.LitJson;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using VRT.Orchestrator.Wrapping;
 using UnityEngine;
 
@@ -108,22 +107,22 @@ namespace VRT.Orchestrator.WSManagement
             // Socket config
             SocketOptions options = new SocketOptions();
             options.AutoConnect = false;
-            options.ConnectWith = BestHTTP.SocketIO.Transports.TransportTypes.WebSocket;
+            options.ConnectWith = Best.SocketIO.Transports.TransportTypes.WebSocket;
             
             // Create the Socket.IO manager
             Manager = new SocketManager(new Uri(OrchestratorUrl), options);
-            
-            Manager.Encoder = new BestHTTP.SocketIO.JsonEncoders.LitJsonEncoder(); //
-            Manager.Socket.AutoDecodePayload = false;
+
             Manager.Socket.On(SocketIOEventTypes.Connect, OnServerConnect);
             Manager.Socket.On(SocketIOEventTypes.Disconnect, OnServerDisconnect);
+
             Manager.Socket.On("connecting", OnServerConnecting);
-            Manager.Socket.On(SocketIOEventTypes.Error, OnServerError);
+            Manager.Socket.On<Error>(SocketIOEventTypes.Error, OnServerError);
 
             // Listen to the messages received
-            messagesToManage.ForEach(delegate (OrchestratorMessageReceiver messageReceiver)
+            messagesToManage.ForEach((OrchestratorMessageReceiver messageReceiver) =>
             {
-                Manager.Socket.On(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
+                Debug.Log("Installing handler for " + messageReceiver.SocketEventName);
+                Manager.Socket.On<Socket>(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
             });
             
             // Open the socket
@@ -133,56 +132,35 @@ namespace VRT.Orchestrator.WSManagement
         // Socket.io disconnection
         public void SocketDisconnect()
         {
-            UnityEngine.Debug.Log("OrchestratorWSManager: xxxjack SocketDisconnect()");
             Manager.Close();
         }
 
         // Called when socket is connected to the orchestrator
-        void OnServerConnect(Socket socket, Packet packet, params object[] args)
+        void OnServerConnect()
         {
             isSocketConnected = true;
-
-            if (connectionListener != null)
-            {
-                connectionListener.OnSocketConnect();
-            }
+            connectionListener?.OnSocketConnect();
         }
 
         // Called when socket is connecting to the orchestrator
-        void OnServerConnecting(Socket socket, Packet packet, params object[] args)
+        void OnServerConnecting()
         {
             isSocketConnected = false;
-
-            if (connectionListener != null)
-            {
-                connectionListener.OnSocketConnecting();
-            }
+            connectionListener?.OnSocketConnecting();
         }
 
         // Called when socket is disconnected from the orchestrator
-        void OnServerDisconnect(Socket socket, Packet packet, params object[] args)
+        void OnServerDisconnect()
         {
             isSocketConnected = false;
-
-            if (connectionListener != null)
-            {
-                connectionListener.OnSocketDisconnect();
-            }
+            connectionListener?.OnSocketDisconnect();
         }
 
         // Called when socket connection error occurs
-        void OnServerError(Socket socket, Packet packet, params object[] args)
+        void OnServerError(Error error)
         {
-            if(args != null)
-            {
-                Error error = args[0] as Error;
-                ResponseStatus status = new ResponseStatus((int)error.Code, error.Message);
-
-                if (connectionListener != null)
-                {
-                    connectionListener.OnSocketError(status);
-                }
-            }
+            ResponseStatus status = new ResponseStatus((int)0, error.message);
+            connectionListener?.OnSocketError(status);
         }
 
         #endregion
@@ -200,7 +178,7 @@ namespace VRT.Orchestrator.WSManagement
                     }
 
                     // emit the packet on socket.io
-                    Manager.Socket.Emit(command.SocketEventName, null, parameters);
+                    Manager.Socket.Emit(command.SocketEventName, parameters);
                 }
             }
         }
@@ -216,10 +194,18 @@ namespace VRT.Orchestrator.WSManagement
                     // for each parameter defined in the command, fill the parameter with its value
                     command.Parameters.ForEach(delegate (Parameter parameter) {
                         if (parameter.ParamValue != null) {
-                            if (parameter.type == typeof(bool)) {
+                            if (parameter.type == typeof(bool))
+                            {
                                 parameters[parameter.ParamName] = (bool)parameter.ParamValue;
                             } else {
-                                parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                                if (parameter.ParamValue is JsonData)
+                                {
+                                    parameters[parameter.ParamName] = parameter.ParamValue as JsonData;
+                                }
+                                else
+                                {
+                                    parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                                }
                             }
                         } else {
                             parameters[parameter.ParamName] = "";
@@ -239,38 +225,24 @@ namespace VRT.Orchestrator.WSManagement
                     messagesListener.OnOrchestratorRequest(command.SocketEventName + " " + parameters.ToJson());
                 }
 
+                UnityEngine.Debug.Log("Emitting command " + command.SocketEventName + " with params " + parameters);
                 // emit the command on socket.io
-                Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
-
-                /*
-                // send the command
-                if (!SendCommand(command.SocketEventName, parameters))
-                {
-                    UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
-                    // problem while sending the command
-                    sentCommand = null;
-                    return false;
-                }
-                // command succesfully sent
-                sentCommand = command;
-                return true;
-                */
+                Manager.Socket.ExpectAcknowledgement<OrchestratorResponse>(OnAckCallback).Emit(command.SocketEventName, parameters); 
             }
         }
 
         // Callback that is called on a command response
-        private void OnAckCallback(Socket socket, Packet originalPacket, params object[] args)
+        private void OnAckCallback(OrchestratorResponse response)
         {
             int ackedCmdIndex = -1;
             OrchestratorCommand ackedCmd = null;
 
-            OrchestratorResponse response = JsonToOrchestratorResponse(originalPacket.Payload);
-
             //warn the messages Listener that a response is received from the orchestrator
             if (messagesListener != null)
             {
-                messagesListener.OnOrchestratorResponse(response.commandId, response.error, originalPacket.Payload);
+                messagesListener.OnOrchestratorResponse(response.commandId, response.error, "");
             }
+
             lock(this)
             {
                 for (int i = 0; i < commandQueue.Count; i++)
@@ -293,18 +265,6 @@ namespace VRT.Orchestrator.WSManagement
             }
   
             ackedCmd.ResponseCallback.Invoke(ackedCmd, response);
-
-            /*
-            for (int i = 0; i < commandQueue.Count; i++)
-            {
-                UnityEngine.Debug.Log(commandQueue[i].commandID);
-            }
-            */
-
-            //IsWaitingResponse = false;
-            // If a function is declared in the grammar to treat the response 
-            // for this command, then call this function
-            //sentCommand?.ResponseCallback.Invoke(sentCommand, response);
         }
 
         // Parse the first level of this JSON string response

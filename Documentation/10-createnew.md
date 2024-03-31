@@ -6,6 +6,15 @@ A new experience should have its own Git repository, but because VR2Gather is cu
 
 > We will move to a package-based structure in the future. This section will then change.
 
+## How things are named in the code and documentation
+
+There are a lot of terms going to be used in this document. So let us start by explaining them.
+
+- _Scene_ is a Unity term: all the `GameObjects` and such.
+- A _Scenario_ is something the participants can experience. It may consist of a single _Scene_, but it may have multiple scenes, with all participants going from one scene to the next together.
+- A _Session_ is a number of people experiencing a _Scenario_. Some participant creates a _Session_, which is then advertised at the orchestrator. Other participants can then join that _Session_. At some point in time the creator starts the session, and then all participants start with the starting _Scene_ of the _Scenario_.
+
+## Creating a new experience
 
 Follow these steps to start a new experience, lets say `MyNewExperience`:
 
@@ -23,13 +32,13 @@ Now you can create subdirectories `Scenes`, `Prefabs`, `Scripts`, etc. under `As
 
 Create a new scene by copying Pilot0, for example. Subclass any component that needs different functionality (for example `PilotController`) and fix the scene to refer to the new component.
 
-The new scene needs to be known to the orchestrator. For the time being: edit `PilotRegistry.cs` and return your new scene for one of the development pilots `"Development"`, `"Development 2"` or `"Development 3"`.
+Now you need to create a _Scenario_. In the `LoginManager` there is a GameObject `Tool_ScenarioRegistry` with a `ScenarioRegistry` object. Here you add your scenario. The `ScenarioID` must be globally unique (use a uuid-generator once). The `ScenarioSceneName` is the first Scene used (the one you created in the previous step). The `Name` and `Description` are for humans only: when the first participant creates a session they select this scenario. Other participants then see the name and description when they select the session to join it. 
 
 You probably need new interactable objects. Create these in your submodule (using one of the prefabs from the [Prefabs](04-prefabs.md) section as an example, make sure you copy materials and subclass any components that need changing).
 
 You can now test these new interactables in `SoloPlayground` and `TechnicalPlayground`, as explained in the [Walkthrough](03-walkthrough.md) section. Then you add them to your scene.
 
-If you need multiple scenes: you `PilotController` can open a new scene for you.
+If you need multiple scenes: your `PilotController` can open a new scene for you.
 
 > xxxjack need to provide an example
 

@@ -111,7 +111,7 @@ namespace VRT.Pilots.Common
 
 			}
 #if VRT_WITH_STATS
-			Statistics.Output("NetworkInstantiator", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+			Statistics.Output("NetworkInstantiator", $"name={name}, sessionId={OrchestratorController.Instance.CurrentSession.sessionId}");
 #endif
 		}
 

@@ -26,8 +26,8 @@ namespace VRT.Pilots.Common
         public bool setHeightOnStart = true;
         [Tooltip("If true set height whenever HMD starts tracking. Otherwise only on AdjustHeight() callback")]
         public bool setHeightOnHMDTracking = true;
-        [Tooltip("The Input System Action that determines whether we are tracking")]
-        [SerializeField] InputActionProperty m_trackingAction;
+        [Tooltip("The Input System Action that determines whether the HMD is tracking")]
+        [SerializeField] InputActionProperty m_hmdTrackingAction;
         [Tooltip("Native total height of destination (introspection)")]
         [DisableEditing] [SerializeField] float nativeHeight = 1;
         [Tooltip("Current real player height (introspection)")]
@@ -36,6 +36,8 @@ namespace VRT.Pilots.Common
         [DisableEditing] [SerializeField] Vector3 nativeSize;
         [Tooltip("Current size (introspection)")]
         [DisableEditing] [SerializeField] Vector3 currentSize;
+        [Tooltip("Enable debug logging")]
+        [SerializeField] bool debug = false;
 
 
         // Start is called before the first frame update
@@ -46,6 +48,7 @@ namespace VRT.Pilots.Common
             Vector3 topPoint = DestinationTop.transform.position;
             Vector3 bottomPoint = DestinationBottom.transform.position;
             nativeHeight = topPoint.y - bottomPoint.y;
+            if (debug) Debug.Log($"SizeAdjust: nativeHeight={nativeHeight}");
         }
 
         private void Start()
@@ -60,7 +63,7 @@ namespace VRT.Pilots.Common
         {
             if (setHeightOnHMDTracking)
             {
-                if (m_trackingAction.action.WasPerformedThisFrame())
+                if (m_hmdTrackingAction.action.WasPerformedThisFrame())
                 {
                     AdjustHeight();
                 }
@@ -77,7 +80,7 @@ namespace VRT.Pilots.Common
             currentSize = nativeSize * factor;
             
             Destination.transform.localScale = currentSize;
-            Debug.Log($"SizeAdjust: size={currentSize}");
+            if (debug) Debug.Log($"SizeAdjust: height was {actualHeight}. currentSize={currentSize}. Now height is {SourceTop.transform.position.y - SourceBottom.transform.position.y}");
         }
     }
 }
