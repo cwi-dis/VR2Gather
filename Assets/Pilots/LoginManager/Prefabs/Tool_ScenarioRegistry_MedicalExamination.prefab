@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8141314486536374808}
   - component: {fileID: 8141314486536374815}
   m_Layer: 0
-  m_Name: Tool_ScenarioRegistry
+  m_Name: Tool_ScenarioRegistry_MedicalExamination
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
