@@ -1,5 +1,7 @@
 # Creating a new experience with a submodule
 
+> **Note:** as of April 2024 this information is outdated, because of the new package-structure of VR2Gather.
+
 - Branch `master` to `development/transmixr_ch_mvp`
 - Checkout branch
 - Create `VRTApp_transmixr_ch_mvp` on github

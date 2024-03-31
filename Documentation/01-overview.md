@@ -8,3 +8,7 @@ This documentation is intended to get you started with developing a VR2Gather ex
 - [Prefabs](04-prefabs.md) goes into the structure of the important prefabs and accompanying scripts.
 - [Creating an experience](10-createnew.md) explains how to start creating a new experience with VR2Gather.
 - [Building the experience](20-building.md) has some information on creating the built application.
+
+Here is a walkthrough on how to port an existing pre-April-2024 VR2Gather experience to the new VR2Gather package: [Port a VRTApp to the package](31-port-to-package.md).
+
+Here is a old overview (outdated) of how to create a VRTApp in the old structure: [outdated](30-new_submodule.md)
