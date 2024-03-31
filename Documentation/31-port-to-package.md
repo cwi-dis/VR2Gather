@@ -15,17 +15,28 @@ There are going to be problems with the `Tool_scenarioRegistry`. Try the followi
 - Edit the `.meta` file, change the GUID.
 - Now also change all occurrences of the old GUID.
 
+> It is probably a good idea to move all changed files from the toplevel repo (your branch) to the submodule repo.
+> 
+> You can then do a diff between the checked-out version of your branch and the master branch with a recursive diff program.
+> 
+> If the only differences are the GUIDs in things like the `LoginManager` scene you're going to be fine later on.
+
 Tag your submodule with something like `historic/framework`. Push your main module branch to `historic/yourappname-framework`. Now everything has been saved so you can still run the old version.
 
-Checkout a separate copy of your app repo (which is now a submodule).
+Checkout a separate copy of your app repo (which was - until now - a submodule).
 
 Create an empty toplevel app _with a different name than your current folder name_. Maybe something like `VRTApp-MyWonderfulApp`. You can probably simply copy `VRTApp-TestGitPackage` from the VR2Gather repo.
 
-Now you need to **move** everything from your old subfolder into your new app `Assets` folder. It is important that you move the `.meta` files too.
+Now you need to **move** everything from your old subfolder into your new app `Assets` folder. It is important that you move the `.meta` files too. Moving the whole second-level folder `MyWonderfulApp` into `VRTApp-MyWonderfulApp` may work.
 
 Next you need to **copy** everything from your branch in the old VR2Gather repo that has been **added** there. Again, also copy the `.meta` files.
 
 For the **modified** files I'm not sure what you should do.
+
+Now you need to ensure your `.gitattributes` and `.gitignore` are up-to-date. Compare with the one frmo `VR2Gather`.
+
+Finally, you can try to open the new project in Unity.
+You need to replace your ScenarioRegistry in the LoginManager scene by the correct one. You also need to add all needed scenes to the build settings. Now you can try to run your experience.
 
 
 
