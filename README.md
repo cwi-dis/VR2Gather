@@ -40,18 +40,20 @@ In the Unity Package Manager do the following:
   ```
   git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc
   ```
-- Add the `nl.cwi.dis.vr2gather` package, by github url:
 
-  ```
-  git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather#142-restructure
-  ```
 - Add the `nl.cwi.dis.vr2gather.nativelibraries` package, by github url:
  
   ```
   git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries
   ```
+  
+  > This step needs to be done before the next step, it seems. We are not quite sure why...
+- Add the `nl.cwi.dis.vr2gather` package, by github url:
 
-- For the VR2Gather project, Add the _VR2Gather Essential Assets_ from the Samples tab. These are some essential assets, the most important one being the `LoginManager` scene that must be used as the first scene in your application (because it creates the shared session).
+  ```
+  git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather#142-restructure
+  ```
+- For the VR2Gather project, Add the _VR2Gather Essential Assets_ from Package Manager->VR2Gather->Samples tab. These are some essential assets, the most important one being the `LoginManager` scene that must be used as the first scene in your application (because it creates the shared session).
 
 Next, in _Project Settings_, you probably want to add an XR plugin (for example _OpenXR_) and you probably want to add at least one Interaction Profile (for example Oculus Touch Controller).
 

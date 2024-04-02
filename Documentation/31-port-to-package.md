@@ -39,4 +39,7 @@ Finally, you can try to open the new project in Unity.
 You need to replace your ScenarioRegistry in the LoginManager scene by the correct one. You also need to add all needed scenes to the build settings. Now you can try to run your experience.
 
 
+## Next steps
+
+Go back to the [Developer Overview](01-overview.md)
 
