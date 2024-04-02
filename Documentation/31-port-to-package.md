@@ -10,16 +10,16 @@ If at all possibly you should try to ensure that you have no **modifications** o
 
 There are going to be problems with the `Tool_scenarioRegistry`. Try the following:
 
-- Rename to `Tool_scenarionRegistry_myApplication`.
-- commit.
+- Rename to `Tool_scenarionRegistry_myApplication`. Move into the `Prefabs` of the submodule. 
+- commit both repos. An example is at SHA `a5adb6f10`.
 - Edit the `.meta` file, change the GUID.
-- Now also change all occurrences of the old GUID.
+- Now also change all occurrences of the old GUID, probably only in the `LoginManager` scene.
+- commit both repos again. An example is at SHA `8296b0`.
 
-> It is probably a good idea to move all changed files from the toplevel repo (your branch) to the submodule repo.
-> 
-> You can then do a diff between the checked-out version of your branch and the master branch with a recursive diff program.
-> 
-> If the only differences are the GUIDs in things like the `LoginManager` scene you're going to be fine later on.
+It is probably a good idea to move all changed files from the toplevel repo (your branch) to the submodule repo.
+ 
+You can then do a diff between the checked-out version of your branch and the master branch with a recursive diff program.
+If the only differences are the GUIDs in things like the `LoginManager` scene you're going to be fine later on.
 
 Tag your submodule with something like `historic/framework`. Push your main module branch to `historic/yourappname-framework`. Now everything has been saved so you can still run the old version.
 
