@@ -25,6 +25,9 @@ Tag your submodule with something like `historic/framework`. Push your main modu
 
 Checkout a separate copy of your app repo (which was - until now - a submodule).
 
+
+Now you need to ensure your `.gitattributes` and `.gitignore` are up-to-date. Compare with the one frmo `VR2Gather`.
+
 Create an empty toplevel app _with a different name than your current folder name_. Maybe something like `VRTApp-MyWonderfulApp`. You can probably simply copy `VRTApp-TestGitPackage` from the VR2Gather repo.
 
 Now you need to **move** everything from your old subfolder into your new app `Assets` folder. It is important that you move the `.meta` files too. Moving the whole second-level folder `MyWonderfulApp` into `VRTApp-MyWonderfulApp` may work.
@@ -32,8 +35,6 @@ Now you need to **move** everything from your old subfolder into your new app `A
 Next you need to **copy** everything from your branch in the old VR2Gather repo that has been **added** there. Again, also copy the `.meta` files.
 
 For the **modified** files I'm not sure what you should do.
-
-Now you need to ensure your `.gitattributes` and `.gitignore` are up-to-date. Compare with the one frmo `VR2Gather`.
 
 Finally, you can try to open the new project in Unity.
 You need to replace your ScenarioRegistry in the LoginManager scene by the correct one. You also need to add all needed scenes to the build settings. Now you can try to run your experience.
