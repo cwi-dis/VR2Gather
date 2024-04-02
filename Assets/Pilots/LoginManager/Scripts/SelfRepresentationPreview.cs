@@ -30,23 +30,52 @@ namespace VRT.Pilots.LoginManager
         // Start is called before the first frame update
         void Start()
         {
-         }
+        }
+
+        public void InitializeSelfPlayer()
+        {
+            User user = OrchestratorController.Instance.SelfUser;
+            if (OrchestratorController.Instance?.SelfUser?.userData != null)
+            {
+                // ChangeRepresentation(userData.userRepresentationType, userData.webcamName);
+                UpdateSelfPlayer(null);
+            }
+        }
+
+        void UpdateSelfPlayer(User user)
+        {
+            if (user == null)
+            {
+                user = OrchestratorController.Instance.SelfUser;
+            }
+            else
+            {
+                user.userName = OrchestratorController.Instance.SelfUser.userName;
+            }
+            if (!playerHasBeenInitialized)
+            {
+                // We set HasBeenInitialized early, because SetupPlayerController may raise an exception
+                // and revert the representation to avatar if there are problems with the chosen representation
+                // (for example no cameras found).
+                // This way we don't get into an error message loop.
+                playerHasBeenInitialized = true;
+                player.SetUpPlayerController(true, user);
+            }
+            player.SetRepresentation(user.userData.userRepresentationType, permanent: true);
+        }    
 
         void Update()
         {
             // See if we can already initialize player self representation
             if (!playerHasBeenInitialized)
             {
-                User user = OrchestratorController.Instance.SelfUser;
-                if (user != null)
-                {
-                    UserData userData = user.userData;
-                    if (userData != null)
-                    {
-                        ChangeRepresentation(userData.userRepresentationType, userData.webcamName);
-                    }
-                }
+                InitializeSelfPlayer();
             }
+            UpdateMicrophoneLevel();
+        }
+
+        void UpdateMicrophoneLevel()
+        { 
             // See if we need to listen to audio for VU-meter.
             if (currentMicrophoneName != "None")
             {
@@ -104,17 +133,7 @@ namespace VRT.Pilots.LoginManager
                     userRepresentationType = representation
                 }
             };
-            if (!playerHasBeenInitialized)
-            {
-                // We set HasBeenInitialized early, because SetupPlayerController may raise an exception
-                // and revert the representation to avatar if there are problems with the chosen representation
-                // (for example no cameras found).
-                // This way we don't get into an error message loop.
-                playerHasBeenInitialized = true;
-                tmpSelfUser.userName = OrchestratorController.Instance.SelfUser.userName;
-                player.SetUpPlayerController(true, tmpSelfUser);
-            }
-            player.SetRepresentation(representation, permanent: true);
+            UpdateSelfPlayer(tmpSelfUser);
         }
     }
 }

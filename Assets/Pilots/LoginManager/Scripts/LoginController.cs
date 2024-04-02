@@ -38,11 +38,6 @@ namespace VRT.Pilots.LoginManager
         IEnumerator RefreshAndLoad(string scenary)
         {
             yield return null;
-            OrchestratorController.Instance.GetUsers();
-            // The OrchestratorController is in DontDestroyOnLoad, so we don't have to wait for the GetUsers
-            // response before loading the next scene (as long as we don't start acting on the data until the resonse has
-            // been received).
-            yield return null;
             LoadNewScene(scenary);
         }
 

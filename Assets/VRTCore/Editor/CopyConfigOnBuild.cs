@@ -37,6 +37,11 @@ public class CopyConfigOnBuild : IPostprocessBuildWithReport
             File.Copy(srcDir + "config.json", dstDir + "config.json", true);
             Debug.Log($"CopyConfigOnBuild.OnPostProcessBuild copied config.json");
         }
+        if (File.Exists(srcDir + "config-user.json"))
+        {
+            File.Copy(srcDir + "config-user.json", dstDir + "config-user.json", true);
+            Debug.Log($"CopyConfigOnBuild.OnPostProcessBuild copied config-user.json");
+        }
         if (File.Exists(srcDir + "cameraconfig.json"))
         {
             File.Copy(srcDir + "cameraconfig.json", dstDir + "cameraconfig.json", true);

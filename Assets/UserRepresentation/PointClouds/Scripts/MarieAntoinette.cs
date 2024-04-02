@@ -49,7 +49,8 @@ namespace VRT.UserRepresentation.PointCloud
             if (isEnabled)
             {
                 if (pc == null || !pc.activeSelf) {
-                    Debug.Log("MarieAntoinette: pointcloud not active");
+                    Debug.LogWarning("MarieAntoinette: pointcloud not active");
+                    return;
                 }
                 else
                 {

@@ -6,37 +6,22 @@ namespace VRT.Core
     public enum UserRepresentationType
     {
         /// <summary>
-        /// No representation, spectator/listener only.
+        /// Point cloud.
         /// </summary>
-        NoRepresentation,
-        /// <summary>
-        /// 2D video (WebCam) stream, usually shown as an avatar with a screen.
-        /// </summary>
-        VideoAvatar,
+        PointCloud,
         /// <summary>
         /// Default avatar.
         /// </summary>
         SimpleAvatar,
         /// <summary>
-        /// Point cloud.
+        /// 2D video (WebCam) stream, usually shown as an avatar with a screen.
         /// </summary>
-        PointCloud,
+        VideoAvatar,
         /// <summary>
-        /// Point cloud (from Kinect camera)
+        /// No representation, spectator/listener only.
         /// </summary>
-        Deprecated__PCC_CWIK4A_,
-        /// <summary>
-        /// Point cloud (from remote RGBD camera via proxy)
-        /// </summary>
-        Deprecated__PCC_PROXY__,
-        /// <summary>
-        /// Synthetic point cloud
-        /// </summary>
-        Deprecated__PCC_SYNTH__,
-        /// <summary>
-        /// Prerecorded point cloud
-        /// </summary>
-        Deprecated__PCC_PRERECORDED__,
+        NoRepresentation,
+       
         /// <summary>
         /// User without visual representation but with audio feed
         /// </summary>

@@ -16,13 +16,14 @@ namespace VRT.Pilots.Common
 		{
 			public Vector3 BodyPosition;
 			public Quaternion BodyOrientation;
-			// bad idea, leads to detached heads. public Vector3 HeadPosition;
+			public Vector3 HeadPosition;
 			public Quaternion HeadOrientation;
 			public Vector3 LeftHandPosition;
 			public Quaternion LeftHandOrientation;
 			public Vector3 RightHandPosition;
 			public Quaternion RightHandOrientation;
 			public UserRepresentationType representation;
+			public float BodySize;
 		}
 		#endregion
 
@@ -33,12 +34,16 @@ namespace VRT.Pilots.Common
 		public Transform BodyTransform;
 		[Tooltip("The virtual head to rotate")]
 		public Transform HeadTransform;
-		[Tooltip("Another virtual head to rotate")]
-		public Transform Head2Transform;
-		[Tooltip("Left hand for which to synchronise position/orientation")]
+        [Tooltip("Another virtual head to rotate")]
+        public Transform Head2Transform;
+        [Tooltip("Another virtual head to rotate and also move")]
+        public Transform Head3TransformAlsoMove;
+        [Tooltip("Left hand for which to synchronise position/orientation")]
 		public Transform LeftHandTransform;
 		[Tooltip("Right hand for which to synchronise position/orientation")]
 		public Transform RightHandTransform;
+		[Tooltip("Alternative user representation (for example Mediascape costume)")]
+		public GameObject AlternativeUserRepresentation;
 		[Tooltip("How often position/orientation data is synchronized")]
 		public int SendRate = 10; //Send out 10 "frames" per second
 
@@ -85,7 +90,31 @@ namespace VRT.Pilots.Common
 					Debug.Log($"{Name()}: Representation changed to {data.representation}");
 					playerController.SetRepresentation(data.representation);
 				}
-				_PreviousReceivedData = _LastReceivedData;
+                // Adjust size, if needed
+                if (data.BodySize != 0)
+                {
+					float newSize = data.BodySize;
+					GameObject currentRepresentation = playerController.GetRepresentationGameObject();
+                    if (currentRepresentation != null && currentRepresentation.activeInHierarchy)
+                    {
+                        float oldSize = currentRepresentation.transform.transform.localScale.y;
+                        if (newSize != oldSize)
+                        {
+                            Debug.Log($"{Name()}: Change size from {oldSize} to {newSize}");
+                            currentRepresentation.transform.transform.localScale = new Vector3(newSize, newSize, newSize);
+                        }
+                    }
+                    if (AlternativeUserRepresentation != null && AlternativeUserRepresentation.activeInHierarchy)
+                    {
+                        float oldSize = AlternativeUserRepresentation.transform.transform.localScale.y;
+                        if (newSize != oldSize)
+                        {
+                            Debug.Log($"{Name()}: Change AlternativeUserRepresentation size from {oldSize} to {newSize}");
+                            AlternativeUserRepresentation.transform.transform.localScale = new Vector3(newSize, newSize, newSize);
+                        }
+                    }
+                }
+                _PreviousReceivedData = _LastReceivedData;
 				_LastReceivedData = data;
 				_LastReceiveTime = Time.realtimeSinceStartup;
 
@@ -104,12 +133,17 @@ namespace VRT.Pilots.Common
 						//HeadTransform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
 						HeadTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
 					}
-					if (Head2Transform != null)
+                    if (Head2Transform != null)
                     {
-						//Head2Transform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
-						Head2Transform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
-					}
-					if (LeftHandTransform != null)
+                        //Head2Transform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
+                        Head2Transform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
+                    }
+                    if (Head3TransformAlsoMove != null)
+                    {
+                        Head3TransformAlsoMove.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
+                        Head3TransformAlsoMove.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
+                    }
+                    if (LeftHandTransform != null)
                     {
 						LeftHandTransform.position = Vector3.Lerp(_PreviousReceivedData.LeftHandPosition, _LastReceivedData.LeftHandPosition, t);
 						LeftHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.LeftHandOrientation, _LastReceivedData.LeftHandOrientation, t);
@@ -120,6 +154,7 @@ namespace VRT.Pilots.Common
 						RightHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.RightHandOrientation, _LastReceivedData.RightHandOrientation, t);
 					}
 				}
+				
 			}
 		}
 
