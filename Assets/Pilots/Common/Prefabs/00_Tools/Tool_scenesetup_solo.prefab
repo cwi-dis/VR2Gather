@@ -141,6 +141,7 @@ MonoBehaviour:
     latencyMaxIncrease: 33
     acceptDesyncOnDataUnavailable: 0
   LocalUser:
+    orchestratorConfigFilename: 
     PCSelfConfig:
       capturerType: 0
       capturerTypeName: 
@@ -247,9 +248,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   NonPlayersLocation: {fileID: 0}
+  InstantiatePlayersDelay: 2
   AutoSpawnOnLocation: 1
   localPlayer: {fileID: 0}
   AllUsers: []
+  debug: 1
 --- !u!114 &1222537213239129258
 MonoBehaviour:
   m_ObjectHideFlags: 0

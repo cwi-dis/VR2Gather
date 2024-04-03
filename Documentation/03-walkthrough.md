@@ -16,19 +16,23 @@ The applications communicate through a central cloud-based `Orchestrator` that i
 
 The orchestrator also helps with synchronizing the experience between participants, by allowing to find the offset between local system time (NTP-based) and orchestrator system time.
 
-> As of this writing, early 2023, the orchestrator is also responsible for session management and for some of the participant settings, such as which avatar representation to use. This orchestrator is expected to be replaced in the near future.
+The orchestrator also handles creation and advertisement of sessions.
 
-For some actions in the experience (think: creating a new virtual object) it is important that the action is coordinated. This is implemented by having one application instance designated the _master instance_, and have such actions always done first on the master.
+For some actions in the experience (think: creating a new virtual object) it is important that the action is coordinated. This is implemented by having one application instance designated the _master instance_, and have such actions always done first on the master. Currently, the master instance is always the instance that created the session.
 
 ## Github Repository Structure
 
-The core of VR2Gather is intended to become open source soon, but obviously this is not the case for the experiences. Moreover, there are currently still some modules that cannot be open sourced.
+The core of VR2Gather is open source, but obviously this is not the case for the experiences: a VR2Gather experience will usually contain content that can not be made available as open source.
 
 For this reason VR2Gather uses [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to structure the project into manageable parts.
 
 The `VR2Gather` repository is the main repository, and should not contain anything that can not be open sourced.
 
-There is a submodule `Assets/ExternalAssets/VR2G-basthttp` that contains a package that is needed to communicate with the orchestrator.
+> Let us repeat this statement, in bold: **The main VR2Gather repository should not contain any material that cannot be distributed as open source**.
+> 
+> So even if you fork the VR2Gather repository it is probably still a good idea to create a submodule repository for content you know you will probably never want to open source.
+
+There is a submodule `Assets/ExternalAssets/VR2G-nativeLibraries` that contains a couple of native DLLs (and `.so` for Linux, and `.dylib` for Mac). Specifically, these are the DLLs for the Motion Spell low-latency DASH implementation. This code is not open source, but the DLLs may be used and redistributed by VR2Gather.
 
 Each new experience will get its own branch in the main repository and its own git submodule. So, if you are developing an experience `MyGreatExperience` you will have a branch `develop/MyGreatExperience`, and later a branch `deployment/MyGreatExperience` and on that branch (_only on that branch!_) there will be a submodule `Assets/ExternalPilots/VR2G-MyGreatExperience`.
 
@@ -38,10 +42,9 @@ A quick note on branch names, to keep things manageable:
 
 - Experiences under development have a branch name starting with `development/`.
 - The `master` branch should almost always be in a runnable state, and should almost never get individual commits. 
-- Most other branches should have a corresponding issue in Github, and the branch name should be called after the issue number. So, I am typing this on branch `issue54-documentation`, which will be merged into `master` when complete, and then deleted.
+- Most other branches should have a corresponding issue in Github, and the branch name should be called after the issue number. So, I was typing this on branch `54-documentation`, which has been merged into `master` when complete, and then deleted.
 - Temporary branches should start with `exp-` and have an indication about the owner. So I would create a branch `exp-jack-wildidea` for something I would work on without an issue, and eventually either throw that branch away (if it was a bad idea) or merge it into an issue branch (if it was a good idea).
 
-> There is a potential problem with issue numbers because we have multiple repositories, and multiple forks of VR2Gather as well. Let's hope that doesn't turn out to be too big a problem.
 
 ## Unity Project Structure
 
@@ -59,9 +62,8 @@ In a roughly bottom-to-top order of dependencies these are:
 - `UserRepresentation/PointClouds` has everything that has to do with using point clouds as your user representation (think: avatar).
 - `UserRepresentation/WebCam` is the implementation of an avatar that has a "screen" that shows the image from your webcam.
 - `UserRepresentation/Voice` has the code that allows participants to talk to each other in an experience.
-- `Transport/SocketIO` and `Transport/TCP` handle streaming of the user representation streams (from the previous set of assemblies) over the net, so that participants can see and hear each other.
+- `Transport/SocketIO`, `Transport/Dash` and `Transport/TCP` handle streaming of the user representation streams (from the previous set of assemblies) over the net, so that participants can see and hear each other.
 - `Orchestrator` has the communication code and the stubs to allow VR2Gather application instances to communicate via the orchestrator.
-- `DevelopmentTests` has various scenes and sripts that were used during development. Some may still work.
 - `Pilots/Common` has most of the implementation of the VR2Gather framework. The functionality and components here are described in the [Prefabs](04-prefabs.md) section.
 - The other assemblies under `Pilots` have things that are specific to a certain experience (for an experience that is included in the base repository), they are described in the _Scene Overview_ subsection, below.
 - `PilotsExternal` is where the git repository for the experience under development should live.
@@ -81,25 +83,24 @@ Even though LoginManager is the first scene experienced it is better to walk thr
 
 You should open `Assets/Pilots/Pilot0/Scenes/Pilot0` in the hierarchy view while reading this section.
 
-The `Pilot0Controller` object has three components that together manage the session:
+At the top level there is a`Tool_scenesetup` (from a prefab) that contains the per-scene logic:
 
-- `SessionController` manages comunicating with the orchestrator to allow joining the session and leaving it.
-- `PilotController` (or a subclass of it) manages the local copy of the scene, such as fading it in and out at beginnging and end, and it manages any transition to a follow-on scene.
-- `SessionPlayersManager` manages instantiating the prefabs for the participants: a single `SelfPlayerPrefab` for the local participant and a `PlayerPrefab` for each of the other participants in the session.
+- The `PilotController` object has three components that together manage the session:
 
- > As a result of this paradigm the scene does not contain the usual Unity objects like the main camera and the controller objects, because these are part of the `SelfPlayerPrefab`. This also means that there are a few scripts to fix things up after self-player creation (like telling interactables where the interaction manager is), and some things may be unexpected (if your script tries to use `Camera.Main` in its `Start()` method it will notice there is no main camera).
+	- `SessionController` manages comunicating with the orchestrator to allow joining the session and leaving it.
+	- `PilotController` (or a subclass of it) manages the local copy of the scene, such as fading it in and out at beginnging and end, and it manages any transition to a follow-on scene.
+	- `SessionPlayersManager` manages instantiating the prefabs for the participants: a single `SelfPlayerPrefab` for the local participant and a `PlayerPrefab` for each of the other participants in the session.
 
-  The Pilot0 scene has at most 4 participants (plus unlimited non-playing observers) the `PlayerRoot` object has the locations where these players will be instantiated.
+	> As a result of this paradigm the scene does not contain the usual Unity objects like the main camera and the controller objects, because these are part of the `SelfPlayerPrefab`. This also means that there are a few scripts to fix things up after self-player creation (like telling interactables where the interaction manager is), and some things may be unexpected (if your script tries to use `Camera.Main` in its `Start()` method it will notice there is no main camera).
+- `XR Interaction Manager` is farily standard.
+- `ErrorManager` handles showing important error messages to the user (even when in VR)
+- `TilingConfigDistributor` and `SyncConfigDistributor` are components that ensure temporal and spatial consistency within a session.
+- `PlayerInitialLocations` holds the game objects where players will initially be placed. Referenced by the `SessionPlayerManager`, above.
 
-
-The `ErrorManager`, `TilingConfigDistributor` and `SyncConfigDistributor` objects are VR2Gather helper objects. They could be components on the PilotController game object but have their own objects for historic reasons.
 
 The `Floor` and `Tables` objects contain the actual scene. It is worth noticing that the `Floor` has a `TeleportationArea` component allowing the participants to teleport anywhere.
 
 On each table there is an instance of `PFB_Pilot0ButtonObject`, a gadget that can make a "pling" sound when the button is pressed and that can be picked up and dropped elsewhere (or thrown over the side of the world:-). When one participant interacts with the gadget other participants should see and hear that interaction too.
-
-
-Finally, the `EventSystem` is a fairly standard Unity object to handle interaction.
 
 ### LoginManager
 
@@ -111,7 +112,7 @@ When the participant that created the scene presses the `Start` button a command
 
 If you compare this scene to _Pilot0_ you will notice a few differences:
 
-- This scene has a `VRTInitializer` that does global application initialization. This GameObject also has the `VRTConfig` component that has all the global configuration information (such as the URL at which to contact the orchestrator), and it has a `PilotRegistry` object that maps Pilot names (as known by the orchestrator) to scene names (as known by this Unity application.
+- This scene has a `VRTInitializer` that does global application initialization. This GameObject also has the `VRTConfig` component that has all the global configuration information (such as the URL at which to contact the orchestrator), and it has a `Tool_ScenarioRegistry` object that has the definition of the scenarios known by this copy of VR2Gather.
 
   The configuration settings can be overriden at runtime by placing a `config.json` file in the same directory as where the executable lives, or (for Unity Editor) next to the Assets folder.
   
@@ -147,4 +148,4 @@ Generally, if you create a new interactable object you do this in a prefab. You 
 
 You should now have a basic understanding of the overall structure of a VR2Gather experience.
 
-The [Prefabs](04-prefabs.md) section is a good continuation point, or go back to the [Developer Overview](01-overview.md)
+The [Prefabs](04-prefabs.md) section is a good continuation point, or the [Comparison to standard Unity VR](11-differences.md) section, or go back to the [Developer Overview](01-overview.md)

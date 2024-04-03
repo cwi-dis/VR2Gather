@@ -19,6 +19,15 @@ namespace VRT.Pilots.LoginManager
             public string scenarioDescription;
             [Tooltip("The name of the scene that implements this scenario")]
             public string scenarioSceneName;
+
+            public Scenario AsScenario()
+            {
+                Scenario scOrch = new Scenario();
+                scOrch.scenarioId = this.scenarioId;
+                scOrch.scenarioName = this.scenarioName;
+                scOrch.scenarioDescription = this.scenarioDescription;
+                return scOrch;
+            }
          }
 
         [Tooltip("Scenarios supported by this VR2Gather player. Order them for the creation popup.")]

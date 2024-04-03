@@ -39,7 +39,7 @@ namespace VRT.Orchestrator.Wrapping
     // from the session updates by the orchestrator
     public interface IUserSessionEventsListener
     {
-        void OnUserJoinedSession(string userID);
+        void OnUserJoinedSession(string userID, User user);
         void OnUserLeftSession(string userID);
     }
 
@@ -65,34 +65,11 @@ namespace VRT.Orchestrator.Wrapping
         void OnDeleteSessionResponse(ResponseStatus status);
         void OnJoinSessionResponse(ResponseStatus status, Session session);
         void OnLeaveSessionResponse(ResponseStatus status);
-
-#if outdated_orchestrator
-        void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData);
-#endif
-        void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios);
-        void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario);
-
-        void OnGetUsersResponse(ResponseStatus status, List<User> scenarios);
-        void OnAddUserResponse(ResponseStatus status, User user);
-        void OnGetUserInfoResponse(ResponseStatus status, User user);
-        void OnUpdateUserDataResponse(ResponseStatus status);
         void OnUpdateUserDataJsonResponse(ResponseStatus status);
-#if outdated_orchestrator
-
-        void OnClearUserDataResponse(ResponseStatus status);
-        void OnDeleteUserResponse(ResponseStatus status);
-        void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms);
-        void OnJoinRoomResponse(ResponseStatus status);
-        void OnLeaveRoomResponse(ResponseStatus status);
-#endif
 
         void OnSendMessageResponse(ResponseStatus status);
         void OnSendMessageToAllResponse(ResponseStatus status);
-#if outdated_orchestrator
 
-        void OnGetAvailableDataStreams(ResponseStatus status, List<DataStream> dataStreams);
-        void OnGetRegisteredDataStreams(ResponseStatus status, List<DataStream> dataStreams);
-#endif
     }
 
     // interface to implement to be updated from messages exchanged on the socketio

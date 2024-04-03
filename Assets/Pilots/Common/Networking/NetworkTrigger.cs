@@ -77,7 +77,7 @@ namespace VRT.Pilots.Common
 			{
 				OnTrigger.Invoke();
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.CurrentSession.sessionId}");
 #endif
 				OrchestratorController.Instance.SendTypeEventToAll(triggerData);
 			}
@@ -88,7 +88,7 @@ namespace VRT.Pilots.Common
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.CurrentSession.sessionId}");
 #endif
 
 				OnTrigger.Invoke();

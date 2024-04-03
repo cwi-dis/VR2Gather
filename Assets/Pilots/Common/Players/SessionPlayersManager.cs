@@ -139,7 +139,7 @@ namespace VRT.Pilots.Common
 			SetupConfigDistributors();
             if (debug) Debug.Log($"SessionPlayersManager: Instantiating players");
 
-            foreach (User user in OrchestratorController.Instance.ConnectedUsers)
+            foreach (User user in OrchestratorController.Instance.CurrentSession.GetUsers())
 			{
 				bool isLocalPlayer = me.userId == user.userId;
 				GameObject player = null;

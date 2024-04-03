@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+using static VRT.Core.NTPTools;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -57,25 +58,14 @@ namespace VRT.Orchestrator.Wrapping
         private orchestratorConnectionStatus connectionStatus;
 
         //Users
-        private User me;
-        private List<User> connectedUsers;
-        private List<User> availableUserAccounts;
+        private User _me; // Accessed via SelfUser
 
         //Session
         private Session mySession;
-        private List<Session> availableSessions;
+        private List<Session> availableSessions = new List<Session>();
 
         //Scenario
-        private ScenarioInstance myScenario;
-        private List<Scenario> availableScenarios;
-
-#if outdated_orchestrator
-        //Rooms
-        private List<RoomInstance> availableRoomInstances;
-
-        //LivePresenter
-        private LivePresenterData livePresenterData;
-#endif
+        private Scenario myScenario;
 
         // user Login state
         private bool userIsLogged = false;
@@ -86,18 +76,10 @@ namespace VRT.Orchestrator.Wrapping
         // orchestrator connection state
         private bool connectedToOrchestrator = false;
         private bool hasBeenConnectedToOrchestrator = false;
-
-        // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios).
-        private bool isAutoRetrievingData = false;
-
-       
-        // Enable or disable SFU logs collection (disabled by default).
-        private bool collectSFULogs = false;
-
         private bool autoStopOnLeave = false;
 #endregion
 
-        #region public
+#region public
 
         //Orchestrator Controller Singleton
         public static OrchestratorController Instance {
@@ -126,8 +108,7 @@ namespace VRT.Orchestrator.Wrapping
         // Orchestrator Login Events
         public Action<bool> OnLoginEvent;
         public Action<bool> OnLogoutEvent;
-        public Action OnSignInEvent;
-
+        
         // Orchestrator NTP clock Events
         public Action<NtpClock> OnGetNTPTimeEvent;
 
@@ -141,28 +122,6 @@ namespace VRT.Orchestrator.Wrapping
         public Action OnDeleteSessionEvent;
         public Action<string> OnUserJoinSessionEvent;
         public Action<string> OnUserLeaveSessionEvent;
-
-        // Orchestrator Scenarios Events
-        public Action<ScenarioInstance> OnGetScenarioEvent;
-        public Action<Scenario[]> OnGetScenariosEvent;
-
-#if outdated_orchestrator
-        // Orchestrator Live Events
-        public Action<LivePresenterData> OnGetLiveDataEvent;
-#endif
-
-        // Orchestrator User Events
-        public Action<User[]> OnGetUsersEvent;
-        public Action<User> OnGetUserInfoEvent;
-        public Action<User> OnAddUserEvent;
-
-#if outdated_orchestrator
-
-        // Orchestrator Rooms Events
-        public Action<RoomInstance[]> OnGetRoomsEvent;
-        public Action<bool> OnJoinRoomEvent;
-        public Action OnLeaveRoomEvent;
-#endif
 
         // Orchestrator User Messages Events
         public Action<UserMessage> OnUserMessageReceivedEvent;
@@ -181,39 +140,22 @@ namespace VRT.Orchestrator.Wrapping
             };
         }
 
-        public void StartRetrievingData() {
-            if (!connectedToOrchestrator)
-            {
-                Debug.LogError("OrchestratorController: cannot retrieve data if not connected");
-            }
-            isAutoRetrievingData = true;
-        }
-
         public bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
         public bool UserIsLogged { get { return userIsLogged; } }
         public bool UserIsMaster { get { return userIsMaster; } }
-        public User SelfUser { get { return me; } set { me = value; } }
-        public User[] AvailableUserAccounts { get { return availableUserAccounts?.ToArray(); } }
-        public User[] ConnectedUsers { get { return connectedUsers?.ToArray(); } }
-        public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
-        public ScenarioInstance MyScenario { get { return myScenario; } }
+        public User SelfUser { get { return _me; } set { _me = value; } }
+        public Scenario CurrentScenario { get { return myScenario; } }
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
-        public Session MySession { get { return mySession; } }
-#if outdated_orchestrator
-       public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
-        public LivePresenterData LivePresenterData { get { return livePresenterData; } }
-#endif
-        public bool CollectSFULogs { get { return collectSFULogs; } set { collectSFULogs = value; } }
+        public Session CurrentSession { get { return mySession; } }
 
 #endregion
 
-        #region Unity
+#region Unity
 
         private void Awake() {
             
             if (instance == null) {
-                Debug.Log($"xxxjack OrchestratorController.Awake from {gameObject.name}");
                 DontDestroyOnLoad(this);
                 instance = this;
             } else if (instance != this) {
@@ -246,19 +188,21 @@ namespace VRT.Orchestrator.Wrapping
         // Connect to the orchestrator
         public void SocketConnect(string pUrl) {
             if (enableLogging) Debug.Log($"OrchestratorController: connect to {pUrl}");
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
+#endif
             orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this, this);
             orchestratorWrapper.Connect();
         }
 
         // SockerConnect response callback
-        public void OnConnect() {
+        public void OnConnect()
+        {
             if (enableLogging) Debug.Log($"OrchestratorController: connected to orchestrator");
             connectedToOrchestrator = true;
             hasBeenConnectedToOrchestrator = true;
             connectionStatus = orchestratorConnectionStatus.__CONNECTED__;
             OnConnectionEvent?.Invoke(true);
-
-            orchestratorWrapper.GetOrchestratorVersion();
         }
 
         // SockerConnecting response callback
@@ -274,9 +218,13 @@ namespace VRT.Orchestrator.Wrapping
 
         // Abort Socket connection
         public void Abort() {
-            Debug.Log("OrchestratorController: xxxjack Abort()");
             orchestratorWrapper.Disconnect();
             OnDisconnect();
+        }
+
+        public void GetVersion()
+        {
+            orchestratorWrapper.GetOrchestratorVersion();
         }
 
         // Get connected Orchestrator version
@@ -285,13 +233,16 @@ namespace VRT.Orchestrator.Wrapping
                 OnErrorEvent?.Invoke(status);
                 return;
             }
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_version={version}");
+#endif
             OnGetOrchestratorVersionEvent?.Invoke(version);
         }
 
         // SockerDisconnect response callback
         public void OnDisconnect() {
             Debug.LogWarning($"OrchestratorController: disconnected from orchestrator");
-            me = null;
+            SelfUser = null;
             connectedToOrchestrator = false;
             connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
             userIsLogged = false;
@@ -317,6 +268,9 @@ namespace VRT.Orchestrator.Wrapping
 #region Login/Logout
 
         public void Login(string pName, string pPassword) {
+            SelfUser = new User();
+            SelfUser.userName = pName;
+            SelfUser.userPassword = pPassword;
             orchestratorWrapper.Login(pName, pPassword);
         }
 
@@ -334,11 +288,7 @@ namespace VRT.Orchestrator.Wrapping
                     if (enableLogging) Debug.Log("OrchestratorController: OnLoginResponse: User logged in.");
 
                     userIsLogged = true;
-
-                    // Replaced by UpdateUserDataKey to update the IP adress field of the user on the Login.
-                    //orchestratorWrapper.GetUserInfo();
-                    // xxxjack note: this has the side-effect that we get a callback with all the settings.
-                    UpdateUserDataKey("userIP", GetIPAddress());
+                    SelfUser.userId = userId;
                 } else {
                     userIsLogged = false;
                 }
@@ -380,7 +330,7 @@ namespace VRT.Orchestrator.Wrapping
                     if (enableLogging) Debug.Log("OrchestratorController: OnLogoutResponse: User logout.");
 
                     //normal
-                    me = null;
+                    SelfUser = null;
                     userIsLogged = false;
                 } else {
                     // problem while logout
@@ -392,7 +342,6 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void SignIn(string pName, string pPassword) {
-            orchestratorWrapper.AddUser(pName, pPassword, false);
         }
 
 #endregion
@@ -441,7 +390,11 @@ namespace VRT.Orchestrator.Wrapping
                 OnErrorEvent?.Invoke(status);
                 return;
             }
-
+            int nRemoved = sessions.RemoveAll(item => item == null);
+            if (nRemoved > 0)
+            {
+                Debug.LogWarning($"OrchestratorController: Removed {nRemoved} null sessions");
+            }
             if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionsResponse: Number of available sessions:" + sessions.Count);
 
             // update the list of available sessions
@@ -449,14 +402,12 @@ namespace VRT.Orchestrator.Wrapping
 
             OnSessionsEvent?.Invoke(sessions.ToArray());
 
-            if (isAutoRetrievingData) {
-                // auto retriving phase: this was the last call
-                isAutoRetrievingData = false;
-            }
+    
         }
 
-        public void AddSession(string pScenarioID, string pSessionName, string pSessionDescription, string pSessionProtocol) {
-            orchestratorWrapper.AddSession(pScenarioID, pSessionName, pSessionDescription, pSessionProtocol);
+        public void AddSession(string pScenarioID, Scenario scOrch, string pSessionName, string pSessionDescription, string pSessionProtocol) {
+            myScenario = scOrch;
+            orchestratorWrapper.AddSession(pScenarioID, scOrch, pSessionName, pSessionDescription, pSessionProtocol);
         }
 
         public void OnAddSessionResponse(ResponseStatus status, Session session) {
@@ -466,21 +417,26 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            if (enableLogging) Debug.Log("OrchestratorController: OnAddSessionResponse: Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
+            if (enableLogging) Debug.Log("OrchestratorController: OnAddSessionResponse: Session " + session.sessionName + " successfully created by " + session.GetUser(session.sessionAdministrator).userName + ".");
             // success
             mySession = session;
-            userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = ExtractConnectedUsers(session.sessionUsers);
-
+            // We may need to update our own user definition (because the sfuData may have been added)
+            User newMe = session.GetUser(SelfUser.userId);
+            if (newMe == null)
+            {
+                Debug.LogError($"OrchestratorController: OnAddSessionResponse: userId {SelfUser.userId} (which is me) not in session");
+                return;
+            }
+            SelfUser = newMe;
+            userIsMaster = session.sessionMaster == SelfUser.userId;
+            int  userCount = session.GetUserCount();
+            
 #if VRT_WITH_STATS
-            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={connectedUsers.Count}");
+            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={userCount}");
 #endif
 
             availableSessions.Add(session);
             OnAddSessionEvent?.Invoke(session);
-
-            // now retrieve the secnario instance infos
-            orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
         }
 
         public void GetSessionInfo() {
@@ -489,12 +445,12 @@ namespace VRT.Orchestrator.Wrapping
 
         public void OnGetSessionInfoResponse(ResponseStatus status, Session session) {
             if (mySession == null || string.IsNullOrEmpty(session.sessionId)) {
-                if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionInfoResponse: Aborted, current session is null.");
+                if (enableLogging) Debug.LogError("OrchestratorController: OnGetSessionInfoResponse: Aborted, current session is null.");
                 return;
             }
 
             if (status.Error != 0) {
-                if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: clear session, status={status}");
+                if (enableLogging) Debug.LogError($"OrchestratorController: OnGetSessionInfoResponse: clear session, status={status}");
                 mySession = null;
                 OnErrorEvent?.Invoke(status);
                 return;
@@ -503,27 +459,11 @@ namespace VRT.Orchestrator.Wrapping
            
             // success
             mySession = session;
-            userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = ExtractConnectedUsers(session.sessionUsers);
-            if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
+            userIsMaster = session.sessionMaster == SelfUser.userId;
+            int userCount = mySession.GetUserCount();
+            if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={userCount}");
 
             OnSessionInfoEvent?.Invoke(session);
-        }
-
-        public void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetScenarioInstanceInfoResponse: Scenario instance succesfully retrieved: " + scenario.scenarioName + ".");
-#if outdated_orchestrator
-
-            // now retrieve the url of the Live presenter stream
-            orchestratorWrapper.GetLivePresenterData();
-#endif
-            myScenario = scenario;
-            OnGetScenarioEvent?.Invoke(myScenario);
         }
 
         public void DeleteSession(string pSessionID) {
@@ -559,22 +499,19 @@ namespace VRT.Orchestrator.Wrapping
             
             // success
             mySession = session;
-            userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = ExtractConnectedUsers(session.sessionUsers);
-            if (enableLogging) Debug.Log($"OrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
+            userIsMaster = session.sessionMaster == SelfUser.userId;
+            int userCount = session.GetUserCount();
+            if (enableLogging) Debug.Log($"OrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={userCount}");
 
             // Simulate user join a session for each connected users
             foreach (string id in session.sessionUsers) {
-                if (id != me.userId) {
-                    OnUserJoinedSession(id);
+                if (id != SelfUser.userId) {
+                    OnUserJoinedSession(id, null);
                 }
             }
 
             OnJoinSessionEvent?.Invoke(mySession);
             OnSessionJoinedEvent?.Invoke();
-
-            // now retrieve the secnario instance infos
-            orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
         }
 
         public void LeaveSession() {
@@ -591,14 +528,12 @@ namespace VRT.Orchestrator.Wrapping
 
             // success
             myScenario = null;
-            connectedUsers?.Clear();
-            connectedUsers = null;
             OnLeaveSessionEvent?.Invoke();
 
-            if (mySession != null && me != null) {
+            if (mySession != null && SelfUser != null) {
  
                 // As the session creator, the session should be deleted when leaving.
-                if (mySession.sessionAdministrator == me.userId) {
+                if (mySession.sessionAdministrator == SelfUser.userId) {
                     if (enableLogging) Debug.Log("OrchestratorController: OnLeaveSessionResponse: As session creator, delete the current session when its empty.");
                     StartCoroutine(WaitForEmptySessionToDelete());
                     return;
@@ -622,25 +557,39 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        public void OnUserJoinedSession(string userID) {
-            // Someone as joined the session
-            if (!string.IsNullOrEmpty(userID)) {
-                if (enableLogging) Debug.Log("OrchestratorController: OnUserJoinedSession: User " + GetUser(userID).userName + " joined the session.");
-                orchestratorWrapper.GetSessionInfo();
-                OnUserJoinSessionEvent?.Invoke(userID);
+        public void OnUserJoinedSession(string userID, User user) {
+            // Someone has joined the session
+            if (string.IsNullOrEmpty(userID))
+            {
+                Debug.LogError("OrchestratorController: OnUserJoinedSession: empty userID");
             }
+            if (user == null)
+            {
+                user = mySession.GetUser(userID);
+                if (user == null)
+                {
+                    Debug.LogError($"OrchestratorController: OnUserJoinedSession: userID {userID} unknown");
+                }
+            }
+            else
+            {
+                // xxxjack we don't add the user, but we call GetSessionInfo below to get a complete picture.
+            }
+            if (enableLogging) Debug.Log("OrchestratorController: OnUserJoinedSession: User " + user.userName + " joined the session.");
+            orchestratorWrapper.GetSessionInfo();
+            OnUserJoinSessionEvent?.Invoke(userID);
         }
 
         public void OnUserLeftSession(string userID) {
             if (!string.IsNullOrEmpty(userID)) {
                 // If the session creator left, I need to leave also.
                 if (mySession.sessionAdministrator == userID) {
-                    Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + GetUser(userID).userName + " left the session. Also leaving.");
+                    Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + mySession.GetUser(userID).userName + " left the session. Also leaving.");
                     LeaveSession();
                 }
                 // Otherwise, just proceed to the common user left event.
                 else {
-                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + GetUser(userID).userName + " left the session.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + mySession.GetUser(userID).userName + " left the session. Getting new session info.");
                     // Required to update the list of connect users.
                     orchestratorWrapper.GetSessionInfo();
                     OnUserLeaveSessionEvent?.Invoke(userID);
@@ -648,99 +597,11 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        #endregion
-
-        #region Scenarios
-
-        public void AddScenario(Scenario scOrch)
-        {
-            orchestratorWrapper.AddScenario(scOrch);
-        }
-
-        public void OnAddScenarioResponse(ResponseStatus status)
-        { 
-        }
-
-
-        public void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetScenariosResponse: Number of available scenarios:" + scenarios.Count);
-
-            // update the list of available scenarios
-            availableScenarios = scenarios;
-            OnGetScenariosEvent?.Invoke(scenarios.ToArray());
-
-            if (isAutoRetrievingData) {
-                // auto retriving phase: call next
-                orchestratorWrapper.GetSessions();
-            }
-        }
-
 #endregion
-#if outdated_orchestrator
 
-#region Live
-
-        public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            //Debug.Log("[OrchestratorController][OnGetLivePresenterDataResponse] Live stream url: " + liveData.liveAddress);
-            livePresenterData = liveData;
-
-            OnGetLiveDataEvent?.Invoke(liveData);
-            orchestratorWrapper.GetRooms();
-        }
-
-#endregion
-#endif
 #region Users
 
-        public void GetUsers() {
-            orchestratorWrapper.GetUsers();
-        }
-
-        public void OnGetUsersResponse(ResponseStatus status, List<User> users) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetUsersResponse: Users count:" + users.Count);
-
-            availableUserAccounts = users;
-            OnGetUsersEvent?.Invoke(users.ToArray());
-
-            if (isAutoRetrievingData) {
-                // auto retriving phase: call next
-                orchestratorWrapper.GetScenarios();
-            }
-        }
-
-
-        public void OnAddUserResponse(ResponseStatus status, User user) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (userIsLogged) {
-                if (enableLogging) Debug.Log("OrchestratorController: OnAddUserResponse: User successfully added.");
-                OnAddUserEvent?.Invoke(user);
-                // update the lists of user, anyway the result
-                orchestratorWrapper.GetUsers();
-            } else {
-                if (enableLogging) Debug.Log("OrchestratorController: OnAddUserResponse: User successfully registered.");
-                OnSignInEvent.Invoke();
-            }
-        }
-
+        // xxxjack can go
         public void UpdateUserDataKey(string pKey, string pValue) {
             orchestratorWrapper.UpdateUserData(pKey, pValue);
         }
@@ -752,7 +613,6 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnUpdateUserDataResponse: User data key updated.");
-            orchestratorWrapper.GetUserInfo();
         }
 
         public void UpdateFullUserData(UserData pUserData) {
@@ -766,115 +626,11 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
-            orchestratorWrapper.GetUserInfo();
-        }
-#if outdated_orchestrator
-
-        public void ClearUserData() {
-            orchestratorWrapper.ClearUserData();
-        }
-
-        public void OnClearUserDataResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnClearUserDataResponse: User data successfully cleaned-up.");
-            orchestratorWrapper.GetUserInfo();
-        }
-#endif
-        public void GetUserInfo(string pUserID) {
-            orchestratorWrapper.GetUserInfo(pUserID);
-        }
-
-        public void OnGetUserInfoResponse(ResponseStatus status, User user) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetUserInfoResponse: Get info of user ID: " + user.userId);
-
-            OnGetUserInfoEvent?.Invoke(user);
-
-            if (isAutoRetrievingData) {
-                // auto retriving phase: call next
-                orchestratorWrapper.GetUsers();
-            }
-        }
-#if outdated_orchestrator
-
-        public void DeleteUser(string pUserID) {
-            orchestratorWrapper.DeleteUser(pUserID);
-        }
-
-        public void OnDeleteUserResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnDeleteUserResponse");
-
-            // update the lists of user, anyway the result
-            orchestratorWrapper.GetUsers();
-        }
-#endif
-#endregion
-
-#if outdated_orchestrator
-
-#region Rooms
-
-        public void GetRooms() {
-            orchestratorWrapper.GetRooms();
-        }
-
-        public void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetRoomsResponse: Rooms count:" + rooms.Count);
-
-            // update the list of available rooms
-            availableRoomInstances = rooms;
-            OnGetRoomsEvent?.Invoke(rooms.ToArray());
-        }
-
-        public void JoinRoom(string pRoomID) {
-            orchestratorWrapper.JoinRoom(pRoomID);
-        }
-
-        public void OnJoinRoomResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnJoinRoomResponse: Room joined.");
-
-            OnJoinRoomEvent?.Invoke(status.Error == 0);
-        }
-
-        public void LeaveRoom() {
-            orchestratorWrapper.LeaveRoom();
-        }
-
-        public void OnLeaveRoomResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnLeaveRoomResponse: Room leaved.");
-
-            OnLeaveRoomEvent?.Invoke();
         }
 
 #endregion
-#endif
+
+
 #region Messages
 
         public void SendMessage(string pMessage, string pUserID) {
@@ -952,74 +708,22 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void OnMasterEventReceived(UserEvent pMasterEventData) {
-            if (pMasterEventData.fromId != me.userId) {
+            if (pMasterEventData.fromId != SelfUser.userId) {
                 //if (enableLogging) Debug.Log("OrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.fromId + " sent: " + pMasterEventData.message);
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
         }
 
         public void OnUserEventReceived(UserEvent pUserEventData) {
-            if (pUserEventData.fromId != me.userId) {
+            if (pUserEventData.fromId != SelfUser.userId) {
                 //if (enableLogging) Debug.Log("OrchestratorController: OnUserEventReceived: User: " + pUserEventData.fromId + " sent: " + pUserEventData.message);
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }
 #endregion
 
-#region Data bit-stream
-#if outdated_orchestrator
-
-        public void GetAvailableDataStreams(string pDataStreamUserId) {
-            OrchestratorWrapper.instance.GetAvailableDataStreams(pDataStreamUserId);
-        }
-
-        public void OnGetAvailableDataStreams(ResponseStatus status, List<DataStream> dataStreams) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetAvailableDataStreams: Available DataStream list count: " + dataStreams.Count);
-        }
-
-        public void GetRegisteredDataStreams() {
-            OrchestratorWrapper.instance.GetRegisteredDataStreams();
-        }
-
-        public void OnGetRegisteredDataStreams(ResponseStatus status, List<DataStream> dataStreams) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetRegisteredDataStreams: Registered DataStream list count: " + dataStreams.Count);
-        }
-#endif
-#endregion
 
 #region Logics
-
-        public User GetUser(string masterUuid) {
-            if (availableUserAccounts != null) {
-                for (int i = 0; i < availableUserAccounts.Count; i++) {
-                    if (availableUserAccounts[i].userId == masterUuid)
-                        return availableUserAccounts[i];
-                }
-            }
-            return null;
-        }
-
-        private List<User> ExtractConnectedUsers(string[] UserUUIDs) {
-            List<User> users = new List<User>();
-
-            for (int i = 0; i < UserUUIDs.Length; i++) {
-                foreach (User u in availableUserAccounts) {
-                    if (UserUUIDs[i] == u.userId) {
-                        users.Add(u);
-                    }
-                }
-            }
-
-            return users;
-        }
 
         private IEnumerator WaitForEmptySessionToDelete() {
             if (mySession == null) {
@@ -1042,21 +746,6 @@ namespace VRT.Orchestrator.Wrapping
 
 #endregion
 
-#region Utils
-
-        public string GetIPAddress() {
-            var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
-            foreach (var ip in host.AddressList) {
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) {
-                    if (enableLogging) Debug.Log("OrchestratorController: GetIPAdress: IPv4 adress: " + ip.ToString());
-                    return ip.ToString();
-                }
-            }
-            Debug.LogError("OrchestratorController: GetIPAdress: Cannot retrieve IPv4 adress of the network adapater.");
-            return "";
-        }
-
-#endregion
 
 
 #region Errors
@@ -1068,8 +757,8 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
     }
 }
