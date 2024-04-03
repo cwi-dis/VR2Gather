@@ -304,10 +304,11 @@
       "hash": "bf8c223ce6490d04ca97a1189d4a34328645f635"
     },
     "nl.cwi.dis.vr2gather": {
-      "version": "git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather#142-restructure",
+      "version": "git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather",
       "depth": 0,
       "source": "git",
       "dependencies": {
+        "nl.cwi.dis.vr2gather.nativelibraries": "0.9.1",
         "nl.cwi.dis.cwipc": "7.5.1",
         "com.tivadar.best.http": "3.0.0",
         "com.tivadar.best.socketio": "3.0.0",
@@ -321,7 +322,14 @@
         "com.unity.xr.oculus": "4.2.0",
         "com.unity.xr.openxr": "1.10.0"
       },
-      "hash": "928715ddd50368b07404c2c77351174a3fb63cf9"
+      "hash": "052193d26ca00a02ff1836ba1e07de5de7113d7c"
+    },
+    "nl.cwi.dis.vr2gather.nativelibraries": {
+      "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "cd233771f01ae85fe54ee4ff31470e133b756b91"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

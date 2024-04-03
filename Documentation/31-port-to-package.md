@@ -4,7 +4,7 @@ If you have created a VR2Gather application before April 2024 you have likely cr
 
 This needs to be changed.
 
-First step is to get your application completely up to date with the framework version of VR2Gather. Merge the current framework branch (either `historic/framework` or if that doesn't exist yet `master`) into your (development) branch. Check that everything works.
+First step is to get your application completely up to date with the framework version of VR2Gather. Merge the current framework branch `historic/framework` (which is the old `master`) into your (development) branch. Check that everything works.
 
 If at all possibly you should try to ensure that you have no **modifications** on your branch of the VR2Gather repo. Additions is fine, but modifications are going to cause a problem later.
 
