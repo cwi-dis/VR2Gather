@@ -63,7 +63,7 @@ An example of how to create an object that is both grabbable and clickable/point
 
 ## Avatars for participants
 
-The `P_Player` prefab is what is instantiated for every other player.
+The `P_Player` prefab is what is instantiated for every _other_ player. Note the emphasis on _other_: these are created for all players except for the current user.
 
 The `PlayerControllerOther` component controls which of the possible representations for this participant is currently in use. The standard options are:
 
