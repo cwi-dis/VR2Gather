@@ -265,12 +265,26 @@ namespace VRT.Pilots.LoginManager
         /// </summary>
         private void AutoStart_StateUpdate()
         {
+            // We do a quick exit if we don't have an autostart config, or if shift is pressed.
             VRTConfig._AutoStart config = VRTConfig.Instance.AutoStart;
             if (config == null) return;
-            if (
-                    Keyboard.current.shiftKey.isPressed
+            if (Keyboard.current.shiftKey.isPressed) return;
 
-                ) return;
+            if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart.autoLogin)
+            {
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
+                autoState = AutoState.DidLogIn;
+                Login();
+                return;
+            }
+            if (autoState == AutoState.DidLogIn && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin))
+            {
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
+                autoState = AutoState.DidPlay;
+                ChangeState(State.Play);
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                return;
+            }
             if (state == State.Play && autoState == AutoState.DidPlay)
             {
                 if (config.autoCreate)
@@ -449,7 +463,7 @@ namespace VRT.Pilots.LoginManager
                 case State.Offline:
                     break;
                 case State.Online:
-                    LoginPanel_UpdateRememberMe();
+                    LoginPanel_UpdateUserName();
                     break;
                 case State.LoggedIn:
                     HomePanelUserName.text = uname;
@@ -507,12 +521,18 @@ namespace VRT.Pilots.LoginManager
         #region UI: LoginPanel
 
         // Check saved used credentials.
-        private void LoginPanel_UpdateRememberMe()
+        private void LoginPanel_UpdateUserName()
         {
-            if (PlayerPrefs.HasKey("userNameLoginIF") && PlayerPrefs.HasKey("userPasswordLoginIF"))
+            if (PlayerPrefs.HasKey("userNameLoginIF"))
             {
-                LoginPanelRememberMeToggle.isOn = true;
-                LoginPanelUserName.text = PlayerPrefs.GetString("userNameLoginIF");
+                string userName = PlayerPrefs.GetString("userNameLoginIF");
+                if (string.IsNullOrEmpty(userName)) {
+                    LoginPanelRememberMeToggle.isOn = false;
+                } else
+                {
+                    LoginPanelRememberMeToggle.isOn = true;
+                    LoginPanelUserName.text = userName;
+                }
             }
             else
                 LoginPanelRememberMeToggle.isOn = false;
@@ -1117,7 +1137,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnConnectionEvent += UpdateStateOnConnectionEvent;
             OrchestratorController.Instance.OnConnectingEvent += UpdateStateOnConnectingEvent;
             OrchestratorController.Instance.OnGetOrchestratorVersionEvent += UpdateStateOnGetOrchestratorVersionEvent;
-            OrchestratorController.Instance.OnLoginEvent += UpdateStateOnLogin;
+            OrchestratorController.Instance.OnLoginEvent += UpdateStateOnLoginEvent;
             OrchestratorController.Instance.OnLogoutEvent += UpdateStateOnLogout;
             OrchestratorController.Instance.OnGetNTPTimeEvent += UpdateStateOnGetNTPTime;
             OrchestratorController.Instance.OnSessionsEvent += UpdateStateOnGetSessions;
@@ -1141,7 +1161,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnConnectionEvent -= UpdateStateOnConnectionEvent;
             OrchestratorController.Instance.OnConnectingEvent -= UpdateStateOnConnectingEvent;
             OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= UpdateStateOnGetOrchestratorVersionEvent;
-            OrchestratorController.Instance.OnLoginEvent -= UpdateStateOnLogin;
+            OrchestratorController.Instance.OnLoginEvent -= UpdateStateOnLoginEvent;
             OrchestratorController.Instance.OnLogoutEvent -= UpdateStateOnLogout;
             OrchestratorController.Instance.OnGetNTPTimeEvent -= UpdateStateOnGetNTPTime;
             OrchestratorController.Instance.OnSessionsEvent -= UpdateStateOnGetSessions;
@@ -1168,6 +1188,7 @@ namespace VRT.Pilots.LoginManager
             Debug.Log("OrchestratorLogin: OnError: Error code: " + status.Error + ", Error message: " + status.Message);
             ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
         }
+
         private void SocketConnect()
         {
             switch (OrchestratorController.Instance.ConnectionStatus)
@@ -1188,24 +1209,17 @@ namespace VRT.Pilots.LoginManager
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
                 statusText.color = colorConnected;
                 state = State.Online;
+                AllPanels_UpdateAfterStateChange();
+                // We may want to login automatically.
+                AutoStart_StateUpdate();
             }
             else
             {
                 UpdateStateOnLogout(true);
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
                 statusText.color = colorDisconnecting;
+                AllPanels_UpdateAfterStateChange();
                 state = State.Offline;
-            }
-            AllPanels_UpdateAfterStateChange();
-            if (pConnected && autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoLogin)
-            {
-                if (
-                    Keyboard.current.shiftKey.isPressed
-
-                    ) return;
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
-                autoState = AutoState.DidLogIn;
-                Login();
             }
         }
 
@@ -1217,6 +1231,9 @@ namespace VRT.Pilots.LoginManager
 
         private void UpdateStateOnGetOrchestratorVersionEvent(string pVersion)
         {
+            // After login we ask the orchestrator for its version.
+            // When we get here we now know the version, and we ask the orchestrator for
+            // the NTP time.
             Debug.Log("Orchestration Service: " + pVersion);
             StatusPanelOrchestratorVersion.text = pVersion;
             GetNTPTime();
@@ -1287,44 +1304,34 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.Login(userName, "");
         }
 
-        private void UpdateStateOnLogin(bool userLoggedSucessfully)
+        private void UpdateStateOnLoginEvent(bool userLoggedSucessfully)
         {
-            if (userLoggedSucessfully)
+            if (!userLoggedSucessfully)
             {
-                // We can now load the user data and send it to the orchesrator.
-                // Also, we can start the self preview (because the user data is complete)
-
-                LoadUserData();
-                UploadUserData();
-                StartSelfRepresentationPreview();
-                state = State.LoggedIn;
-            }
-            else
-            {
-                // User has logged out, or login failed.
-                this.StatusPanelUserId.text = "";
-                StatusPanelUserName.text = "";
-                HomePanelUserName.text = "";
-
-                state = State.Online;
+                // User login has failed. Treat as logout.
+                UpdateStateOnLogout(true);
+                return;
             }
 
             AllPanels_UpdateAfterStateChange();
-            if (userLoggedSucessfully
-                && autoState == AutoState.DidLogIn
-                && VRTConfig.Instance.AutoStart != null
-                && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin)
-                )
-            {
-                if (
-                    Keyboard.current.shiftKey.isPressed
+            // After successful login we ask the Orchestrator for its version
+            OrchestratorController.Instance.GetVersion();
+        }
 
-                    ) return;
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
-                autoState = AutoState.DidPlay;
-                ChangeState(State.Play);
-                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
-            }
+        private void UpdateStateOnLoginFullyComplete()
+        {
+            // We can now load the user data and send it to the orchesrator.
+            // Also, we can start the self preview (because the user data is complete)
+
+            LoadUserData();
+            UploadUserData();
+            StartSelfRepresentationPreview();
+            state = State.LoggedIn;
+            
+
+            AllPanels_UpdateAfterStateChange();
+            AutoStart_StateUpdate();
+           
         }
 
         private void Logout()
@@ -1351,12 +1358,15 @@ namespace VRT.Pilots.LoginManager
 
         private void UpdateStateOnGetNTPTime(NtpClock ntpTime)
         {
+            // The final step in connecting to the orchestrator and logging in: we have the NTP time.
+            // We are now fully logged in.
             double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
             if (developerMode) Debug.Log("OrchestratorLogin: OnGetNTPTimeResponse: Difference: " + difference);
             if (Math.Abs(difference) >= VRTConfig.Instance.ntpSyncThreshold)
             {
                 Debug.LogError($"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {VRTConfig.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.");
             }
+            UpdateStateOnLoginFullyComplete();
         }
 
         private void GetSessions()

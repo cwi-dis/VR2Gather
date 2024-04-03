@@ -196,14 +196,13 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         // SockerConnect response callback
-        public void OnConnect() {
+        public void OnConnect()
+        {
             if (enableLogging) Debug.Log($"OrchestratorController: connected to orchestrator");
             connectedToOrchestrator = true;
             hasBeenConnectedToOrchestrator = true;
             connectionStatus = orchestratorConnectionStatus.__CONNECTED__;
             OnConnectionEvent?.Invoke(true);
-
-            orchestratorWrapper.GetOrchestratorVersion();
         }
 
         // SockerConnecting response callback
@@ -221,6 +220,11 @@ namespace VRT.Orchestrator.Wrapping
         public void Abort() {
             orchestratorWrapper.Disconnect();
             OnDisconnect();
+        }
+
+        public void GetVersion()
+        {
+            orchestratorWrapper.GetOrchestratorVersion();
         }
 
         // Get connected Orchestrator version

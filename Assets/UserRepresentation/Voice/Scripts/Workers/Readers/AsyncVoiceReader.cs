@@ -77,7 +77,7 @@ namespace VRT.UserRepresentation.Voice
         {
             var ac = AudioSettings.GetConfiguration();
             if (_sampleRate == 0) _sampleRate = ac.sampleRate;
-            if (_bufferSize != 0) _bufferSize = ac.dspBufferSize;
+            if (_bufferSize == 0) _bufferSize = ac.dspBufferSize;
 
             if (_sampleRate != ac.sampleRate || _bufferSize != ac.dspBufferSize)
             {
