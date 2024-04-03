@@ -1,8 +1,6 @@
 # VR2Gather - Creating a new experience
 
-A new VR2Gather experience should have its own Git repository and include VR2Gather as a Unity package.
-
-The [toplevel README file](../README.md) has the currently valid set of steps you need to take.
+First read the [Installation guide](Documentation/02-installation.md) and follow all steps there.
 
 ## How things are named in the code and documentation
 
@@ -14,17 +12,27 @@ There are a lot of terms going to be used in this document. So let us start by e
 
 ## Creating a new experience
 
-- Create a repo `VRTApp-MyNewExperience`. In there, create a Unity project `VRTApp-MyNewExperience` and possibly a toplevel readme. Follow the steps in the [toplevel README file](../README.md) to add VR2Gather to your project.
-- Create a new scene by copying Pilot0, for example. Subclass any component that needs different functionality (for example `PilotController`) and fix the scene to refer to the new component.
+- You have followed the steps in the [Installation guide](Documentation/02-installation.md) and you have a Unity project with VR2Gather enabled. Now you want to add your own scenario. There are two options:
+	- Create a new scene by copying the `Pilot0` scene. Subclass any component that needs different functionality (for example `PilotController`) and fix the scene to refer to the new component. Add your GameObjects, and remove GameObjects you don't need.
+	- You already have a scene that works in "normal" Unity. This scene will have to be adapted for using VR2Gather. The most important step is that your VRRig and interaction GameObjects will have to be changed. The [Comparison to standard Unity practices](11-differences.md) document will explain.
+	
 - Now you need to create a _Scenario_. In the `LoginManager` there is a GameObject `Tool_ScenarioRegistry` with a `ScenarioRegistry` object. Here you add your scenario. The `ScenarioID` must be globally unique (use a uuid-generator once). The `ScenarioSceneName` is the first Scene used (the one you created in the previous step). The `Name` and `Description` are for humans only: when the first participant creates a session they select this scenario. Other participants then see the name and description when they select the session to join it. 
+- Next you need to ensure your scene is available for loading at runtime. In the _Build Settings..._ dialog you can add your scene to the list.
+- You can now try your new scenario:
+  - Open the `LoginManager` scene and _Play_ it.
+  - Login to the orchestrator.
+  - In the _Settings_ you can set your representation and microphone, this will be remembered between runs.
+  - _Create_ a session.
+  - Select your new scenario from the popup menu.
+  - _Start_ the session.
+- To try your scenario with two uses: The first user follows the steps above, the second user uses _Join_ to join the session that the first user created. And the first user waits until the second user has joined before selecting _Start_.
 
 You probably need new interactable objects. Create these using one of the prefabs from the [Prefabs](04-prefabs.md) section as an example, make sure you copy materials and subclass any components that need changing).
 
-You can now test these new interactables in `SoloPlayground` and `TechnicalPlayground`, as explained in the [Walkthrough](03-walkthrough.md) section. Then you add them to your scene.
+> You can now test these new interactables in `SoloPlayground` and `TechnicalPlayground`, as explained in the [Walkthrough](03-walkthrough.md) section. Then you add them to your scene.
 
-If you need multiple scenes: your `PilotController` can open a new scene for you.
+If you need multiple scenes: your `PilotController` can open a new scene for you, and help you ensuring that if one participant goes to the new scene this also happens for all the other participants.
 
-> xxxjack need to provide an example
 
 If you need additional functionality in your `P_Player` and `P_Self_player`, for example if you have multiple avatars that you want to switch between: subclass the PlayerControllers and provide the new functionality there. Then create variants of `P_Player` and `P_Player_Self`, reference the new controller and add any GameObjects you need. Finally references these new prefabs in your scene's `SessionPlayersManager`.
 
