@@ -1,10 +1,10 @@
 {
 	"name" : "nl.cwi.dis.vr2gather",
-	"version" : "0.9.2",
+	"version" : "0.9.3",
 	"displayName" : "VR2Gather",
-	"description" : "Create networked shared social VR experiences in Unity",
-	"documentationUrl" : "https://github.com/cwi-dis/VR2Gather/nl.cwi.dis.vr2gather/README.md",
-	"changelogUrl" : "https://github.com/cwi-dis/VR2Gather/nl.cwi.dis.vr2gather/CHANGELOG.md",
+	"description" : "Create networked shared social VR experiences in Unity.\nPlease check the README before installing this package into your project.",
+	"documentationUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/README.md",
+	"changelogUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/nl.cwi.dis.vr2gather/CHANGELOG.md",
 	"dependencies" : {
 		"nl.cwi.dis.vr2gather.nativelibraries": "0.9.1",
 	    "nl.cwi.dis.cwipc": "7.5.1",
