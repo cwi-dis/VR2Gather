@@ -322,7 +322,7 @@
         "com.unity.xr.oculus": "4.2.0",
         "com.unity.xr.openxr": "1.10.0"
       },
-      "hash": "052193d26ca00a02ff1836ba1e07de5de7113d7c"
+      "hash": "4952d1f0cbc7996467790ca1717e24d5d2b6d03c"
     },
     "nl.cwi.dis.vr2gather.nativelibraries": {
       "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",

@@ -273,8 +273,14 @@ namespace VRT.Pilots.LoginManager
             if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart.autoLogin)
             {
                 if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
-                autoState = AutoState.DidLogIn;
-                Login();
+                if (Login())
+                {
+                    autoState = AutoState.DidLogIn;
+                }
+                else
+                {
+                    VRTConfig.Instance.AutoStart.autoLogin = false;
+                }
                 return;
             }
             if (autoState == AutoState.DidLogIn && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin))
@@ -397,7 +403,7 @@ namespace VRT.Pilots.LoginManager
             // Load locally save user data
             if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
             {
-                Debug.LogError("OrchestratorLogin.LoadUserData: orchestratorConfigFilename is empty");
+                Debug.LogError("OrchestratorLogin.LoadUserData: LocalUser.orchestratorConfigFilename is empty");
                 OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }
@@ -1284,7 +1290,7 @@ namespace VRT.Pilots.LoginManager
         #region Orchestrator: Commands and responses
 
         // Login from the main buttons Login & Logout
-        private void Login()
+        private bool Login()
         {
             if (LoginPanelRememberMeToggle.isOn)
             {
@@ -1297,8 +1303,11 @@ namespace VRT.Pilots.LoginManager
             var userName = LoginPanelUserName.text;
             if (userName == "")
             {
-                Debug.LogError("Cannot login if no username specified");
-                return;
+                if (!VRTConfig.Instance.AutoStart.autoLogin)
+                {
+                    Debug.LogError("Cannot login if no username specified");
+                }
+                return false;
             }
             // If we want to autoCreate or autoStart depending on username set the right config flags.
             if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
@@ -1309,6 +1318,7 @@ namespace VRT.Pilots.LoginManager
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
             OrchestratorController.Instance.Login(userName, "");
+            return true;
         }
 
         private void UpdateStateOnLoginEvent(bool userLoggedSucessfully)
