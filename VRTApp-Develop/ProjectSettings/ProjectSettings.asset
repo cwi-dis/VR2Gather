@@ -196,7 +196,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: nl.cwi.dis.vr2gather
-    Standalone: nl.cwi.dis.VR2Gather.transmixr-ch-mvp
+    Standalone: nl.cwi.dis.VR2Gather.VRTApp-Develop
   buildNumber:
     Standalone: 0.1
     VisionOS: 0
