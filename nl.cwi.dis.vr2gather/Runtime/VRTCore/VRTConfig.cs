@@ -256,6 +256,10 @@ namespace VRT.Core
                     LocalUser.PCSelfConfig.capturerType = _User._PCSelfConfig.PCCapturerType.none;
                 }
             }
+            if (string.IsNullOrEmpty(LocalUser.orchestratorConfigFilename))
+            {
+                LocalUser.orchestratorConfigFilename = "config-user.json";
+            }
             // Initialize some other modules that have their own configuration.
 #if VRT_WITH_STATS
             Statistics.Initialize(this.statsInterval, this.statsOutputFile, this.statsOutputFileAppend);
