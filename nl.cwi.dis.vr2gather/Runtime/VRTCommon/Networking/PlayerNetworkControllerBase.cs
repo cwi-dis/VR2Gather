@@ -67,7 +67,7 @@ namespace VRT.Pilots.Common
 			return $"{GetType().Name}";
 		}
 
-		protected virtual void Awake()
+		protected virtual void Start()
 		{
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
 			OrchestratorController.Instance.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);

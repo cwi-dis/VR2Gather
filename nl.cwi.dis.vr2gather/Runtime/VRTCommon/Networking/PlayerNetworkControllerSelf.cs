@@ -7,16 +7,10 @@ namespace VRT.Pilots.Common
 {
     public class PlayerNetworkControllerSelf : PlayerNetworkControllerBase
     {
-		private float _SendDelta;
 		private float _LastSendTime;
 		[Tooltip("Where to get head orientation from")]
 		public Transform camTransform;
 
-		protected override void Awake()
-		{
-			base.Awake();
-			_SendDelta = 1.0f / SendRate;
-		}
 		public override void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId)
 		{
 			if (!local)
@@ -30,7 +24,7 @@ namespace VRT.Pilots.Common
 
 		void Update()
 		{
-			if (_LastSendTime + _SendDelta <= Time.realtimeSinceStartup)
+			if (_LastSendTime + (1.0f / SendRate) <= Time.realtimeSinceStartup)
 			{
 				SendPlayerData();
 			}

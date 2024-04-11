@@ -28,6 +28,9 @@ using System.Text;
 using UnityEngine;
 using VRT.Core;
 using static VRT.Core.NTPTools;
+#if UNITY_EDITOR
+using UnityEditor.Search;
+#endif
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -85,8 +88,7 @@ namespace VRT.Orchestrator.Wrapping
         public static OrchestratorController Instance {
             get {
                 if (instance is null) {
-                    Debug.Log("OrchestratorController.Instance: Creating GameObject");
-                    instance = new GameObject("OrchestratorController").AddComponent<OrchestratorController>();
+                    Debug.LogError("OrchestratorController.Instance: No OrchestratorController yet");
                 }
                 return instance;
             }
@@ -154,13 +156,20 @@ namespace VRT.Orchestrator.Wrapping
 #region Unity
 
         private void Awake() {
-            
             if (instance == null) {
-                DontDestroyOnLoad(this);
+                DontDestroyOnLoad(this.gameObject);
+                this.gameObject.name = this.gameObject.name + "_keep";
                 instance = this;
             } else if (instance != this) {
-                Debug.LogWarning($"OrchestratorController: attempt to create second instance from GameObject {gameObject.name}. Keep first one, from {instance.gameObject.name}.");
-                Destroy(gameObject);
+#if UNITY_EDITOR
+                string newName = SearchUtils.GetHierarchyPath(gameObject, false);
+                string oldName = SearchUtils.GetHierarchyPath(instance.gameObject, false);
+#else
+                string newName = gameObject.name;
+                string oldName = instance.gameObject.name;
+#endif
+                Debug.LogWarning($"OrchestratorController: attempt to create second instance from {newName}. Keep first one, from {oldName}.");
+                // xxxjack Destroy(gameObject);
             }
         }
 
