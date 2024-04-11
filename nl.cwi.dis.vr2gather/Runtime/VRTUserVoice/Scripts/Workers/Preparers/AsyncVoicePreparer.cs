@@ -111,7 +111,7 @@ namespace VRT.UserRepresentation.Voice
                 PauseAudioPlayout = false;
                 if (currentAudioFrame != null)
                 {
-                    // Debug.Log($"{Name()}: previous audio frame not consumed yet");
+                    if (debugBuffering) Debug.Log($"{Name()}: previous audio frame not consumed yet");
                     return true;
                 }
                 Timestamp bestTimestamp = 0;
@@ -258,6 +258,7 @@ namespace VRT.UserRepresentation.Voice
             audioBufferHeadTimestamp = currentAudioFrame.metadata.timestamp;
             currentAudioFrame.free();
             currentAudioFrame = null;
+            if (debugBuffering) Debug.Log($"{Name()}: audioFrame consumed");
             return true;
         }
 
@@ -265,6 +266,7 @@ namespace VRT.UserRepresentation.Voice
         {
             lock(this)
             {
+                if (debugBuffering) Debug.Log($"{Name()}: GetAudioBuffer(..., {len})");
                 if (InQueue.IsClosed()) return len;
                 if (PauseAudioPlayout)
                 {

@@ -23,6 +23,7 @@ namespace VRT.UserRepresentation.Voice
         AsyncReader reader;
         AsyncWorker codec;
         AsyncVoicePreparer preparer;
+        public AudioSource audioSource;
 
         [Tooltip("Object responsible for synchronizing playout")]
         public ISynchronizer synchronizer = null;
@@ -49,7 +50,11 @@ namespace VRT.UserRepresentation.Voice
                 synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
             AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
-            AudioSource audioSource = gameObject.AddComponent<AudioSource>();
+            if (audioSource != null)
+            {
+                Debug.LogWarning($"{Name()}: already have an AudioSource, overriding");
+            }
+            audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
             audioSource.spatialBlend = 1.0f;
             audioSource.minDistance = 4f;
@@ -114,46 +119,14 @@ namespace VRT.UserRepresentation.Voice
 #endif
         }
 
-        public void Init(User user, QueueThreadSafe queue)
-        {
-#if VRT_WITH_STATS
-            stats = new Stats(Name());
-#endif
-            if (synchronizer == null)
-            {
-                synchronizer = FindObjectOfType<VRTSynchronizer>();
-            }
-            AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
-            AudioSource audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.spatialize = true;
-            audioSource.spatialBlend = 1.0f;
-            audioSource.minDistance = 4f;
-            audioSource.maxDistance = 100f;
-            audioSource.loop = true;
-            audioSource.Play();
-
-            string audioCodec = SessionConfig.Instance.voiceCodec;
-            bool audioIsEncoded = audioCodec == "VR2A";
-
-            preparerQueue = null;
-            QueueThreadSafe _readerOutputQueue = queue;
-            if (audioIsEncoded)
-            {
-                preparerQueue = new QueueThreadSafe("voicePreparer", 4, true);
-                codec = new AsyncVoiceDecoder(queue, preparerQueue);
-                _readerOutputQueue = preparerQueue;
-            }
-
-            preparer = new AsyncVoicePreparer(_readerOutputQueue);
-            if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
-#if VRT_WITH_STATS
-            Statistics.Output(Name(), $"encoded={audioIsEncoded}");
-#endif
-        }
-
         private void Update()
         {
             preparer?.Synchronize();
+            if (!audioSource.isPlaying)
+            {
+                Debug.Log($"{Name()}: AudioSource is not playing. Restarting.");
+                audioSource.Play();
+            }
         }
 
         private void LateUpdate()
@@ -167,12 +140,7 @@ namespace VRT.UserRepresentation.Voice
             codec?.StopAndWait();
             preparer?.StopAndWait();
         }
-        /*
-        void OnAudioRead(float[] data) {
-            if (preparer == null || !preparer.GetAudioBuffer(data, data.Length))
-                System.Array.Clear(data, 0, data.Length);
-        }
-    */
+        
 
         float[] tmpBuffer;
         void OnAudioFilterRead(float[] data, int channels)
