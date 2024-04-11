@@ -22,7 +22,7 @@ namespace VRT.Transport.SocketIO
     {
         OutgoingStreamDescription[] streams;
 
-        public AsyncSocketIOWriter(User user, string remoteStream, string fourcc, OutgoingStreamDescription[] streams) : base()
+        public AsyncSocketIOWriter(User user, string streamName, string fourcc, OutgoingStreamDescription[] streams) : base()
         {
             if (streams == null)
             {
@@ -34,9 +34,9 @@ namespace VRT.Transport.SocketIO
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i)
             {
-                streams[i].name = $"{user.userId}.{remoteStream}.{fourcc}#{i}";
+                streams[i].name = $"{user.userId}.{streamName}.{fourcc}#{i}";
 #if VRT_WITH_STATS
-                Statistics.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
+                Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }

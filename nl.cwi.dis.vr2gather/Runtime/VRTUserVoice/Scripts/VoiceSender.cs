@@ -74,14 +74,23 @@ namespace VRT.UserRepresentation.Voice
             if (proto == SessionConfig.ProtocolType.Dash)
             {
                 writer = new AsyncB2DWriter(user.sfuData.url_audio, _streamName, audioCodec, _segmentSize, _segmentLife, b2dStreams);
-            } 
+#if VRT_WITH_STATS
+                Statistics.Output("VoiceSender", $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, codec={audioCodec}");
+#endif
+            }
             else if (proto == SessionConfig.ProtocolType.TCP)
             {
                 writer = new AsyncTCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
+#if VRT_WITH_STATS
+                Statistics.Output("VoiceSender", $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
+#endif
             }
             else
             {
                 writer = new AsyncSocketIOWriter(user, _streamName, audioCodec, b2dStreams);
+#if VRT_WITH_STATS
+                Statistics.Output("VoiceSender", $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
+#endif
             }
             string encoderName = "none";
             if (codec != null)
