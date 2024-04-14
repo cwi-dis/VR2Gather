@@ -18,7 +18,7 @@ namespace VRT.UserRepresentation.Voice
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
-    public class VoiceReceiver : MonoBehaviour
+    public class VoicePipelineOther : MonoBehaviour
     {
         AsyncReader reader;
         AsyncWorker codec;
@@ -40,8 +40,16 @@ namespace VRT.UserRepresentation.Voice
         }
 
         // Start is called before the first frame update
-        public void Init(User user, string _streamName, int _streamNumber)
+        public void Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
+        //public void Init(User user, string _streamName, int _streamNumber)
         {
+            User user = (User)_user;
+            const string _streamName = "audio";
+            const int _streamNumber = 0;
+            if (preview)
+            {
+                Debug.LogError($"{Name()}: preview==true not supported");
+            }
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif

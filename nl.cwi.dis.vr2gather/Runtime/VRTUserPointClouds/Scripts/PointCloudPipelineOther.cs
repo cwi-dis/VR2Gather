@@ -286,7 +286,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.Log($"{Name()}: SetSyncConfig: reader is not a BaseReader");
             }
             // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
-            VoiceReceiver voiceReceiver = gameObject.transform.parent.GetComponentInChildren<VoiceReceiver>();
+            VoicePipelineOther voiceReceiver = gameObject.transform.parent.GetComponentInChildren<VoicePipelineOther>();
             if (voiceReceiver != null)
             {
                 voiceReceiver.SetSyncInfo(config.audio);

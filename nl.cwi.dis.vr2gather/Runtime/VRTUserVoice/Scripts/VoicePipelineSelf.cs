@@ -7,6 +7,7 @@ using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
+using System;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -17,7 +18,7 @@ namespace VRT.UserRepresentation.Voice
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
     using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 
-    public class VoiceSender : MonoBehaviour
+    public class VoicePipelineSelf : MonoBehaviour
     {
         AsyncVoiceReader reader;
         AsyncVoiceEncoder codec;
@@ -27,16 +28,24 @@ namespace VRT.UserRepresentation.Voice
         QueueThreadSafe encoderQueue = null;
         QueueThreadSafe senderQueue = null;
 
-        // Start is called before the first frame update
-        public void Init(User user, string _streamName, int _segmentSize, int _segmentLife)
+        public string Name()
         {
+            return $"{GetType().Name}";
+        }
+
+        // Start is called before the first frame update
+        public void Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
+        //public void Init(User user, string _streamName, int _segmentSize, int _segmentLife)
+        {
+            User user = (User)_user;
+            string _streamName = "audio";
             string micro = null;
             if (user != null && user.userData != null)
                 micro = user.userData.microphoneName;
             int minBufferSize = 0;
             if (micro == "None")
             {
-                Debug.LogError("VoiceSender: no microphone, other participants will not hear you");
+                Debug.LogError($"{Name()}: no microphone, other participants will not hear you");
                 return;
             }
 
@@ -65,7 +74,7 @@ namespace VRT.UserRepresentation.Voice
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
-                Debug.LogWarning($"VoiceSender: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
+                Debug.LogWarning($"{Name()}: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
             OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1];
@@ -73,23 +82,27 @@ namespace VRT.UserRepresentation.Voice
 
             if (proto == SessionConfig.ProtocolType.Dash)
             {
-                writer = new AsyncB2DWriter(user.sfuData.url_audio, _streamName, audioCodec, _segmentSize, _segmentLife, b2dStreams);
+                var AudioBin2Dash = cfg?.PCSelfConfig?.AudioBin2Dash;
+                if (AudioBin2Dash == null)
+                    throw new Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
+
+                writer = new AsyncB2DWriter(user.sfuData.url_audio, _streamName, audioCodec, AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, b2dStreams);
 #if VRT_WITH_STATS
-                Statistics.Output("VoiceSender", $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, codec={audioCodec}");
+                Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, codec={audioCodec}");
 #endif
             }
             else if (proto == SessionConfig.ProtocolType.TCP)
             {
                 writer = new AsyncTCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
-                Statistics.Output("VoiceSender", $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
+                Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
 #endif
             }
             else
             {
                 writer = new AsyncSocketIOWriter(user, _streamName, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
-                Statistics.Output("VoiceSender", $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
+                Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
 #endif
             }
             string encoderName = "none";
@@ -98,7 +111,7 @@ namespace VRT.UserRepresentation.Voice
                 encoderName = codec.Name();
             }
 #if VRT_WITH_STATS
-            Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
+            Statistics.Output(Name(), $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
 #endif
         }
 
@@ -110,7 +123,7 @@ namespace VRT.UserRepresentation.Voice
             int minBufferSize = 0;
             if (micro == "None")
             {
-                Debug.LogError("VoiceSender: no microphone, other participants will not hear you");
+                Debug.LogError($"{Name()}: no microphone, other participants will not hear you");
                 return;
             }
 
@@ -138,11 +151,11 @@ namespace VRT.UserRepresentation.Voice
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
-                Debug.LogWarning($"VoiceSender: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
+                Debug.LogWarning($"{Name()}: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
 #if VRT_WITH_STATS
-            Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
+            Statistics.Output(Name(), $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
 #endif
         }
 

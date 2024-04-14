@@ -53,13 +53,7 @@ namespace VRT.Pilots.Common
             get => _isVisible;
             protected set { _isVisible = value; }
         }
-        [Tooltip("True if this user has an audio representation")]
-        private bool _isAudible;
-        public bool isAudible
-        {
-            get => _isAudible;
-            protected set { _isAudible = value; }
-        }
+        
         [Tooltip("Human-readable name of this user")]
         private string _userName;
         public string userName
@@ -93,27 +87,21 @@ namespace VRT.Pilots.Common
                 userNameText.text = userName;
             }
             playerNetworkController.SetupPlayerNetworkController(this, isLocalPlayer, user.userId);
-            
-            SetRepresentation(user.userData.userRepresentationType);
 
+            //
+            // Setup visual representation (pointcloud, avatar, webcam, etc)
+            //
+            SetRepresentation(user.userData.userRepresentationType);
+            //
+            // Setup voice representation
+            //
             // xxxjack Don't like this special case here: it means that everyone except 
-            // NoRepresentation has audio (including the caermaman)
+            // NoRepresentation has audio (including the camermaman)
             if (user.userData.userRepresentationType != UserRepresentationType.NoRepresentation)
             {
-                isAudible = true;
-
                 // Audio
                 voice.SetActive(true);
-                try
-                {
-                    LoadAudio(user);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log($"[SessionPlayersManager] Exception occured when trying to load audio for user {user.userName} - {user.userId}: " + e);
-                    Debug.LogError($"Cannot receive audio from participant {user.userName}");
-                    throw;
-                }
+                LoadVoicePipeline(user);
             }
         }
 
@@ -217,7 +205,7 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void LoadAudio(VRT.Orchestrator.Wrapping.User user)
+        public void LoadVoicePipeline(VRT.Orchestrator.Wrapping.User user)
         {
             if (isPreviewPlayer) return;
             if (user.userData.microphoneName == "None")
@@ -227,23 +215,15 @@ namespace VRT.Pilots.Common
             }
             if (isLocalPlayer)
             { // Sender
-                var AudioBin2Dash = VRTConfig.Instance.LocalUser.PCSelfConfig.AudioBin2Dash;
-                if (AudioBin2Dash == null)
-                    throw new Exception("PointCloudPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
-                try
-                {
-                    voice.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
-                }
-                catch (EntryPointNotFoundException e)
-                {
-                    Debug.Log("PointCloudPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                    throw new Exception("PointCloudPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                }
+                var userCfg = VRTConfig.Instance.LocalUser;
+                voice.AddComponent<VoicePipelineSelf>().Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
+                // Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
+                // Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
+            
             }
             else
             { // Receiver
-                const int audioStreamNumber = 0;
-                voice.AddComponent<VoiceReceiver>().Init(user, "audio", audioStreamNumber); //Audio Pipeline
+                voice.AddComponent<VoicePipelineOther>().Init(isLocalPlayer, user, null, isPreviewPlayer);
             }
         }
     

@@ -333,7 +333,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"{Name()}: GetSyncConfig: isSource, but writer is not a BaseWriter");
             }
             // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
-            VoiceSender voiceSender = gameObject.transform.parent.GetComponentInChildren<VoiceSender>();
+            VoicePipelineSelf voiceSender = gameObject.transform.parent.GetComponentInChildren<VoicePipelineSelf>();
             if (voiceSender != null)
             {
                 rv.audio = voiceSender.GetSyncInfo();
