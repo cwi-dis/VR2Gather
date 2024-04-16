@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Renamed and refactored voice-handling classes
+- Renamed and refactored voice-handling classes (#156)
+- Fixed accidental clearing of user name (#152)
 
 ## [0.9.4] - 2024-04-10
 
