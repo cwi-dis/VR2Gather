@@ -714,6 +714,7 @@ namespace VRT.Pilots.LoginManager
             SelfRepresentationPreview.StopMicrophone();
             SettingsPanel_ExtractUserData();
             SaveUserData();
+            UploadUserData();
             state = State.LoggedIn;
             AllPanels_UpdateAfterStateChange();
         }
