@@ -95,10 +95,6 @@ namespace VRT.Orchestrator.WSManagement
             this.messagesListener = messagesListener;
         }
 
-        public OrchestratorWSManager(string orchestratorUrl, IOrchestratorConnectionListener connectionListener) : this(orchestratorUrl, connectionListener, null)
-        {
-        }
-
         #region socket connection & disconnection
 
         // socket.io connection to the orchestrator
@@ -121,7 +117,7 @@ namespace VRT.Orchestrator.WSManagement
             // Listen to the messages received
             messagesToManage.ForEach((OrchestratorMessageReceiver messageReceiver) =>
             {
-                Debug.Log("Installing handler for " + messageReceiver.SocketEventName);
+                Debug.Log("OrchestratorWSManager: Installing handler for " + messageReceiver.SocketEventName);
                 Manager.Socket.On<Socket>(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
             });
             
@@ -225,7 +221,7 @@ namespace VRT.Orchestrator.WSManagement
                     messagesListener.OnOrchestratorRequest(command.SocketEventName + " " + parameters.ToJson());
                 }
 
-                UnityEngine.Debug.Log("Emitting command " + command.SocketEventName + " with params " + parameters);
+                UnityEngine.Debug.Log("OrchestratorWSManager: Emitting command " + command.SocketEventName + " with params " + parameters);
                 // emit the command on socket.io
                 Manager.Socket.ExpectAcknowledgement<OrchestratorResponse>(OnAckCallback).Emit(command.SocketEventName, parameters); 
             }

@@ -395,7 +395,6 @@ namespace VRT.Pilots.LoginManager
             var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
             System.IO.File.WriteAllText(fullName, configData);
             Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
-
         }
 
         private void LoadUserData()
@@ -417,8 +416,7 @@ namespace VRT.Pilots.LoginManager
 
             Debug.Log($"OrchestratorLogin: load UserData from {fullName}");
             var configData = System.IO.File.ReadAllText(fullName);
-            UserData lUserData = new UserData();
-            JsonUtility.FromJsonOverwrite(configData, lUserData);
+            UserData lUserData = UserData.ParseJsonString<UserData>(configData);
             OrchestratorController.Instance.SelfUser.userData = lUserData;
         }
 

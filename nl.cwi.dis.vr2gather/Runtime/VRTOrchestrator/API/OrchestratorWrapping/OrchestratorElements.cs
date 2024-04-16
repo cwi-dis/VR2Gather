@@ -45,20 +45,24 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         // Parse a JSonData to a C# object
-        public static T ParseJsonData<T>(JsonData data)
+        public static T ParseJsonString<T>(string data)
         {
             try
             {
-                return JsonMapper.ToObject<T>(data.ToJson());
+                return JsonMapper.ToObject<T>(data);
 
             }
             catch (JsonException ex)
             {
-                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON reply. See log message.");
+                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON. See log message.");
                 UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
-                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data.ToJson()}");
+                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data}");
                 return default(T);
             }
+        }
+        public static T ParseJsonData<T>(JsonData data)
+        {
+            return ParseJsonString<T>(data.ToJson());
         }
     }
 
@@ -70,26 +74,8 @@ namespace VRT.Orchestrator.Wrapping
         public UserData userData;
         public SfuData sfuData;
 
-        // empty constructor callled by the JsonData parser
         public User()
         {
-        }
-
-        // Parse a JSonData to a C# object
-        public static User ParseJsonData(JsonData data)
-        {
-            try
-            {
-                return JsonMapper.ToObject<User>(data.ToJson());
-
-            }
-            catch (JsonException ex)
-            {
-                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON reply. See log message.");
-                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
-                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data.ToJson()}");
-                return null;
-            }
         }
 
         public override string GetId()
@@ -117,21 +103,6 @@ namespace VRT.Orchestrator.Wrapping
         // empty constructor callled by the JsonData parser
         public UserData() { }
 
-        public static UserData ParseJsonData(JsonData data)
-        {
-            try
-            {
-                return JsonMapper.ToObject<UserData>(data.ToJson());
-
-            }
-            catch (JsonException ex)
-            {
-                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON reply. See log message.");
-                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
-                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data.ToJson()}");
-                return null;
-            }
-        }
 
         public string AsJsonString()
         {
@@ -145,8 +116,7 @@ namespace VRT.Orchestrator.Wrapping
         public string url_audio = "";
         public string url_pcc = "";
 
-        // empty constructor callled by the JsonData parser
-        public SfuData() { }
+        public SfuData() {}
     }
 
     public class DataStream : OrchestratorElement
@@ -155,14 +125,7 @@ namespace VRT.Orchestrator.Wrapping
         public string dataStreamKind = "";
         public string dataStreamDescription = "";
 
-        // empty constructor callled by the JsonData parser
         public DataStream() { }
-
-        // Parse a JSonData to a C# object
-        public static DataStream ParseJsonData(JsonData data)
-        {
-            return JsonMapper.ToObject<DataStream>(data.ToJson());
-        }
     }
 
     public class NtpClock: OrchestratorElement
@@ -170,7 +133,8 @@ namespace VRT.Orchestrator.Wrapping
         public string ntpDate;
         public System.Int64 ntpTimeMs;
 
-        public NtpClock() {}
+        public NtpClock() { }
+
         public double Timestamp { get { return (ntpTimeMs / 1000.0); } }
     }
 
@@ -180,15 +144,7 @@ namespace VRT.Orchestrator.Wrapping
         public string scenarioName;
         public string scenarioDescription;
 
-        public static Scenario ParseJsonData(JsonData data)
-        {
-            Scenario scenario = new Scenario();
-            scenario.scenarioId = data["scenarioId"].ToString();
-            scenario.scenarioName = data["scenarioName"].ToString();
-            scenario.scenarioDescription = data["scenarioDescription"].ToString();
-
-            return scenario;
-        }
+        public Scenario() { }
 
         public override string GetId()
         {
@@ -200,6 +156,7 @@ namespace VRT.Orchestrator.Wrapping
             return scenarioName + " (" + scenarioDescription + ")";
         }
     }
+
     public class Session : OrchestratorElement
     {
         public string sessionId;
@@ -211,25 +168,7 @@ namespace VRT.Orchestrator.Wrapping
         public string[] sessionUsers;
         public List<User> sessionUserDefinitions;
 
-        public Session()
-        {
-        }
-
-        public static Session ParseJsonData(JsonData data)
-        {
-            try
-            {
-                Session rv = JsonMapper.ToObject<Session>(data.ToJson());
-                return rv;
-
-            } catch(JsonException ex)
-            {
-                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON reply. See log message.");
-                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
-                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data.ToJson()}");
-                return null;
-            }
-        }
+        public Session() { }
 
         public override string GetId()
         {

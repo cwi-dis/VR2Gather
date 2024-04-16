@@ -547,7 +547,7 @@ namespace VRT.Orchestrator.Wrapping
             var packet = socket.CurrentPacket;
             MessagesListener?.OnOrchestratorResponse(-1, 0, packet.Payload);
 
-            Debug.Log("SessionUpdated:" + packet.ToString());
+            Debug.Log("OrchestratorWrapper: SessionUpdated: " + packet.ToString());
             JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
 
             string lEventID = jsonResponse[1]["eventId"].ToString();
@@ -562,7 +562,7 @@ namespace VRT.Orchestrator.Wrapping
             switch (lEventID)
             {
                 case "USER_JOINED_SESSION":
-                    User lUser = User.ParseJsonData(jsonResponse[1]["eventData"]["userData"]);
+                    User lUser = User.ParseJsonData<User>(jsonResponse[1]["eventData"]["userData"]);
 
                     foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
