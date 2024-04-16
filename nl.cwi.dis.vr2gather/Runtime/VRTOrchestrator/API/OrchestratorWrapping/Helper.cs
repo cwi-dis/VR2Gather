@@ -35,9 +35,7 @@ namespace VRT.Orchestrator.Wrapping
             List<T> list = new List<T>();
             for (int i = 0; i < dataList.Count; i++)
             {
-                object[] arg = { dataList[i] };
-                // call the class function that knows how to parse the Json Data
-                T element = (T)(typeof(T).InvokeMember("ParseJsonData", BindingFlags.InvokeMethod, null, null, arg));
+                T element = OrchestratorElement.ParseJsonData<T>(dataList[i]);
                 list.Add(element);
             }
             return list;
