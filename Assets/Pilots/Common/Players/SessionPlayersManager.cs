@@ -4,6 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 using VRT.Core;
+using AOT;
+using System.Diagnostics;
+using Cwipc;
+
+using System.Runtime.InteropServices;
+
+using Debug = UnityEngine.Debug;
+
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -11,6 +19,12 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
+
+
+
+
+
+  
 
     /// <summary>
     /// Spawns the player prefab for players in a session, and if we're the 
@@ -38,7 +52,9 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		[Tooltip("Prefab used to create players")]
+        [Tooltip("WebRTCController (GO will be enabled for WebRTC sessions)")]
+        public WebRTCConnector webRTCConnector = null;
+        [Tooltip("Prefab used to create players")]
         public GameObject PlayerPrefab;
         [Tooltip("Prefab used to create self-player")]
         public GameObject SelfPlayerPrefab;
@@ -135,8 +151,41 @@ namespace VRT.Pilots.Common
         public void InstantiatePlayers()
 		{
 			var me = OrchestratorController.Instance.SelfUser;
+            bool webRTCInitialized = false;
+            // Initialize WebRTC, if needed and not initialized already
+            if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.WebRTC)
+            {
+             
+                if (webRTCConnector == null)
+                {
+                    throw new Exception($"SessionPlayersManager: No webRTCConnector but webRTC protocol requested");
+                }
+                webRTCConnector.enabled = true;
+                webRTCConnector.gameObject.SetActive(true);
+                int indexWithinCurrentSession = 0;
+                int ourWebRTCClientId = -1;
+                foreach (User user in OrchestratorController.Instance.CurrentSession.GetUsers())
+                {
+                    bool isLocalPlayer = me.userId == user.userId;
+                    // This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
+                    // receiver side. The only reassonable way we have to create this is to use the index of this user within the array of
+                    // users in this session. We also need our own client ID before we can initialize the webRTC peer process.
+                    // This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
+                    // receiver side. The only reassonable way we have to create this is to use the index of this user within the array of
+                    // users in this session.
+                    user.webRTCClientId = indexWithinCurrentSession + 1;
+                    if (isLocalPlayer)
+                    {
+                        ourWebRTCClientId = user.webRTCClientId;
+                    }
+                    indexWithinCurrentSession++;
+                }
+                string peerExecutablePath = VRTConfig.Instance.LocalUser.PCSelfConfig.WebRTC.peerExecutablePath;
+                webRTCConnector.Initialize(peerExecutablePath, ourWebRTCClientId);
+                webRTCInitialized = true;
+            }
 
-			SetupConfigDistributors();
+            SetupConfigDistributors();
             if (debug) Debug.Log($"SessionPlayersManager: Instantiating players");
 
             foreach (User user in OrchestratorController.Instance.CurrentSession.GetUsers())
@@ -168,6 +217,7 @@ namespace VRT.Pilots.Common
                 AllUsers.Add(networkPlayer);
 
 				var representationType = user.userData.userRepresentationType;
+
 				switch(representationType)
 				{
 					case UserRepresentationType.NoRepresentation:
@@ -202,6 +252,10 @@ namespace VRT.Pilots.Common
 				RequestPlayerLocationData();
             }
             if (debug) Debug.Log($"SessionPlayersManager: All players instantiated");
+            if (webRTCInitialized)
+            {
+                webRTCConnector.AllConnectionsDone();
+            }
         }
 
         private void OnUserLeft(string userId)
