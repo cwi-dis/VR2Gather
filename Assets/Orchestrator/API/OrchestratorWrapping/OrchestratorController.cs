@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+using static VRT.Core.NTPTools;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -187,19 +188,21 @@ namespace VRT.Orchestrator.Wrapping
         // Connect to the orchestrator
         public void SocketConnect(string pUrl) {
             if (enableLogging) Debug.Log($"OrchestratorController: connect to {pUrl}");
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
+#endif
             orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this, this);
             orchestratorWrapper.Connect();
         }
 
         // SockerConnect response callback
-        public void OnConnect() {
+        public void OnConnect()
+        {
             if (enableLogging) Debug.Log($"OrchestratorController: connected to orchestrator");
             connectedToOrchestrator = true;
             hasBeenConnectedToOrchestrator = true;
             connectionStatus = orchestratorConnectionStatus.__CONNECTED__;
             OnConnectionEvent?.Invoke(true);
-
-            orchestratorWrapper.GetOrchestratorVersion();
         }
 
         // SockerConnecting response callback
@@ -219,12 +222,20 @@ namespace VRT.Orchestrator.Wrapping
             OnDisconnect();
         }
 
+        public void GetVersion()
+        {
+            orchestratorWrapper.GetOrchestratorVersion();
+        }
+
         // Get connected Orchestrator version
         public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version) {
             if (status.Error != 0) {
                 OnErrorEvent?.Invoke(status);
                 return;
             }
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_version={version}");
+#endif
             OnGetOrchestratorVersionEvent?.Invoke(version);
         }
 
@@ -379,7 +390,11 @@ namespace VRT.Orchestrator.Wrapping
                 OnErrorEvent?.Invoke(status);
                 return;
             }
-
+            int nRemoved = sessions.RemoveAll(item => item == null);
+            if (nRemoved > 0)
+            {
+                Debug.LogWarning($"OrchestratorController: Removed {nRemoved} null sessions");
+            }
             if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionsResponse: Number of available sessions:" + sessions.Count);
 
             // update the list of available sessions

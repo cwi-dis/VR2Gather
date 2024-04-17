@@ -1,13 +1,13 @@
 {
-  "_unused_orchestratorURL" : "http://www.jackjansen.nl:8080/socket.io/",
-  "statsOutputFile" : "VQEG_Experiment.txt",
-  "AutoStart" : {
+  "_unused_orchestratorURL" : "http://192.16.197.145:8090",
+  "statsOutputFile" : "",
+  "_unused_AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "ashu-test",
-  	"sessionScenario" : "VQEG",
-  	"sessionTransportProtocol" : "tcp",
-  	"sessionUncompressed" : true,
-  	"sessionUncompressedAudio" : true,
+  	"sessionName" : "jack-grab",
+  	"sessionScenario" : "Technical Playground",
+  	"sessionTransportProtocol" : "socketio",
+  	"sessionUncompressed" : false,
+  	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "topinambur",
   	"autoCreate" : false,
   	"autoJoin" : false,
@@ -19,7 +19,7 @@
   "LocalUser": {
     "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
-	  "capturerTypeName" : "auto",
+	  "capturerTypeName" : "developer",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },

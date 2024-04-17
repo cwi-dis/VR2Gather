@@ -4,14 +4,14 @@ This section explains what you need to install to get start with developing a VR
 
 ## Hardware and operating system
 
-Currently the best platform for development is Windows 10 64 bit, with a decent GPU. An OpenXR-compatible HMD (Oculus Quest, Vive) is good to have but not a strict requirement, a lot of interaction can be done (or at least tested) with keyboard and mouse.
+Currently the best platform for development is Windows 10/11 64 bit, with a decent GPU. An OpenXR-compatible HMD (Oculus Quest, Vive) is good to have but not a strict requirement, a lot of interaction can be done (or at least tested) with keyboard and mouse.
 
 Linux worked at some time in the past but is untested at the moment.
 
 Mac works, with two caveats:
 
-- On an M1 Mac you should use Intel compatibility, for the time being
 - There is no support for OpenXR (and hence no support for an HMD) in Unity at the moment.
+- The situation with RGBD cameras on MacOS is a bit of a mess. No problem for development, but deploying to Mac is not optimal.
 
 ## Software
 
@@ -30,11 +30,11 @@ You need a working NTP (or other time synchronization implementation) on your sy
 
 ### cwipc
 
-You probably need the [CWI Point Cloud](https://github.com/cwi-dis/cwipc) package. The linked website has installation instructions. It is best to first install [Python](https://www.python.org) first. Install version 3.9 or 3.10, install it for all users. Preferably on Windows install it into `C:/Python39` or something like that.
+You probably need the [CWI Point Cloud](https://github.com/cwi-dis/cwipc) package. The github page, <https://github.com/cwi-dis/cwipc>, has installation instructions. 
 
 If you don't have an RGBD camera you need not bother with Intel Realsense or Microsoft Kinect support, but you still want `cwipc` to be able to see participants that do have a camera.
 
-After installation (you may have to reboot, on Windows) run `cwipc_view --synthetic` in a Bash window to confirm everything is installed correctly.
+The VR2Gather Unity project will automatically obtain the `cwipc_unity` package, but this package still requires the `cwipc` package to be installed on your machine.
 
 ## Next steps
 

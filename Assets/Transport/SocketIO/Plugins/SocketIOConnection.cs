@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using BestHTTP.SocketIO;
+using Best.SocketIO;
+using Best.SocketIO.Events;
 using VRT.Core;
 
 namespace VRT.Transport.SocketIO
@@ -25,43 +26,41 @@ namespace VRT.Transport.SocketIO
         {
             SocketOptions options = new SocketOptions();
             options.AutoConnect = false;
-            options.ConnectWith = BestHTTP.SocketIO.Transports.TransportTypes.WebSocket;
+            options.ConnectWith = Best.SocketIO.Transports.TransportTypes.WebSocket;
 
             // Create the Socket.IO manager
             manager = new SocketManager(new System.Uri(socketIO_URL), options);
             //        manager = new SocketManager(new System.Uri("http://127.0.0.1:3000/socket.io/"), options);
             socket = manager.Socket;
 
-            socket.On(SocketIOEventTypes.Error, (socket, packet, args) =>
+            socket.On<Error>(SocketIOEventTypes.Error, (error) =>
             {
-                if (args != null && args.Length > 0) Debug.Log(string.Format("Error: {0}", args[0].ToString()));
-                else Debug.Log("Error: ???");
+                Debug.Log(string.Format("Error: {0}", error));
             });
 
-            socket.On(SocketIOEventTypes.Connect, (socket, packet, args) =>
+            socket.On(SocketIOEventTypes.Connect, () =>
             {
-                this.socket = socket;
+                this.socket = manager.Socket;
                 socket.Emit("setEcho", useEcho);
                 isConnected = true;
             });
 
-            socket.On("disconnect", (socket, packet, args) =>
+            socket.On<IncomingPacket>("disconnect", (packet) =>
             {
                 isConnected = false;
-                byte id = packet.Attachments[0][0];
             });
 
-            socket.On("dataChannel", OnData, false);
+            socket.On<IncomingPacket>("dataChannel", OnData);
             manager.Open();
         }
 
         NTPTools.NTPTime tempTime;
-        void OnData(Socket socket, Packet packet, params object[] args)
+        void OnData(IncomingPacket packet)
         {
-            if (packet != null && packet.Attachments != null)
+            if (packet.Attachements != null)
             {
-                var data = packet.Attachments[0];
-                readers[data[0]]?.OnData(data);
+                var data = packet.Attachements[0];
+                // readers[data[0]]?.OnData(data);
             }
         }
 

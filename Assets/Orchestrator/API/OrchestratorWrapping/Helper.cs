@@ -22,7 +22,7 @@
 //  other intellectual property.
 
 using System.Collections.Generic;
-using LitJson;
+using Best.HTTP.JSON.LitJson;
 using System.Reflection;
 
 namespace VRT.Orchestrator.Wrapping

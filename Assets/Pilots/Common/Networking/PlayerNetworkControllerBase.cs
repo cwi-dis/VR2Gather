@@ -42,6 +42,8 @@ namespace VRT.Pilots.Common
 		public Transform LeftHandTransform;
 		[Tooltip("Right hand for which to synchronise position/orientation")]
 		public Transform RightHandTransform;
+		[Tooltip("Alternative user representation (for example Mediascape costume)")]
+		public GameObject AlternativeUserRepresentation;
 		[Tooltip("How often position/orientation data is synchronized")]
 		public int SendRate = 10; //Send out 10 "frames" per second
 
@@ -93,12 +95,22 @@ namespace VRT.Pilots.Common
                 {
 					float newSize = data.BodySize;
 					GameObject currentRepresentation = playerController.GetRepresentationGameObject();
-					if (currentRepresentation != null && currentRepresentation.activeInHierarchy)
-					{
-						float oldSize = currentRepresentation.transform.transform.localScale.y;
-						if (newSize != oldSize) {
-							Debug.Log($"{Name()}: Change size from {oldSize} to {newSize}");
-							currentRepresentation.transform.transform.localScale = new Vector3(newSize, newSize, newSize);
+                    if (currentRepresentation != null && currentRepresentation.activeInHierarchy)
+                    {
+                        float oldSize = currentRepresentation.transform.transform.localScale.y;
+                        if (newSize != oldSize)
+                        {
+                            Debug.Log($"{Name()}: Change size from {oldSize} to {newSize}");
+                            currentRepresentation.transform.transform.localScale = new Vector3(newSize, newSize, newSize);
+                        }
+                    }
+                    if (AlternativeUserRepresentation != null && AlternativeUserRepresentation.activeInHierarchy)
+                    {
+                        float oldSize = AlternativeUserRepresentation.transform.transform.localScale.y;
+                        if (newSize != oldSize)
+                        {
+                            Debug.Log($"{Name()}: Change AlternativeUserRepresentation size from {oldSize} to {newSize}");
+                            AlternativeUserRepresentation.transform.transform.localScale = new Vector3(newSize, newSize, newSize);
                         }
                     }
                 }
