@@ -1,17 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using UnityEngine;
 using VRT.Core;
-using Cwipc;
 using VRT.Orchestrator.Wrapping;
-using VRT.UserRepresentation.WebCam;
 using VRT.UserRepresentation.Voice;
-using VRT.UserRepresentation.PointCloud;
 using VRT.Pilots.Common;
 
-using PointCloudRenderer = Cwipc.PointCloudRenderer;
-namespace VRT.Pilots.LoginManager
+namespace VRT.Login
 {
 
     public class SelfRepresentationPreview : MonoBehaviour

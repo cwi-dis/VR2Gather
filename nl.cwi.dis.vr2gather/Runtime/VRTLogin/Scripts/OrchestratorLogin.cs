@@ -8,10 +8,8 @@ using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Pilots.Common;
-using static System.Collections.Specialized.BitVector32;
-using UnityEngine.Serialization;
 
-namespace VRT.Pilots.LoginManager
+namespace VRT.Login
 {
 
     public enum State

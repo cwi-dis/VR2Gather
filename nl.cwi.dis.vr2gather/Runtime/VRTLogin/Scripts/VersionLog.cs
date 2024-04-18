@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using UnityEngine;
-namespace VRT.Pilots.LoginManager
+namespace VRT.Login
 {
 
     public class VersionLog : MonoBehaviour

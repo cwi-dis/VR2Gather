@@ -2,9 +2,8 @@ using VRT.Orchestrator.Wrapping;
 using UnityEngine;
 using VRT.Core;
 using System.Collections.Generic;
-using System;
 
-namespace VRT.Pilots.LoginManager
+namespace VRT.Login
 {
     public class ScenarioRegistry : MonoBehaviour
     {

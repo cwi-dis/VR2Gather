@@ -1,13 +1,9 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.XR;
-using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
 using VRT.Core;
 
-namespace VRT.Pilots.LoginManager
+namespace VRT.Login
 {
 
     public class LoginController : PilotController
