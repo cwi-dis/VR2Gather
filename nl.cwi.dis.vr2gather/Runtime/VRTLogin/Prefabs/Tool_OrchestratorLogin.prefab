@@ -1953,7 +1953,7 @@ GameObject:
   - component: {fileID: 671561097607944466}
   - component: {fileID: 5613023755126059771}
   m_Layer: 5
-  m_Name: DevStatus_UMTSVersion
+  m_Name: DevStatus_OrchestratorVersion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6822,7 +6822,7 @@ GameObject:
   - component: {fileID: 5382094152853456153}
   - component: {fileID: 6542866074137546315}
   m_Layer: 5
-  m_Name: DevStatus_clientVersion
+  m_Name: DevStatus_VR2GatherVersion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10938,7 +10938,7 @@ GameObject:
   - component: {fileID: 2077505382855957287}
   - component: {fileID: 6452554714203992237}
   m_Layer: 5
-  m_Name: NativeClientVersion
+  m_Name: VR2GatherVersion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20613,7 +20613,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4743310512897280265
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21756,7 +21756,7 @@ GameObject:
   - component: {fileID: 1839728888735975304}
   - component: {fileID: 5988285956660113336}
   m_Layer: 5
-  m_Name: UMTSVersion
+  m_Name: OrchestratorVersion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22004,7 +22004,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Native Client
+  m_Text: VR2Gather Version
 --- !u!1 &8435724894923469410
 GameObject:
   m_ObjectHideFlags: 0

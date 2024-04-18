@@ -8,7 +8,9 @@ using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Pilots.Common;
-
+#if UNITY_EDITOR
+using UnityEditor.PackageManager;
+#endif
 namespace VRT.Login
 {
 
@@ -138,7 +140,13 @@ namespace VRT.Login
             developerModeButton.isOn = developerMode;
             // Update Application version
             StatusPanelOrchestratorURL.text = VRTConfig.Instance.orchestratorURL;
-            if (VersionLog.Instance != null) StatusPanelNativeVersion.text = VersionLog.Instance.NativeClient;
+#if UNITY_EDITOR
+            foreach(var pkg in UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages()) {
+                if (pkg.name == "nl.cwi.dis.vr2gather") {
+                    StatusPanelNativeVersion.text = pkg.version;
+                }
+            }
+#endif
             StatusPanelPlayerVersion.text = "v" + Application.version;
             StatusPanelOrchestratorVersion.text = "";
 
