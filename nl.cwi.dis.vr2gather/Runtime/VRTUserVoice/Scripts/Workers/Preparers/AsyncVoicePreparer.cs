@@ -111,6 +111,7 @@ namespace VRT.UserRepresentation.Voice
                 PauseAudioPlayout = false;
                 if (currentAudioFrame != null)
                 {
+                    #pragma warning disable CS0162
                     if (debugBuffering) Debug.Log($"{Name()}: previous audio frame not consumed yet");
                     return true;
                 }

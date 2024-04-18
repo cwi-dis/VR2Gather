@@ -40,6 +40,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         return new AsyncAutoReader(config.CameraReaderConfig.configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                     }
+                    #pragma warning disable CS0168
                     catch (Exception e)
                     {
                         Debug.LogWarning("PointCloudCapturerFactory: fallback to synthetic capturer");
