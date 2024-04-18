@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Refactored LoginManager scene and renamed to VRTLoginManager (#164)
 - Renamed and refactored voice-handling classes (#156)
 - Fixed accidental clearing of user name (#152)
 - Changes in LoginManager Settings panel take effect immedeately (#145)
