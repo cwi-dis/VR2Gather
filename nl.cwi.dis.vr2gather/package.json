@@ -24,7 +24,7 @@
 	"samples" : [
 		{
 			"displayName": "VRT Essential Assets",
-			"description": "A set of assets that are essential when using VR2Gather",
+			"description": "A set of assets that are essential when using VR2Gather\n\nWhen _updating_ the assets from an older version it is best to remember any changes you have made, update the samples, exit Unity, remove the Library cache, start Unity again, apply your changes again.",
 			"path": "Samples~/VRTAssets"
 		}
 	]
