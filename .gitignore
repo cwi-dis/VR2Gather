@@ -45,3 +45,6 @@ crashlytics-build.properties
 cameraconfig.xml
 cameraconfig.json
 config-user.json
+
+# Unsure where thise come from...
+com.Tivadar.*.xml
