@@ -5,7 +5,6 @@
 
 # Optionally collapse Unity-generated files on GitHub diffs
 # [attr]unity-yaml        merge=unityyamlmerge text linguist-language=yaml linguist-generated
-
 # Unity source files
 *.cginc                 text
 *.compute               text linguist-language=hlsl
@@ -13,7 +12,6 @@
 *.hlsl                  text linguist-language=hlsl
 *.raytrace              text linguist-language=hlsl
 *.shader                text
-
 # Unity JSON files
 *.asmdef                unity-json
 *.asmref                unity-json
@@ -21,12 +19,10 @@
 *.inputactions          unity-json
 *.shadergraph           unity-json
 *.shadersubgraph        unity-json
-
 # Unity UI Toolkit files
 *.tss                   text diff=css linguist-language=css
 *.uss                   text diff=css linguist-language=css
 *.uxml                  text linguist-language=xml linguist-detectable
-
 # Unity YAML
 *.anim                  unity-yaml
 *.asset                 unity-yaml
@@ -54,18 +50,14 @@
 *.terrainlayer          unity-yaml
 # *.unity                 unity-yaml
 *.unity                 lfs
-
 # "physic" for 3D but "physics" for 2D
 *.physicMaterial        unity-yaml
 *.physicsMaterial2D     unity-yaml
-
 # Exclude third-party plugins from GitHub stats
 Assets/Plugins/**       linguist-vendored
-
 # Unity LFS
 *.cubemap               lfs
 *.unitypackage          lfs
-
 # 3D models
 *.3dm                   lfs
 *.3ds                   lfs
@@ -87,7 +79,6 @@ Assets/Plugins/**       linguist-vendored
 *.skp                   lfs
 *.stl                   lfs
 *.ztl                   lfs
-
 # Audio
 *.aif                   lfs
 *.aiff                  lfs
@@ -98,7 +89,6 @@ Assets/Plugins/**       linguist-vendored
 *.s3m                   lfs
 *.wav                   lfs
 *.xm                    lfs
-
 # Video
 *.asf                   lfs
 *.avi                   lfs
@@ -109,7 +99,6 @@ Assets/Plugins/**       linguist-vendored
 *.mpg                   lfs
 *.ogv                   lfs
 *.wmv                   lfs
-
 # Images
 *.bmp                   lfs
 *.exr                   lfs
@@ -126,7 +115,6 @@ Assets/Plugins/**       linguist-vendored
 *.tiff                  lfs
 *.webp                  lfs
 *.xcf                   lfs
-
 # Compressed Archive
 *.7z                    lfs
 *.bz2                   lfs
@@ -134,31 +122,25 @@ Assets/Plugins/**       linguist-vendored
 *.rar                   lfs
 *.tar                   lfs
 *.zip                   lfs
-
 # Compiled Dynamic Library
 *.dll                   lfs
 *.dylib                 lfs
 *.pdb                   lfs
 *.so                    lfs
-
 # Fonts
 *.otf                   lfs
 *.ttf                   lfs
-
 # Executable/Installer
 *.apk                   lfs
 *.exe                   lfs
-
 # Documents
 *.pdf                   lfs
-
 # ETC
 *.a                     lfs
 *.reason                lfs
 *.rns                   lfs
-
 # Spine export file for Unity
 *.skel.bytes            lfs
-
 # xxxjack old
 # *.unity filter=lfs diff=lfs merge=lfs -text
+*.unity !text !filter !merge !diff
