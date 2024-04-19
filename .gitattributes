@@ -52,8 +52,8 @@
 *.spriteatlas           unity-yaml
 *.spriteatlasv2         unity-yaml
 *.terrainlayer          unity-yaml
-*.unity                 unity-yaml
-# *.unity                 lfs
+# *.unity                 unity-yaml
+*.unity                 lfs
 
 # "physic" for 3D but "physics" for 2D
 *.physicMaterial        unity-yaml
