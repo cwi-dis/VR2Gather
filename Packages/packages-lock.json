@@ -233,11 +233,11 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#issue-vr2gather-161-webrtc",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "bf8c223ce6490d04ca97a1189d4a34328645f635"
+      "hash": "b1a329ede571a36e4f198a6b11121d1462f6b8e4"
     },
     "nl.cwi.dis.vr2gather.nativelibraries": {
       "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
