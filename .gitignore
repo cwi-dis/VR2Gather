@@ -1,4 +1,7 @@
-Library/
+Library/*
+!Library/PackageCache
+Library/PackageCache/*
+!Library/PackageCache/nl.cwi.dis.cwipc@bf8c223ce6
 Logs/
 UserSettings/
 Temp/

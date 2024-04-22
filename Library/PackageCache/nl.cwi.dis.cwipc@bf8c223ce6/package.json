@@ -1,0 +1,21 @@
+{
+	"name" : "nl.cwi.dis.cwipc",
+	"version" : "7.5.1",
+	"displayName" : "CWI Point Cloud Support",
+	"description" : "The Cwipc Unity package allows capturing point clouds, loading them from disk, displaying them, and serializing and compressing them for transmission. At runtime it requires <https://github.com/cwi-dis/cwipc> to be installed.",
+	"documentationUrl" : "https://github.com/cwi-dis/cwipc_unity/blob/master/nl.cwi.dis.cwipc/README.md",
+	"changelogUrl" : "https://github.com/cwi-dis/cwipc_unity/blob/master/nl.cwi.dis.cwipc/CHANGELOG.md",
+	"unity" : "2021.3",
+	"samples" : [
+		{
+			"displayName": "Simple point cloud samples",
+			"description": "Show a stream of point clouds from a depth camera or other source, or do a 2-computer session with both users represented as point clouds",
+			"path": "Samples~/Simple point cloud samples"
+		},
+		{
+			"displayName": "VR point cloud extensions",
+			"description": "A two user interactive VR session, using optional HMD and controllers. Needs simple samples.",
+			"path": "Samples~/VR point cloud extensions"
+		}
+	]
+}
