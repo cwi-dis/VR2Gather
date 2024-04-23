@@ -1,0 +1,16 @@
+{
+    "name": "WebRTC",
+    "rootNamespace": "",
+    "references": [
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

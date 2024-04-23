@@ -24,6 +24,8 @@ namespace VRT.Core
                     return SessionConfig.ProtocolType.Dash;
                 case "tcp":
                     return SessionConfig.ProtocolType.TCP;
+                case "webrtc":
+                    return SessionConfig.ProtocolType.WebRTC;
             }
             throw new System.Exception($"Unknown protocoltype \"{s}\"");
         }
@@ -39,6 +41,7 @@ namespace VRT.Core
             SocketIO = 1,
             Dash = 2,
             TCP = 3,
+            WebRTC = 4,
         };
 
         /// <summary>

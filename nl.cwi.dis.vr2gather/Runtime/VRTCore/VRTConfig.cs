@@ -193,6 +193,12 @@ namespace VRT.Core
                 }
                 public _Bin2Dash Bin2Dash;
                 public _Bin2Dash AudioBin2Dash;
+                [Serializable]
+                public class _WebRTC
+                {
+                    public string peerExecutablePath;
+                }
+                public _WebRTC WebRTC;
             }
             public _PCSelfConfig PCSelfConfig;
 
@@ -255,10 +261,6 @@ namespace VRT.Core
                     Debug.LogError($"VRTCore.Config: Unknown capturerTypeName \"{LocalUser.PCSelfConfig.capturerTypeName}\"");
                     LocalUser.PCSelfConfig.capturerType = _User._PCSelfConfig.PCCapturerType.none;
                 }
-            }
-            if (string.IsNullOrEmpty(LocalUser.orchestratorConfigFilename))
-            {
-                LocalUser.orchestratorConfigFilename = "config-user.json";
             }
             // Initialize some other modules that have their own configuration.
 #if VRT_WITH_STATS
