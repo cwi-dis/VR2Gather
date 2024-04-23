@@ -145,7 +145,9 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         Debug.LogError($"{Name()}: WebRTC client id incorrect {user.webRTCClientId}");
                     }
-                    reader = new AsyncWebRTCPCReader(user.sfuData.url_gen, user.webRTCClientId, pointcloudCodec, tilesToReceive);
+                    // xxxjack this signature changed???
+                    // reader = new AsyncWebRTCPCReader(user.sfuData.url_gen, user.webRTCClientId, pointcloudCodec, tilesToReceive);
+                    reader = new AsyncWebRTCPCReader(user.sfuData.url_gen, pointcloudCodec, tilesToReceive);
                     break;
                 default:
                     throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
