@@ -8,7 +8,7 @@ using Debug = UnityEngine.Debug;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Policy;
 
-namespace Cwipc
+namespace VRT.Transport.WebRTC
 {
     /// <summary>
     /// MonoBehaviour that controls the WebRTC peer process and the native unmanaged plugin that interfaces to it.

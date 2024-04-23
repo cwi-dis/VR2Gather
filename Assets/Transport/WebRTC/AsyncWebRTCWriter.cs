@@ -12,7 +12,7 @@ using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
 
-namespace Cwipc
+namespace VRT.Transport.WebRTC
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;

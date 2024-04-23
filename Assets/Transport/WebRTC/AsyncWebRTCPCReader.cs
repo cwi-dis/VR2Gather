@@ -4,7 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using Cwipc;
 
-namespace Cwipc
+namespace VRT.Transport.WebRTC
 {
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
