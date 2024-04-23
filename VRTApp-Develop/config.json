@@ -1,5 +1,5 @@
 {
-  "orchestratorURL" : "http://beignet.local:8090",
+  "orchestratorURL" : "http://192.168.1.119:8090",
   "statsOutputFile" : "",
   "_unused_AutoStart" : {
   	"autoLogin" : true,
@@ -50,7 +50,10 @@
       "AudioBin2Dash": {
         "segmentSize": 1000,
         "segmentLife": 16000
-      }
+      },
+	  "WebRTC": {
+		  "peerExecutablePath": "C:/Users/DIS/VRTogether/WebRTCSFU/peer.exe"
+	  }
     }
   }
 }
