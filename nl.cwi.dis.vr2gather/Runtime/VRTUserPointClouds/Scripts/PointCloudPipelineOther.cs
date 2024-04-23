@@ -8,6 +8,7 @@ using Statistics = Cwipc.Statistics;
 using VRT.UserRepresentation.Voice;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
+using VRT.Transport.WebRTC;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 using VRT.Pilots.Common;
@@ -145,9 +146,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         Debug.LogError($"{Name()}: WebRTC client id incorrect {user.webRTCClientId}");
                     }
-                    // xxxjack this signature changed???
-                    // reader = new AsyncWebRTCPCReader(user.sfuData.url_gen, user.webRTCClientId, pointcloudCodec, tilesToReceive);
-                    reader = new AsyncWebRTCPCReader(user.sfuData.url_gen, pointcloudCodec, tilesToReceive);
+                    reader = new AsyncWebRTCPCReader(user.sfuData.url_gen, user.webRTCClientId, pointcloudCodec, tilesToReceive);
                     break;
                 default:
                     throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");

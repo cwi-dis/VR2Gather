@@ -6,9 +6,10 @@
         "Dash",
         "Orchestrator",
         "Voice",
-        "SocketIO",
         "Pilots",
+        "SocketIO",
         "TCP",
+        "WebRTC",
         "Cwipc",
         "Unity.XR.Interaction.Toolkit",
         "UnityEngine.SpatialTracking"
