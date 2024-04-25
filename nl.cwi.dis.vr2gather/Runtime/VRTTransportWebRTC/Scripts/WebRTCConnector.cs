@@ -117,6 +117,24 @@ namespace VRT.Transport.WebRTC
             // xxxjack this is not correct for built Unity players.
             string appPath = System.IO.Path.GetDirectoryName(Application.dataPath);
             peerExecutablePath = System.IO.Path.Combine(appPath, peerExecutablePath);
+            
+            // Replace %PLATFORM% in peerExecutablePath
+            string platform = "unknown";
+            switch(Application.platform) {
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
+                    platform = "macos";
+                    break;
+                case RuntimePlatform.Android:
+                    platform = "android";
+                    break;
+                    case RuntimePlatform.WindowsEditor:
+                    case RuntimePlatform.WindowsPlayer:
+                    platform = "win";
+                    break;
+            }
+            peerExecutablePath = peerExecutablePath.Replace("%PLATFORM%", platform);
+
             peerProcess = new Process();
             peerProcess.StartInfo.FileName = peerExecutablePath;
             peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {clientId}";

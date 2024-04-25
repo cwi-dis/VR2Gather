@@ -531,7 +531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b525d00924485145b45e4eb91b61bb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  peerExecutablePath: peer.exe
+  peerExecutablePath: ../webRTC-helpers/webRTC-peer-%PLATFORM%.exe
   peerInWindow: 0
   peerWindowDontClose: 0
   peerUDPPort: 8000
