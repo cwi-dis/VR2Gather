@@ -28,6 +28,9 @@ namespace VRT.UserRepresentation.Voice
         [Tooltip("Object responsible for synchronizing playout")]
         public ISynchronizer synchronizer = null;
 
+        [Tooltip("True if audio should be spatialized")]
+        public bool spatialize = true;
+
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
         QueueThreadSafe preparerQueue;
@@ -58,12 +61,16 @@ namespace VRT.UserRepresentation.Voice
                 synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
             AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
+            if (audioSource == null)
+            {
+                audioSource = gameObject.GetComponent<AudioSource>();
+            }
             if (audioSource != null)
             {
                 Debug.LogWarning($"{Name()}: already have an AudioSource, overriding");
             }
             audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.spatialize = true;
+            audioSource.spatialize = spatialize;
             audioSource.spatialBlend = 1.0f;
             audioSource.minDistance = 4f;
             audioSource.maxDistance = 100f;

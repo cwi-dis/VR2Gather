@@ -83,8 +83,9 @@ namespace VRT.UserRepresentation.Voice
             {
                 ac.sampleRate = _sampleRate;
                 ac.dspBufferSize = _bufferSize;
-                AudioSettings.Reset(ac);
+                bool ok = AudioSettings.Reset(ac);
                 ac = AudioSettings.GetConfiguration();
+                Debug.Log($"PrepareDSP: sampleRate={ac.sampleRate}, dspBufferSize={ac.dspBufferSize}, speakerMode={ac.speakerMode}");
                 if (ac.sampleRate != _sampleRate && _sampleRate != 0)
                 {
                     Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {_sampleRate}. Other participants may sound funny.");
