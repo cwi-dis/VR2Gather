@@ -209,7 +209,7 @@ namespace VRT.Transport.WebRTC
 
                 if (_url == "" || _url == null)
                 {
-                    throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, but no URL specified");
+                    throw new System.Exception($"{Name()}: WebRTC transport requires tcp://host:port/ URL, but no URL specified");
                 }
                 url = new Uri(_url);
                 client_id = _client_id;
