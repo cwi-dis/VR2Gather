@@ -29,7 +29,7 @@ namespace VRT.UserRepresentation.Voice
         public ISynchronizer synchronizer = null;
 
         [Tooltip("True if audio should be spatialized")]
-        public bool spatialize = true;
+        public bool spatialize = false;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
