@@ -16,6 +16,9 @@
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
   },
+  "Voice": {
+	  "audioFps" : 100
+  },
   "LocalUser": {
     "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
