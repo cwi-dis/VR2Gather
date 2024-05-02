@@ -247,7 +247,10 @@ namespace VRT.Core
             if (targetFrameRate != 0)
             {
                 Application.targetFrameRate = this.targetFrameRate;
-                Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
+                if (Application.targetFrameRate > 0)
+                {
+                    Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
+                }
             }
             if (LocalUser.PCSelfConfig.capturerTypeName != null && LocalUser.PCSelfConfig.capturerTypeName != "") {
                 if (!Enum.TryParse(LocalUser.PCSelfConfig.capturerTypeName, out LocalUser.PCSelfConfig.capturerType))
