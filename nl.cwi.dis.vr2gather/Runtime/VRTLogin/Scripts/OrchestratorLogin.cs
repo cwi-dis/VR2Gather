@@ -133,8 +133,7 @@ namespace VRT.Login
                 instance = this;
             }
 
-            AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
-
+            
             // Developer mode settings
             developerMode = PlayerPrefs.GetInt("developerMode", 0) != 0;
             developerModeButton.isOn = developerMode;

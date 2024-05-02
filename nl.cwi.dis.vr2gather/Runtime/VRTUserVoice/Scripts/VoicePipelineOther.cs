@@ -60,7 +60,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
-            AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
+            VoiceDspController.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
             if (audioSource == null)
             {
                 audioSource = gameObject.GetComponent<AudioSource>();

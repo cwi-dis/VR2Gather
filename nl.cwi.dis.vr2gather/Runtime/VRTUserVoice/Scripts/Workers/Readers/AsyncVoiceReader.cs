@@ -73,31 +73,6 @@ namespace VRT.UserRepresentation.Voice
 
         int wantedSampleRate;
         
-        public static void PrepareDSP(int _sampleRate, int _bufferSize)
-        {
-            var ac = AudioSettings.GetConfiguration();
-            if (_sampleRate == 0) _sampleRate = ac.sampleRate;
-            if (_bufferSize == 0) _bufferSize = ac.dspBufferSize;
-
-            if (_sampleRate != ac.sampleRate || _bufferSize != ac.dspBufferSize)
-            {
-                ac.sampleRate = _sampleRate;
-                ac.dspBufferSize = _bufferSize;
-                bool ok = AudioSettings.Reset(ac);
-                ac = AudioSettings.GetConfiguration();
-                Debug.Log($"PrepareDSP: sampleRate={ac.sampleRate}, dspBufferSize={ac.dspBufferSize}, speakerMode={ac.speakerMode}");
-                if (ac.sampleRate != _sampleRate && _sampleRate != 0)
-                {
-                    Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {_sampleRate}. Other participants may sound funny.");
-                }
-                if (ac.dspBufferSize != _bufferSize && _bufferSize != 0)
-                {
-                    Debug.LogWarning($"PrepareDSP: audio output buffer is {ac.dspBufferSize} in stead of {_bufferSize}");
-                }
-              
-            }
-
-        }
 
         IEnumerator MicroRecorder(string deviceName, int _sampleRate, int _fps, int _minBufferSize)
         {
@@ -121,7 +96,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 Debug.LogWarning($"{Name()}: non-integral number of buffers per second. This may not work.");
             }
-            PrepareDSP(wantedSampleRate, nSamplesPerPacket);
+            VoiceDspController.PrepareDSP(wantedSampleRate, nSamplesPerPacket);
             if (Microphone.devices.Length > 0)
             {
                 if (deviceName == null || deviceName == "") deviceName = Microphone.devices[0];
