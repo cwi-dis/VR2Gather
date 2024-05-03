@@ -1,6 +1,7 @@
 {
   "_unused_orchestratorURL" : "http://192.16.197.145:8090",
   "statsOutputFile" : "",
+  "statsInterval" : 0,
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jack-sync-test",
