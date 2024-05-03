@@ -907,7 +907,7 @@ MonoBehaviour:
     decoderParallelism: 0
   Voice:
     audioFps: 50
-    maxPlayoutLatency: 0.3
+    maxPlayoutLatency: 0.066
     maxPlayoutAhead: 0.066
     ignoreSynchronizer: 1
   Synchronizer:
