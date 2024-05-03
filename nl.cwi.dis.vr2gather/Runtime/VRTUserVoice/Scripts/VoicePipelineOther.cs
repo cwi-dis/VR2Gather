@@ -157,31 +157,49 @@ namespace VRT.UserRepresentation.Voice
         }
         
 
-        float[] tmpBuffer;
         void OnAudioFilterRead(float[] data, int channels)
         {
             if (preparer == null)
             {
                 return;
             }
-            if (tmpBuffer == null)
+            Timestamp currentTimestamp = preparer.getCurrentTimestamp();
+            int nZeroSamplesInserted = 0;
+            if (channels == 1)
             {
-                tmpBuffer = new float[data.Length / channels];
-            }
-            int nZeroSamplesInserted = preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length);
-            if (nZeroSamplesInserted > 0)
-            {
-                for(int i=tmpBuffer.Length-nZeroSamplesInserted; i < tmpBuffer.Length; i++)
+                // Simple case: mono. Just copy.
+                nZeroSamplesInserted = preparer.GetAudioBuffer(data, data.Length);
+#if unused
+                // xxxjack Unsure whether this is needed, maybe the buffer is already clear when we get here.
+                if (nZeroSamplesInserted > 0)
                 {
-                    tmpBuffer[i] = 0;
+                    for(int i=data.Length-nZeroSamplesInserted; i<data.Length; i++)
+                    {
+                        data[i] = 0;
+                    }
+                }
+#endif
+            } 
+            else
+            {
+                Debug.LogWarning($"{Name()}: Convert audio to {channels} channels");
+                float[] tmpBuffer = new float[data.Length / channels];
+                nZeroSamplesInserted = preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length);
+                if (nZeroSamplesInserted > 0)
+                {
+                    for (int i = tmpBuffer.Length - nZeroSamplesInserted; i < tmpBuffer.Length; i++)
+                    {
+                        tmpBuffer[i] = 0;
+                    }
+                }
+                for (int i = 0; i < data.Length; i++)
+                {
+                    data[i] += tmpBuffer[i / channels];
                 }
             }
-            for (int i=0; i<data.Length; i++)
-            {
-                data[i] += tmpBuffer[i / channels];
-            }
+           
 #if VRT_WITH_STATS
-            stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, preparer.getCurrentTimestamp(), preparer.getQueueDuration());
+            stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, currentTimestamp, preparer.getQueueDuration());
 #endif
         }
 
