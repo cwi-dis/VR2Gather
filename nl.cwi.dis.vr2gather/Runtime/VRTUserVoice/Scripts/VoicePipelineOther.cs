@@ -31,6 +31,11 @@ namespace VRT.UserRepresentation.Voice
         [Tooltip("True if audio should be spatialized")]
         public bool spatialize = false;
 
+        [Tooltip("Introspection: audio level")]
+        public float currentAudioLevel = 0;
+        public int currentAudioLevelCount = 0;
+        public float currentFrameAudioLevel = 0;
+
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
         QueueThreadSafe preparerQueue;
@@ -136,6 +141,13 @@ namespace VRT.UserRepresentation.Voice
 
         private void Update()
         {
+            lock(this)
+            {
+                currentFrameAudioLevel = currentAudioLevel;
+                currentAudioLevel = 0;
+                currentAudioLevelCount = 0;
+            }
+           
             preparer?.Synchronize();
             if (!audioSource.isPlaying)
             {
@@ -197,7 +209,17 @@ namespace VRT.UserRepresentation.Voice
                     data[i] += tmpBuffer[i / channels];
                 }
             }
-           
+            float rmsCompute = 0;
+            for (int i = 0; i < data.Length; i++)
+            {
+                rmsCompute += data[i] * data[i];
+            }
+            lock(this)
+            {
+                currentAudioLevel += Mathf.Sqrt(rmsCompute);
+                currentAudioLevelCount += 1;
+            }
+            
 #if VRT_WITH_STATS
             stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, currentTimestamp, preparer.getQueueDuration());
 #endif
