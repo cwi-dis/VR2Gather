@@ -143,7 +143,8 @@ namespace VRT.UserRepresentation.Voice
         {
             lock(this)
             {
-                currentFrameAudioLevel = currentAudioLevel;
+                if (currentAudioLevelCount == 0) currentAudioLevelCount = 1;
+                currentFrameAudioLevel = currentAudioLevel / currentAudioLevelCount;
                 currentAudioLevel = 0;
                 currentAudioLevelCount = 0;
             }
@@ -216,7 +217,7 @@ namespace VRT.UserRepresentation.Voice
             }
             lock(this)
             {
-                currentAudioLevel += Mathf.Sqrt(rmsCompute);
+                currentAudioLevel += Mathf.Sqrt(rmsCompute / data.Length);
                 currentAudioLevelCount += 1;
             }
             
