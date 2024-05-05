@@ -8,6 +8,7 @@ using Cwipc;
 using Statistics = Cwipc.Statistics;
 #endif
 
+
 namespace VRT.UserRepresentation.Voice
 {
     using Timestamp = System.Int64;
@@ -125,12 +126,8 @@ namespace VRT.UserRepresentation.Voice
                 {
                     Debug.LogWarning($"VoiceReader: Microphone produces {nSamplesInCircularBuffer} samples per second, expected {wantedSampleRate}");
                 }
-#if WITH_SAMPLERATE_ADAPTER
-                float inc = 1; // was: recorderBufferSize / 16000f;
-                int nInputSamplesNeededPerPacket = (int)(nSamplesPerPacket * inc);
-#else
+
                 int nInputSamplesNeededPerPacket = nSamplesPerPacket;
-#endif
                 float[] readBuffer = new float[nInputSamplesNeededPerPacket];
                 Debug.Log($"{Name()}: Using {deviceName}  Channels {recorder.channels} Frequency {nSamplesInCircularBuffer} bufferLength {nSamplesPerPacket} IsRecording {Microphone.IsRecording(deviceName)}");
 
@@ -226,19 +223,10 @@ namespace VRT.UserRepresentation.Voice
 
                 void _copyTo(float[] inBuffer, float[] outBuffer)
                 {
-#if WITH_SAMPLERATE_ADAPTER
-                    float idx = 0;
-                    for (int i = 0; i < bufferLength; i++)
-                    {
-                        outBuffer[i] = inBuffer[(int)idx];
-                        idx += inc;
-                    }
-#else
                     for (int i = 0; i < nSamplesPerPacket; i++)
                     {
                         outBuffer[i] = inBuffer[i];
                     }
-#endif
                 }
             }
             else
