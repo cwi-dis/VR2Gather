@@ -18,15 +18,6 @@ namespace VRT.UserRepresentation.Voice
 
     public class AsyncVoiceReader : AsyncWorker
     {
-#if VRT_AUDIO_DEBUG
-        //
-        // For debugging we can add a 440Hz tone to the microphone signal by setting this
-        // value to true.
-        //
-        const bool debugReplaceByTone = false;
-        const bool debugAddTone = true;
-        ToneGenerator debugToneGenerator = null;
-#endif
         const float extraWaitTime = 0.005f; // Schedule the next enumerator call 5ms after we expect the next audio frame to be available.
         Coroutine coroutine;
         QueueThreadSafe outQueue;
@@ -77,13 +68,6 @@ namespace VRT.UserRepresentation.Voice
 
         IEnumerator MicroRecorder(string deviceName, int _sampleRate, int _fps, int _minBufferSize)
         {
-#if VRT_AUDIO_DEBUG
-            if (debugAddTone || debugReplaceByTone)
-            {
-                debugToneGenerator = new ToneGenerator();
-                Debug.LogWarning($"{Name()}: Adding 440Hz tone to microphone signal");
-            }
-#endif
             wantedSampleRate = _sampleRate;
             nSamplesPerPacket = wantedSampleRate / _fps;
             if (_minBufferSize > 0 && nSamplesPerPacket % _minBufferSize != 0)
@@ -181,16 +165,6 @@ namespace VRT.UserRepresentation.Voice
                             {
                                 FloatMemoryChunk mc = new FloatMemoryChunk(nSamplesPerPacket);
                                 _copyTo(readBuffer, mc.buffer);
-#if VRT_AUDIO_DEBUG
-                                if (debugAddTone || debugReplaceByTone)
-                                {
-                                    if (debugReplaceByTone)
-                                    {
-                                        for (int i = 0; i < mc.buffer.Length; i++) mc.buffer[i] = 0;
-                                    }
-                                    debugToneGenerator.addTone(mc.buffer);
-                                }
-#endif
                                 //
                                 // Update read position and number of available samples in the circular buffer
                                 //
@@ -202,10 +176,6 @@ namespace VRT.UserRepresentation.Voice
                                 //
                                 mc.metadata.timestamp = sampleTimestamp(available);
                                 timeRemainingInBuffer = (float)available / wantedSampleRate;
-#if VRT_AUDIO_DEBUG
-                                ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc", mc.buffer);
-                                ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc.pointer", mc.pointer, mc.length);
-#endif
                                 bool ok = outQueue.Enqueue(mc);
 #if VRT_WITH_STATS
                                 stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration());
