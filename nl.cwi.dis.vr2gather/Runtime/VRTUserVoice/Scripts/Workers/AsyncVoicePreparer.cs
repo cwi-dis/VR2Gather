@@ -163,7 +163,7 @@ namespace VRT.UserRepresentation.Voice
                 }
                 currentAudioFrame = InQueue.TryDequeue(0);
                 if (currentAudioFrame == null) {
-                    if (true || (synchronizer != null && synchronizer.debugSynchronizer && currentTimestamp != 0))
+                    if ((synchronizer != null && synchronizer.debugSynchronizer && currentTimestamp != 0))
                     {
                         Debug.Log($"{Name()}: no audio frame available");
                     }

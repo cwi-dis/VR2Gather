@@ -29,9 +29,10 @@ namespace VRT.UserRepresentation.Voice
         [Tooltip("Object responsible for synchronizing playout")]
         public ISynchronizer synchronizer = null;
 
-        [Tooltip("True if audio should be spatialized")]
-        public bool spatialize = false;
-
+        [Tooltip("Max number of packets stored before the preparer/renderer")]
+        int preparerQueueSize = 50;
+        [Tooltip("Max number of packets stored before the decoder")]
+        int decoderQueueSize = 10;
         [Tooltip("Introspection: audio level debugging")]
         public bool audioLevelDebugging = false;
         [Tooltip("Introspection: audio level as gotten from preparer")]
@@ -79,13 +80,19 @@ namespace VRT.UserRepresentation.Voice
             }
             if (audioSource != null)
             {
-                Debug.LogWarning($"{Name()}: already have an AudioSource, overriding");
+                audioSource.enabled = true;
+            } 
+            else
+            {
+
+                Debug.LogWarning($"{Name()}: No AudioSource, create one");
+                audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.spatialize = true;
+                audioSource.spatialBlend = 1.0f;
+                audioSource.minDistance = 4f;
+                audioSource.maxDistance = 100f;
             }
-            audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.spatialize = spatialize;
-            audioSource.spatialBlend = 1.0f;
-            audioSource.minDistance = 4f;
-            audioSource.maxDistance = 100f;
+            
             audioSource.loop = true;
             audioSource.Play();
 
@@ -93,11 +100,11 @@ namespace VRT.UserRepresentation.Voice
             bool audioIsEncoded = audioCodec == "VR2A";
             SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
 
-            preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 2, true);
+            preparerQueue = new QueueThreadSafe("VoicePreparer", preparerQueueSize, true);
             QueueThreadSafe _readerOutputQueue = preparerQueue;
             if (audioIsEncoded)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 2, true);
+                decoderQueue = new QueueThreadSafe("VoiceDecoder", decoderQueueSize, true);
                 codec = new AsyncVoiceDecoder(decoderQueue, preparerQueue);
                 _readerOutputQueue = decoderQueue;
             }
@@ -124,7 +131,6 @@ namespace VRT.UserRepresentation.Voice
                 Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
 #endif
             }
-
 
             preparer = new AsyncVoicePreparer(preparerQueue);
             string synchronizerName = "none";

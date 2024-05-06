@@ -210,20 +210,38 @@ namespace VRT.Pilots.Common
             if (isPreviewPlayer) return;
             if (user.userData.microphoneName == "None")
             {
-                Debug.LogWarning($"SessionPlayersManager: user {user.userId} has no microphone, skipping audio.");
+                if (isLocalPlayer)
+                {
+                    Debug.LogWarning($"SessionPlayersManager: You have no microphone, skipping voice transmission.");
+                }
                 return;
             }
             if (isLocalPlayer)
             { // Sender
                 var userCfg = VRTConfig.Instance.LocalUser;
-                voice.AddComponent<VoicePipelineSelf>().Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
-                // Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
-                // Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
-            
+                VoicePipelineSelf voicePipelineSelf = voice.GetComponent<VoicePipelineSelf>();
+                if (voicePipelineSelf != null)
+                {
+                    voicePipelineSelf.enabled = true;
+                }
+                else
+                {
+                    voicePipelineSelf = voice.AddComponent<VoicePipelineSelf>();
+                }
+                voicePipelineSelf.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
             }
             else
             { // Receiver
-                voice.AddComponent<VoicePipelineOther>().Init(isLocalPlayer, user, null, isPreviewPlayer);
+                VoicePipelineOther voicePipelineOther = voice.GetComponent<VoicePipelineOther>();
+                if (voicePipelineOther != null)
+                {
+                    voicePipelineOther.enabled = true;
+                }
+                else
+                {
+                    voicePipelineOther = voice.AddComponent<VoicePipelineOther> ();
+                }
+                voicePipelineOther.Init(isLocalPlayer, user, null, isPreviewPlayer);
             }
         }
     
