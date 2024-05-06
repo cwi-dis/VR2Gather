@@ -115,49 +115,6 @@ namespace VRT.UserRepresentation.Voice
 #endif
         }
 
-        public void Init(User user, QueueThreadSafe queue)
-        {
-            string micro = null;
-            if (user != null && user.userData != null)
-                micro = user.userData.microphoneName;
-            int minBufferSize = 0;
-            if (micro == "None")
-            {
-                Debug.LogError($"{Name()}: no microphone, other participants will not hear you");
-                return;
-            }
-
-            string audioCodec = SessionConfig.Instance.voiceCodec;
-            bool audioIsEncoded = audioCodec == "VR2A";
-
-            QueueThreadSafe _readerOutputQueue = null;
-            if (audioIsEncoded)
-            {
-                encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
-                senderQueue = queue;
-                codec = new AsyncVoiceEncoder(encoderQueue, senderQueue);
-                minBufferSize = codec.minSamplesPerFrame;
-                _readerOutputQueue = encoderQueue;
-            }
-            else
-            {
-                encoderQueue = null;
-                codec = null;
-                senderQueue = queue;
-                _readerOutputQueue = senderQueue;
-            }
-
-            reader = new AsyncVoiceReader(micro, VRTConfig.Instance.audioSampleRate, VRTConfig.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
-            int audioSamplesPerPacket = reader.getBufferSize();
-            if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
-            {
-                Debug.LogWarning($"{Name()}: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
-            }
-
-#if VRT_WITH_STATS
-            Statistics.Output(Name(), $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
-#endif
-        }
 
         void OnDestroy()
         {
