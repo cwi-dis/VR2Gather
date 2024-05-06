@@ -211,6 +211,14 @@ namespace VRT.Core
             System.IO.File.WriteAllText(file, JsonUtility.ToJson(this, true));
             Debug.Log($"VRTConfig: Saving configuration to {file}");
         }
+
+        [ContextMenu("Load from config.json")]
+        private void LoadFromConfigJson()
+        {
+            string file = ConfigFilename();
+            JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+            Debug.Log($"VRTConfig: Loaded configuration from {file}");
+        }
 #endif
         static VRTConfig _Instance;
         public static VRTConfig Instance
