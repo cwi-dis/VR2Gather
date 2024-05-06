@@ -86,11 +86,11 @@ namespace VRT.UserRepresentation.Voice
             bool audioIsEncoded = audioCodec == "VR2A";
             SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
 
-            preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
+            preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 2, true);
             QueueThreadSafe _readerOutputQueue = preparerQueue;
             if (audioIsEncoded)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 2, true);
                 codec = new AsyncVoiceDecoder(decoderQueue, preparerQueue);
                 _readerOutputQueue = decoderQueue;
             }
