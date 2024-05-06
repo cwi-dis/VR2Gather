@@ -203,6 +203,15 @@ namespace VRT.Core
         [Tooltip("Introspection: Config override JSON file used")]
         public string configOverrideFilename;
 
+#if UNITY_EDITOR
+        [ContextMenu("Save as config.json")]
+        private void SaveAsConfigJson()
+        {
+            string file = ConfigFilename();
+            System.IO.File.WriteAllText(file, JsonUtility.ToJson(this, true));
+            Debug.Log($"VRTConfig: Saving configuration to {file}");
+        }
+#endif
         static VRTConfig _Instance;
         public static VRTConfig Instance
         {
@@ -271,16 +280,6 @@ namespace VRT.Core
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
-
-#if xxxjack_unused
-        public void WriteConfig(object toJson)
-        {
-            string file = ConfigFilename();
-            System.IO.File.WriteAllText(file, JsonUtility.ToJson(toJson, true));
-
-            //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));
-        }
-#endif
 
         static string _ConfigFilenameFromCommandLineArgs()
         {
