@@ -32,10 +32,15 @@ namespace VRT.UserRepresentation.Voice
         [Tooltip("True if audio should be spatialized")]
         public bool spatialize = false;
 
-        [Tooltip("Introspection: audio level")]
+        [Tooltip("Introspection: audio level debugging")]
+        public bool audioLevelDebugging = false;
+        [Tooltip("Introspection: audio level as gotten from preparer")]
         public float currentAudioLevel = 0;
+        [Tooltip("Introspection: count of packages from preparer")]
         public int currentAudioLevelCount = 0;
+        [Tooltip("Introspection: aggregate audio level for previous frame, from currentAudioLevel")]
         public float currentFrameAudioLevel = 0;
+        [Tooltip("Introspection: audio level for previous frame, from GetSpectrumData")]
         public float currentFrameAltAudioLevel = 0;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
@@ -143,21 +148,24 @@ namespace VRT.UserRepresentation.Voice
 
         private void Update()
         {
-            lock(this)
+            if (audioLevelDebugging)
             {
-                if (currentAudioLevelCount == 0) currentAudioLevelCount = 1;
-                currentFrameAudioLevel = currentAudioLevel / currentAudioLevelCount;
-                currentAudioLevel = 0;
-                currentAudioLevelCount = 0;
+                lock (this)
+                {
+                    if (currentAudioLevelCount == 0) currentAudioLevelCount = 1;
+                    currentFrameAudioLevel = currentAudioLevel / currentAudioLevelCount;
+                    currentAudioLevel = 0;
+                    currentAudioLevelCount = 0;
 
 
-                float[] spectrum = new float[256];
+                    float[] spectrum = new float[256];
 
-                audioSource.GetSpectrumData(spectrum, 0, FFTWindow.Rectangular);
-                float sum = 0;
-                Array.ForEach(spectrum, value => sum += value);
-                currentFrameAltAudioLevel = sum;
-                
+                    audioSource.GetSpectrumData(spectrum, 0, FFTWindow.Rectangular);
+                    float sum = 0;
+                    Array.ForEach(spectrum, value => sum += value);
+                    currentFrameAltAudioLevel = sum;
+
+                }
             }
            
             preparer?.Synchronize();
@@ -226,10 +234,13 @@ namespace VRT.UserRepresentation.Voice
             {
                 rmsCompute += data[i] * data[i];
             }
-            lock(this)
+            if (audioLevelDebugging)
             {
-                currentAudioLevel += Mathf.Sqrt(rmsCompute / data.Length);
-                currentAudioLevelCount += 1;
+                lock (this)
+                {
+                    currentAudioLevel += Mathf.Sqrt(rmsCompute / data.Length);
+                    currentAudioLevelCount += 1;
+                }
             }
             
 #if VRT_WITH_STATS
