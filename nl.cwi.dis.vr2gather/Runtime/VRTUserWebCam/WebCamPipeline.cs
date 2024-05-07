@@ -121,19 +121,31 @@ namespace VRT.UserRepresentation.WebCam
                                 inQueue = writerQueue
                                 }
                             };
+                       // We need some backward-compatibility hacks, depending on protocol type.
+                        string url = user.sfuData.url_gen;
+                        switch (SessionConfig.Instance.protocolType)
+                        {
+                            case SessionConfig.ProtocolType.None:
+                            case SessionConfig.ProtocolType.SocketIO:
+                                url = user.userId;
+                                break;
+                            case SessionConfig.ProtocolType.TCP:
+                                url = user.sfuData.url_pcc;
+                                break;
+                        }
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                         {
-                            writer = new AsyncDashWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            writer = new AsyncDashWriter(url, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         }
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                         {
-                            writer = new AsyncTCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
+                            writer = new AsyncTCPDirectWriter(url, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                         {
-                            writer = new AsyncSocketIOWriter(user.userId, "webcam", "wcwc", dashStreamDescriptions);
+                            writer = new AsyncSocketIOWriter(url, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         {

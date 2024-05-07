@@ -6,6 +6,7 @@ using Statistics = Cwipc.Statistics;
 using VRT.UserRepresentation.Voice;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
+using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 using VRT.Pilots.Common;
@@ -220,17 +221,29 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create correct writer for PC transmission
                 //
+                // We need some backward-compatibility hacks, depending on protocol type.
+                string url = user.sfuData.url_gen;
+                switch (SessionConfig.Instance.protocolType)
+                {
+                    case SessionConfig.ProtocolType.None:
+                    case SessionConfig.ProtocolType.SocketIO:
+                        url = user.userId;
+                        break;
+                    case SessionConfig.ProtocolType.TCP:
+                        url = user.sfuData.url_pcc;
+                        break;
+                }
                 switch (SessionConfig.Instance.protocolType)
                 {
                     case SessionConfig.ProtocolType.Dash:
-                        writer = new AsyncDashWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
+                        writer = new AsyncDashWriter(url, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
                         break;
                     case SessionConfig.ProtocolType.TCP:
-                        writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, outgoingStreamDescriptions);
+                        writer = new AsyncTCPDirectWriter(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     case SessionConfig.ProtocolType.None:
                     case SessionConfig.ProtocolType.SocketIO:
-                        writer = new AsyncSocketIOWriter(user.userId, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                        writer = new AsyncSocketIOWriter(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     default:
                         throw new System.Exception($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");

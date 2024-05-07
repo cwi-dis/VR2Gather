@@ -201,10 +201,12 @@ namespace VRT.Transport.Dash
                     Debug.LogError($"{Name()}: configuration error: url or streamName not set");
                     throw new System.Exception($"{Name()}: configuration error: url or streamName not set");
                 }
-                if (_streamName != null)
-                {
-                    if (!_streamName.Contains(".mpd")) _streamName += ".mpd";
-                    _url += _streamName;
+                if (!_url.EndsWith("/")) {
+                    _url += "/";
+                }
+                _url += _streamName;
+                if (!_url.EndsWith("/")) {
+                    _url += "/";
                 }
                 url = _url;
                

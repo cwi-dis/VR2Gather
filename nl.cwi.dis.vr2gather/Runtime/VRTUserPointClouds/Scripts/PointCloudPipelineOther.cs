@@ -12,6 +12,7 @@ using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 using VRT.Pilots.Common;
+using UnityEngine.Rendering;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -128,18 +129,29 @@ namespace VRT.UserRepresentation.PointCloud
                 Statistics.Output(Name(), $"tile={tileIndex}, tile_number={tilesToReceive[tileIndex].tileNumber}, decoder={decoder.Name()}");
 #endif
             };
-
+            // We need some backward-compatibility hacks, depending on protocol type.
+            string url = user.sfuData.url_gen;
             switch (SessionConfig.Instance.protocolType)
             {
                 case SessionConfig.ProtocolType.None:
                 case SessionConfig.ProtocolType.SocketIO:
-                    reader = new AsyncSocketIOReader(user.userId, "pointcloud", pointcloudCodec, tilesToReceive);
-                    break;
-                case SessionConfig.ProtocolType.Dash:
-                    reader = new AsyncDashReader_PC(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
+                    url = user.userId;
                     break;
                 case SessionConfig.ProtocolType.TCP:
-                    reader = new AsyncTCPDirectReader_PC(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
+                    url = user.sfuData.url_pcc;
+                    break;
+            }
+            switch (SessionConfig.Instance.protocolType)
+            {
+                case SessionConfig.ProtocolType.None:
+                case SessionConfig.ProtocolType.SocketIO:
+                    reader = new AsyncSocketIOReader(url, "pointcloud", pointcloudCodec, tilesToReceive);
+                    break;
+                case SessionConfig.ProtocolType.Dash:
+                    reader = new AsyncDashReader_PC(url, "pointcloud", pointcloudCodec, tilesToReceive);
+                    break;
+                case SessionConfig.ProtocolType.TCP:
+                    reader = new AsyncTCPDirectReader_PC(url, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 default:
                     throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
