@@ -1,5 +1,5 @@
 {
-    "name": "VRTProfiler",
+    "name": "VRT.Profiler",
     "rootNamespace": "",
     "references": [
         "GUID:6f16117c2be38af4f989c1918efefead",

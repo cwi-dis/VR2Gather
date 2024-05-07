@@ -1,5 +1,5 @@
 {
-    "name": "VRTCore",
+    "name": "VRT.Core",
     "rootNamespace": "",
     "references": [
         "GUID:af6a1da4aa3e8478baf73e0bb3eddfee",
