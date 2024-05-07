@@ -287,13 +287,13 @@ namespace VRT.UserRepresentation.PointCloud
             }
             // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
             VoicePipelineOther voiceReceiver = gameObject.transform.parent.GetComponentInChildren<VoicePipelineOther>();
-            if (voiceReceiver != null)
+            if (voiceReceiver != null && voiceReceiver.enabled && voiceReceiver.gameObject.activeInHierarchy)
             {
                 voiceReceiver.SetSyncInfo(config.audio);
             }
             else
             {
-                Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver");
+                Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver for this player");
             }
             //Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
 
