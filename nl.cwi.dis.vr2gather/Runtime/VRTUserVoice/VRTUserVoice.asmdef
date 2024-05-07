@@ -1,14 +1,13 @@
 {
-    "name": "Voice",
+    "name": "VRTUserVoice",
     "rootNamespace": "",
     "references": [
-        "VRTCore",
-        "Dash",
-        "Orchestrator",
-        "SocketIO",
-        "TCP",
-        "Cwipc",
-        "VRTStatistics"
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:483ef9d2ea25bb34cb9cdc48962c5283",
+        "GUID:30bd862cd7044fd4484784b07598041d",
+        "GUID:0fe28dc2fadbc7445be6b310124197c6",
+        "GUID:9b63c533e75544f398f69585902a5620",
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,5 +1,5 @@
 {
-    "name": "SocketIO",
+    "name": "VRTTransportSocketIO",
     "rootNamespace": "",
     "references": [
         "GUID:30bd862cd7044fd4484784b07598041d",
