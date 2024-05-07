@@ -119,7 +119,7 @@ namespace VRT.UserRepresentation.Voice
             else
             if (proto == SessionConfig.ProtocolType.TCP)
             {
-                reader = new AsyncTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
+                reader = new AsyncTCPDirectReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
 #endif

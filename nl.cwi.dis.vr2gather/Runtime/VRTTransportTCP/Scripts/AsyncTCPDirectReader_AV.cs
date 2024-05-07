@@ -5,9 +5,8 @@ using Cwipc;
 namespace VRT.Transport.TCP
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
-    using AsyncTCPReader = Cwipc.AsyncTCPReader;
-
-    public class AsyncTCPAVReader : AsyncTCPReader
+ 
+    public class AsyncTCPDirectReader_AV : Cwipc.AsyncTCPReader
     {
         public enum CCCC : uint
         {
@@ -17,7 +16,7 @@ namespace VRT.Transport.TCP
             H264 = 0x34363268
         };
 
-        public AsyncTCPAVReader(string url, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+        public AsyncTCPDirectReader_AV(string url, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
          : base(url)
         {
 #if xxxjack_disabled

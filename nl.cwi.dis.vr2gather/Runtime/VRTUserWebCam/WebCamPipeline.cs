@@ -171,7 +171,7 @@ namespace VRT.UserRepresentation.WebCam
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                 {
-                    reader = new AsyncTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
+                    reader = new AsyncTCPDirectReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
                 }
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)

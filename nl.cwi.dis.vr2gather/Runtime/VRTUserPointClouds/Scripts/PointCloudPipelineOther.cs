@@ -8,6 +8,7 @@ using Statistics = Cwipc.Statistics;
 using VRT.UserRepresentation.Voice;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
+using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 using VRT.Pilots.Common;
@@ -138,7 +139,7 @@ namespace VRT.UserRepresentation.PointCloud
                     reader = new AsyncDashReader_PC(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.TCP:
-                    reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
+                    reader = new AsyncTCPDirectReader_PC(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
                     break;
                 default:
                     throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
@@ -253,7 +254,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 return;
             }
-            AsyncTCPPCReader _tcpreader = reader as AsyncTCPPCReader;
+            AsyncTCPDirectReader_PC _tcpreader = reader as AsyncTCPDirectReader_PC;
             if (_tcpreader != null)
             {
                 for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
