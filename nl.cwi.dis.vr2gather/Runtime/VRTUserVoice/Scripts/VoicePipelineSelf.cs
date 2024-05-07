@@ -100,7 +100,7 @@ namespace VRT.UserRepresentation.Voice
             }
             else
             {
-                writer = new AsyncSocketIOWriter(user, _streamName, audioCodec, b2dStreams);
+                writer = new AsyncSocketIOWriter(user.userId, _streamName, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
 #endif

@@ -23,12 +23,10 @@ namespace VRT.Transport.SocketIO
     {
         IncomingTileDescription[] descriptors;
 
-        User user;
-
-        public AsyncSocketIOReader(User user, string remoteStream, string fourcc, IncomingTileDescription[] descriptors) : base()
+        
+        public AsyncSocketIOReader(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors) : base()
         {
             NoUpdateCallsNeeded();
-            this.user = user;
             if (descriptors == null)
             {
                 throw new System.Exception($"{Name()}: descriptors is null");
@@ -38,16 +36,16 @@ namespace VRT.Transport.SocketIO
             {
                 for (int i = 0; i < this.descriptors.Length; ++i)
                 {
-                    this.descriptors[i].name = $"{user.userId}.{remoteStream}.{fourcc}#{i}";
+                    this.descriptors[i].name = $"{remoteUrl}.{streamName}#{i}";
                     Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name}");
-                    OrchestratorWrapper.instance.RegisterForDataStream(user.userId, this.descriptors[i].name);
+                    OrchestratorWrapper.instance.RegisterForDataStream(remoteUrl, this.descriptors[i].name);
                 }
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
                 Start();
-                Debug.Log($"{Name()}: Started {remoteStream}.");
+                Debug.Log($"{Name()}: Started {remoteUrl}.{streamName}");
             }
             catch (System.Exception e)
             {
@@ -56,9 +54,10 @@ namespace VRT.Transport.SocketIO
             }
         }
 
-        public AsyncSocketIOReader(User user, string remoteStream, string fourcc, QueueThreadSafe outQueue)
-        : this(user,
-            remoteStream,
+        public AsyncSocketIOReader(string remoteUrl, string streamName, string fourcc, QueueThreadSafe outQueue)
+        : this(
+            remoteUrl,
+            streamName,
             fourcc,
               new IncomingTileDescription[]
               {

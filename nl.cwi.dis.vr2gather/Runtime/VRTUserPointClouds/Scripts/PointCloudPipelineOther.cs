@@ -132,7 +132,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 case SessionConfig.ProtocolType.None:
                 case SessionConfig.ProtocolType.SocketIO:
-                    reader = new AsyncSocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
+                    reader = new AsyncSocketIOReader(user.userId, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.Dash:
                     reader = new AsyncSubPCReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);

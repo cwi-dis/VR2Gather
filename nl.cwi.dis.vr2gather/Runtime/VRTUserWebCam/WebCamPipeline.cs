@@ -133,7 +133,7 @@ namespace VRT.UserRepresentation.WebCam
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                         {
-                            writer = new AsyncSocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
+                            writer = new AsyncSocketIOWriter(user.userId, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         {
@@ -176,7 +176,7 @@ namespace VRT.UserRepresentation.WebCam
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                 {
-                    reader = new AsyncSocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
+                    reader = new AsyncSocketIOReader(user.userId, "webcam", "wcwc", videoCodecQueue);
                 }
                 else
                 {

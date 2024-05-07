@@ -22,11 +22,11 @@ namespace VRT.Transport.SocketIO
     {
         OutgoingStreamDescription[] streams;
 
-        public AsyncSocketIOWriter(User user, string streamName, string fourcc, OutgoingStreamDescription[] streams) : base()
+        public AsyncSocketIOWriter(string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams) : base()
         {
             if (streams == null)
             {
-                throw new System.Exception($"[FPA] {Name()}: outQueue is null");
+                throw new System.Exception($"{Name()}: outQueue is null");
             }
 #if VRT_WITH_STATS
             stats = new Stats(Name());
@@ -34,7 +34,7 @@ namespace VRT.Transport.SocketIO
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i)
             {
-                streams[i].name = $"{user.userId}.{streamName}.{fourcc}#{i}";
+                streams[i].name = $"{userId}.{streamName}#{i}";
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
@@ -43,7 +43,7 @@ namespace VRT.Transport.SocketIO
             try
             {
                 Start();
-                Debug.Log($"[FPA] {Name()}: Started.");
+                Debug.Log($"{Name()}: Started.");
             }
             catch (System.Exception e)
             {

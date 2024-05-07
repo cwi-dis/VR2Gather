@@ -126,7 +126,7 @@ namespace VRT.UserRepresentation.Voice
             }
             else
             {
-                reader = new AsyncSocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
+                reader = new AsyncSocketIOReader(user.userId, _streamName, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
 #endif

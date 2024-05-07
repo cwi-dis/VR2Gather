@@ -230,7 +230,7 @@ namespace VRT.UserRepresentation.PointCloud
                         break;
                     case SessionConfig.ProtocolType.None:
                     case SessionConfig.ProtocolType.SocketIO:
-                        writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                        writer = new AsyncSocketIOWriter(user.userId, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     default:
                         throw new System.Exception($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
