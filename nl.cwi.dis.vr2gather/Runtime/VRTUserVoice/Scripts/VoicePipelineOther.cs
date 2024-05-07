@@ -111,7 +111,7 @@ namespace VRT.UserRepresentation.Voice
 
             if (proto == SessionConfig.ProtocolType.Dash)
             {
-                reader = new AsyncSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
+                reader = new AsyncDashReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
 #endif

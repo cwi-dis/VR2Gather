@@ -135,7 +135,7 @@ namespace VRT.UserRepresentation.PointCloud
                     reader = new AsyncSocketIOReader(user.userId, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.Dash:
-                    reader = new AsyncSubPCReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
+                    reader = new AsyncDashReader_PC(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.TCP:
                     reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
@@ -242,7 +242,7 @@ namespace VRT.UserRepresentation.PointCloud
                 _prreader.SelectTileQualities(tileQualities);
                 return;
             }
-            AsyncSubPCReader _subreader = reader as AsyncSubPCReader;
+            AsyncDashReader_PC _subreader = reader as AsyncDashReader_PC;
             if (_subreader != null)
             {
                 for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)

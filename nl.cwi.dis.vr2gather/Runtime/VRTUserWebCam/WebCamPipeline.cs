@@ -123,7 +123,7 @@ namespace VRT.UserRepresentation.WebCam
                             };
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                         {
-                            writer = new AsyncB2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            writer = new AsyncDashWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         }
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
@@ -166,7 +166,7 @@ namespace VRT.UserRepresentation.WebCam
        
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                 {
-                    reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                    reader = new AsyncDashReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                 }
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
@@ -271,7 +271,7 @@ namespace VRT.UserRepresentation.WebCam
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            AsyncB2DWriter pcWriter = (AsyncB2DWriter)writer;
+            AsyncDashWriter pcWriter = (AsyncDashWriter)writer;
             if (pcWriter != null)
             {
                 rv.visuals = pcWriter.GetSyncInfo();
@@ -290,7 +290,7 @@ namespace VRT.UserRepresentation.WebCam
                 Debug.LogError("Programmer error: WebCamPipeline: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            AsyncSubPCReader pcReader = (AsyncSubPCReader)reader;
+            AsyncDashReader_PC pcReader = (AsyncDashReader_PC)reader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);

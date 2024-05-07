@@ -16,7 +16,7 @@ namespace VRT.Transport.Dash
     using SyncConfig = Cwipc.SyncConfig;
     using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 
-    public class AsyncB2DWriter : AsyncWriter
+    public class AsyncDashWriter : AsyncWriter
     {
 
         static int instanceCounter = 0;
@@ -28,7 +28,7 @@ namespace VRT.Transport.Dash
         B2DPusher[] streamPushers;
 
 
-        public AsyncB2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, OutgoingStreamDescription[] _descriptions) : base()
+        public AsyncDashWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, OutgoingStreamDescription[] _descriptions) : base()
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {
@@ -153,12 +153,12 @@ namespace VRT.Transport.Dash
 
         protected class B2DPusher
         {
-            AsyncB2DWriter parent;
+            AsyncDashWriter parent;
             int stream_index;
             OutgoingStreamDescription description;
             NativeMemoryChunk curBuffer = null;
 
-            public B2DPusher(AsyncB2DWriter _parent, int _stream_index, OutgoingStreamDescription _description)
+            public B2DPusher(AsyncDashWriter _parent, int _stream_index, OutgoingStreamDescription _description)
             {
                 parent = _parent;
                 stream_index = _stream_index;

@@ -223,7 +223,7 @@ namespace VRT.UserRepresentation.PointCloud
                 switch (SessionConfig.Instance.protocolType)
                 {
                     case SessionConfig.ProtocolType.Dash:
-                        writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
+                        writer = new AsyncDashWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
                         break;
                     case SessionConfig.ProtocolType.TCP:
                         writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, outgoingStreamDescriptions);

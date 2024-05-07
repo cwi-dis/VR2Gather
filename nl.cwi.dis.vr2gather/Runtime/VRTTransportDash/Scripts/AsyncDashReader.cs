@@ -14,7 +14,7 @@ namespace VRT.Transport.Dash
 
    
 
-    public class AsyncSubReader : AsyncReader
+    public class AsyncDashReader : AsyncReader
     {
 
         public delegate bool NeedsSomething();
@@ -42,13 +42,13 @@ namespace VRT.Transport.Dash
 
         public class TileOrMediaHandler
         {
-            AsyncSubReader parent;
+            AsyncDashReader parent;
             int handler_index;
             TileOrMediaInfo receiverInfo;
             public Timestamp mostRecentDashTimestamp;
 
 
-            public TileOrMediaHandler(AsyncSubReader _parent, int _handler_index, TileOrMediaInfo _receiverInfo)
+            public TileOrMediaHandler(AsyncDashReader _parent, int _handler_index, TileOrMediaInfo _receiverInfo)
             {
                 parent = _parent;
                 handler_index = _handler_index;
@@ -189,7 +189,7 @@ namespace VRT.Transport.Dash
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
         bool clockCorrespondenceReceived = false;
 
-        protected AsyncSubReader(string _url, string _streamName) : base()
+        protected AsyncDashReader(string _url, string _streamName) : base()
         { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
             lock (this)
@@ -211,7 +211,7 @@ namespace VRT.Transport.Dash
             }
         }
 
-        public AsyncSubReader(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue) : this(_url, _streamName)
+        public AsyncDashReader(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue) : this(_url, _streamName)
         {
             lock (this)
             {

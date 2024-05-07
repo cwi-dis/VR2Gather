@@ -86,7 +86,7 @@ namespace VRT.UserRepresentation.Voice
                 if (AudioBin2Dash == null)
                     throw new Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
 
-                writer = new AsyncB2DWriter(user.sfuData.url_audio, _streamName, audioCodec, AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, b2dStreams);
+                writer = new AsyncDashWriter(user.sfuData.url_audio, _streamName, audioCodec, AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, b2dStreams);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, codec={audioCodec}");
 #endif
