@@ -2,9 +2,8 @@
     "name": "VRTVideo",
     "rootNamespace": "",
     "references": [
-        "VRTCore",
-        "Cwipc",
-        "VRTStatistics"
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
