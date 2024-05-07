@@ -1,15 +1,14 @@
 {
-    "name": "VRTInitializer",
+    "name": "VRT.Core.Initializer",
     "rootNamespace": "",
     "references": [
-        "VRTCore",
-        "VRTStatistics",
-        "Cwipc",
-        "PointClouds",
-        "WebCam",
-        "Pilots",
-        "Unity.InputSystem",
-        "Unity.XR.Management"
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:4af040fa3c94c184cb1ec89f9fcf7b18",
+        "GUID:77a5444f66e9ccd458004d8a0e4b8181",
+        "GUID:8830b9e06f5eb184f963f1aec82206c7",
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:e40ba710768534012815d3193fa296cb"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
