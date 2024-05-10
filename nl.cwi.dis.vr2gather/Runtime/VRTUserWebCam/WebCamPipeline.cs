@@ -135,7 +135,7 @@ namespace VRT.UserRepresentation.WebCam
                         }
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                         {
-                            writer = new AsyncDashWriter().Init(url, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            writer = new AsyncDashWriter().Init(url, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
