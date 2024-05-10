@@ -7,7 +7,7 @@ namespace VRT.Transport.Dash
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class AsyncDashReader_AV : AsyncDashReader
+    public class AsyncDashReader_AV : AsyncDashReader, ITransportProtocolReader_AV
     {
         public enum CCCC : uint
         {
@@ -17,9 +17,9 @@ namespace VRT.Transport.Dash
             H264 = 0x34363268
         };
 
-        public AsyncDashReader_AV Init(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+        public TransportProtocolReader Init(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
-            base.Init(url, streamName);
+            base._Init(url, streamName);
             lock (this)
             {
                 int videoStream = -1;

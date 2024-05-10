@@ -10,14 +10,14 @@ namespace VRT.Transport.Dash
     using IncomingStreamDescription = Cwipc.StreamSupport.IncomingStreamDescription;
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
-    public class AsyncDashReader_PC : AsyncDashReader
+    public class AsyncDashReader_PC : AsyncDashReader, ITransportProtocolReader_PC
     {
         protected IncomingTileDescription[] tileDescriptors;
         protected IncomingStreamDescription[] allStreamDescriptors;
 
-        public AsyncDashReader_PC Init(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
+        public TransportProtocolReader Init(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
-            base.Init(_url, _streamName);
+            base._Init(_url, _streamName);
             lock (this)
             {
                 tileDescriptors = _tileDescriptors;

@@ -14,7 +14,7 @@ namespace VRT.Transport.Dash
 
    
 
-    public class AsyncDashReader : AsyncReader
+    public class AsyncDashReader : TransportProtocolReader
     {
 
         public delegate bool NeedsSomething();
@@ -191,7 +191,7 @@ namespace VRT.Transport.Dash
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
         bool clockCorrespondenceReceived = false;
 
-        protected AsyncDashReader Init(string _url, string _streamName)
+        protected void _Init(string _url, string _streamName)
         { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
             lock (this)
@@ -213,13 +213,11 @@ namespace VRT.Transport.Dash
                 url = _url;
                
             }
-            initialized = true;
-            return this;
         }
 
-        public AsyncDashReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue)
+        public override TransportProtocolReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue)
         {
-            this.Init(_url, _streamName);
+            this._Init(_url, _streamName);
             lock (this)
             {
                 perTileInfo = new TileOrMediaInfo[]
