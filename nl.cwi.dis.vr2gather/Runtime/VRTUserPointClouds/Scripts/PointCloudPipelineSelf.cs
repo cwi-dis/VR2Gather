@@ -236,14 +236,14 @@ namespace VRT.UserRepresentation.PointCloud
                 switch (SessionConfig.Instance.protocolType)
                 {
                     case SessionConfig.ProtocolType.Dash:
-                        writer = new AsyncDashWriter(url, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
+                        writer = new AsyncDashWriter().Init(url, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
                         break;
                     case SessionConfig.ProtocolType.TCP:
-                        writer = new AsyncTCPDirectWriter(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                        writer = new AsyncTCPDirectWriter().Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     case SessionConfig.ProtocolType.None:
                     case SessionConfig.ProtocolType.SocketIO:
-                        writer = new AsyncSocketIOWriter(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                        writer = new AsyncSocketIOWriter().Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     default:
                         throw new System.Exception($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");

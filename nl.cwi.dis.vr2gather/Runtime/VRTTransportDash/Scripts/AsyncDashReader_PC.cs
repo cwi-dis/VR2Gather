@@ -15,9 +15,9 @@ namespace VRT.Transport.Dash
         protected IncomingTileDescription[] tileDescriptors;
         protected IncomingStreamDescription[] allStreamDescriptors;
 
-        public AsyncDashReader_PC(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
-        : base(_url, _streamName)
+        public AsyncDashReader_PC Init(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
+            base.Init(_url, _streamName);
             lock (this)
             {
                 tileDescriptors = _tileDescriptors;
@@ -42,6 +42,8 @@ namespace VRT.Transport.Dash
                 }
                 Start();
             }
+            initialized = true;
+            return this;
         }
 
         protected override void _streamInfoAvailable()

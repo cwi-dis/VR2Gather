@@ -135,17 +135,17 @@ namespace VRT.UserRepresentation.WebCam
                         }
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                         {
-                            writer = new AsyncDashWriter(url, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            writer = new AsyncDashWriter().Init(url, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         }
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                         {
-                            writer = new AsyncTCPDirectWriter(url, "webcam", "wcwc", dashStreamDescriptions);
+                            writer = new AsyncTCPDirectWriter().Init(url, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                         {
-                            writer = new AsyncSocketIOWriter(url, "webcam", "wcwc", dashStreamDescriptions);
+                            writer = new AsyncSocketIOWriter().Init(url, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         {
@@ -178,17 +178,17 @@ namespace VRT.UserRepresentation.WebCam
        
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                 {
-                    reader = new AsyncDashReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                    reader = new AsyncDashReader().Init(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                 }
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                 {
-                    reader = new AsyncTCPDirectReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
+                    reader = new AsyncTCPDirectReader().Init(user.userData.userPCurl, "wcwc", videoCodecQueue);
                 }
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                 {
-                    reader = new AsyncSocketIOReader(user.userId, "webcam", "wcwc", videoCodecQueue);
+                    reader = new AsyncSocketIOReader().Init(user.userId, "webcam", "wcwc", videoCodecQueue);
                 }
                 else
                 {

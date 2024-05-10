@@ -22,9 +22,10 @@ namespace VRT.Transport.SocketIO
     public class AsyncSocketIOReader : AsyncReader, ISocketReader
     {
         IncomingTileDescription[] descriptors;
+        bool initialized = false;
 
         
-        public AsyncSocketIOReader(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors) : base()
+        public AsyncSocketIOReader Init(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
             NoUpdateCallsNeeded();
             if (descriptors == null)
@@ -52,22 +53,26 @@ namespace VRT.Transport.SocketIO
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw;
             }
+            initialized = true;
+            return this;
         }
 
-        public AsyncSocketIOReader(string remoteUrl, string streamName, string fourcc, QueueThreadSafe outQueue)
-        : this(
-            remoteUrl,
-            streamName,
-            fourcc,
-              new IncomingTileDescription[]
-              {
-                  new IncomingTileDescription()
-                  {
-                      outQueue = outQueue
-                  }
-              }
-            )
+        public AsyncSocketIOReader Init(string remoteUrl, string streamName, string fourcc, QueueThreadSafe outQueue)
         {
+            Init(
+                remoteUrl,
+                streamName,
+                fourcc,
+                new IncomingTileDescription[]
+                {
+                    new IncomingTileDescription()
+                    {
+                        outQueue = outQueue
+                    }
+                }
+            );
+            initialized = true;
+            return this;   
         }
 
         public override void Stop()

@@ -8,10 +8,10 @@ namespace VRT.Transport.TCP
  
     public class AsyncTCPDirectReader_PC : Cwipc.AsyncTCPPCReader
     {
-        public AsyncTCPDirectReader_PC(string _url, string streamname, string fourcc, Cwipc.StreamSupport.IncomingTileDescription[] _tileDescriptors)
-         : base(_url, fourcc, _tileDescriptors)
+        public AsyncTCPDirectReader_PC Init(string _url, string streamname, string fourcc, Cwipc.StreamSupport.IncomingTileDescription[] _tileDescriptors)
         {
-
+            base.Init(_url, fourcc, _tileDescriptors);
+            return this;
         }
     }
 }

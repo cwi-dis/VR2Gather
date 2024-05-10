@@ -16,8 +16,7 @@ namespace VRT.Transport.TCP
             H264 = 0x34363268
         };
 
-        public AsyncTCPDirectReader_AV(string url, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
-         : base(url)
+        public AsyncTCPDirectReader_AV Init(string url, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
 #if xxxjack_disabled
             lock (this)
@@ -75,6 +74,7 @@ namespace VRT.Transport.TCP
                 Start();
             }
 #endif
+            return this;
         }
     }
 }

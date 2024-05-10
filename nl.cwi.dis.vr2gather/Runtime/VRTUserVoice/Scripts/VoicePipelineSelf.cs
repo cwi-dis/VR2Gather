@@ -97,21 +97,21 @@ namespace VRT.UserRepresentation.Voice
                 if (AudioBin2Dash == null)
                     throw new Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
 
-                writer = new AsyncDashWriter(url, _streamName, audioCodec, AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, b2dStreams);
+                writer = new AsyncDashWriter().Init(url, _streamName, audioCodec, AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, b2dStreams);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, codec={audioCodec}");
 #endif
             }
             else if (proto == SessionConfig.ProtocolType.TCP)
             {
-                writer = new AsyncTCPDirectWriter(url, _streamName, audioCodec, b2dStreams);
+                writer = new AsyncTCPDirectWriter().Init(url, _streamName, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
 #endif
             }
             else
             {
-                writer = new AsyncSocketIOWriter(url, _streamName, audioCodec, b2dStreams);
+                writer = new AsyncSocketIOWriter().Init(url, _streamName, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
 #endif

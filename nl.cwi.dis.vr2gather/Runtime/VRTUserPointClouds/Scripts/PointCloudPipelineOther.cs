@@ -145,13 +145,13 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 case SessionConfig.ProtocolType.None:
                 case SessionConfig.ProtocolType.SocketIO:
-                    reader = new AsyncSocketIOReader(url, "pointcloud", pointcloudCodec, tilesToReceive);
+                    reader = new AsyncSocketIOReader().Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.Dash:
-                    reader = new AsyncDashReader_PC(url, "pointcloud", pointcloudCodec, tilesToReceive);
+                    reader = new AsyncDashReader_PC().Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.TCP:
-                    reader = new AsyncTCPDirectReader_PC(url, "pointcloud", pointcloudCodec, tilesToReceive);
+                    reader = new AsyncTCPDirectReader_PC().Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 default:
                     throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");

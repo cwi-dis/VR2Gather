@@ -17,9 +17,9 @@ namespace VRT.Transport.Dash
             H264 = 0x34363268
         };
 
-        public AsyncDashReader_AV(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
-         : base(url, streamName)
+        public AsyncDashReader_AV Init(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
+            base.Init(url, streamName);
             lock (this)
             {
                 int videoStream = -1;
@@ -74,6 +74,8 @@ namespace VRT.Transport.Dash
                 InitThread();
                 Start();
             }
+            initialized = true;
+            return this;
         }
     }
 }

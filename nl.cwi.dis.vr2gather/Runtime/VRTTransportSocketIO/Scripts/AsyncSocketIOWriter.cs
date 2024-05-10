@@ -21,8 +21,9 @@ namespace VRT.Transport.SocketIO
     public class AsyncSocketIOWriter : AsyncWriter
     {
         OutgoingStreamDescription[] streams;
+        bool initialized = false;
 
-        public AsyncSocketIOWriter(string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams) : base()
+        public AsyncSocketIOWriter Init(string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
         {
             if (streams == null)
             {
@@ -50,6 +51,8 @@ namespace VRT.Transport.SocketIO
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw;
             }
+            initialized = true;
+            return this;
         }
 
         static int instanceCounter = 0;

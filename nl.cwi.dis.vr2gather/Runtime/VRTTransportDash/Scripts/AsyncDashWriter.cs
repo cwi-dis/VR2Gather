@@ -21,14 +21,14 @@ namespace VRT.Transport.Dash
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-
+        bool initialized = false;
         public bin2dash.connection uploader;
         public string url;
         OutgoingStreamDescription[] descriptions;
         B2DPusher[] streamPushers;
 
 
-        public AsyncDashWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, OutgoingStreamDescription[] _descriptions) : base()
+        public AsyncDashWriter Init(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, OutgoingStreamDescription[] _descriptions)
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {
@@ -84,6 +84,8 @@ namespace VRT.Transport.Dash
                 Debug.Log($"{Name()}({url}) Exception:{e.Message}");
                 throw;
             }
+            initialized = true;
+            return this;
         }
 
         public override string Name()

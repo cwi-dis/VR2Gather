@@ -8,10 +8,16 @@ namespace VRT.Transport.TCP
  
     public class AsyncTCPDirectWriter : Cwipc.AsyncTCPWriter
     {
-        public AsyncTCPDirectWriter(string _url, string streamName, string fourcc, Cwipc.StreamSupport.OutgoingStreamDescription[] _descriptions)
-         : base(_url, fourcc, _descriptions)
+        public AsyncTCPDirectWriter()
+        : base()
         {
 
+        }
+
+        public AsyncTCPDirectWriter Init(string _url, string streamName, string fourcc, Cwipc.StreamSupport.OutgoingStreamDescription[] _descriptions)
+        {
+            base.Init(_url, fourcc, _descriptions);
+            return this;
         }
     }
 }

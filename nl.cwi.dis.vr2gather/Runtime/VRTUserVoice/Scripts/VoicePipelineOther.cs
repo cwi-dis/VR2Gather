@@ -111,7 +111,7 @@ namespace VRT.UserRepresentation.Voice
 
             if (proto == SessionConfig.ProtocolType.Dash)
             {
-                reader = new AsyncDashReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
+                reader = new AsyncDashReader().Init(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
 #endif
@@ -119,14 +119,14 @@ namespace VRT.UserRepresentation.Voice
             else
             if (proto == SessionConfig.ProtocolType.TCP)
             {
-                reader = new AsyncTCPDirectReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
+                reader = new AsyncTCPDirectReader().Init(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
 #endif
             }
             else
             {
-                reader = new AsyncSocketIOReader(user.userId, _streamName, audioCodec, _readerOutputQueue);
+                reader = new AsyncSocketIOReader().Init(user.userId, _streamName, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
 #endif
