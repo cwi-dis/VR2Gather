@@ -237,11 +237,11 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#32-tcp-constructor",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "bf8c223ce6490d04ca97a1189d4a34328645f635"
+      "hash": "465bd6f0e050a76775a6a274f93c5643dfd25856"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",
