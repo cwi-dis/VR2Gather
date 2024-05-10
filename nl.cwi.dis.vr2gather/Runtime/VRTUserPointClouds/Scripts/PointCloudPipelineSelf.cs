@@ -21,6 +21,11 @@ namespace VRT.UserRepresentation.PointCloud
 
     public class PointCloudPipelineSelf : PointCloudPipelineBase, IPointCloudPositionProvider
     {
+        protected AsyncPointCloudReader reader;
+        public AsyncPointCloudReader GetReader() { return reader; }
+        protected AbstractPointCloudEncoder encoder;
+        protected ITransportProtocolWriter writer;
+
         public static void Register()
         {
             RegisterPipelineClass(true, UserRepresentationType.PointCloud, AddPipelineComponent);
@@ -122,45 +127,9 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Create reader
             //
-            pcReader = PointCloudCapturerFactory.Create(PCSelfConfig, selfPreparerQueue, encoderQueue);
-#if xxxjack_old
-            switch (user.userData.userRepresentationType)
-            {
-                case UserRepresentationType.Old__PCC_CWI_:
-                    break;
-             
-                case UserRepresentationType.Old__PCC_CWIK4A_:
-                    var KinectReaderConfig = PCSelfConfig.CameraReaderConfig; // Note: config shared with rs2
-                    if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CameraReaderConfig config");
-                    pcReader = new AsyncKinectReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                    break;
-                case UserRepresentationType.Old__PCC_PROXY__:
-                    var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
-                    if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
-                    pcReader = new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                    break;
-                case UserRepresentationType.Old__PCC_SYNTH__:
-                    int nPoints = 0;
-                    var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
-                    if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
-                    pcReader = new AsyncSyntheticReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
-                    break;
-                case UserRepresentationType.Old__PCC_PRERECORDED__:
-                    var prConfig = PCSelfConfig.PrerecordedReaderConfig;
-                    if (prConfig.folder == null || prConfig.folder == "")
-                    {
-                        throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
-                    }
-                    pcReader = new AsyncPrerecordedReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                    break;
-                default:
-                    throw new System.Exception($"{Name()}: Unknown representation {user.userData.userRepresentationType}");
+            reader = PointCloudCapturerFactory.Create(PCSelfConfig, selfPreparerQueue, encoderQueue);
 
-            }
-#endif
-
-            reader = (IAsyncReader)pcReader;
-
+            
             if (!preview)
             {
                 // Which encoder do we want?
@@ -173,7 +142,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Cwipc.PointCloudTileDescription[] tilesToTransmit = null;
                 if (PCSelfConfig.tiled)
                 {
-                    tilesToTransmit = pcReader.getTiles();
+                    tilesToTransmit = reader.getTiles();
                     if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                     {
                         // Skip tile 0, it is the untiled cloud that has all points.
@@ -254,6 +223,16 @@ namespace VRT.UserRepresentation.PointCloud
 #endif
             }
         }
+
+        new void OnDestroy()
+        {
+            reader?.StopAndWait();
+            encoder?.StopAndWait();
+            writer?.StopAndWait();
+
+            base.OnDestroy();
+        }
+
 
         private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig._User._PCSelfConfig._Encoder[] Encoders, bool leakyQueues)
         {

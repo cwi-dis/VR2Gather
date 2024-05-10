@@ -25,6 +25,9 @@ namespace VRT.UserRepresentation.PointCloud
 
     public class PointCloudPipelineOther : PointCloudPipelineBase
     {
+        protected ITransportProtocolReader_Tiled reader;
+        
+        protected List<AbstractPointCloudDecoder> decoders = new List<AbstractPointCloudDecoder>();
 
         public static void Register()
         {
@@ -165,6 +168,15 @@ namespace VRT.UserRepresentation.PointCloud
 #if VRT_WITH_STATS
             Statistics.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
 #endif
+        }
+        new void OnDestroy()
+        {
+            reader?.StopAndWait();
+            foreach (var decoder in decoders)
+            {
+                decoder?.StopAndWait();
+            }
+            base.OnDestroy();
         }
 
         public void SetTilingConfig(PointCloudNetworkTileDescription config)
