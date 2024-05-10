@@ -299,7 +299,7 @@ namespace VRT.UserRepresentation.WebCam
                 Debug.LogError("Programmer error: WebCamPipeline: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            AsyncDashReader_PC pcReader = (AsyncDashReader_PC)reader;
+            AsyncDashReader_Tiled pcReader = (AsyncDashReader_Tiled)reader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);

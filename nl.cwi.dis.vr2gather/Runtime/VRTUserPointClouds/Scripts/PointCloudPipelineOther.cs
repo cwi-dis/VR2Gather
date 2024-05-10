@@ -148,10 +148,10 @@ namespace VRT.UserRepresentation.PointCloud
                     reader = new AsyncSocketIOReader_PC().Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.Dash:
-                    reader = new AsyncDashReader_PC().Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
+                    reader = new AsyncDashReader_Tiled().Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.TCP:
-                    reader = new AsyncTCPDirectReader_PC().Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
+                    reader = new AsyncTCPDirectReader_Tiled().Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
                 default:
                     throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
@@ -255,7 +255,7 @@ namespace VRT.UserRepresentation.PointCloud
                 _prreader.SelectTileQualities(tileQualities);
                 return;
             }
-            AsyncDashReader_PC _subreader = reader as AsyncDashReader_PC;
+            AsyncDashReader_Tiled _subreader = reader as AsyncDashReader_Tiled;
             if (_subreader != null)
             {
                 for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
@@ -266,7 +266,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 return;
             }
-            AsyncTCPDirectReader_PC _tcpreader = reader as AsyncTCPDirectReader_PC;
+            AsyncTCPDirectReader_Tiled _tcpreader = reader as AsyncTCPDirectReader_Tiled;
             if (_tcpreader != null)
             {
                 for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
