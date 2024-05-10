@@ -159,7 +159,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
 #endif
 
-            reader = pcReader;
+            reader = (IAsyncReader)pcReader;
 
             if (!preview)
             {

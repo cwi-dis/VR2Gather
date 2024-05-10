@@ -9,28 +9,37 @@ namespace VRT.Core
 
     }
 
-    abstract public class TransportProtocolWriter : AsyncWriter {
-        abstract public TransportProtocolWriter Init(string _url, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions);
+    public interface IAsyncWriter
+    {
+        public string Name();
+        public SyncConfig.ClockCorrespondence GetSyncInfo();
+        public void Stop();
+        public void StopAndWait();
+
+    }
+
+    public interface ITransportProtocolWriter : IAsyncWriter {
+        public ITransportProtocolWriter Init(string _url, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions);
         
     }
 
-    public interface ITransportProtocolReader {
-        abstract public TransportProtocolReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue);
+    public interface IAsyncReader
+    {
+        public string Name();
+        public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence);
+        public void StopAndWait();
 
     }
 
-    abstract public class TransportProtocolReader : AsyncReader, ITransportProtocolReader {
-        abstract public TransportProtocolReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue);
-    }
-
-    public interface ITransportProtocolReader_PC {
-        abstract public TransportProtocolReader Init(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors);
+    public interface ITransportProtocolReader : IAsyncReader {
+        public ITransportProtocolReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue);
 
     }
 
-    public interface ITransportProtocolReader_AV  {
-        abstract public TransportProtocolReader Init(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue);
+    public interface ITransportProtocolReader_Tiled : IAsyncReader {
+        public ITransportProtocolReader_Tiled Init(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors);
 
     }
+
    
 }

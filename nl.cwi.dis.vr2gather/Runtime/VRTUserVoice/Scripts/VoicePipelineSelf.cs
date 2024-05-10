@@ -22,7 +22,7 @@ namespace VRT.UserRepresentation.Voice
     {
         AsyncVoiceReader reader;
         AsyncVoiceEncoder codec;
-        AsyncWriter writer;
+        ITransportProtocolWriter writer;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe encoderQueue = null;

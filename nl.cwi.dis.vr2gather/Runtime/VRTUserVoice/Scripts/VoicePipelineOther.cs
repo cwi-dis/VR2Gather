@@ -21,7 +21,7 @@ namespace VRT.UserRepresentation.Voice
 
     public class VoicePipelineOther : MonoBehaviour
     {
-        AsyncReader reader;
+        ITransportProtocolReader reader;
         AsyncWorker codec;
         AsyncVoicePreparer preparer;
         public AudioSource audioSource;

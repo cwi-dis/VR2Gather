@@ -31,10 +31,10 @@ namespace VRT.UserRepresentation.WebCam
 
 
         AsyncWebCamReader webReader;
-        AsyncWorker reader;
+        ITransportProtocolReader reader;
         AsyncWorker encoder;
         AsyncVideoDecoder decoder;
-        AsyncWorker writer;
+        ITransportProtocolWriter writer;
         AsyncVideoPreparer preparer;
 
         QueueThreadSafe encoderQueue;

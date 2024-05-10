@@ -89,7 +89,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
 
             }
-            reader = _reader;
+            reader = (IAsyncReader)_reader;
             //
             // Initialize tiling configuration. We invent this, but it has the correct number of tiles
             // and the correct number of qualities, and the qualities are organized so that earlier

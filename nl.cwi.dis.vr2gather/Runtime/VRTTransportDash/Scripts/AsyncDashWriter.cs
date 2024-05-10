@@ -16,7 +16,7 @@ namespace VRT.Transport.Dash
     using SyncConfig = Cwipc.SyncConfig;
     using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 
-    public class AsyncDashWriter : TransportProtocolWriter
+    public class AsyncDashWriter : AsyncWriter, ITransportProtocolWriter
     {
 
         static int instanceCounter = 0;
@@ -28,7 +28,7 @@ namespace VRT.Transport.Dash
         B2DPusher[] streamPushers;
 
 
-        override public TransportProtocolWriter Init(string _url, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
+        public ITransportProtocolWriter Init(string _url, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
             int _segmentSize = VRTConfig.Instance.TransportDash.segmentSize;
             int _segmentLife = VRTConfig.Instance.TransportDash.segmentLife;

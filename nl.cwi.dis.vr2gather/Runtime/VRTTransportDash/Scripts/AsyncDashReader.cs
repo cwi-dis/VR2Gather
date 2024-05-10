@@ -14,7 +14,7 @@ namespace VRT.Transport.Dash
 
    
 
-    public class AsyncDashReader : TransportProtocolReader
+    public class AsyncDashReader : AsyncReader, ITransportProtocolReader
     {
 
         public delegate bool NeedsSomething();
@@ -215,7 +215,7 @@ namespace VRT.Transport.Dash
             }
         }
 
-        public override TransportProtocolReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue)
+        public ITransportProtocolReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue)
         {
             this._Init(_url, _streamName);
             lock (this)

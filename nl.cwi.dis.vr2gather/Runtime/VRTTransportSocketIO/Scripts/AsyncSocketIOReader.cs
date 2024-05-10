@@ -19,13 +19,13 @@ namespace VRT.Transport.SocketIO
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
-    public class AsyncSocketIOReader : AsyncReader, ISocketReader
+    public class AsyncSocketIOReader : AsyncReader, ISocketReader, ITransportProtocolReader, ITransportProtocolReader_Tiled
     {
         IncomingTileDescription[] descriptors;
         bool initialized = false;
 
         
-        public AsyncSocketIOReader Init(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors)
+        public ITransportProtocolReader_Tiled Init(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
             NoUpdateCallsNeeded();
             if (descriptors == null)
@@ -57,7 +57,7 @@ namespace VRT.Transport.SocketIO
             return this;
         }
 
-        public AsyncSocketIOReader Init(string remoteUrl, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
+        public ITransportProtocolReader Init(string remoteUrl, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
             Init(
                 remoteUrl,
