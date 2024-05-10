@@ -895,6 +895,9 @@ MonoBehaviour:
     autoDelay: 1
   Macintosh:
     SIGNALS_SMD_PATH: Assets/ExternalAssets/VR2G-nativeLibraries/VRTNativeLibraries/Plugins/mac/
+  TransportDash:
+    segmentSize: 1000
+    segmentLife: 16000
   PCs:
     Codec: cwi1
     defaultCellSize: 0.002
@@ -940,12 +943,6 @@ MonoBehaviour:
       tiled: 0
       Encoders:
       - octreeBits: 9
-      Bin2Dash:
-        segmentSize: 1000
-        segmentLife: 16000
-      AudioBin2Dash:
-        segmentSize: 1000
-        segmentLife: 16000
   configOverrideFilename: 
 --- !u!114 &1542001137
 MonoBehaviour:

@@ -82,6 +82,17 @@ namespace VRT.Core
         };
         public _Macintosh Macintosh;
 
+        [Serializable]
+        public class _TransportDash
+        {
+            [Tooltip("How many milliseconds one transmitted DASH segment should contain")]
+            public int segmentSize;
+            [Tooltip("After how many milliseconds DASH segments can be deleted by the SFU")]
+            public int segmentLife;
+        }
+        [Tooltip("Settable parameters for DASH protocol")]
+        public _TransportDash TransportDash;
+
         public Cwipc.CwipcConfig PCs;
 
         [Serializable]
@@ -185,14 +196,6 @@ namespace VRT.Core
                     public int octreeBits;
                 }
                 public _Encoder[] Encoders;
-                [Serializable]
-                public class _Bin2Dash
-                {
-                    public int segmentSize;
-                    public int segmentLife;
-                }
-                public _Bin2Dash Bin2Dash;
-                public _Bin2Dash AudioBin2Dash;
             }
             public _PCSelfConfig PCSelfConfig;
 

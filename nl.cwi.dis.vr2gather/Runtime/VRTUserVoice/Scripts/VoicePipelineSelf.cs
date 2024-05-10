@@ -93,10 +93,6 @@ namespace VRT.UserRepresentation.Voice
             }
             if (proto == SessionConfig.ProtocolType.Dash)
             {
-                var AudioBin2Dash = cfg?.PCSelfConfig?.AudioBin2Dash;
-                if (AudioBin2Dash == null)
-                    throw new Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
-
                 writer = new AsyncDashWriter().Init(url, _streamName, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, codec={audioCodec}");

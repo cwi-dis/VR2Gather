@@ -109,9 +109,6 @@ namespace VRT.UserRepresentation.WebCam
                     //
                     // Create bin2dash writer for PC transmission
                     //
-                    var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
-                    if (Bin2Dash == null)
-                        throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                     try
                     {
                         OutgoingStreamDescription[] dashStreamDescriptions = new OutgoingStreamDescription[1] {

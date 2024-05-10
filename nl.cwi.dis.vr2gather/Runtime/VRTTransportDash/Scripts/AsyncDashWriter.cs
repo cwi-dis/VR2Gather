@@ -30,8 +30,8 @@ namespace VRT.Transport.Dash
 
         public AsyncDashWriter Init(string _url, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
-            int _segmentSize = VRTConfig.Instance.LocalUser.PCSelfConfig.Bin2Dash.segmentSize;
-            int _segmentLife = VRTConfig.Instance.LocalUser.PCSelfConfig.Bin2Dash.segmentLife;
+            int _segmentSize = VRTConfig.Instance.TransportDash.segmentSize;
+            int _segmentLife = VRTConfig.Instance.TransportDash.segmentLife;
             if (_descriptions == null || _descriptions.Length == 0)
             {
                 throw new System.Exception($"{Name()}: descriptions is null or empty");
