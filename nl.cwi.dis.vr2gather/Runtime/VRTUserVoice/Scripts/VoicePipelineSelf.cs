@@ -88,7 +88,7 @@ namespace VRT.UserRepresentation.Voice
                     url = user.userId;
                     break;
                 case SessionConfig.ProtocolType.TCP:
-                    url = user.sfuData.url_pcc;
+                    url = user.userData.userAudioUrl;
                     break;
             }
             if (proto == SessionConfig.ProtocolType.Dash)

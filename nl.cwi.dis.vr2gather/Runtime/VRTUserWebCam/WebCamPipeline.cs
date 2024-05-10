@@ -130,7 +130,7 @@ namespace VRT.UserRepresentation.WebCam
                                 url = user.userId;
                                 break;
                             case SessionConfig.ProtocolType.TCP:
-                                url = user.sfuData.url_pcc;
+                                url = user.userData.userAudioUrl;
                                 break;
                         }
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)

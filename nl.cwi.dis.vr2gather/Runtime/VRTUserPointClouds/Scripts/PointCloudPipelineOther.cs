@@ -138,7 +138,7 @@ namespace VRT.UserRepresentation.PointCloud
                     url = user.userId;
                     break;
                 case SessionConfig.ProtocolType.TCP:
-                    url = user.sfuData.url_pcc;
+                    url = user.userData.userPCurl;
                     break;
             }
             switch (SessionConfig.Instance.protocolType)
