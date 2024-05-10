@@ -18,12 +18,12 @@ namespace VRT.Transport.SocketIO
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
     using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 
-    public class AsyncSocketIOWriter : AsyncWriter
+    public class AsyncSocketIOWriter : TransportProtocolWriter
     {
         OutgoingStreamDescription[] streams;
         bool initialized = false;
 
-        public AsyncSocketIOWriter Init(string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
+        override public TransportProtocolWriter Init(string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
         {
             if (streams == null)
             {

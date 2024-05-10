@@ -180,12 +180,12 @@ namespace VRT.UserRepresentation.WebCam
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                 {
-                    reader = new AsyncTCPDirectReader().Init(user.userData.userPCurl, "wcwc", videoCodecQueue);
+                    reader = new AsyncTCPDirectReader().Init(user.userData.userPCurl, "webcam", 0, "wcwc", videoCodecQueue);
                 }
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                 {
-                    reader = new AsyncSocketIOReader().Init(user.userId, "webcam", "wcwc", videoCodecQueue);
+                    reader = new AsyncSocketIOReader().Init(user.userId, "webcam", 0, "wcwc", videoCodecQueue);
                 }
                 else
                 {

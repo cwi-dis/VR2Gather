@@ -8,7 +8,7 @@ namespace VRT.Transport.TCP
  
     public class AsyncTCPDirectReader : Cwipc.AsyncTCPReader
     {
-        public new AsyncTCPDirectReader Init(string _url, string fourcc, QueueThreadSafe outQueue)
+        public AsyncTCPDirectReader Init(string _url, string _streamName, int _streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
             base.Init(_url, fourcc, outQueue);
             return this;

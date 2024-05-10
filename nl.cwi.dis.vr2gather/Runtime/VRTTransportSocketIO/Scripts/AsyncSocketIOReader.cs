@@ -57,7 +57,7 @@ namespace VRT.Transport.SocketIO
             return this;
         }
 
-        public AsyncSocketIOReader Init(string remoteUrl, string streamName, string fourcc, QueueThreadSafe outQueue)
+        public AsyncSocketIOReader Init(string remoteUrl, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
             Init(
                 remoteUrl,
@@ -157,4 +157,8 @@ namespace VRT.Transport.SocketIO
 #endif
     }
 
+    public class AsyncSocketIOReader_PC : AsyncSocketIOReader
+    {
+
+    }
 }
