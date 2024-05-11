@@ -21,6 +21,16 @@ namespace VRT.Transport.SocketIO
 
     public class AsyncSocketIOReader : AsyncReader, ISocketReader, ITransportProtocolReader, ITransportProtocolReader_Tiled
     {
+        static public ITransportProtocolReader Factory()
+        {
+            return new AsyncSocketIOReader();
+        }
+
+        static public ITransportProtocolReader_Tiled Factory_Tiled()
+        {
+            return new AsyncSocketIOReader();
+        }
+
         IncomingTileDescription[] descriptors;
         bool initialized = false;
 

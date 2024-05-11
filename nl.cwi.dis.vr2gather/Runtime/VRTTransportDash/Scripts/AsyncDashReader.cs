@@ -16,6 +16,10 @@ namespace VRT.Transport.Dash
 
     public class AsyncDashReader : AsyncReader, ITransportProtocolReader
     {
+        static public ITransportProtocolReader Factory()
+        {
+            return new AsyncDashReader();
+        }
 
         public delegate bool NeedsSomething();
 

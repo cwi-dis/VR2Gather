@@ -18,6 +18,10 @@ namespace VRT.Transport.Dash
 
     public class AsyncDashWriter : AsyncWriter, ITransportProtocolWriter
     {
+        static public ITransportProtocolWriter Factory()
+        {
+            return new AsyncDashWriter();
+        }
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;

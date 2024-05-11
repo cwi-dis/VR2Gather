@@ -12,6 +12,11 @@ namespace VRT.Transport.Dash
 
     public class AsyncDashReader_Tiled : AsyncDashReader, ITransportProtocolReader_Tiled
     {
+        static public ITransportProtocolReader_Tiled Factory()
+        {
+            return new AsyncDashReader_Tiled();
+        }
+
         protected IncomingTileDescription[] tileDescriptors;
         protected IncomingStreamDescription[] allStreamDescriptors;
 

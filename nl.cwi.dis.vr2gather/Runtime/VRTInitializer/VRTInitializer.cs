@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.XR.Management;
 using VRT.UserRepresentation.PointCloud;
 using VRT.UserRepresentation.WebCam;
-using VRT.Core;
-using VRT.Pilots.Common;
+using VRT.Transport.SocketIO;
+using VRT.Transport.Dash;
+using VRT.Transport.TCP;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -17,7 +18,11 @@ public class VRTInitializer : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-         Debug.Log("VRTInitializer: Registering pipelines");
+        Debug.Log("VRTInitializer: Registering transport protocols");
+        TransportProtocolSocketIO.Register();
+        TransportProtocolDash.Register();
+        TransportProtocolTCPDirect.Register();
+        Debug.Log("VRTInitializer: Registering pipelines");
         PointCloudPipelineSelf.Register();
         PointCloudPipelineOther.Register();
         WebCamPipeline.Register();

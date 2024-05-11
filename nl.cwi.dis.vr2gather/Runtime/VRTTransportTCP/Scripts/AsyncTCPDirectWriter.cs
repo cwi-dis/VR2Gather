@@ -8,6 +8,11 @@ namespace VRT.Transport.TCP
  
     public class AsyncTCPDirectWriter : Cwipc.AsyncTCPWriter, ITransportProtocolWriter
     {
+        static public ITransportProtocolWriter Factory()
+        {
+            return new AsyncTCPDirectWriter();
+        }
+
         public AsyncTCPDirectWriter()
         : base()
         {

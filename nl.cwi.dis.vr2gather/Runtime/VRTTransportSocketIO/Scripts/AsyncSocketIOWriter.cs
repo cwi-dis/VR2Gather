@@ -20,6 +20,11 @@ namespace VRT.Transport.SocketIO
 
     public class AsyncSocketIOWriter : AsyncWriter, ITransportProtocolWriter
     {
+        static public ITransportProtocolWriter Factory()
+        {
+            return new AsyncSocketIOWriter();
+        }
+
         OutgoingStreamDescription[] streams;
         bool initialized = false;
 
