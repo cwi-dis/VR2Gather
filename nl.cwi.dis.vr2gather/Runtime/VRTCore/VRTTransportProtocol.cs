@@ -19,17 +19,17 @@ namespace VRT.Core
             Debug.Log($"TransportProtocol: Registered {protocol}");
         }
 
-        public ITransportProtocolWriter NewWriter(string protocol)
+        static public ITransportProtocolWriter NewWriter(string protocol)
         {
             return writers[protocol]();
         }
 
-        public ITransportProtocolReader NewReader(string protocol)
+        static public ITransportProtocolReader NewReader(string protocol)
         {
             return readers[protocol]();
         }
 
-        public ITransportProtocolReader_Tiled NewReader_Tiled(string protocol)
+        static public ITransportProtocolReader_Tiled NewReader_Tiled(string protocol)
         {
             return readers_tiled[protocol]();
         }
@@ -67,7 +67,6 @@ namespace VRT.Core
     public interface ITransportProtocolReader_Tiled : IAsyncReader {
         public delegate ITransportProtocolReader_Tiled Factory();
         public ITransportProtocolReader_Tiled Init(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors);
-
     }
 
    

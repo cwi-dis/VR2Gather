@@ -7,9 +7,6 @@ using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using Cwipc;
 using VRT.Video;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
-using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
 
@@ -120,29 +117,31 @@ namespace VRT.UserRepresentation.WebCam
                             };
                        // We need some backward-compatibility hacks, depending on protocol type.
                         string url = user.sfuData.url_gen;
-                        switch (SessionConfig.Instance.protocolType)
+                        string proto = SessionConfig.Instance.protocolType;
+                        switch (proto)
                         {
-                            case SessionConfig.ProtocolType.None:
-                            case SessionConfig.ProtocolType.SocketIO:
+                            case "socketio":
                                 url = user.userId;
                                 break;
-                            case SessionConfig.ProtocolType.TCP:
+                            case "tcp":
                                 url = user.userData.userAudioUrl;
                                 break;
                         }
+                        writer = TransportProtocol.NewWriter(proto).Init(url, "webcam", "wcwc", dashStreamDescriptions);
+                        // xxxjack add stats 
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                         {
-                            writer = new AsyncDashWriter().Init(url, "webcam", "wcwc", dashStreamDescriptions);
+                            writer = TransportProtocol.NewWriter("dash").Init(url, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                         {
-                            writer = new AsyncTCPDirectWriter().Init(url, "webcam", "wcwc", dashStreamDescriptions);
+                            writer = TransportProtocol.NewWriter("tcp").Init(url, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                         {
-                            writer = new AsyncSocketIOWriter().Init(url, "webcam", "wcwc", dashStreamDescriptions);
+                            writer = TransportProtocol.NewWriter("socketio").Init(url, "webcam", "wcwc", dashStreamDescriptions);
                         }
                         else
                         {
@@ -175,17 +174,17 @@ namespace VRT.UserRepresentation.WebCam
        
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                 {
-                    reader = new AsyncDashReader().Init(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                    reader = TransportProtocol.NewReader("dash").Init(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                 }
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                 {
-                    reader = new AsyncTCPDirectReader().Init(user.userData.userPCurl, "webcam", 0, "wcwc", videoCodecQueue);
+                    reader = TransportProtocol.NewReader("tcp").Init(user.userData.userPCurl, "webcam", 0, "wcwc", videoCodecQueue);
                 }
                 else
                 if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                 {
-                    reader = new AsyncSocketIOReader().Init(user.userId, "webcam", 0, "wcwc", videoCodecQueue);
+                    reader = TransportProtocol.NewReader("socketio").Init(user.userId, "webcam", 0, "wcwc", videoCodecQueue);
                 }
                 else
                 {
@@ -280,15 +279,7 @@ namespace VRT.UserRepresentation.WebCam
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            AsyncDashWriter pcWriter = (AsyncDashWriter)writer;
-            if (pcWriter != null)
-            {
-                rv.visuals = pcWriter.GetSyncInfo();
-            }
-            else
-            {
-                Debug.LogWarning("WebCamPipeline: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
-            }
+            rv.visuals = writer.GetSyncInfo();
             return rv;
         }
 
@@ -299,16 +290,8 @@ namespace VRT.UserRepresentation.WebCam
                 Debug.LogError("Programmer error: WebCamPipeline: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            AsyncDashReader_Tiled pcReader = (AsyncDashReader_Tiled)reader;
-            if (pcReader != null)
-            {
-                pcReader.SetSyncInfo(config.visuals);
-            }
-            else
-            {
-                Debug.LogWarning("WebCamPipeline: SetSyncConfig: reader is not a PCSubReader");
-            }
-
+            reader.SetSyncInfo(config.visuals);
+        
         }
 
         public new float GetBandwidthBudget()

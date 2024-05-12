@@ -98,7 +98,7 @@ namespace VRT.UserRepresentation.Voice
 
             string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
-            SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
+            string proto = SessionConfig.Instance.protocolType;
 
             preparerQueue = new QueueThreadSafe("VoicePreparer", preparerQueueSize, true);
             QueueThreadSafe _readerOutputQueue = preparerQueue;
@@ -108,29 +108,23 @@ namespace VRT.UserRepresentation.Voice
                 codec = new AsyncVoiceDecoder(decoderQueue, preparerQueue);
                 _readerOutputQueue = decoderQueue;
             }
+            string url = user.sfuData.url_audio;
+            // Backward compatible trick for 
+            switch(proto)
+            {
+                case "tcp":
+                    url = user.userData.userAudioUrl;
+                    break;
+                case "socketio":
+                    url = user.userId;
+                    break;
+            }
+            reader = TransportProtocol.NewReader(proto).Init(url, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
+#endif
 
-            if (proto == SessionConfig.ProtocolType.Dash)
-            {
-                reader = new AsyncDashReader().Init(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
-#endif
-            }
-            else
-            if (proto == SessionConfig.ProtocolType.TCP)
-            {
-                reader = new AsyncTCPDirectReader().Init(user.userData.userAudioUrl, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
-#endif
-            }
-            else
-            {
-                reader = new AsyncSocketIOReader().Init(user.userId, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
-#endif
-            }
+            
 
             preparer = new AsyncVoicePreparer(preparerQueue);
             string synchronizerName = "none";

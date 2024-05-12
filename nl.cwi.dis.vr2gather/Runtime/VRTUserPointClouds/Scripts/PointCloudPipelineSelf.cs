@@ -4,9 +4,6 @@ using VRT.Core;
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.UserRepresentation.Voice;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
-using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 using VRT.Pilots.Common;
@@ -205,14 +202,14 @@ namespace VRT.UserRepresentation.PointCloud
                 switch (SessionConfig.Instance.protocolType)
                 {
                     case SessionConfig.ProtocolType.Dash:
-                        writer = new AsyncDashWriter().Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                        writer = TransportProtocol.NewWriter("dash").Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     case SessionConfig.ProtocolType.TCP:
-                        writer = new AsyncTCPDirectWriter().Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                        writer = TransportProtocol.NewWriter("tcp").Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     case SessionConfig.ProtocolType.None:
                     case SessionConfig.ProtocolType.SocketIO:
-                        writer = new AsyncSocketIOWriter().Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                        writer = TransportProtocol.NewWriter("socketio").Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     default:
                         throw new System.Exception($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");

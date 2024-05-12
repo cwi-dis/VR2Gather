@@ -1,9 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
-using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
@@ -51,7 +48,7 @@ namespace VRT.UserRepresentation.Voice
 
             string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
-            SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
+            string proto = SessionConfig.Instance.protocolType;
 
             QueueThreadSafe _readerOutputQueue = null;
             if (audioIsEncoded)
@@ -81,37 +78,20 @@ namespace VRT.UserRepresentation.Voice
             b2dStreams[0].inQueue = senderQueue;
             // We need some backward-compatibility hacks, depending on protocol type.
             string url = user.sfuData.url_gen;
-            switch (SessionConfig.Instance.protocolType)
+            switch (proto)
             {
-                case SessionConfig.ProtocolType.None:
-                case SessionConfig.ProtocolType.SocketIO:
+                case "socketio":
                     url = user.userId;
                     break;
-                case SessionConfig.ProtocolType.TCP:
+                case "tcp":
                     url = user.userData.userAudioUrl;
                     break;
             }
-            if (proto == SessionConfig.ProtocolType.Dash)
-            {
-                writer = new AsyncDashWriter().Init(url, _streamName, audioCodec, b2dStreams);
+            writer = TransportProtocol.NewWriter(proto).Init(url, _streamName, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, codec={audioCodec}");
+            Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, codec={audioCodec}");
 #endif
-            }
-            else if (proto == SessionConfig.ProtocolType.TCP)
-            {
-                writer = new AsyncTCPDirectWriter().Init(url, _streamName, audioCodec, b2dStreams);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
-#endif
-            }
-            else
-            {
-                writer = new AsyncSocketIOWriter().Init(url, _streamName, audioCodec, b2dStreams);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
-#endif
-            }
+
             string encoderName = "none";
             if (codec != null)
             {
