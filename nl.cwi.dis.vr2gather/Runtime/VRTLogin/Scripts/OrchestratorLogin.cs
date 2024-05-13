@@ -777,9 +777,8 @@ namespace VRT.Login
         {
             CreatePanelSessionProtocolDropdown.ClearOptions();
             List<string> names = new List<string>();
-            foreach (string protocolName in Enum.GetNames(typeof(SessionConfig.ProtocolType)))
+            foreach (string protocolName in TransportProtocol.GetNames())
             {
-                if (protocolName == "None") continue;
                 names.Add(protocolName);
             }
             CreatePanelSessionProtocolDropdown.AddOptions(names);
@@ -820,7 +819,6 @@ namespace VRT.Login
                 // Empty string means we're called from the dropdown callback. Get the value from there.
                 protoString = CreatePanelSessionProtocolDropdown.options[CreatePanelSessionProtocolDropdown.value].text;
             }
-            SessionConfig.ProtocolType proto = SessionConfig.ProtocolFromString(protoString);
             bool done = false;
             for (int i = 0; i < CreatePanelSessionProtocolDropdown.options.Count; i++)
             {
@@ -835,7 +833,7 @@ namespace VRT.Login
                 Debug.LogError($"OrchestratorLogin: unknown protocol \"protoString\"");
             }
 
-            SessionConfig.Instance.protocolType = proto;
+            SessionConfig.Instance.protocolType = protoString;
         }
 
         #endregion
@@ -1420,7 +1418,7 @@ namespace VRT.Login
 
         private void AddSession()
         {
-            string protocol = SessionConfig.ProtocolToString(SessionConfig.Instance.protocolType);
+            string protocol = SessionConfig.Instance.protocolType;
 
             ScenarioRegistry.ScenarioInfo scenarioInfo = ScenarioRegistry.Instance.Scenarios[CreatePanelScenarioDropdown.value];
             Scenario scenario = scenarioInfo.AsScenario();

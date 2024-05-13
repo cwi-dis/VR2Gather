@@ -33,6 +33,13 @@ namespace VRT.Core
         {
             return readers_tiled[protocol]();
         }
+
+        static public string[] GetNames()
+        {
+            string[] rv = new string[writers.Keys.Count];
+            writers.Keys.CopyTo(rv, 0);
+            return rv;
+        }
     }
 
     public interface IAsyncWriter

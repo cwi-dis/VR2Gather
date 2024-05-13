@@ -189,31 +189,18 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // We need some backward-compatibility hacks, depending on protocol type.
                 string url = user.sfuData.url_gen;
-                switch (SessionConfig.Instance.protocolType)
+                string proto = SessionConfig.Instance.protocolType;
+                switch (proto)
                 {
-                    case SessionConfig.ProtocolType.None:
-                    case SessionConfig.ProtocolType.SocketIO:
+                    case "socketio":
                         url = user.userId;
                         break;
-                    case SessionConfig.ProtocolType.TCP:
-                        url = user.userData.userPCurl;
+                    case "tcp":
+                        url = user.userData.userAudioUrl;
                         break;
                 }
-                switch (SessionConfig.Instance.protocolType)
-                {
-                    case SessionConfig.ProtocolType.Dash:
-                        writer = TransportProtocol.NewWriter("dash").Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
-                        break;
-                    case SessionConfig.ProtocolType.TCP:
-                        writer = TransportProtocol.NewWriter("tcp").Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
-                        break;
-                    case SessionConfig.ProtocolType.None:
-                    case SessionConfig.ProtocolType.SocketIO:
-                        writer = TransportProtocol.NewWriter("socketio").Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
-                        break;
-                    default:
-                        throw new System.Exception($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
-                }
+                writer = TransportProtocol.NewWriter(proto).Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+               
 
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={tilesToTransmit.Length}, nquality={PCSelfConfig.Encoders.Length}, nStream={outgoingStreamDescriptions.Length}");
