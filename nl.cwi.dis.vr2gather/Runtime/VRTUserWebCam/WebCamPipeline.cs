@@ -115,7 +115,7 @@ namespace VRT.UserRepresentation.WebCam
                                 inQueue = writerQueue
                                 }
                             };
-                       // We need some backward-compatibility hacks, depending on protocol type.
+                        // We need some backward-compatibility hacks, depending on protocol type.
                         string url = user.sfuData.url_gen;
                         string proto = SessionConfig.Instance.protocolType;
                         switch (proto)
@@ -128,25 +128,10 @@ namespace VRT.UserRepresentation.WebCam
                                 break;
                         }
                         writer = TransportProtocol.NewWriter(proto).Init(url, "webcam", "wcwc", dashStreamDescriptions);
-                        // xxxjack add stats 
-                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
-                        {
-                            writer = TransportProtocol.NewWriter("dash").Init(url, "webcam", "wcwc", dashStreamDescriptions);
-                        }
-                        else
-                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
-                        {
-                            writer = TransportProtocol.NewWriter("tcp").Init(url, "webcam", "wcwc", dashStreamDescriptions);
-                        }
-                        else
-                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
-                        {
-                            writer = TransportProtocol.NewWriter("socketio").Init(url, "webcam", "wcwc", dashStreamDescriptions);
-                        }
-                        else
-                        {
-                            Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
-                        }
+#if VRT_WITH_STATS
+                        Statistics.Output(Name(), $"proto={proto}, url={url}");
+#endif
+
 
                     }
                     catch (System.EntryPointNotFoundException e)
@@ -171,25 +156,23 @@ namespace VRT.UserRepresentation.WebCam
             }
             else
             {
-       
-                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
+                // We need some backward-compatibility hacks, depending on protocol type.
+                string url = user.sfuData.url_gen;
+                string proto = SessionConfig.Instance.protocolType;
+                switch (proto)
                 {
-                    reader = TransportProtocol.NewReader("dash").Init(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                    case "socketio":
+                        url = user.userId;
+                        break;
+                    case "tcp":
+                        url = user.userData.userAudioUrl;
+                        Debug.LogError("xxxjack port must be incremented");
+                        break;
                 }
-                else
-                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
-                {
-                    reader = TransportProtocol.NewReader("tcp").Init(user.userData.userPCurl, "webcam", 0, "wcwc", videoCodecQueue);
-                }
-                else
-                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
-                {
-                    reader = TransportProtocol.NewReader("socketio").Init(user.userId, "webcam", 0, "wcwc", videoCodecQueue);
-                }
-                else
-                {
-                    Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
-                }
+                reader = TransportProtocol.NewReader(proto).Init(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+#if VRT_WITH_STATS
+                Statistics.Output(Name(), $"proto={proto}, url={url}");
+#endif
 
                 //
                 // Create video decoder.

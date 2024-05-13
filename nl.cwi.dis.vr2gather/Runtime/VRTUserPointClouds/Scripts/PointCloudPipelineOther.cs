@@ -133,32 +133,20 @@ namespace VRT.UserRepresentation.PointCloud
 #endif
             };
             // We need some backward-compatibility hacks, depending on protocol type.
+            // We need some backward-compatibility hacks, depending on protocol type.
             string url = user.sfuData.url_gen;
-            switch (SessionConfig.Instance.protocolType)
+            string proto = SessionConfig.Instance.protocolType;
+            switch (proto)
             {
-                case SessionConfig.ProtocolType.None:
-                case SessionConfig.ProtocolType.SocketIO:
+                case "socketio":
                     url = user.userId;
                     break;
-                case SessionConfig.ProtocolType.TCP:
-                    url = user.userData.userPCurl;
+                case "tcp":
+                    url = user.userData.userAudioUrl;
+                    Debug.LogError("xxxjack port must be incremented");
                     break;
             }
-            switch (SessionConfig.Instance.protocolType)
-            {
-                case SessionConfig.ProtocolType.None:
-                case SessionConfig.ProtocolType.SocketIO:
-                    reader = TransportProtocol.NewReader_Tiled("socketio").Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
-                    break;
-                case SessionConfig.ProtocolType.Dash:
-                    reader = TransportProtocol.NewReader_Tiled("dash").Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
-                    break;
-                case SessionConfig.ProtocolType.TCP:
-                    reader = TransportProtocol.NewReader_Tiled("tcp").Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
-                    break;
-                default:
-                    throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
-            }
+            reader = TransportProtocol.NewReader_Tiled(proto).Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
 
             string synchronizerName = "none";
             if (synchronizer != null && synchronizer.isEnabled())
@@ -166,7 +154,7 @@ namespace VRT.UserRepresentation.PointCloud
                 synchronizerName = synchronizer.Name();
             }
 #if VRT_WITH_STATS
-            Statistics.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
+            Statistics.Output(Name(), $"reader={reader.Name()}, codec={pointcloudCodec}, synchronizer={synchronizerName}");
 #endif
         }
         new void OnDestroy()
