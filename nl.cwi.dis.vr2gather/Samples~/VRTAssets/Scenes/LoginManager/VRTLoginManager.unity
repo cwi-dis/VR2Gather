@@ -124,6 +124,18 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &153050525 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3096292403496545405, guid: 50281900da061ff41b77e212fa1ab6f1,
+    type: 3}
+  m_PrefabInstance: {fileID: 5310739694599492227}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &338882283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1212,11 +1224,41 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1329914578780927931, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: m_Text
+      value: Local tcp:// server URL
+      objectReference: {fileID: 0}
+    - target: {fileID: 1685828838444248956, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: SettingsPanelTCPURLField
+      value: 
+      objectReference: {fileID: 153050525}
+    - target: {fileID: 1685828838444248956, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: SettingsPanelTCPPointcloudURLField
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1929673041601025120, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2279564963699044520, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: m_Text
+      value: tcp://localhost:9900
+      objectReference: {fileID: 0}
     - target: {fileID: 5707680166055793319, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 1151372263}
+    - target: {fileID: 5866854877333937368, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -85.00006
+      objectReference: {fileID: 0}
     - target: {fileID: 6457971032522044961, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1327,8 +1369,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tool_OrchestratorLogin
       objectReference: {fileID: 0}
+    - target: {fileID: 6457971033183718167, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 107636813754614923, guid: 50281900da061ff41b77e212fa1ab6f1, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 50281900da061ff41b77e212fa1ab6f1, type: 3}

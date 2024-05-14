@@ -92,13 +92,12 @@ namespace VRT.Orchestrator.Wrapping
     public class UserData: OrchestratorElement
     {
 
-        public string userPCurl = "";
         public string userAudioUrl = "";
 
         public string webcamName = "";
         public string microphoneName = "";
 
-        public UserRepresentationType userRepresentationType;
+        public UserRepresentationType userRepresentationType = UserRepresentationType.SimpleAvatar;
 
         // empty constructor callled by the JsonData parser
         public UserData() { }

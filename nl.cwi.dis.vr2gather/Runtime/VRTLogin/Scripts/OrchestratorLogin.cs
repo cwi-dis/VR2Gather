@@ -67,8 +67,7 @@ namespace VRT.Login
         [Header("SettingsPanel")]
         [SerializeField] private GameObject settingsPanel = null;
         [SerializeField] private GameObject SettingsPanelWebcamInfoGO = null;
-        [SerializeField] private InputField SettingsPanelTCPPointcloudURLField = null;
-        [SerializeField] private InputField SettingsPanelTCPAudioURLField = null;
+        [SerializeField] private InputField SettingsPanelTCPURLField = null;
         [SerializeField] private Dropdown SettingsPanelRepresentationDropdown = null;
         [SerializeField] private Dropdown SettingsPanelWebcamDropdown = null;
         [SerializeField] private Dropdown SettingsPanelMicrophoneDropdown = null;
@@ -649,8 +648,7 @@ namespace VRT.Login
             // UserData info in Config
             UserData lUserData = new UserData
             {
-                userPCurl = SettingsPanelTCPPointcloudURLField.text,
-                userAudioUrl = SettingsPanelTCPAudioURLField.text,
+                userAudioUrl = SettingsPanelTCPURLField.text,
                 userRepresentationType = (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
                 webcamName = (SettingsPanelWebcamDropdown.options.Count <= 0) ? "None" : SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
                 microphoneName = (SettingsPanelMicrophoneDropdown.options.Count <= 0) ? "None" : SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
@@ -669,8 +667,7 @@ namespace VRT.Login
             }
             UserData userData = user.userData;
 
-            SettingsPanelTCPPointcloudURLField.text = userData.userPCurl;
-            SettingsPanelTCPAudioURLField.text = userData.userAudioUrl;
+            SettingsPanelTCPURLField.text = userData.userAudioUrl;
             SettingsPanelRepresentationDropdown.value = (int)userData.userRepresentationType;
             SettingsPanelWebcamDropdown.value = 0;
 
