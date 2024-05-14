@@ -1,6 +1,5 @@
-using UnityEngine;
+using System;
 using VRT.Core;
-using Cwipc;
 
 namespace VRT.Transport.TCP
 {
@@ -13,8 +12,13 @@ namespace VRT.Transport.TCP
             return new AsyncTCPDirectReader_Tiled();
         }
 
-        public ITransportProtocolReader_Tiled Init(string _url, string streamname, string fourcc, Cwipc.StreamSupport.IncomingTileDescription[] _tileDescriptors)
+        public ITransportProtocolReader_Tiled Init(string _url, string streamName, string fourcc, Cwipc.StreamSupport.IncomingTileDescription[] _tileDescriptors)
         {
+            if (streamName != "audio")
+            {
+                Uri tmp = new Uri(_url);
+                _url = $"tcp://{tmp.Host}:{tmp.Port + 1}";
+            }
             base.Init(_url, fourcc, _tileDescriptors);
             return this;
         }

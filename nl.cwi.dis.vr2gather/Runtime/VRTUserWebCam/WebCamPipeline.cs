@@ -166,7 +166,6 @@ namespace VRT.UserRepresentation.WebCam
                         break;
                     case "tcp":
                         url = user.userData.userAudioUrl;
-                        Debug.LogError("xxxjack port must be incremented");
                         break;
                 }
                 reader = TransportProtocol.NewReader(proto).Init(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);

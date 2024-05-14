@@ -1,6 +1,5 @@
-using UnityEngine;
+using System;
 using VRT.Core;
-using Cwipc;
 
 namespace VRT.Transport.TCP
 {
@@ -15,6 +14,11 @@ namespace VRT.Transport.TCP
 
         public ITransportProtocolReader Init(string _url, string _streamName, int _streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
+            if (_streamName != "audio")
+            {
+                Uri tmp = new Uri(_url);
+                _url = $"tcp://{tmp.Host}:{tmp.Port + 1}";
+            }
             base.Init(_url, fourcc, outQueue);
             return this;
         }

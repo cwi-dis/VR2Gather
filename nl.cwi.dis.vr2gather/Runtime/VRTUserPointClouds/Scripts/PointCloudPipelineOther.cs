@@ -143,7 +143,6 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
                 case "tcp":
                     url = user.userData.userAudioUrl;
-                    Debug.LogError("xxxjack port must be incremented");
                     break;
             }
             reader = TransportProtocol.NewReader_Tiled(proto).Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
