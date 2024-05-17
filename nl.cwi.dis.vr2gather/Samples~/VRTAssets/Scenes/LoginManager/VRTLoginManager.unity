@@ -1351,7 +1351,7 @@ PrefabInstance:
     - target: {fileID: 1428028439696384793, guid: f235c89f17e78fe43928308c1e3ac4d1,
         type: 3}
       propertyPath: enableSocketioLogging
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3991120480309365947, guid: f235c89f17e78fe43928308c1e3ac4d1,
         type: 3}
