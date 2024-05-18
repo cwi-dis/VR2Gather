@@ -27,6 +27,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Best.SocketIO;
 using Best.HTTP.JSON.LitJson;
+using Best.HTTP;
 using System.Text;
 using VRT.Orchestrator.WSManagement;
 
@@ -116,6 +117,7 @@ namespace VRT.Orchestrator.Wrapping
     // and converting and parsing the camands and the responses
     public class OrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
     {
+        
         public static OrchestratorWrapper instance;
 
         // manager for the socketIO connection to the orchestrator 
@@ -156,6 +158,10 @@ namespace VRT.Orchestrator.Wrapping
             UserSessionEventslisteners.Add(userSessionEventsListener);
 
             InitGrammar();
+        }
+
+        public void EnableSocketioLogging() {
+            Best.HTTP.Shared.HTTPManager.Logger.Level = Best.HTTP.Shared.Logger.Loglevels.All;
         }
         public Action<UserDataStreamPacket> OnDataStreamReceived;
 
