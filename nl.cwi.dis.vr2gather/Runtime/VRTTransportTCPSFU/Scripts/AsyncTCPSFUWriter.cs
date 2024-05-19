@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 using UnityEngine;
-using VRT.Transport.Dash;
-using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS
@@ -27,24 +25,26 @@ namespace VRT.Transport.TCPSFU
 
         OutgoingStreamDescription[] streams;
         bool initialized = false;
+        private TransportProtocolTCPSFU connection;
 
-        public ITransportProtocolWriter Init(string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
+        public ITransportProtocolWriter Init(string url, string streamName, string fourcc, OutgoingStreamDescription[] streams)
         {
             if (streams == null)
             {
                 throw new System.Exception($"{Name()}: outQueue is null");
             }
+            connection = TransportProtocolTCPSFU.Connect(url);
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i)
             {
-                streams[i].name = $"{userId}.{streamName}#{i}";
+                streams[i].name = $"{streamName}/{streams[i].tileNumber}";
+                connection.RegisterOutgoingStream(streams[i].name);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
-                OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
             try
             {
@@ -75,43 +75,28 @@ namespace VRT.Transport.TCPSFU
             {
                 if (!streams[i].inQueue.IsClosed())
                 {
-                    Debug.LogWarning($"[FPA] {Name()}: inQueue not closed, closing");
+                    Debug.LogWarning($"{Name()}: inQueue not closed, closing");
                     streams[i].inQueue.Close();
                 }
+                connection.UnregisterOutgoingStream(streams[i].name);
             }
-            Debug.Log($"[FPA] {Name()}: Stopped.");
-            OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
+            Debug.Log($"{Name()}: Stopped.");
         }
 
         protected override void AsyncUpdate()
         {
-            if (OrchestratorWrapper.instance != null && OrchestratorController.Instance.ConnectedToOrchestrator)
+            for (int i = 0; i < streams.Length; ++i)
             {
-                for (int i = 0; i < streams.Length; ++i)
-                {
-                    BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
-                    if (chk == null) continue;
-                    if (chk.length > 1000000)
-                    {
-                        // Messages > 1MB case socket.io to hang up the connection. This will create very
-                        // weird errors with the current Orchestrator and BestHTTP implementations.
-                        Debug.LogError($"{Name()}: Message size {chk.length} exceeds SocketIO 1MByte maximum. Dropping. ");
-                        continue;
-                    }
-                    var hdr_timestamp = BitConverter.GetBytes(chk.metadata.timestamp);
-                    var buf = new byte[chk.length+sizeof(long)];
-                    Array.Copy(hdr_timestamp, buf, sizeof(long));
-                    System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
-                    OrchestratorWrapper.instance.SendData(streams[i].name, buf);
+                BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
+                connection.SendChunk(chk, streams[i].name);
+                
 #if VRT_WITH_STATS
-                    stats.statsUpdate(chk.length, i);
+                stats.statsUpdate(chk.length, i);
 #endif
-                    chk.free();
+                chk.free();
 
-                }
             }
         }
-        // FPA: Ask Jack about GetSyncInfo().
 
         public override SyncConfig.ClockCorrespondence GetSyncInfo()
         {

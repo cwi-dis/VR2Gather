@@ -28,7 +28,7 @@ namespace VRT.Transport.TCPSFU
 
         IncomingTileDescription[] descriptors;
         bool initialized = false;
-
+        private TransportProtocolTCPSFU connection;
         
         public ITransportProtocolReader_Tiled Init(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
@@ -38,26 +38,19 @@ namespace VRT.Transport.TCPSFU
                 throw new System.Exception($"{Name()}: descriptors is null");
             }
             this.descriptors = descriptors;
-            try
+            connection = TransportProtocolTCPSFU.Connect(remoteUrl);
+            for (int i = 0; i < this.descriptors.Length; ++i)
             {
-                for (int i = 0; i < this.descriptors.Length; ++i)
-                {
-                    this.descriptors[i].name = $"{remoteUrl}.{streamName}#{i}";
-                    Debug.Log($"{Name()}:  xxxjack RegisterForDataStream {i}: {this.descriptors[i].name}");
-                    // OrchestratorWrapper.instance.RegisterForDataStream(remoteUrl, this.descriptors[i].name);
-                }
-                // OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
+                this.descriptors[i].name = $"{streamName}/{this.descriptors[i].tileNumber}";
+                Debug.Log($"{Name()}:  xxxjack RegisterForDataStream {i}: {this.descriptors[i].name}");
+                connection.RegisterIncomingStream(this.descriptors[i].name, this.descriptors[i].outQueue);
+            }
 #if VRT_WITH_STATS
-                stats = new Stats(Name());
+            stats = new Stats(Name());
 #endif
-                Start();
-                Debug.Log($"{Name()}: Started {remoteUrl}.{streamName}");
-            }
-            catch (System.Exception e)
-            {
-                Debug.Log($"{Name()}: Exception: {e.Message}");
-                throw;
-            }
+            Start();
+            Debug.Log($"{Name()}: Started {remoteUrl}.{streamName}");
+           
             initialized = true;
             return this;
         }
@@ -86,8 +79,7 @@ namespace VRT.Transport.TCPSFU
             for (int i = 0; i < descriptors.Length; ++i)
             {
                 descriptors[i].outQueue?.Close();
-                // xxxjack if (OrchestratorWrapper.instance != null && OrchestratorController.Instance.SelfUser != null)
-                // xxxjack    OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
+                connection.UnregisterIncomingStream(descriptors[i].name);
             }
         }
 
