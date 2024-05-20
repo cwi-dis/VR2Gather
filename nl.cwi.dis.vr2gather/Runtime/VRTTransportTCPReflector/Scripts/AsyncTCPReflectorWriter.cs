@@ -9,23 +9,23 @@ using Cwipc;
 using Statistics = Cwipc.Statistics;
 #endif
 
-namespace VRT.Transport.TCPSFU
+namespace VRT.Transport.TCPReflector
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
     using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 
-    public class AsyncTCPSFUWriter : AsyncWriter, ITransportProtocolWriter
+    public class AsyncTCPReflectorWriter : AsyncWriter, ITransportProtocolWriter
     {
         static public ITransportProtocolWriter Factory()
         {
-            return new AsyncTCPSFUWriter();
+            return new AsyncTCPReflectorWriter();
         }
 
         OutgoingStreamDescription[] streams;
         bool initialized = false;
-        private TransportProtocolTCPSFU connection;
+        private TransportProtocolTCPReflector connection;
 
         public ITransportProtocolWriter Init(string url, string streamName, string fourcc, OutgoingStreamDescription[] streams)
         {
@@ -33,7 +33,7 @@ namespace VRT.Transport.TCPSFU
             {
                 throw new System.Exception($"{Name()}: outQueue is null");
             }
-            connection = TransportProtocolTCPSFU.Connect(url);
+            connection = TransportProtocolTCPReflector.Connect(url);
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif

@@ -6,7 +6,7 @@ using Cwipc;
 using Statistics = Cwipc.Statistics;
 #endif
 
-namespace VRT.Transport.TCPSFU
+namespace VRT.Transport.TCPReflector
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
@@ -14,21 +14,21 @@ namespace VRT.Transport.TCPSFU
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
-    public class AsyncTCPSFUReader : AsyncReader, ITransportProtocolReader, ITransportProtocolReader_Tiled
+    public class AsyncTCPReflectorReader : AsyncReader, ITransportProtocolReader, ITransportProtocolReader_Tiled
     {
         static public ITransportProtocolReader Factory()
         {
-            return new AsyncTCPSFUReader();
+            return new AsyncTCPReflectorReader();
         }
 
         static public ITransportProtocolReader_Tiled Factory_Tiled()
         {
-            return new AsyncTCPSFUReader();
+            return new AsyncTCPReflectorReader();
         }
 
         IncomingTileDescription[] descriptors;
         bool initialized = false;
-        private TransportProtocolTCPSFU connection;
+        private TransportProtocolTCPReflector connection;
         
         public ITransportProtocolReader_Tiled Init(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
@@ -38,7 +38,7 @@ namespace VRT.Transport.TCPSFU
                 throw new System.Exception($"{Name()}: descriptors is null");
             }
             this.descriptors = descriptors;
-            connection = TransportProtocolTCPSFU.Connect(remoteUrl);
+            connection = TransportProtocolTCPReflector.Connect(remoteUrl);
             for (int i = 0; i < this.descriptors.Length; ++i)
             {
                 this.descriptors[i].name = $"{streamName}/{this.descriptors[i].tileNumber}";
@@ -155,7 +155,7 @@ namespace VRT.Transport.TCPSFU
 #endif
     }
 
-    public class AsyncTCPSFUReader_PC : AsyncTCPSFUReader
+    public class AsyncTCPSFUReader_PC : AsyncTCPReflectorReader
     {
 
     }

@@ -7,12 +7,12 @@ using System.Threading;
 using System.Net.Sockets;
 using UnityEngine;
 
-namespace VRT.Transport.TCPSFU
+namespace VRT.Transport.TCPReflector
 {
-    public class TransportProtocolTCPSFU : TransportProtocol
+    public class TransportProtocolTCPReflector : TransportProtocol
     {
        
-        private static TransportProtocolTCPSFU _Instance;
+        private static TransportProtocolTCPReflector _Instance;
         private static string _InstanceURL;
 
         private Socket Sock;
@@ -25,16 +25,16 @@ namespace VRT.Transport.TCPSFU
 
         public static void Register()
         {
-            RegisterTransportProtocol("tcpsfu", AsyncTCPSFUWriter.Factory, AsyncTCPSFUReader.Factory, AsyncTCPSFUReader.Factory_Tiled);
+            RegisterTransportProtocol("tcpreflector", AsyncTCPReflectorWriter.Factory, AsyncTCPReflectorReader.Factory, AsyncTCPReflectorReader.Factory_Tiled);
         }
 
 
-        public static TransportProtocolTCPSFU Connect(string url)
+        public static TransportProtocolTCPReflector Connect(string url)
         {
             if (_Instance == null)
             {
                 _InstanceURL = url;
-                _Instance = new TransportProtocolTCPSFU(url);
+                _Instance = new TransportProtocolTCPReflector(url);
                 return _Instance;
             }
             if (_InstanceURL == url)
@@ -49,7 +49,7 @@ namespace VRT.Transport.TCPSFU
             return "TransportProtocolTCPSFU";
         }
 
-        TransportProtocolTCPSFU(string url)
+        TransportProtocolTCPReflector(string url)
         {
             Uri tmp = new Uri(url);
             string host = tmp.Host;
