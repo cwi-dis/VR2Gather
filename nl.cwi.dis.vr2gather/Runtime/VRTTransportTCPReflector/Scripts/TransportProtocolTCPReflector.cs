@@ -11,7 +11,62 @@ namespace VRT.Transport.TCPReflector
 {
     public class TransportProtocolTCPReflector : TransportProtocol
     {
-       
+        /// <summary>
+        /// Transport protocol that uses a TCP reflector, which simply sends any incoming packets
+        /// back out on all connections (except the connection it came in on).
+        /// 
+        /// Packets are a 64 byte ASCII/UTF8 header (which happens to be a single line) followed
+        /// by the binary data bytes.
+        /// 
+        /// The header is a line of comma-separated fields followed by a single linefeed (LF, \n).
+        /// 
+        /// The fields are as follows:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>
+        /// version
+        /// </term>
+        /// <description>
+        /// must be 1.
+        /// </description>
+        /// </item>
+        /// <item>
+        /// <term>
+        /// streamName
+        /// </term>
+        /// <description>
+        /// determines which stream this packet belongs to
+        /// </description>
+        /// </item>
+        /// <item>
+        /// <term>
+        /// timestamp
+        /// </term>
+        /// <description>
+        /// timestamp of this packet
+        /// </description>
+        /// </item>
+        /// <item>
+        /// <term>
+        /// datalength
+        /// </term>
+        /// <description>
+        /// the number of binary bytes that follow this header and make up the payload of this packet
+        /// </description>
+        /// </item>
+        /// <item>
+        /// <term>
+        /// filler
+        /// </term>
+        /// <description>
+        /// excetly enough '0' characters to make the header 64 bytes
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        const int HeaderVersion = 1;
+        const int HeaderLength = 64;
+
         private static TransportProtocolTCPReflector _Instance;
         private static string _InstanceURL;
 
@@ -27,7 +82,6 @@ namespace VRT.Transport.TCPReflector
         {
             RegisterTransportProtocol("tcpreflector", AsyncTCPReflectorWriter.Factory, AsyncTCPReflectorReader.Factory, AsyncTCPReflectorReader.Factory_Tiled);
         }
-
 
         public static TransportProtocolTCPReflector Connect(string url)
         {
@@ -105,14 +159,16 @@ namespace VRT.Transport.TCPReflector
                 Debug.Log($"{Name()}: No socket, dropping.");
                 return;
             }
-            string header = $"{streamName},{chk.metadata.timestamp},{chk.length}\n";
+            string header = $"{HeaderVersion},{streamName},{chk.metadata.timestamp},{chk.length},";
+            int zeroesNeeded = HeaderLength - 1 - header.Length;
+            string zeroes = new('0', zeroesNeeded);
+            header = header + zeroes + "\n";
             byte[] b_header = Encoding.UTF8.GetBytes(header);
-            if (b_header.Length > 64)
+            if (b_header.Length != HeaderLength)
             {
-                Debug.LogError($"{Name()}: header size {b_header.Length} greater than 64. Dropping.");
+                Debug.LogError($"{Name()}: header size {b_header.Length} unequal {HeaderLength}. Dropping.");
                 return;
             }
-            Array.Resize(ref b_header, 64);
             int totalLength = b_header.Length + chk.length;
             var buf = new byte[totalLength];
             Array.Copy(b_header, buf, b_header.Length);
@@ -120,11 +176,11 @@ namespace VRT.Transport.TCPReflector
             OutgoingQueue.Enqueue(buf);
         }
 
-        private bool decodeHeader(string header, out string streamName, out long timestamp, out int dataLength)
+        private bool _DecodeHeader(string header, out string streamName, out long timestamp, out int dataLength)
         {
             string[] lines = header.Split('\n');
             string[] words = lines[0].Split(',');
-            if (lines.Length != 2 || words.Length != 3)
+            if (lines.Length != 2 || words.Length != 5)
             {
                 Debug.LogWarning($"{Name()}:Bad header: {header}");
                 streamName = "";
@@ -132,9 +188,17 @@ namespace VRT.Transport.TCPReflector
                 dataLength = 0;
                 return false;
             }
-            streamName = words[0];
-            timestamp = long.Parse(words[1]);
-            dataLength = int.Parse(words[2]);
+            int version = int.Parse(words[0]);
+            if (version != HeaderVersion) {
+                Debug.LogWarning($"{Name()}: Bad header version: {version}, expected {HeaderVersion}");
+                streamName = "";
+                timestamp = 0;
+                dataLength = 0;
+                return false;
+            }
+            streamName = words[1];
+            timestamp = long.Parse(words[2]);
+            dataLength = int.Parse(words[3]);
             return true;
         }
 
@@ -149,9 +213,9 @@ namespace VRT.Transport.TCPReflector
 
         private string _ReadHeader()
         {
-            byte[] b_header = new byte[64];
+            byte[] b_header = new byte[HeaderLength];
             int actualSize = Sock.Receive(b_header);
-            if (actualSize != 64)
+            if (actualSize != HeaderLength)
             {
                 Debug.LogError($"{Name()}: Received short header, {actualSize} bytes");
                 return null;
@@ -173,10 +237,7 @@ namespace VRT.Transport.TCPReflector
                 {
                     break;
                 }
-                string streamName;
-                long timeStamp;
-                int dataLength;
-                bool ok = decodeHeader(header, out streamName, out timeStamp, out dataLength);
+                bool ok = _DecodeHeader(header, out string streamName, out long timeStamp, out int dataLength);
                 if (!ok)
                 {
                     break;
