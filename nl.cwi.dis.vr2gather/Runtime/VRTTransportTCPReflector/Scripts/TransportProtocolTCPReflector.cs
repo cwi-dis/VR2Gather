@@ -2,6 +2,7 @@ using VRT.Core;
 using Cwipc;
 using System;
 using System.Text;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Net.Sockets;
@@ -67,12 +68,14 @@ namespace VRT.Transport.TCPReflector
         const int HeaderVersion = 1;
         const int HeaderLength = 64;
 
+        const int OutgoingQueueSize = 10;
+
         private static TransportProtocolTCPReflector _Instance;
         private static string _InstanceURL;
 
         private Socket Sock;
         private HashSet<string> OutgoingStreams = new();
-        private Queue<byte[]> OutgoingQueue = new();
+        private BlockingCollection<byte[]> OutgoingQueue = new();
         private Thread OutgoingThread;
 
         private Dictionary<string, QueueThreadSafe> IncomingQueues;
@@ -112,6 +115,8 @@ namespace VRT.Transport.TCPReflector
             Sock.Connect(host, port);
             OutgoingThread = new Thread(OutgoingRun);
             IncomingThread = new Thread(IncomingRun);
+            OutgoingThread.Start();
+            IncomingThread.Start();
         }
 
         public void Stop()
@@ -173,7 +178,7 @@ namespace VRT.Transport.TCPReflector
             var buf = new byte[totalLength];
             Array.Copy(b_header, buf, b_header.Length);
             System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, b_header.Length, chk.length);
-            OutgoingQueue.Enqueue(buf);
+            OutgoingQueue.Add(buf);
         }
 
         private bool _DecodeHeader(string header, out string streamName, out long timestamp, out int dataLength)
@@ -206,7 +211,7 @@ namespace VRT.Transport.TCPReflector
         {
             while (Sock != null)
             {
-                byte[] packet = OutgoingQueue.Dequeue();
+                byte[] packet = OutgoingQueue.Take();
                 Sock.Send(packet);
             }
         }
