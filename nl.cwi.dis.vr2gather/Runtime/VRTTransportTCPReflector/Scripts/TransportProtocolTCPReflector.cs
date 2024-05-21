@@ -71,8 +71,8 @@ namespace VRT.Transport.TCPReflector
         private static string _InstanceURL;
 
         private Socket Sock;
-        private HashSet<string> OutgoingStreams;
-        private Queue<byte[]> OutgoingQueue;
+        private HashSet<string> OutgoingStreams = new();
+        private Queue<byte[]> OutgoingQueue = new();
         private Thread OutgoingThread;
 
         private Dictionary<string, QueueThreadSafe> IncomingQueues;
