@@ -26,6 +26,7 @@ using VRT.Core;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using VRT.Orchestrator.Responses;
 
 namespace VRT.Orchestrator.Wrapping
 {
@@ -127,10 +128,10 @@ namespace VRT.Orchestrator.Wrapping
         public DataStream() { }
     }
 
-    public class NtpClock: OrchestratorElement
+    public class NtpClock: OrchestratorElement, IOrchestratorResponseBody
     {
         public string ntpDate;
-        public System.Int64 ntpTimeMs;
+        public long ntpTimeMs;
 
         public NtpClock() { }
 
