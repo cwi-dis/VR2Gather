@@ -19,6 +19,7 @@
     "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#32-tcp-constructor",
     "nl.cwi.dis.vr2gather": "file:../../nl.cwi.dis.vr2gather",
     "nl.cwi.dis.vr2gather.nativelibraries": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
+    "com.itisnajim.socketiounity": "git+https://github.com/itisnajim/SocketIOUnity.git",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
