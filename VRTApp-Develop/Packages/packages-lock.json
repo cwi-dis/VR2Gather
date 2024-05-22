@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.itisnajim.socketiounity": {
+      "version": "git+https://github.com/itisnajim/SocketIOUnity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.0.2"
+      },
+      "hash": "c9e06b15391449ad42fd9b0f39fea48054751bcd"
+    },
     "com.tivadar.best.http": {
       "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.http",
       "depth": 0,
@@ -97,6 +106,13 @@
     },
     "com.unity.mathematics": {
       "version": "1.2.6",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -260,7 +276,8 @@
         "com.unity.xr.interaction.toolkit": "2.5.2",
         "com.unity.xr.management": "4.4.1",
         "com.unity.xr.oculus": "4.2.0",
-        "com.unity.xr.openxr": "1.10.0"
+        "com.unity.xr.openxr": "1.10.0",
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
       }
     },
     "nl.cwi.dis.vr2gather.nativelibraries": {
