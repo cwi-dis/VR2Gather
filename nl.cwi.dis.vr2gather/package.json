@@ -5,20 +5,22 @@
 	"description" : "Create networked shared social VR experiences in Unity.\nPlease check the documentation before installing this package into your project.",
 	"documentationUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/README.md",
 	"changelogUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/nl.cwi.dis.vr2gather/CHANGELOG.md",
-	"dependencies" : {
+	"dependencies": {
 		"nl.cwi.dis.vr2gather.nativelibraries": "0.9.1",
-	    "nl.cwi.dis.cwipc": "7.5.1",
+		"nl.cwi.dis.cwipc": "7.5.1",
 		"com.tivadar.best.http": "3.0.0",
 		"com.tivadar.best.socketio": "3.0.0",
 		"com.tivadar.best.tlssecurity": "3.0.0",
 		"com.tivadar.best.websockets": "3.0.0",
-	    "com.unity.animation.rigging": "1.2.1",
+		"com.unity.animation.rigging": "1.2.1",
 		"com.unity.recorder": "4.0.2",
 		"com.unity.textmeshpro": "3.0.8",
 		"com.unity.xr.interaction.toolkit": "2.5.2",
 		"com.unity.xr.management": "4.4.1",
 		"com.unity.xr.oculus": "4.2.0",
-		"com.unity.xr.openxr": "1.10.0"
+		"com.unity.xr.openxr": "1.10.0",
+		"com.unity.nuget.newtonsoft-json": "3.2.1",
+		"com.itisnajim.socketiounity": "https://github.com/itisnajim/SocketIOUnity.git"
 	},
 	"unity" : "2022.3",
 	"samples" : [
