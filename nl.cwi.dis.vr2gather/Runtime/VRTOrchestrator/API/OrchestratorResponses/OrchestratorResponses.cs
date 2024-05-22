@@ -18,7 +18,13 @@ namespace VRT.Orchestrator.Responses {
         }
     }
 
-    public class OrchestratorVersionResponse : IOrchestratorResponseBody {
+    public class EmptyResponse : IOrchestratorResponseBody {}
+
+    public class VersionResponse : IOrchestratorResponseBody {
         public string orchestratorVersion;
+    }
+
+    public class LoginResponse : IOrchestratorResponseBody {
+        public string userId;
     }
 }

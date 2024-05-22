@@ -103,7 +103,7 @@ namespace VRT.Orchestrator.Wrapping {
         public void GetOrchestratorVersion() {
             lock (this) {
                 Socket.Emit("GetOrchestratorVersion", (response) => {
-                    var data = response.GetValue<OrchestratorResponse<OrchestratorVersionResponse>>();
+                    var data = response.GetValue<OrchestratorResponse<VersionResponse>>();
                     ResponsesListener?.OnGetOrchestratorVersionResponse(data.ResponseStatus, data.body.orchestratorVersion);
                 }, new { });
             }
@@ -114,6 +114,30 @@ namespace VRT.Orchestrator.Wrapping {
                 Socket.Emit("GetNTPTime", (response) => {
                     var data = response.GetValue<OrchestratorResponse<NtpClock>>();
                     ResponsesListener?.OnGetNTPTimeResponse(data.ResponseStatus, data.body);
+                }, new { });
+            }
+        }
+
+        #endregion
+
+        #region login/logout
+
+        public void Login(string username, string password) {
+            lock (this) {
+                Socket.Emit("Login", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<LoginResponse>>();
+                    ResponsesListener?.OnLoginResponse(data.ResponseStatus, data.body.userId);
+                }, new {
+                    userName = username
+                });
+            }
+        }
+
+        public void Logout() {
+            lock (this) {
+                Socket.Emit("Logout", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
+                    ResponsesListener?.OnLogoutResponse(data.ResponseStatus);
                 }, new { });
             }
         }
