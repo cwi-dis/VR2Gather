@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using VRT.Orchestrator.WSManagement;
 using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
 using UnityEngine;
+
+using VRT.Orchestrator.WSManagement;
+using VRT.Orchestrator.Responses;
 
 namespace VRT.Orchestrator.Wrapping {
     public class OSSOrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
@@ -95,5 +97,27 @@ namespace VRT.Orchestrator.Wrapping {
         {
             throw new NotImplementedException();
         }
+
+        #region utility requests
+
+        public void GetOrchestratorVersion() {
+            lock (this) {
+                Socket.Emit("GetOrchestratorVersion", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<OrchestratorVersionResponse>>();
+                    ResponsesListener?.OnGetOrchestratorVersionResponse(data.ResponseStatus, data.body.orchestratorVersion);
+                }, new { });
+            }
+        }
+
+        public void GetNTPTime() {
+            lock (this) {
+                Socket.Emit("GetNTPTime", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<NtpClock>>();
+                    ResponsesListener?.OnGetNTPTimeResponse(data.ResponseStatus, data.body);
+                }, new { });
+            }
+        }
+
+        #endregion
     }
 }
