@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Orchestrator.Responses { 
     public interface IOrchestratorResponseBody { }
 
-    public class OrchestratorResponse<T> where T : IOrchestratorResponseBody
+    public class OrchestratorResponse<T>
     {
         public int error { get; set; }
         public string message { get; set; }
