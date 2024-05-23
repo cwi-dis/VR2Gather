@@ -724,14 +724,14 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void OnMasterEventReceived(UserEvent pMasterEventData) {
-            if (pMasterEventData.fromId != SelfUser.userId) {
+            if (pMasterEventData.sceneEventFrom != SelfUser.userId) {
                 //if (enableLogging) Debug.Log("OrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.fromId + " sent: " + pMasterEventData.message);
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
         }
 
         public void OnUserEventReceived(UserEvent pUserEventData) {
-            if (pUserEventData.fromId != SelfUser.userId) {
+            if (pUserEventData.sceneEventFrom != SelfUser.userId) {
                 //if (enableLogging) Debug.Log("OrchestratorController: OnUserEventReceived: User: " + pUserEventData.fromId + " sent: " + pUserEventData.message);
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }

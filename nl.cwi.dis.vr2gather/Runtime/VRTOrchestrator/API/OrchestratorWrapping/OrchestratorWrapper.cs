@@ -50,14 +50,14 @@ namespace VRT.Orchestrator.Wrapping
     // class that stores a user message incoming from the orchestrator
     public class UserMessage
     {
-        public readonly string fromId;
-        public readonly string fromName;
+        public readonly string messageFrom;
+        public readonly string messageFromName;
         public readonly string message;
 
         public UserMessage(string pFromID, string pFromName, string pMessage)
         {
-            fromId = pFromID;
-            fromName = pFromName;
+            messageFrom = pFromID;
+            messageFromName = pFromName;
             message = pMessage;
         }
     }
@@ -66,13 +66,13 @@ namespace VRT.Orchestrator.Wrapping
     // necessary new parameters welcomed
     public class UserEvent
     {
-        public readonly string fromId;
-        public readonly string message;
+        public readonly string sceneEventFrom;
+        public readonly string sceneEventData;
 
         public UserEvent(string pFromID, string pMessage)
         {
-            fromId = pFromID;
-            message = pMessage;
+            sceneEventFrom = pFromID;
+            sceneEventData = pMessage;
         }
     }
 

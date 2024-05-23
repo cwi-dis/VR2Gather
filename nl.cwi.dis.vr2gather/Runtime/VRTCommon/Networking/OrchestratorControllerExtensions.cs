@@ -210,12 +210,12 @@ namespace VRT.Pilots.Common
 
 		private static void ForwardMasterEvent(UserEvent userEvent)
 		{
-			_MessageForwarderManager.Forward(userEvent.message);
+			_MessageForwarderManager.Forward(userEvent.sceneEventData);
 		}
 
 		private static void ForwardUserEvent(UserEvent userEvent)
 		{
-			_MessageForwarderManager.Forward(userEvent.message);
+			_MessageForwarderManager.Forward(userEvent.sceneEventData);
 		}
 	}
 }
