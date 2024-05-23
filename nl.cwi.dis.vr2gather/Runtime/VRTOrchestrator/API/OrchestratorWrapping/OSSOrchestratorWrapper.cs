@@ -52,6 +52,7 @@ namespace VRT.Orchestrator.Wrapping {
             Socket.On("DataReceived", OnUserDataReceived);
             Socket.On("SceneEventToMaster", OnMasterEventReceived);
             Socket.On("SceneEventToUser", OnUserEventReceived);
+            Socket.On("SessionUpdated", OnSessionUpdated);
         }
 
         public void Connect() {
@@ -356,6 +357,31 @@ namespace VRT.Orchestrator.Wrapping {
             if (UserMessagesListener != null) {
                 var sceneEvent = response.GetValue<UserEvent>();
                 UserMessagesListener.OnUserEventReceived(sceneEvent);
+            }
+        }
+
+        private void OnSessionUpdated(SocketIOResponse response) {
+            var data = response.GetValue<SessionUpdate>();
+
+            if (data.eventData.userId == myUserID) {
+                return;
+            }
+
+            switch (data.eventId) {
+                case "USER_JOINED_SESSION":
+                    foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
+                    {
+                        e?.OnUserJoinedSession(data.eventData.userId, data.eventData.userData);
+                    }
+                    break;
+                case "USER_LEFT_SESSION":
+                    foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
+                    {
+                        e?.OnUserLeftSession(data.eventData.userId);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
