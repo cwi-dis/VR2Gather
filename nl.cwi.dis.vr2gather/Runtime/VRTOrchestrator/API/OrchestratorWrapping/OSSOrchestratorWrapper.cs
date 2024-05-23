@@ -59,6 +59,8 @@ namespace VRT.Orchestrator.Wrapping {
             Socket.Connect();
         }
 
+        public void EnableSocketioLogging() { }
+
         public void OnSocketConnect()
         {
             if (ResponsesListener == null)
