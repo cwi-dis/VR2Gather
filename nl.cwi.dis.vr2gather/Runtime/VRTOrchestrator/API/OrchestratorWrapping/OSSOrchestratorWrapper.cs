@@ -219,6 +219,40 @@ namespace VRT.Orchestrator.Wrapping {
             }
         }
 
+        public void SendMessage(string message, string userId) {
+            lock (this) {
+                Socket.Emit("SendMessage", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
+                    ResponsesListener?.OnSendMessageResponse(data.ResponseStatus);
+                }, new {
+                    message,
+                    userId
+                });
+            }
+        }
+
+        public void SendMessageToAll(string message) {
+            lock (this) {
+                Socket.Emit("SendMessageToAll", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
+                    ResponsesListener?.OnSendMessageResponse(data.ResponseStatus);
+                }, new {
+                    message
+                });
+            }
+        }
+
+        public void UpdateUserDataJson(UserData userData) {
+            lock (this) {
+                Socket.Emit("UpdateUserDataJson", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
+                    ResponsesListener?.OnUpdateUserDataJsonResponse(data.ResponseStatus);
+                }, new {
+                    userDataJson = userData.AsJsonString()
+                });
+            }
+        }
+
         #endregion
     }
 }
