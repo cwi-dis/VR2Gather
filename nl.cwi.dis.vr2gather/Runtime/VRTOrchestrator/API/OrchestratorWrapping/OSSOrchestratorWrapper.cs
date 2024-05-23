@@ -254,5 +254,33 @@ namespace VRT.Orchestrator.Wrapping {
         }
 
         #endregion
+
+        #region scene events
+
+        public void SendSceneEventPacketToMaster(byte[] pByteArray) {
+            lock (this) {
+                Socket.Emit("SendSceneEventToMaster", 
+                    pByteArray
+                );
+            }
+        }
+
+        public void SendSceneEventPacketToUser(string pUserID, byte[] pByteArray) {
+            lock (this) {
+                Socket.Emit("SendSceneEventToUser", new {
+                    pUserID, pByteArray
+                });
+            }
+        }
+
+        public void SendSceneEventPacketToAllUsers(byte[] pByteArray) {
+            lock (this) {
+                Socket.Emit("SendSceneEventToAllUsers", new {
+                    pByteArray
+                });
+            }
+        }
+
+        #endregion
     }
 }
