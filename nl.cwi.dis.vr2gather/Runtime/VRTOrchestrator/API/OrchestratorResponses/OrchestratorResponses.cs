@@ -28,4 +28,14 @@ namespace VRT.Orchestrator.Responses {
     public class LoginResponse : IOrchestratorResponseBody {
         public string userId;
     }
+
+    public class SessionUpdateEventData {
+        public string userId;
+        public User userData;
+    }
+
+    public class SessionUpdate {
+        public string eventId;
+        public SessionUpdateEventData eventData;
+    }
 }
