@@ -1523,12 +1523,12 @@ namespace VRT.Login
 
         private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
         {
-            Debug.LogError("OrchestratorLogin: OnMasterEventReceivedHandler: Unexpected message from " + pMasterEventData.fromId + ": " + pMasterEventData.message);
+            Debug.LogError("OrchestratorLogin: OnMasterEventReceivedHandler: Unexpected message from " + pMasterEventData.sceneEventFrom + ": " + pMasterEventData.sceneEventData);
         }
 
         private void OnUserEventReceivedHandler(UserEvent pUserEventData)
         {
-            Debug.LogError("OrchestratorLogin: OnUserEventReceivedHandler: Unexpected message from " + pUserEventData.fromId + ": " + pUserEventData.message);
+            Debug.LogError("OrchestratorLogin: OnUserEventReceivedHandler: Unexpected message from " + pUserEventData.sceneEventFrom + ": " + pUserEventData.sceneEventData);
         }
         #endregion
     }
