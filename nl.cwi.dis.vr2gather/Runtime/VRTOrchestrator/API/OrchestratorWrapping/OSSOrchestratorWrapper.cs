@@ -283,6 +283,35 @@ namespace VRT.Orchestrator.Wrapping {
 
         #endregion
 
+        #region data streams
+
+        public void DeclareDataStream(string pDataStreamType) {
+            lock (this) {
+                Socket.Emit("DeclareDataStream", pDataStreamType);
+            }
+        }
+
+        public void RemoveDataStream(string pDataStreamType) {
+            lock (this) {
+                Socket.Emit("RemoveDataStream", pDataStreamType);
+            }
+        }
+
+        public void RegisterForDataStream(string pDataStreamUserId, string pDataStreamType) {
+            lock (this) {
+                Socket.Emit("RegisterForDataStream", pDataStreamUserId, pDataStreamType);
+            }
+        }
+
+        public void UnregisterFromDataStream(string pDataStreamUserId, string pDataStreamType) {
+            lock (this) {
+                Socket.Emit("UnregisterFromDataStream", pDataStreamUserId, pDataStreamType);
+            }
+        }
+
+        public void SendData(string pDataStreamType, byte[] pDataStreamBytes) {
+            lock (this) {
+                Socket.Emit("SendData", pDataStreamType, pDataStreamBytes);
             }
         }
 
