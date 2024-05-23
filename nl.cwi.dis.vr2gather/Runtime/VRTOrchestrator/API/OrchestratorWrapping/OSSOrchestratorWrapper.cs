@@ -25,6 +25,8 @@ namespace VRT.Orchestrator.Wrapping {
         // Listeners for the user events emitted when a session is updated by the orchestrator
         private List<IUserSessionEventsListener> UserSessionEventslisteners;
 
+        public Action<UserDataStreamPacket> OnDataStreamReceived;
+
         public OSSOrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
             ResponsesListener = responsesListener;
@@ -44,6 +46,11 @@ namespace VRT.Orchestrator.Wrapping {
             Socket.OnConnected += (sender, e) => OnSocketConnect();
             Socket.OnDisconnected += (sender, e) => OnSocketDisconnect();
             Socket.OnError += (sender, e) => OnSocketError(null);
+
+            Socket.On("MessageSent", OnMessageSentFromOrchestrator);
+            Socket.On("DataReceived", OnUserDataReceived);
+            Socket.On("SceneEventToMaster", OnMasterEventReceived);
+            Socket.On("SceneEventToUser", OnUserEventReceived);
         }
 
         public void Connect() {
@@ -312,6 +319,38 @@ namespace VRT.Orchestrator.Wrapping {
         public void SendData(string pDataStreamType, byte[] pDataStreamBytes) {
             lock (this) {
                 Socket.Emit("SendData", pDataStreamType, pDataStreamBytes);
+            }
+        }
+
+        #endregion
+
+        #region events
+
+        private void OnMessageSentFromOrchestrator(SocketIOResponse response) {
+            var message = response.GetValue<UserMessage>();
+            UserMessagesListener?.OnUserMessageReceived(message);
+        }
+
+        private void OnUserDataReceived(SocketIOResponse response) {
+            var userId = response.GetValue<string>(0);
+            var type = response.GetValue<string>(1);
+            var data = response.GetValue<byte[]>(2);
+
+            var packet = new UserDataStreamPacket(userId, type, "", data);
+            OnDataStreamReceived?.Invoke(packet);
+        }
+
+        private void OnMasterEventReceived(SocketIOResponse response) {
+            if (UserMessagesListener != null) {
+                var sceneEvent = response.GetValue<UserEvent>();
+                UserMessagesListener.OnMasterEventReceived(sceneEvent);
+            }
+        }
+
+        private void OnUserEventReceived(SocketIOResponse response) {
+            if (UserMessagesListener != null) {
+                var sceneEvent = response.GetValue<UserEvent>();
+                UserMessagesListener.OnUserEventReceived(sceneEvent);
             }
         }
 
