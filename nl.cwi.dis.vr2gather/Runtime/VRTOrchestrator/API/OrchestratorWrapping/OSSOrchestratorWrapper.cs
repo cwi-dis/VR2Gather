@@ -57,6 +57,7 @@ namespace VRT.Orchestrator.Wrapping {
 
         public void Connect() {
             Socket.Connect();
+            OnSocketConnecting();
         }
 
         public void EnableSocketioLogging() { }
@@ -101,7 +102,7 @@ namespace VRT.Orchestrator.Wrapping {
 
         public void OnSocketConnecting()
         {
-            throw new NotImplementedException();
+            ResponsesListener?.OnConnecting();
         }
 
         public void OnSocketError(ResponseStatus message)
