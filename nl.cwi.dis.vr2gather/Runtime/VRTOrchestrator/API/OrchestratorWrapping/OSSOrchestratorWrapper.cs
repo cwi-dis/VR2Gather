@@ -143,5 +143,42 @@ namespace VRT.Orchestrator.Wrapping {
         }
 
         #endregion
+
+        #region session management
+
+        public void AddSession(string scenarioId, Scenario scenario, string sessionName, string sessionDescription, string sessionProtocol) {
+            lock (this) {
+                Socket.Emit("AddSession", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<Session>>();
+                    ResponsesListener?.OnAddSessionResponse(data.ResponseStatus, data.body);
+                }, new {
+                    sessionName,
+                    sessionDescription,
+                    sessionProtocol,
+                    scenarioDefinition = new {
+                        scenarioId,
+                        scenario.scenarioName,
+                        scenario.scenarioDescription
+                    }
+                });
+            }
+        }
+
+        public void GetSessions() {
+            lock (this) {
+                Socket.Emit("GetSessions", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<Dictionary<string, Session>>>();
+
+                    var sessions = new List<Session>();
+                    foreach (var item in data.body) {
+                        sessions.Add(item.Value);
+                    }
+
+                    ResponsesListener?.OnGetSessionsResponse(data.ResponseStatus, sessions);
+                }, new { });
+            }
+        }
+
+        #endregion
     }
 }

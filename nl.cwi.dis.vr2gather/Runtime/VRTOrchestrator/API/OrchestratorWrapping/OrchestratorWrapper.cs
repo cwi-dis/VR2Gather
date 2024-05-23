@@ -281,22 +281,6 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null)ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
         }
 
-
-        internal void _AddScenario(Scenario scOrch)
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("AddScenario");
-            command.GetParameter("scenarioId").ParamValue = scOrch.scenarioId;
-            command.GetParameter("scenarioName").ParamValue = scOrch.scenarioName;
-            command.GetParameter("scenarioDescription").ParamValue = scOrch.scenarioDescription;
-            OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void _OnAddScenarioResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-            // Just ignore the response. We'll get another error later when we create a session.
-        }
-
         public void AddSession(string scenarioId, Scenario scenario, string sessionName, string sessionDescription, string sessionProtocol)
         {
             

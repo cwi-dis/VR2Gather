@@ -128,7 +128,7 @@ namespace VRT.Orchestrator.Wrapping
         public DataStream() { }
     }
 
-    public class NtpClock: OrchestratorElement, IOrchestratorResponseBody
+    public class NtpClock: OrchestratorElement
     {
         public string ntpDate;
         public long ntpTimeMs;
