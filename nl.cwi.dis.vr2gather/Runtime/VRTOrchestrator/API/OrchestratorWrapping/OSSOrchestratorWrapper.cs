@@ -26,6 +26,7 @@ namespace VRT.Orchestrator.Wrapping {
         private List<IUserSessionEventsListener> UserSessionEventslisteners;
 
         public Action<UserDataStreamPacket> OnDataStreamReceived;
+        private string myUserID = "";
 
         public OSSOrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
@@ -133,6 +134,8 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("Login", (response) => {
                     var data = response.GetValue<OrchestratorResponse<LoginResponse>>();
+                    myUserID = data.body.userId;
+
                     ResponsesListener?.OnLoginResponse(data.ResponseStatus, data.body.userId);
                 }, new {
                     userName = username
@@ -144,6 +147,8 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("Logout", (response) => {
                     var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
+                    myUserID = "";
+
                     ResponsesListener?.OnLogoutResponse(data.ResponseStatus);
                 }, new { });
             }
