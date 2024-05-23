@@ -385,6 +385,8 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLeaveSessionResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
+
+        // XXX is this still used?
         public void UpdateUserData(string userDataKey, string userDataValue)
         {
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
@@ -392,6 +394,7 @@ namespace VRT.Orchestrator.Wrapping
             command.GetParameter("userDataValue").ParamValue = userDataValue;
             OrchestrationSocketIoManager.EmitCommand(command);
         }
+
         public void UpdateUserDataJson(UserData userData)
         {
             JsonData json = JsonUtility.ToJson(userData);
