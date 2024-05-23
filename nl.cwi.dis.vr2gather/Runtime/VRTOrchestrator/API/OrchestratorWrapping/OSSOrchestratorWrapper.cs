@@ -179,6 +179,46 @@ namespace VRT.Orchestrator.Wrapping {
             }
         }
 
+        public void GetSessionInfo() {
+            lock (this) {
+                Socket.Emit("GetSessionInfo", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<Session>>();
+                    ResponsesListener?.OnGetSessionInfoResponse(data.ResponseStatus, data.body);
+                }, new { });
+            }
+        }
+
+        public void DeleteSession(string sessionId) {
+            lock (this) {
+                Socket.Emit("DeleteSession", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
+                    ResponsesListener?.OnDeleteSessionResponse(data.ResponseStatus);
+                }, new {
+                    sessionId
+                });
+            }
+        }
+
+        public void JoinSession(string sessionId) {
+            lock (this) {
+                Socket.Emit("JoinSession", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<Session>>();
+                    ResponsesListener?.OnJoinSessionResponse(data.ResponseStatus, data.body);
+                }, new {
+                    sessionId
+                });
+            }
+        }
+
+        public void LeaveSession() {
+            lock (this) {
+                Socket.Emit("LeaveSession", (response) => {
+                    var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
+                    ResponsesListener?.OnLeaveSessionResponse(data.ResponseStatus);
+                }, new { });
+            }
+        }
+
         #endregion
     }
 }
