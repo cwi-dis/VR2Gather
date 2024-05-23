@@ -267,17 +267,22 @@ namespace VRT.Orchestrator.Wrapping {
 
         public void SendSceneEventPacketToUser(string pUserID, byte[] pByteArray) {
             lock (this) {
-                Socket.Emit("SendSceneEventToUser", new {
+                Socket.Emit("SendSceneEventToUser",
                     pUserID, pByteArray
-                });
+                );
             }
         }
 
         public void SendSceneEventPacketToAllUsers(byte[] pByteArray) {
             lock (this) {
-                Socket.Emit("SendSceneEventToAllUsers", new {
+                Socket.Emit("SendSceneEventToAllUsers",
                     pByteArray
-                });
+                );
+            }
+        }
+
+        #endregion
+
             }
         }
 
