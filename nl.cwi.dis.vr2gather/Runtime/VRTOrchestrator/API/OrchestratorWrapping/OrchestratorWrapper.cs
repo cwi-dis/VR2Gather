@@ -50,9 +50,11 @@ namespace VRT.Orchestrator.Wrapping
     // class that stores a user message incoming from the orchestrator
     public class UserMessage
     {
-        public readonly string messageFrom;
-        public readonly string messageFromName;
-        public readonly string message;
+        public string messageFrom;
+        public string messageFromName;
+        public string message;
+
+        public UserMessage() { }
 
         public UserMessage(string pFromID, string pFromName, string pMessage)
         {
