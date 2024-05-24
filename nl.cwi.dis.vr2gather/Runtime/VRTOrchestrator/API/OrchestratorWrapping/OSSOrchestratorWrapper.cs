@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
 using UnityEngine;
+using System.Text;
 
 using VRT.Orchestrator.WSManagement;
 using VRT.Orchestrator.Responses;
@@ -40,6 +41,7 @@ namespace VRT.Orchestrator.Wrapping {
 
             Socket = new SocketIOUnity(new Uri(orchestratorSocketUrl), new SocketIOOptions {
                 Transport = SocketIOClient.Transport.TransportProtocol.WebSocket,
+                Reconnection = false,
                 EIO = 4
             });
             Socket.JsonSerializer = new NewtonsoftJsonSerializer();
@@ -78,6 +80,7 @@ namespace VRT.Orchestrator.Wrapping {
         }
 
         public void Disconnect() {
+            Debug.Log("DISCONNECT called");
             Socket.Disconnect();        
         }
 
@@ -394,26 +397,39 @@ namespace VRT.Orchestrator.Wrapping {
             var data = response.GetValue<byte[]>(2);
 
             var packet = new UserDataStreamPacket(userId, type, "", data);
+
             UnityThread.executeInUpdate(() => {
                 OnDataStreamReceived?.Invoke(packet);
             });
         }
 
         private void OnMasterEventReceived(SocketIOResponse response) {
-            if (UserMessagesListener != null) {
-                var sceneEvent = response.GetValue<UserEvent>();
-                UnityThread.executeInUpdate(() => {
-                    UserMessagesListener.OnMasterEventReceived(sceneEvent);
+            if (UserMessagesListener != null)
+            {
+                var sceneEvent = response.GetValue<SceneEvent>();
+                string data = Encoding.ASCII.GetString(response.InComingBytes[0], 0, response.InComingBytes[0].Length);
+
+                UnityThread.executeInUpdate(() =>
+                {
+                    UserMessagesListener.OnMasterEventReceived(new UserEvent(sceneEvent.sceneEventFrom, data));
                 });
+            }
+            else {
+                Debug.LogWarning("No UserMessagesListener");
             }
         }
 
         private void OnUserEventReceived(SocketIOResponse response) {
             if (UserMessagesListener != null) {
-                var sceneEvent = response.GetValue<UserEvent>();
-                UnityThread.executeInUpdate(() => {
-                    UserMessagesListener.OnUserEventReceived(sceneEvent);
+                var sceneEvent = response.GetValue<SceneEvent>();
+                string data = Encoding.ASCII.GetString(response.InComingBytes[0], 0, response.InComingBytes[0].Length);
+
+                UnityThread.executeInUpdate(() =>
+                {
+                    UserMessagesListener.OnUserEventReceived(new UserEvent(sceneEvent.sceneEventFrom, data));
                 });
+            } else {
+                Debug.LogWarning("No UserMessagesListener");
             }
         }
 
