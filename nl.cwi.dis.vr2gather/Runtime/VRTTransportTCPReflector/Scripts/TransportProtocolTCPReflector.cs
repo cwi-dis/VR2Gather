@@ -276,7 +276,7 @@ namespace VRT.Transport.TCPReflector
                         QueueThreadSafe queue = IncomingQueues[streamName];
                         BaseMemoryChunk chunk = new NativeMemoryChunk(dataLength);
                         chunk.metadata.timestamp = timeStamp;
-                        System.Runtime.InteropServices.Marshal.Copy(data, sizeof(long), chunk.pointer, chunk.length);
+                        System.Runtime.InteropServices.Marshal.Copy(data, 0, chunk.pointer, chunk.length);
                         bool didDrop = queue.Enqueue(chunk);
                         // xxxjack should add Stats
                     }
