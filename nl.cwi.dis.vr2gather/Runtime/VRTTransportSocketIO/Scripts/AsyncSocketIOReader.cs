@@ -48,8 +48,8 @@ namespace VRT.Transport.SocketIO
                 for (int i = 0; i < this.descriptors.Length; ++i)
                 {
                     this.descriptors[i].name = $"{userId}.{streamName}#{i}";
-                    Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name}");
-                    OrchestratorWrapper.instance.RegisterForDataStream(remoteUrl, this.descriptors[i].name);
+                    Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name} from {userId}");
+                    OrchestratorWrapper.instance.RegisterForDataStream(userId, this.descriptors[i].name);
                 }
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
 #if VRT_WITH_STATS
