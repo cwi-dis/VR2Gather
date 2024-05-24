@@ -108,7 +108,7 @@ namespace VRT.UserRepresentation.Voice
                 codec = new AsyncVoiceDecoder(decoderQueue, preparerQueue);
                 _readerOutputQueue = decoderQueue;
             }
-            string url = user.sfuData.url_audio;
+            string url = user.sfuData.url_gen;
             // Backward compatible trick for 
             switch(proto)
             {

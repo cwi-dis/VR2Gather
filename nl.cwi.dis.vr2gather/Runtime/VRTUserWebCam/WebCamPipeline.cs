@@ -168,7 +168,7 @@ namespace VRT.UserRepresentation.WebCam
                         url = user.userData.userAudioUrl;
                         break;
                 }
-                reader = TransportProtocol.NewReader(proto).Init(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                reader = TransportProtocol.NewReader(proto).Init(url, "webcam", 0, "wcwc", videoCodecQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto={proto}, url={url}");
 #endif
