@@ -65,8 +65,8 @@ namespace VRT.Transport.TCPReflector
         /// </item>
         /// </list>
         /// </summary>
-        const int HeaderVersion = 1;
-        const int HeaderLength = 64;
+        const int HeaderVersion = 2;
+        const int HeaderLength = 128;
 
         const int OutgoingQueueSize = 10;
 

@@ -49,7 +49,7 @@ namespace VRT.Transport.TCPReflector
             stats = new Stats(Name());
 #endif
             Start();
-            Debug.Log($"{Name()}: Started {remoteUrl}.{streamName}");
+            Debug.Log($"{Name()}: Started {remoteUrl}/{userId}{streamName}");
            
             initialized = true;
             return this;
