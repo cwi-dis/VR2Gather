@@ -68,8 +68,10 @@ namespace VRT.Orchestrator.Wrapping
     // necessary new parameters welcomed
     public class UserEvent
     {
-        public readonly string sceneEventFrom;
-        public readonly string sceneEventData;
+        public string sceneEventFrom;
+        public string sceneEventData;
+
+        public UserEvent() { }
 
         public UserEvent(string pFromID, string pMessage)
         {
@@ -101,6 +103,8 @@ namespace VRT.Orchestrator.Wrapping
         public string dataStreamType;
         public string dataStreamDesc;
         public byte[] dataStreamPacket;
+
+        public UserDataStreamPacket() { }
 
         public UserDataStreamPacket(string pDataStreamUserID, string pDataStreamType, string pDataStreamDesc, byte[] pDataStreamPacket)
         {
