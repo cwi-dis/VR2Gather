@@ -183,9 +183,8 @@ namespace VRT.Transport.TCPReflector
 
         private bool _DecodeHeader(string header, out string streamName, out long timestamp, out int dataLength)
         {
-            string[] lines = header.Split('\n');
-            string[] words = lines[0].Split(',');
-            if (lines.Length != 2 || words.Length != 5)
+            string[] words = header.Split(',');
+            if (words.Length != 5)
             {
                 Debug.LogWarning($"{Name()}:Bad header: {header}");
                 streamName = "";
