@@ -38,4 +38,8 @@ namespace VRT.Orchestrator.Responses {
         public string eventId;
         public SessionUpdateEventData eventData;
     }
+
+    public class SceneEvent {
+        public string sceneEventFrom;
+    }
 }
