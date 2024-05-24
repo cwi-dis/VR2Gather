@@ -70,7 +70,10 @@ namespace VRT.Orchestrator.Wrapping {
             }
             else
             {
-                ResponsesListener.OnConnect();
+                Debug.Log("Calling OnConnect");
+                UnityThread.executeInUpdate(() => {
+                  ResponsesListener.OnConnect();
+                });
             }
         }
 
@@ -85,24 +88,31 @@ namespace VRT.Orchestrator.Wrapping {
                 Debug.LogWarning($"OrchestratorWrapper: OnSocketDisconnect: no ResponsesListener");
             }
             else
-            { 
-              ResponsesListener.OnDisconnect();
+            {
+                UnityThread.executeInUpdate(() => {
+                    ResponsesListener.OnDisconnect();
+                });
             }
         }
 
         public void OnOrchestratorRequest(string request)
         {
+            Debug.LogWarning($"OnOrchestratorRequest called: {request}");
             throw new NotImplementedException();
         }
 
         public void OnOrchestratorResponse(int commandID, int status, string response)
         {
+            Debug.LogWarning($"OnOrchestratorResponse called: {commandID} {status} {response}");
             throw new NotImplementedException();
         }
 
         public void OnSocketConnecting()
         {
-            ResponsesListener?.OnConnecting();
+            UnityThread.executeInUpdate(() =>
+            {
+                ResponsesListener?.OnConnecting();
+            });
         }
 
         public void OnSocketError(ResponseStatus message)
@@ -116,7 +126,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("GetOrchestratorVersion", (response) => {
                     var data = response.GetValue<OrchestratorResponse<VersionResponse>>();
-                    ResponsesListener?.OnGetOrchestratorVersionResponse(data.ResponseStatus, data.body.orchestratorVersion);
+                    
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnGetOrchestratorVersionResponse(data.ResponseStatus, data.body.orchestratorVersion);
+                    });
                 }, new { });
             }
         }
@@ -125,7 +138,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("GetNTPTime", (response) => {
                     var data = response.GetValue<OrchestratorResponse<NtpClock>>();
-                    ResponsesListener?.OnGetNTPTimeResponse(data.ResponseStatus, data.body);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnGetNTPTimeResponse(data.ResponseStatus, data.body);
+                    });
                 }, new { });
             }
         }
@@ -140,7 +156,9 @@ namespace VRT.Orchestrator.Wrapping {
                     var data = response.GetValue<OrchestratorResponse<LoginResponse>>();
                     myUserID = data.body.userId;
 
-                    ResponsesListener?.OnLoginResponse(data.ResponseStatus, data.body.userId);
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnLoginResponse(data.ResponseStatus, data.body.userId);
+                    });
                 }, new {
                     userName = username
                 });
@@ -153,7 +171,9 @@ namespace VRT.Orchestrator.Wrapping {
                     var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
                     myUserID = "";
 
-                    ResponsesListener?.OnLogoutResponse(data.ResponseStatus);
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnLogoutResponse(data.ResponseStatus);
+                    });
                 }, new { });
             }
         }
@@ -166,7 +186,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("AddSession", (response) => {
                     var data = response.GetValue<OrchestratorResponse<Session>>();
-                    ResponsesListener?.OnAddSessionResponse(data.ResponseStatus, data.body);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnAddSessionResponse(data.ResponseStatus, data.body);
+                    });
                 }, new {
                     sessionName,
                     sessionDescription,
@@ -190,7 +213,9 @@ namespace VRT.Orchestrator.Wrapping {
                         sessions.Add(item.Value);
                     }
 
-                    ResponsesListener?.OnGetSessionsResponse(data.ResponseStatus, sessions);
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnGetSessionsResponse(data.ResponseStatus, sessions);
+                    });
                 }, new { });
             }
         }
@@ -199,7 +224,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("GetSessionInfo", (response) => {
                     var data = response.GetValue<OrchestratorResponse<Session>>();
-                    ResponsesListener?.OnGetSessionInfoResponse(data.ResponseStatus, data.body);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnGetSessionInfoResponse(data.ResponseStatus, data.body);
+                    });
                 }, new { });
             }
         }
@@ -208,7 +236,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("DeleteSession", (response) => {
                     var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
-                    ResponsesListener?.OnDeleteSessionResponse(data.ResponseStatus);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnDeleteSessionResponse(data.ResponseStatus);
+                    });
                 }, new {
                     sessionId
                 });
@@ -219,7 +250,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("JoinSession", (response) => {
                     var data = response.GetValue<OrchestratorResponse<Session>>();
-                    ResponsesListener?.OnJoinSessionResponse(data.ResponseStatus, data.body);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnJoinSessionResponse(data.ResponseStatus, data.body);
+                    });
                 }, new {
                     sessionId
                 });
@@ -230,7 +264,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("LeaveSession", (response) => {
                     var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
-                    ResponsesListener?.OnLeaveSessionResponse(data.ResponseStatus);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnLeaveSessionResponse(data.ResponseStatus);
+                    });
                 }, new { });
             }
         }
@@ -239,7 +276,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("SendMessage", (response) => {
                     var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
-                    ResponsesListener?.OnSendMessageResponse(data.ResponseStatus);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnSendMessageResponse(data.ResponseStatus);
+                    });
                 }, new {
                     message,
                     userId
@@ -251,7 +291,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("SendMessageToAll", (response) => {
                     var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
-                    ResponsesListener?.OnSendMessageResponse(data.ResponseStatus);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnSendMessageResponse(data.ResponseStatus);
+                    });
                 }, new {
                     message
                 });
@@ -262,7 +305,10 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("UpdateUserDataJson", (response) => {
                     var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
-                    ResponsesListener?.OnUpdateUserDataJsonResponse(data.ResponseStatus);
+
+                    UnityThread.executeInUpdate(() => {
+                        ResponsesListener?.OnUpdateUserDataJsonResponse(data.ResponseStatus);
+                    });
                 }, new {
                     userDataJson = userData.AsJsonString()
                 });
@@ -337,7 +383,9 @@ namespace VRT.Orchestrator.Wrapping {
 
         private void OnMessageSentFromOrchestrator(SocketIOResponse response) {
             var message = response.GetValue<UserMessage>();
-            UserMessagesListener?.OnUserMessageReceived(message);
+            UnityThread.executeInUpdate(() => {
+                UserMessagesListener?.OnUserMessageReceived(message);
+            });
         }
 
         private void OnUserDataReceived(SocketIOResponse response) {
@@ -346,20 +394,26 @@ namespace VRT.Orchestrator.Wrapping {
             var data = response.GetValue<byte[]>(2);
 
             var packet = new UserDataStreamPacket(userId, type, "", data);
-            OnDataStreamReceived?.Invoke(packet);
+            UnityThread.executeInUpdate(() => {
+                OnDataStreamReceived?.Invoke(packet);
+            });
         }
 
         private void OnMasterEventReceived(SocketIOResponse response) {
             if (UserMessagesListener != null) {
                 var sceneEvent = response.GetValue<UserEvent>();
-                UserMessagesListener.OnMasterEventReceived(sceneEvent);
+                UnityThread.executeInUpdate(() => {
+                    UserMessagesListener.OnMasterEventReceived(sceneEvent);
+                });
             }
         }
 
         private void OnUserEventReceived(SocketIOResponse response) {
             if (UserMessagesListener != null) {
                 var sceneEvent = response.GetValue<UserEvent>();
-                UserMessagesListener.OnUserEventReceived(sceneEvent);
+                UnityThread.executeInUpdate(() => {
+                    UserMessagesListener.OnUserEventReceived(sceneEvent);
+                });
             }
         }
 
@@ -374,13 +428,17 @@ namespace VRT.Orchestrator.Wrapping {
                 case "USER_JOINED_SESSION":
                     foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
-                        e?.OnUserJoinedSession(data.eventData.userId, data.eventData.userData);
+                        UnityThread.executeInUpdate(() => {
+                            e?.OnUserJoinedSession(data.eventData.userId, data.eventData.userData);
+                        });
                     }
                     break;
                 case "USER_LEFT_SESSION":
                     foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
-                        e?.OnUserLeftSession(data.eventData.userId);
+                        UnityThread.executeInUpdate(() => {
+                            e?.OnUserLeftSession(data.eventData.userId);
+                        });
                     }
                     break;
                 default:
