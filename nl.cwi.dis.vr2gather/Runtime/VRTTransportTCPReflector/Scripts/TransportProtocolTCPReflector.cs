@@ -220,10 +220,21 @@ namespace VRT.Transport.TCPReflector
             }
         }
 
+        private int _ReceiveAll(byte[] buffer) {
+            int off = 0;
+            while(true) {
+                int gotten = Sock.Receive(buffer, off, buffer.Length-off, SocketFlags.None);
+                off += gotten;
+                if (gotten == 0 || off >= buffer.Length) {
+                    return off;
+                }
+            }
+        }
+
         private string _ReadHeader()
         {
             byte[] b_header = new byte[HeaderLength];
-            int actualSize = Sock.Receive(b_header);
+            int actualSize = _ReceiveAll(b_header);
             if (actualSize != HeaderLength)
             {
                 Debug.LogError($"{Name()}: Received short header, {actualSize} bytes");
@@ -254,7 +265,7 @@ namespace VRT.Transport.TCPReflector
                     }
                     // We always want to read the data, even if we don't want it
                     byte[] data = new byte[dataLength];
-                    int dataLengthGotten = Sock.Receive(data);
+                    int dataLengthGotten = _ReceiveAll(data);
                     if (dataLengthGotten != dataLength)
                     {
                         Debug.LogError($"{Name()}: Received {dataLengthGotten} bytes in stead of {dataLength}");
