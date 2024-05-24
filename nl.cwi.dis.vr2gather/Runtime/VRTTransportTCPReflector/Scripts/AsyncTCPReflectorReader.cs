@@ -30,7 +30,7 @@ namespace VRT.Transport.TCPReflector
         bool initialized = false;
         private TransportProtocolTCPReflector connection;
         
-        public ITransportProtocolReader_Tiled Init(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors)
+        public ITransportProtocolReader_Tiled Init(string remoteUrl, string userId, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
             NoUpdateCallsNeeded();
             if (descriptors == null)
@@ -41,7 +41,7 @@ namespace VRT.Transport.TCPReflector
             connection = TransportProtocolTCPReflector.Connect(remoteUrl);
             for (int i = 0; i < this.descriptors.Length; ++i)
             {
-                this.descriptors[i].name = $"{streamName}/{this.descriptors[i].tileNumber}";
+                this.descriptors[i].name = $"{userId}/{streamName}/{this.descriptors[i].tileNumber}";
                 Debug.Log($"{Name()}:  xxxjack RegisterForDataStream {i}: {this.descriptors[i].name}");
                 connection.RegisterIncomingStream(this.descriptors[i].name, this.descriptors[i].outQueue);
             }
@@ -55,10 +55,11 @@ namespace VRT.Transport.TCPReflector
             return this;
         }
 
-        public ITransportProtocolReader Init(string remoteUrl, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
+        public ITransportProtocolReader Init(string remoteUrl, string userId, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
             Init(
                 remoteUrl,
+                userId,
                 streamName,
                 fourcc,
                 new IncomingTileDescription[]

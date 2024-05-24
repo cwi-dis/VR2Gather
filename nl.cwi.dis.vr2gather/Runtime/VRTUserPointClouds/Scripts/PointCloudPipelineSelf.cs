@@ -100,7 +100,6 @@ namespace VRT.UserRepresentation.PointCloud
                 tileSelector.gameObject.SetActive(false);
                 tileSelector = null;
             }
-            AsyncPointCloudReader pcReader;
             //
             // Create renderer and preparer for self-view.
             //
@@ -192,14 +191,11 @@ namespace VRT.UserRepresentation.PointCloud
                 string proto = SessionConfig.Instance.protocolType;
                 switch (proto)
                 {
-                    case "socketio":
-                        url = user.userId;
-                        break;
                     case "tcp":
                         url = user.userData.userAudioUrl;
                         break;
                 }
-                writer = TransportProtocol.NewWriter(proto).Init(url, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                
 
 #if VRT_WITH_STATS

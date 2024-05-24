@@ -20,7 +20,7 @@ namespace VRT.Transport.Dash
         protected IncomingTileDescription[] tileDescriptors;
         protected IncomingStreamDescription[] allStreamDescriptors;
 
-        public ITransportProtocolReader_Tiled Init(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
+        public ITransportProtocolReader_Tiled Init(string _url, string userId, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
             base._Init(_url, _streamName);
             lock (this)

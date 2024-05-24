@@ -20,7 +20,7 @@ namespace VRT.Transport.TCP
 
         }
 
-        public ITransportProtocolWriter Init(string _url, string streamName, string fourcc, Cwipc.StreamSupport.OutgoingStreamDescription[] _descriptions)
+        public ITransportProtocolWriter Init(string _url, string userId, string streamName, string fourcc, Cwipc.StreamSupport.OutgoingStreamDescription[] _descriptions)
         {
             if (streamName != "audio") {
                 Uri tmp = new Uri(_url);

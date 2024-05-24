@@ -219,7 +219,7 @@ namespace VRT.Transport.Dash
             }
         }
 
-        public ITransportProtocolReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue)
+        public ITransportProtocolReader Init(string _url, string userId, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue)
         {
             this._Init(_url, _streamName);
             lock (this)

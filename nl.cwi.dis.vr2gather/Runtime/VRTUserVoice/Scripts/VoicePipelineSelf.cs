@@ -80,14 +80,11 @@ namespace VRT.UserRepresentation.Voice
             string url = user.sfuData.url_gen;
             switch (proto)
             {
-                case "socketio":
-                    url = user.userId;
-                    break;
                 case "tcp":
                     url = user.userData.userAudioUrl;
                     break;
             }
-            writer = TransportProtocol.NewWriter(proto).Init(url, _streamName, audioCodec, b2dStreams);
+            writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, _streamName, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
             Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, codec={audioCodec}");
 #endif

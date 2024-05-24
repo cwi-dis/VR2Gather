@@ -78,7 +78,7 @@ namespace VRT.Transport.TCPReflector
         private BlockingCollection<byte[]> OutgoingQueue = new();
         private Thread OutgoingThread;
 
-        private Dictionary<string, QueueThreadSafe> IncomingQueues;
+        private Dictionary<string, QueueThreadSafe> IncomingQueues = new();
         private Thread IncomingThread;
 
         public static void Register()

@@ -12,7 +12,7 @@ namespace VRT.Transport.TCP
             return new AsyncTCPDirectReader();
         }
 
-        public ITransportProtocolReader Init(string _url, string _streamName, int _streamNumber, string fourcc, QueueThreadSafe outQueue)
+        public ITransportProtocolReader Init(string _url, string userId, string _streamName, int _streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
             if (_streamName != "audio")
             {

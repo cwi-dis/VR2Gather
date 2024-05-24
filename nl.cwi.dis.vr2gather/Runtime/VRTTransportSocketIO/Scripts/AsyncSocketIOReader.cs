@@ -35,7 +35,7 @@ namespace VRT.Transport.SocketIO
         bool initialized = false;
 
         
-        public ITransportProtocolReader_Tiled Init(string remoteUrl, string streamName, string fourcc, IncomingTileDescription[] descriptors)
+        public ITransportProtocolReader_Tiled Init(string remoteUrl, string userId, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
             NoUpdateCallsNeeded();
             if (descriptors == null)
@@ -47,7 +47,7 @@ namespace VRT.Transport.SocketIO
             {
                 for (int i = 0; i < this.descriptors.Length; ++i)
                 {
-                    this.descriptors[i].name = $"{remoteUrl}.{streamName}#{i}";
+                    this.descriptors[i].name = $"{userId}.{streamName}#{i}";
                     Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name}");
                     OrchestratorWrapper.instance.RegisterForDataStream(remoteUrl, this.descriptors[i].name);
                 }
@@ -67,10 +67,11 @@ namespace VRT.Transport.SocketIO
             return this;
         }
 
-        public ITransportProtocolReader Init(string remoteUrl, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
+        public ITransportProtocolReader Init(string remoteUrl, string userId, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
             Init(
                 remoteUrl,
+                userId,
                 streamName,
                 fourcc,
                 new IncomingTileDescription[]

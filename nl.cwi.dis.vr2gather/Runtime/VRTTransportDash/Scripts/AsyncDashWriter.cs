@@ -32,7 +32,7 @@ namespace VRT.Transport.Dash
         B2DPusher[] streamPushers;
 
 
-        public ITransportProtocolWriter Init(string _url, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
+        public ITransportProtocolWriter Init(string _url, string userId, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
             int _segmentSize = VRTConfig.Instance.TransportDash.segmentSize;
             int _segmentLife = VRTConfig.Instance.TransportDash.segmentLife;

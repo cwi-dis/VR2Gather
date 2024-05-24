@@ -28,7 +28,7 @@ namespace VRT.Transport.SocketIO
         OutgoingStreamDescription[] streams;
         bool initialized = false;
 
-        public ITransportProtocolWriter Init(string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
+        public ITransportProtocolWriter Init(string url, string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
         {
             if (streams == null)
             {

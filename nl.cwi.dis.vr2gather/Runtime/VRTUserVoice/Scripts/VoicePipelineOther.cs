@@ -115,11 +115,8 @@ namespace VRT.UserRepresentation.Voice
                 case "tcp":
                     url = user.userData.userAudioUrl;
                     break;
-                case "socketio":
-                    url = user.userId;
-                    break;
             }
-            reader = TransportProtocol.NewReader(proto).Init(url, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
+            reader = TransportProtocol.NewReader(proto).Init(url, user.userId, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
             Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
 #endif

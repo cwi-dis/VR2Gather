@@ -138,14 +138,11 @@ namespace VRT.UserRepresentation.PointCloud
             string proto = SessionConfig.Instance.protocolType;
             switch (proto)
             {
-                case "socketio":
-                    url = user.userId;
-                    break;
                 case "tcp":
                     url = user.userData.userAudioUrl;
                     break;
             }
-            reader = TransportProtocol.NewReader_Tiled(proto).Init(url, "pointcloud", pointcloudCodec, tilesToReceive);
+            reader = TransportProtocol.NewReader_Tiled(proto).Init(url, user.userId, "pointcloud", pointcloudCodec, tilesToReceive);
 
             string synchronizerName = "none";
             if (synchronizer != null && synchronizer.isEnabled())

@@ -12,7 +12,7 @@ namespace VRT.Transport.TCP
             return new AsyncTCPDirectReader_Tiled();
         }
 
-        public ITransportProtocolReader_Tiled Init(string _url, string streamName, string fourcc, Cwipc.StreamSupport.IncomingTileDescription[] _tileDescriptors)
+        public ITransportProtocolReader_Tiled Init(string _url, string userId, string streamName, string fourcc, Cwipc.StreamSupport.IncomingTileDescription[] _tileDescriptors)
         {
             if (streamName != "audio")
             {

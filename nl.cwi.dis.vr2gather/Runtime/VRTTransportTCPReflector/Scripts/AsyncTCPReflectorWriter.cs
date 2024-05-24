@@ -27,7 +27,7 @@ namespace VRT.Transport.TCPReflector
         bool initialized = false;
         private TransportProtocolTCPReflector connection;
 
-        public ITransportProtocolWriter Init(string url, string streamName, string fourcc, OutgoingStreamDescription[] streams)
+        public ITransportProtocolWriter Init(string url, string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
         {
             if (streams == null)
             {
@@ -40,7 +40,7 @@ namespace VRT.Transport.TCPReflector
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i)
             {
-                streams[i].name = $"{streamName}/{streams[i].tileNumber}";
+                streams[i].name = $"{userId}/{streamName}/{streams[i].tileNumber}";
                 connection.RegisterOutgoingStream(streams[i].name);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");

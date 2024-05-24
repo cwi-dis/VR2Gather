@@ -53,7 +53,7 @@ namespace VRT.Core
 
     public interface ITransportProtocolWriter : IAsyncWriter {
         public delegate ITransportProtocolWriter Factory();
-        public ITransportProtocolWriter Init(string _url, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions);
+        public ITransportProtocolWriter Init(string _url, string userId, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions);
         
     }
 
@@ -67,13 +67,13 @@ namespace VRT.Core
 
     public interface ITransportProtocolReader : IAsyncReader {
         public delegate ITransportProtocolReader Factory();
-        public ITransportProtocolReader Init(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue);
+        public ITransportProtocolReader Init(string _url, string userId, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue);
 
     }
 
     public interface ITransportProtocolReader_Tiled : IAsyncReader {
         public delegate ITransportProtocolReader_Tiled Factory();
-        public ITransportProtocolReader_Tiled Init(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors);
+        public ITransportProtocolReader_Tiled Init(string _url, string userId, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors);
     }
 
    

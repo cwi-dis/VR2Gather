@@ -120,14 +120,11 @@ namespace VRT.UserRepresentation.WebCam
                         string proto = SessionConfig.Instance.protocolType;
                         switch (proto)
                         {
-                            case "socketio":
-                                url = user.userId;
-                                break;
                             case "tcp":
                                 url = user.userData.userAudioUrl;
                                 break;
                         }
-                        writer = TransportProtocol.NewWriter(proto).Init(url, "webcam", "wcwc", dashStreamDescriptions);
+                        writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "webcam", "wcwc", dashStreamDescriptions);
 #if VRT_WITH_STATS
                         Statistics.Output(Name(), $"proto={proto}, url={url}");
 #endif
@@ -161,14 +158,11 @@ namespace VRT.UserRepresentation.WebCam
                 string proto = SessionConfig.Instance.protocolType;
                 switch (proto)
                 {
-                    case "socketio":
-                        url = user.userId;
-                        break;
                     case "tcp":
                         url = user.userData.userAudioUrl;
                         break;
                 }
-                reader = TransportProtocol.NewReader(proto).Init(url, "webcam", 0, "wcwc", videoCodecQueue);
+                reader = TransportProtocol.NewReader(proto).Init(url, user.userId, "webcam", 0, "wcwc", videoCodecQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto={proto}, url={url}");
 #endif
