@@ -209,10 +209,15 @@ namespace VRT.Transport.TCPReflector
 
         private void OutgoingRun()
         {
-            while (Sock != null)
-            {
-                byte[] packet = OutgoingQueue.Take();
-                Sock.Send(packet);
+            try {
+                while (Sock != null)
+                {
+                    byte[] packet = OutgoingQueue.Take();
+                    Sock.Send(packet);
+                }
+            }
+            catch(SocketException e) {
+                Debug.LogError($"{Name()}: {e}");
             }
         }
 
@@ -235,35 +240,40 @@ namespace VRT.Transport.TCPReflector
 
         private void IncomingRun()
         {
-            while (Sock != null)
-            {
-                string header = _ReadHeader();
-                if (header == null)
+            try {
+                  while (Sock != null)
                 {
-                    break;
+                    string header = _ReadHeader();
+                    if (header == null)
+                    {
+                        break;
+                    }
+                    bool ok = _DecodeHeader(header, out string streamName, out long timeStamp, out int dataLength);
+                    if (!ok)
+                    {
+                        break;
+                    }
+                    // We always want to read the data, even if we don't want it
+                    byte[] data = new byte[dataLength];
+                    int dataLengthGotten = Sock.Receive(data);
+                    if (dataLengthGotten != dataLength)
+                    {
+                        Debug.LogError($"{Name()}: Received {dataLengthGotten} bytes in stead of {dataLength}");
+                        break;
+                    }
+                    if (IncomingQueues.ContainsKey(streamName))
+                    {
+                        QueueThreadSafe queue = IncomingQueues[streamName];
+                        BaseMemoryChunk chunk = new NativeMemoryChunk(dataLength);
+                        chunk.metadata.timestamp = timeStamp;
+                        System.Runtime.InteropServices.Marshal.Copy(data, sizeof(long), chunk.pointer, chunk.length);
+                        bool didDrop = queue.Enqueue(chunk);
+                        // xxxjack should add Stats
+                    }
                 }
-                bool ok = _DecodeHeader(header, out string streamName, out long timeStamp, out int dataLength);
-                if (!ok)
-                {
-                    break;
-                }
-                // We always want to read the data, even if we don't want it
-                byte[] data = new byte[dataLength];
-                int dataLengthGotten = Sock.Receive(data);
-                if (dataLengthGotten != dataLength)
-                {
-                    Debug.LogError($"{Name()}: Received {dataLengthGotten} bytes in stead of {dataLength}");
-                    break;
-                }
-                if (IncomingQueues.ContainsKey(streamName))
-                {
-                    QueueThreadSafe queue = IncomingQueues[streamName];
-                    BaseMemoryChunk chunk = new NativeMemoryChunk(dataLength);
-                    chunk.metadata.timestamp = timeStamp;
-                    System.Runtime.InteropServices.Marshal.Copy(data, sizeof(long), chunk.pointer, chunk.length);
-                    bool didDrop = queue.Enqueue(chunk);
-                    // xxxjack should add Stats
-                }
+            }
+            catch(SocketException e) {
+                Debug.LogError($"{Name()}: {e}");
             }
         }
     }    
