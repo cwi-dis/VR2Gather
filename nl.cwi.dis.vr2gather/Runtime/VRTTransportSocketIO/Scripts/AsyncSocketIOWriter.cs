@@ -44,7 +44,7 @@ namespace VRT.Transport.SocketIO
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
-                OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
+                OSSOrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
             try
             {
@@ -80,12 +80,12 @@ namespace VRT.Transport.SocketIO
                 }
             }
             Debug.Log($"[FPA] {Name()}: Stopped.");
-            OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
+            OSSOrchestratorWrapper.instance.RemoveDataStream("AUDIO");
         }
 
         protected override void AsyncUpdate()
         {
-            if (OrchestratorWrapper.instance != null && OrchestratorController.Instance.ConnectedToOrchestrator)
+            if (OSSOrchestratorWrapper.instance != null && OrchestratorController.Instance.ConnectedToOrchestrator)
             {
                 for (int i = 0; i < streams.Length; ++i)
                 {
@@ -102,7 +102,7 @@ namespace VRT.Transport.SocketIO
                     var buf = new byte[chk.length+sizeof(long)];
                     Array.Copy(hdr_timestamp, buf, sizeof(long));
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
-                    OrchestratorWrapper.instance.SendData(streams[i].name, buf);
+                    OSSOrchestratorWrapper.instance.SendData(streams[i].name, buf);
 #if VRT_WITH_STATS
                     stats.statsUpdate(chk.length, i);
 #endif
