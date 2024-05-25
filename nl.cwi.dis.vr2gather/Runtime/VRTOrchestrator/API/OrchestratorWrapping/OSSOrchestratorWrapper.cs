@@ -13,7 +13,7 @@ namespace VRT.Orchestrator.Wrapping {
     {
         private SocketIOUnity Socket;
 
-        public OSSOrchestratorWrapper instance;
+        public static OSSOrchestratorWrapper instance;
         // Listener for the responses of the orchestrator
         private IOrchestratorResponsesListener ResponsesListener;
 
@@ -31,6 +31,11 @@ namespace VRT.Orchestrator.Wrapping {
 
         public OSSOrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
+            if (instance is null)
+            {
+                instance = this;
+            }
+
             ResponsesListener = responsesListener;
             MessagesListener = messagesListener;
             UserMessagesListener = userMessagesListener;
