@@ -40,7 +40,7 @@ namespace VRT.Orchestrator.Wrapping
     public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {
         [Tooltip("Enable trace logging output")]
-        [SerializeField] private bool enableLogging = false;
+        [SerializeField] private bool enableLogging = true;
 
         [Tooltip("Enable socketIO debugging")]
         [SerializeField] private bool enableSocketioLogging = false;
@@ -58,7 +58,7 @@ namespace VRT.Orchestrator.Wrapping
         #region orchestration logics
 
         // the wrapper for the orchestrator
-        private OrchestratorWrapper orchestratorWrapper;
+        private OSSOrchestratorWrapper orchestratorWrapper;
         // the reference controller for singleton
         private static OrchestratorController instance;
 
@@ -204,7 +204,7 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
 #endif
-            orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this, this);
+            orchestratorWrapper = new OSSOrchestratorWrapper(pUrl, this, this, this, this);
             if (enableSocketioLogging) {
                 orchestratorWrapper.EnableSocketioLogging();
             }
@@ -619,7 +619,6 @@ namespace VRT.Orchestrator.Wrapping
 
         // xxxjack can go
         public void UpdateUserDataKey(string pKey, string pValue) {
-            orchestratorWrapper.UpdateUserData(pKey, pValue);
         }
 
         public void OnUpdateUserDataResponse(ResponseStatus status) {
@@ -725,14 +724,14 @@ namespace VRT.Orchestrator.Wrapping
 
         public void OnMasterEventReceived(UserEvent pMasterEventData) {
             if (pMasterEventData.sceneEventFrom != SelfUser.userId) {
-                //if (enableLogging) Debug.Log("OrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.fromId + " sent: " + pMasterEventData.message);
+                if (enableLogging) Debug.Log("OrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.sceneEventFrom + " sent: " + pMasterEventData.sceneEventData);
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
         }
 
         public void OnUserEventReceived(UserEvent pUserEventData) {
             if (pUserEventData.sceneEventFrom != SelfUser.userId) {
-                //if (enableLogging) Debug.Log("OrchestratorController: OnUserEventReceived: User: " + pUserEventData.fromId + " sent: " + pUserEventData.message);
+                if (enableLogging) Debug.Log("OrchestratorController: OnUserEventReceived: User: " + pUserEventData.sceneEventFrom + " sent: " + pUserEventData.sceneEventData);
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }
