@@ -52,8 +52,24 @@ namespace VRT.Orchestrator.Wrapping {
             Socket.JsonSerializer = new NewtonsoftJsonSerializer();
 
             Socket.OnConnected += (sender, e) => OnSocketConnect();
-            Socket.OnDisconnected += (sender, e) => OnSocketDisconnect();
-            Socket.OnError += (sender, e) => OnSocketError(null);
+            Socket.OnDisconnected += (sender, e) =>
+            {
+                Debug.LogError($"DISCONNECT: {sender} {e}");
+                OnSocketDisconnect();
+            };
+            Socket.OnError += (sender, e) =>
+            {
+                Debug.LogError($"ERROR: {e}");
+                OnSocketError(null);
+            };
+
+            Socket.OnPing += (sender, e) => {
+                Debug.Log("PING");
+            };
+
+            Socket.OnPong += (sender, e) => {
+                Debug.Log("PoNG");
+            };
 
             Socket.On("MessageSent", OnMessageSentFromOrchestrator);
             Socket.On("DataReceived", OnUserDataReceived);
