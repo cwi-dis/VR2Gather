@@ -51,7 +51,7 @@ namespace VRT.Transport.SocketIO
                     Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name} from {userId}");
                     OrchestratorWrapper.instance.RegisterForDataStream(userId, this.descriptors[i].name);
                 }
-                OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
+                OSSOrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
@@ -92,8 +92,8 @@ namespace VRT.Transport.SocketIO
             for (int i = 0; i < descriptors.Length; ++i)
             {
                 descriptors[i].outQueue?.Close();
-                if (OrchestratorWrapper.instance != null && OrchestratorController.Instance.SelfUser != null)
-                    OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
+                if (OSSOrchestratorWrapper.instance != null && OrchestratorController.Instance.SelfUser != null)
+                    OSSOrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
             }
         }
 
