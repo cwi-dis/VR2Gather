@@ -390,80 +390,93 @@ namespace VRT.Orchestrator.Wrapping {
         #region events
 
         private void OnMessageSentFromOrchestrator(SocketIOResponse response) {
-            var message = response.GetValue<UserMessage>();
-            UnityThread.executeInUpdate(() => {
-                UserMessagesListener?.OnUserMessageReceived(message);
-            });
+            lock (this) {
+                var message = response.GetValue<UserMessage>();
+                UnityThread.executeInUpdate(() => {
+                    UserMessagesListener?.OnUserMessageReceived(message);
+                });
+            }
         }
 
         private void OnUserDataReceived(SocketIOResponse response) {
-            var userId = response.GetValue<string>(0);
-            var type = response.GetValue<string>(1);
-            var data = response.GetValue<byte[]>(2);
+            lock (this) {
+                var userId = response.GetValue<string>(0);
+                var type = response.GetValue<string>(1);
+                var data = response.GetValue<byte[]>(2);
 
-            var packet = new UserDataStreamPacket(userId, type, "", data);
-
-            UnityThread.executeInUpdate(() => {
-                OnDataStreamReceived?.Invoke(packet);
-            });
-        }
-
-        private void OnMasterEventReceived(SocketIOResponse response) {
-            if (UserMessagesListener != null)
-            {
-                var sceneEvent = response.GetValue<SceneEvent>();
-                string data = Encoding.ASCII.GetString(response.InComingBytes[0], 0, response.InComingBytes[0].Length);
+                var packet = new UserDataStreamPacket(userId, type, "", data);
+                Debug.Log($"DATA: {userId} {type} {data}");
 
                 UnityThread.executeInUpdate(() =>
                 {
-                    UserMessagesListener.OnMasterEventReceived(new UserEvent(sceneEvent.sceneEventFrom, data));
+                    OnDataStreamReceived?.Invoke(packet);
                 });
             }
-            else {
-                Debug.LogWarning("No UserMessagesListener");
+        }
+
+        private void OnMasterEventReceived(SocketIOResponse response) {
+            lock (this) {
+                if (UserMessagesListener != null)
+                {
+                    var sceneEvent = response.GetValue<SceneEvent>();
+                    string data = Encoding.ASCII.GetString(response.InComingBytes[0], 0, response.InComingBytes[0].Length);
+
+                    UnityThread.executeInUpdate(() =>
+                    {
+                        UserMessagesListener.OnMasterEventReceived(new UserEvent(sceneEvent.sceneEventFrom, data));
+                    });
+                }
+                else {
+                    Debug.LogWarning("No UserMessagesListener");
+                }
             }
         }
 
         private void OnUserEventReceived(SocketIOResponse response) {
-            if (UserMessagesListener != null) {
-                var sceneEvent = response.GetValue<SceneEvent>();
-                string data = Encoding.ASCII.GetString(response.InComingBytes[0], 0, response.InComingBytes[0].Length);
+            lock (this) {
+                if (UserMessagesListener != null) {
+                    var sceneEvent = response.GetValue<SceneEvent>();
+                    string data = Encoding.ASCII.GetString(response.InComingBytes[0], 0, response.InComingBytes[0].Length);
 
-                UnityThread.executeInUpdate(() =>
-                {
-                    UserMessagesListener.OnUserEventReceived(new UserEvent(sceneEvent.sceneEventFrom, data));
-                });
-            } else {
-                Debug.LogWarning("No UserMessagesListener");
+
+                    UnityThread.executeInUpdate(() =>
+                    {
+                        UserMessagesListener.OnUserEventReceived(new UserEvent(sceneEvent.sceneEventFrom, data));
+                    });
+                } else {
+                    Debug.LogWarning("No UserMessagesListener");
+                }
             }
         }
 
         private void OnSessionUpdated(SocketIOResponse response) {
-            var data = response.GetValue<SessionUpdate>();
+            lock (this) {
+                var data = response.GetValue<SessionUpdate>();
 
-            if (data.eventData.userId == myUserID) {
-                return;
-            }
+                if (data.eventData.userId == myUserID) {
+                    return;
+                }
 
-            switch (data.eventId) {
-                case "USER_JOINED_SESSION":
-                    foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
-                    {
-                        UnityThread.executeInUpdate(() => {
-                            e?.OnUserJoinedSession(data.eventData.userId, data.eventData.userData);
-                        });
-                    }
-                    break;
-                case "USER_LEFT_SESSION":
-                    foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
-                    {
-                        UnityThread.executeInUpdate(() => {
-                            e?.OnUserLeftSession(data.eventData.userId);
-                        });
-                    }
-                    break;
-                default:
-                    break;
+                switch (data.eventId) {
+                    case "USER_JOINED_SESSION":
+                        foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
+                        {
+                            UnityThread.executeInUpdate(() => {
+                                e?.OnUserJoinedSession(data.eventData.userId, data.eventData.userData);
+                            });
+                        }
+                        break;
+                    case "USER_LEFT_SESSION":
+                        foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
+                        {
+                            UnityThread.executeInUpdate(() => {
+                                e?.OnUserLeftSession(data.eventData.userId);
+                            });
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
