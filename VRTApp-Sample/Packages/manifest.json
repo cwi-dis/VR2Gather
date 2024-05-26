@@ -17,6 +17,7 @@
     "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
     "nl.cwi.dis.vr2gather": "git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather",
     "nl.cwi.dis.vr2gather.nativelibraries": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
+    "com.itisnajim.socketiounity": "git+https://github.com/dave30406/SocketIOUnity.git#b43e1fa081328eea08f8a7c05c54eba14c97ae22",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
