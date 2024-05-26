@@ -139,7 +139,7 @@ namespace VRT.Pilots.Common
 			var me = OrchestratorController.Instance.SelfUser;
             bool webRTCInitialized = false;
             // Initialize WebRTC, if needed and not initialized already
-            if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.WebRTC)
+            if (SessionConfig.Instance.protocolType == "webrtc")
             {
              
                 if (webRTCConnector == null)
