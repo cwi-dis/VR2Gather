@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Responses;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Pilots.Common;

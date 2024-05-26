@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Responses;
 
 namespace VRT.Pilots.Common
 {

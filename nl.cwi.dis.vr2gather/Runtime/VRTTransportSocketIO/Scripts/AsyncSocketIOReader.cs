@@ -7,6 +7,7 @@ using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
+using VRT.Orchestrator.Responses;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
