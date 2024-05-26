@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+using VRT.Orchestrator.Responses;
 using static VRT.Core.NTPTools;
 #if UNITY_EDITOR
 using UnityEditor.Search;
