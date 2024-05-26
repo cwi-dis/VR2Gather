@@ -1,9 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
-using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
@@ -22,7 +19,7 @@ namespace VRT.UserRepresentation.Voice
     {
         AsyncVoiceReader reader;
         AsyncVoiceEncoder codec;
-        AsyncWriter writer;
+        ITransportProtocolWriter writer;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe encoderQueue = null;
@@ -51,7 +48,7 @@ namespace VRT.UserRepresentation.Voice
 
             string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
-            SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
+            string proto = SessionConfig.Instance.protocolType;
 
             QueueThreadSafe _readerOutputQueue = null;
             if (audioIsEncoded)
@@ -79,32 +76,19 @@ namespace VRT.UserRepresentation.Voice
 
             OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1];
             b2dStreams[0].inQueue = senderQueue;
+            // We need some backward-compatibility hacks, depending on protocol type.
+            string url = user.sfuData.url_gen;
+            switch (proto)
+            {
+                case "tcp":
+                    url = user.userData.userAudioUrl;
+                    break;
+            }
+            writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, _streamName, audioCodec, b2dStreams);
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, codec={audioCodec}");
+#endif
 
-            if (proto == SessionConfig.ProtocolType.Dash)
-            {
-                var AudioBin2Dash = cfg?.PCSelfConfig?.AudioBin2Dash;
-                if (AudioBin2Dash == null)
-                    throw new Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
-
-                writer = new AsyncB2DWriter(user.sfuData.url_audio, _streamName, audioCodec, AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, b2dStreams);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, codec={audioCodec}");
-#endif
-            }
-            else if (proto == SessionConfig.ProtocolType.TCP)
-            {
-                writer = new AsyncTCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
-#endif
-            }
-            else
-            {
-                writer = new AsyncSocketIOWriter(user, _streamName, audioCodec, b2dStreams);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
-#endif
-            }
             string encoderName = "none";
             if (codec != null)
             {
@@ -115,49 +99,6 @@ namespace VRT.UserRepresentation.Voice
 #endif
         }
 
-        public void Init(User user, QueueThreadSafe queue)
-        {
-            string micro = null;
-            if (user != null && user.userData != null)
-                micro = user.userData.microphoneName;
-            int minBufferSize = 0;
-            if (micro == "None")
-            {
-                Debug.LogError($"{Name()}: no microphone, other participants will not hear you");
-                return;
-            }
-
-            string audioCodec = SessionConfig.Instance.voiceCodec;
-            bool audioIsEncoded = audioCodec == "VR2A";
-
-            QueueThreadSafe _readerOutputQueue = null;
-            if (audioIsEncoded)
-            {
-                encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
-                senderQueue = queue;
-                codec = new AsyncVoiceEncoder(encoderQueue, senderQueue);
-                minBufferSize = codec.minSamplesPerFrame;
-                _readerOutputQueue = encoderQueue;
-            }
-            else
-            {
-                encoderQueue = null;
-                codec = null;
-                senderQueue = queue;
-                _readerOutputQueue = senderQueue;
-            }
-
-            reader = new AsyncVoiceReader(micro, VRTConfig.Instance.audioSampleRate, VRTConfig.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
-            int audioSamplesPerPacket = reader.getBufferSize();
-            if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
-            {
-                Debug.LogWarning($"{Name()}: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
-            }
-
-#if VRT_WITH_STATS
-            Statistics.Output(Name(), $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
-#endif
-        }
 
         void OnDestroy()
         {

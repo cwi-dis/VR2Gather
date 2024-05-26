@@ -104,6 +104,10 @@ namespace VRT.Orchestrator.WSManagement
             SocketOptions options = new SocketOptions();
             options.AutoConnect = false;
             options.ConnectWith = Best.SocketIO.Transports.TransportTypes.WebSocket;
+            // Added by Jack to see if this fixes the disconnect problem
+            options.WebsocketOptions.PingIntervalOverride = TimeSpan.FromSeconds(20);
+            // Added by Jack to try and stop the reconnecting
+            options.Reconnection = false;
             
             // Create the Socket.IO manager
             Manager = new SocketManager(new Uri(OrchestratorUrl), options);

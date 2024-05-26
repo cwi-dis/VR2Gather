@@ -82,6 +82,17 @@ namespace VRT.Core
         };
         public _Macintosh Macintosh;
 
+        [Serializable]
+        public class _TransportDash
+        {
+            [Tooltip("How many milliseconds one transmitted DASH segment should contain")]
+            public int segmentSize;
+            [Tooltip("After how many milliseconds DASH segments can be deleted by the SFU")]
+            public int segmentLife;
+        }
+        [Tooltip("Settable parameters for DASH protocol")]
+        public _TransportDash TransportDash;
+
         public Cwipc.CwipcConfig PCs;
 
         [Serializable]
@@ -186,14 +197,6 @@ namespace VRT.Core
                 }
                 public _Encoder[] Encoders;
                 [Serializable]
-                public class _Bin2Dash
-                {
-                    public int segmentSize;
-                    public int segmentLife;
-                }
-                public _Bin2Dash Bin2Dash;
-                public _Bin2Dash AudioBin2Dash;
-                [Serializable]
                 public class _WebRTC
                 {
                     public string peerExecutablePath;
@@ -209,6 +212,23 @@ namespace VRT.Core
         [Tooltip("Introspection: Config override JSON file used")]
         public string configOverrideFilename;
 
+#if UNITY_EDITOR
+        [ContextMenu("Save as config.json")]
+        private void SaveAsConfigJson()
+        {
+            string file = ConfigFilename();
+            System.IO.File.WriteAllText(file, JsonUtility.ToJson(this, true));
+            Debug.Log($"VRTConfig: Saving configuration to {file}");
+        }
+
+        [ContextMenu("Load from config.json")]
+        private void LoadFromConfigJson()
+        {
+            string file = ConfigFilename();
+            JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+            Debug.Log($"VRTConfig: Loaded configuration from {file}");
+        }
+#endif
         static VRTConfig _Instance;
         public static VRTConfig Instance
         {
@@ -253,7 +273,10 @@ namespace VRT.Core
             if (targetFrameRate != 0)
             {
                 Application.targetFrameRate = this.targetFrameRate;
-                Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
+                if (Application.targetFrameRate > 0)
+                {
+                    Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
+                }
             }
             if (LocalUser.PCSelfConfig.capturerTypeName != null && LocalUser.PCSelfConfig.capturerTypeName != "") {
                 if (!Enum.TryParse(LocalUser.PCSelfConfig.capturerTypeName, out LocalUser.PCSelfConfig.capturerType))
@@ -270,16 +293,6 @@ namespace VRT.Core
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
-
-#if xxxjack_unused
-        public void WriteConfig(object toJson)
-        {
-            string file = ConfigFilename();
-            System.IO.File.WriteAllText(file, JsonUtility.ToJson(toJson, true));
-
-            //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));
-        }
-#endif
 
         static string _ConfigFilenameFromCommandLineArgs()
         {

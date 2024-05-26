@@ -1,0 +1,17 @@
+{
+    "name": "VRT.Transport.TCPSFU",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

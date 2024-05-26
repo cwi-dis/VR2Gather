@@ -4,12 +4,9 @@ using VRT.Core;
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.UserRepresentation.Voice;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 using VRT.Pilots.Common;
-using VRT.Transport.WebRTC;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -21,6 +18,11 @@ namespace VRT.UserRepresentation.PointCloud
 
     public class PointCloudPipelineSelf : PointCloudPipelineBase, IPointCloudPositionProvider
     {
+        protected AsyncPointCloudReader reader;
+        public AsyncPointCloudReader GetReader() { return reader; }
+        protected AbstractPointCloudEncoder encoder;
+        protected ITransportProtocolWriter writer;
+
         public static void Register()
         {
             RegisterPipelineClass(true, UserRepresentationType.PointCloud, AddPipelineComponent);
@@ -98,7 +100,6 @@ namespace VRT.UserRepresentation.PointCloud
                 tileSelector.gameObject.SetActive(false);
                 tileSelector = null;
             }
-            AsyncPointCloudReader pcReader;
             //
             // Create renderer and preparer for self-view.
             //
@@ -122,58 +123,22 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Create reader
             //
-            pcReader = PointCloudCapturerFactory.Create(PCSelfConfig, selfPreparerQueue, encoderQueue);
-#if xxxjack_old
-            switch (user.userData.userRepresentationType)
-            {
-                case UserRepresentationType.Old__PCC_CWI_:
-                    break;
-             
-                case UserRepresentationType.Old__PCC_CWIK4A_:
-                    var KinectReaderConfig = PCSelfConfig.CameraReaderConfig; // Note: config shared with rs2
-                    if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CameraReaderConfig config");
-                    pcReader = new AsyncKinectReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                    break;
-                case UserRepresentationType.Old__PCC_PROXY__:
-                    var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
-                    if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
-                    pcReader = new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                    break;
-                case UserRepresentationType.Old__PCC_SYNTH__:
-                    int nPoints = 0;
-                    var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
-                    if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
-                    pcReader = new AsyncSyntheticReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
-                    break;
-                case UserRepresentationType.Old__PCC_PRERECORDED__:
-                    var prConfig = PCSelfConfig.PrerecordedReaderConfig;
-                    if (prConfig.folder == null || prConfig.folder == "")
-                    {
-                        throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
-                    }
-                    pcReader = new AsyncPrerecordedReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                    break;
-                default:
-                    throw new System.Exception($"{Name()}: Unknown representation {user.userData.userRepresentationType}");
+            reader = PointCloudCapturerFactory.Create(PCSelfConfig, selfPreparerQueue, encoderQueue);
 
-            }
-#endif
-
-            reader = pcReader;
-
+            
             if (!preview)
             {
                 // Which encoder do we want?
                 string pointcloudCodec = SessionConfig.Instance.pointCloudCodec;
                // For TCP we want short queues and we want them leaky (so we don't hang)
-                bool leakyQueues = SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP;
+                bool leakyQueues = SessionConfig.Instance.protocolType == "tcp";
                 //
                 // Determine tiles to transmit
                 //
                 Cwipc.PointCloudTileDescription[] tilesToTransmit = null;
                 if (PCSelfConfig.tiled)
                 {
-                    tilesToTransmit = pcReader.getTiles();
+                    tilesToTransmit = reader.getTiles();
                     if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                     {
                         // Skip tile 0, it is the untiled cloud that has all points.
@@ -221,30 +186,33 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create correct writer for PC transmission
                 //
-                switch (SessionConfig.Instance.protocolType)
+                // We need some backward-compatibility hacks, depending on protocol type.
+                string url = user.sfuData.url_gen;
+                string proto = SessionConfig.Instance.protocolType;
+                switch (proto)
                 {
-                    case SessionConfig.ProtocolType.Dash:
-                        writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
+                    case "tcp":
+                        url = user.userData.userAudioUrl;
                         break;
-                    case SessionConfig.ProtocolType.TCP:
-                        writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, outgoingStreamDescriptions);
-                        break;
-                    case SessionConfig.ProtocolType.None:
-                    case SessionConfig.ProtocolType.SocketIO:
-                        writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
-                        break;
-                    case SessionConfig.ProtocolType.WebRTC:
-                        writer = new AsyncWebRTCWriter(user.sfuData.url_gen, pointcloudCodec, outgoingStreamDescriptions);
-                        break;
-                    default:
-                        throw new System.Exception($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
                 }
+                writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+               
 
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={tilesToTransmit.Length}, nquality={PCSelfConfig.Encoders.Length}, nStream={outgoingStreamDescriptions.Length}");
 #endif
             }
         }
+
+        new void OnDestroy()
+        {
+            reader?.StopAndWait();
+            encoder?.StopAndWait();
+            writer?.StopAndWait();
+
+            base.OnDestroy();
+        }
+
 
         private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig._User._PCSelfConfig._Encoder[] Encoders, bool leakyQueues)
         {

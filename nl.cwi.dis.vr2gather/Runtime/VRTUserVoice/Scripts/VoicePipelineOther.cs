@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
@@ -20,13 +21,28 @@ namespace VRT.UserRepresentation.Voice
 
     public class VoicePipelineOther : MonoBehaviour
     {
-        AsyncReader reader;
+        ITransportProtocolReader reader;
         AsyncWorker codec;
         AsyncVoicePreparer preparer;
         public AudioSource audioSource;
 
         [Tooltip("Object responsible for synchronizing playout")]
         public ISynchronizer synchronizer = null;
+
+        [Tooltip("Max number of packets stored before the preparer/renderer")]
+        int preparerQueueSize = 50;
+        [Tooltip("Max number of packets stored before the decoder")]
+        int decoderQueueSize = 10;
+        [Tooltip("Introspection: audio level debugging")]
+        public bool audioLevelDebugging = false;
+        [Tooltip("Introspection: audio level as gotten from preparer")]
+        public float currentAudioLevel = 0;
+        [Tooltip("Introspection: count of packages from preparer")]
+        public int currentAudioLevelCount = 0;
+        [Tooltip("Introspection: aggregate audio level for previous frame, from currentAudioLevel")]
+        public float currentFrameAudioLevel = 0;
+        [Tooltip("Introspection: audio level for previous frame, from GetSpectrumData")]
+        public float currentFrameAltAudioLevel = 0;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
@@ -57,55 +73,55 @@ namespace VRT.UserRepresentation.Voice
             {
                 synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
-            AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
+            VoiceDspController.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
+            if (audioSource == null)
+            {
+                audioSource = gameObject.GetComponent<AudioSource>();
+            }
             if (audioSource != null)
             {
-                Debug.LogWarning($"{Name()}: already have an AudioSource, overriding");
+                audioSource.enabled = true;
+            } 
+            else
+            {
+
+                Debug.LogWarning($"{Name()}: No AudioSource, create one");
+                audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.spatialize = true;
+                audioSource.spatialBlend = 1.0f;
+                audioSource.minDistance = 4f;
+                audioSource.maxDistance = 100f;
             }
-            audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.spatialize = true;
-            audioSource.spatialBlend = 1.0f;
-            audioSource.minDistance = 4f;
-            audioSource.maxDistance = 100f;
+            
             audioSource.loop = true;
             audioSource.Play();
 
             string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
-            SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
+            string proto = SessionConfig.Instance.protocolType;
 
-            preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
+            preparerQueue = new QueueThreadSafe("VoicePreparer", preparerQueueSize, true);
             QueueThreadSafe _readerOutputQueue = preparerQueue;
             if (audioIsEncoded)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
+                decoderQueue = new QueueThreadSafe("VoiceDecoder", decoderQueueSize, true);
                 codec = new AsyncVoiceDecoder(decoderQueue, preparerQueue);
                 _readerOutputQueue = decoderQueue;
             }
+            string url = user.sfuData.url_gen;
+            // Backward compatible trick for 
+            switch(proto)
+            {
+                case "tcp":
+                    url = user.userData.userAudioUrl;
+                    break;
+            }
+            reader = TransportProtocol.NewReader(proto).Init(url, user.userId, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
+#endif
 
-            if (proto == SessionConfig.ProtocolType.Dash)
-            {
-                reader = new AsyncSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
-#endif
-            }
-            else
-            if (proto == SessionConfig.ProtocolType.TCP)
-            {
-                reader = new AsyncTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
-#endif
-            }
-            else
-            {
-                reader = new AsyncSocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
-#endif
-            }
-
+            
 
             preparer = new AsyncVoicePreparer(preparerQueue);
             string synchronizerName = "none";
@@ -129,6 +145,26 @@ namespace VRT.UserRepresentation.Voice
 
         private void Update()
         {
+            if (audioLevelDebugging)
+            {
+                lock (this)
+                {
+                    if (currentAudioLevelCount == 0) currentAudioLevelCount = 1;
+                    currentFrameAudioLevel = currentAudioLevel / currentAudioLevelCount;
+                    currentAudioLevel = 0;
+                    currentAudioLevelCount = 0;
+
+
+                    float[] spectrum = new float[256];
+
+                    audioSource.GetSpectrumData(spectrum, 0, FFTWindow.Rectangular);
+                    float sum = 0;
+                    Array.ForEach(spectrum, value => sum += value);
+                    currentFrameAltAudioLevel = sum;
+
+                }
+            }
+           
             preparer?.Synchronize();
             if (!audioSource.isPlaying)
             {
@@ -150,31 +186,62 @@ namespace VRT.UserRepresentation.Voice
         }
         
 
-        float[] tmpBuffer;
         void OnAudioFilterRead(float[] data, int channels)
         {
             if (preparer == null)
             {
                 return;
             }
-            if (tmpBuffer == null)
+            Timestamp currentTimestamp = preparer.getCurrentTimestamp();
+            int nZeroSamplesInserted = 0;
+            if (channels == 1)
             {
-                tmpBuffer = new float[data.Length / channels];
-            }
-            int nZeroSamplesInserted = preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length);
-            if (nZeroSamplesInserted > 0)
-            {
-                for(int i=tmpBuffer.Length-nZeroSamplesInserted; i < tmpBuffer.Length; i++)
+                // Simple case: mono. Just copy.
+                nZeroSamplesInserted = preparer.GetAudioBuffer(data, data.Length);
+#if unused
+                // xxxjack Unsure whether this is needed, maybe the buffer is already clear when we get here.
+                if (nZeroSamplesInserted > 0)
                 {
-                    tmpBuffer[i] = 0;
+                    for(int i=data.Length-nZeroSamplesInserted; i<data.Length; i++)
+                    {
+                        data[i] = 0;
+                    }
+                }
+#endif
+            } 
+            else
+            {
+                Debug.LogWarning($"{Name()}: Convert audio to {channels} channels");
+                float[] tmpBuffer = new float[data.Length / channels];
+                nZeroSamplesInserted = preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length);
+                if (nZeroSamplesInserted > 0)
+                {
+                    for (int i = tmpBuffer.Length - nZeroSamplesInserted; i < tmpBuffer.Length; i++)
+                    {
+                        tmpBuffer[i] = 0;
+                    }
+                }
+                for (int i = 0; i < data.Length; i++)
+                {
+                    data[i] += tmpBuffer[i / channels];
                 }
             }
-            for (int i=0; i<data.Length; i++)
+            float rmsCompute = 0;
+            for (int i = 0; i < data.Length; i++)
             {
-                data[i] += tmpBuffer[i / channels];
+                rmsCompute += data[i] * data[i];
             }
+            if (audioLevelDebugging)
+            {
+                lock (this)
+                {
+                    currentAudioLevel += Mathf.Sqrt(rmsCompute / data.Length);
+                    currentAudioLevelCount += 1;
+                }
+            }
+            
 #if VRT_WITH_STATS
-            stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, preparer.getCurrentTimestamp(), preparer.getQueueDuration());
+            stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, currentTimestamp, preparer.getQueueDuration());
 #endif
         }
 

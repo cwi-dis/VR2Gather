@@ -67,8 +67,7 @@ namespace VRT.Login
         [Header("SettingsPanel")]
         [SerializeField] private GameObject settingsPanel = null;
         [SerializeField] private GameObject SettingsPanelWebcamInfoGO = null;
-        [SerializeField] private InputField SettingsPanelTCPPointcloudURLField = null;
-        [SerializeField] private InputField SettingsPanelTCPAudioURLField = null;
+        [SerializeField] private InputField SettingsPanelTCPURLField = null;
         [SerializeField] private Dropdown SettingsPanelRepresentationDropdown = null;
         [SerializeField] private Dropdown SettingsPanelWebcamDropdown = null;
         [SerializeField] private Dropdown SettingsPanelMicrophoneDropdown = null;
@@ -133,8 +132,7 @@ namespace VRT.Login
                 instance = this;
             }
 
-            AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
-
+            
             // Developer mode settings
             developerMode = PlayerPrefs.GetInt("developerMode", 0) != 0;
             developerModeButton.isOn = developerMode;
@@ -650,8 +648,7 @@ namespace VRT.Login
             // UserData info in Config
             UserData lUserData = new UserData
             {
-                userPCurl = SettingsPanelTCPPointcloudURLField.text,
-                userAudioUrl = SettingsPanelTCPAudioURLField.text,
+                userAudioUrl = SettingsPanelTCPURLField.text,
                 userRepresentationType = (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
                 webcamName = (SettingsPanelWebcamDropdown.options.Count <= 0) ? "None" : SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
                 microphoneName = (SettingsPanelMicrophoneDropdown.options.Count <= 0) ? "None" : SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
@@ -670,8 +667,7 @@ namespace VRT.Login
             }
             UserData userData = user.userData;
 
-            SettingsPanelTCPPointcloudURLField.text = userData.userPCurl;
-            SettingsPanelTCPAudioURLField.text = userData.userAudioUrl;
+            SettingsPanelTCPURLField.text = userData.userAudioUrl;
             SettingsPanelRepresentationDropdown.value = (int)userData.userRepresentationType;
             SettingsPanelWebcamDropdown.value = 0;
 
@@ -778,9 +774,8 @@ namespace VRT.Login
         {
             CreatePanelSessionProtocolDropdown.ClearOptions();
             List<string> names = new List<string>();
-            foreach (string protocolName in Enum.GetNames(typeof(SessionConfig.ProtocolType)))
+            foreach (string protocolName in TransportProtocol.GetNames())
             {
-                if (protocolName == "None") continue;
                 names.Add(protocolName);
             }
             CreatePanelSessionProtocolDropdown.AddOptions(names);
@@ -821,7 +816,6 @@ namespace VRT.Login
                 // Empty string means we're called from the dropdown callback. Get the value from there.
                 protoString = CreatePanelSessionProtocolDropdown.options[CreatePanelSessionProtocolDropdown.value].text;
             }
-            SessionConfig.ProtocolType proto = SessionConfig.ProtocolFromString(protoString);
             bool done = false;
             for (int i = 0; i < CreatePanelSessionProtocolDropdown.options.Count; i++)
             {
@@ -836,7 +830,7 @@ namespace VRT.Login
                 Debug.LogError($"OrchestratorLogin: unknown protocol \"protoString\"");
             }
 
-            SessionConfig.Instance.protocolType = proto;
+            SessionConfig.Instance.protocolType = protoString;
         }
 
         #endregion
@@ -1421,7 +1415,7 @@ namespace VRT.Login
 
         private void AddSession()
         {
-            string protocol = SessionConfig.ProtocolToString(SessionConfig.Instance.protocolType);
+            string protocol = SessionConfig.Instance.protocolType;
 
             ScenarioRegistry.ScenarioInfo scenarioInfo = ScenarioRegistry.Instance.Scenarios[CreatePanelScenarioDropdown.value];
             Scenario scenario = scenarioInfo.AsScenario();

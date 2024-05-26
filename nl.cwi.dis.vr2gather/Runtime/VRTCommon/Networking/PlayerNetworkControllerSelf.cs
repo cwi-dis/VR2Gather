@@ -11,6 +11,7 @@ namespace VRT.Pilots.Common
 		[Tooltip("Where to get head orientation from")]
 		public Transform camTransform;
 
+		
 		public override void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId)
 		{
 			if (!local)
@@ -74,7 +75,11 @@ namespace VRT.Pilots.Common
 			{
 				OrchestratorController.Instance.SendTypeEventToMaster(data);
 			}
-
+			// Print a warning if it was preposterously long ago that we last sent this message
+			if (_LastSendTime > 0 && Time.realtimeSinceStartup > _LastSendTime + 10.0)
+            {
+				Debug.LogWarning($"{Name()}: No SendPlayerData() calls in {Time.realtimeSinceStartup - _LastSendTime} seconds");
+            }
 			_LastSendTime = Time.realtimeSinceStartup;
 		}
 	}
