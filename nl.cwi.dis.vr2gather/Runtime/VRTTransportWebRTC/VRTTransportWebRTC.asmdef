@@ -1,8 +1,9 @@
 {
-    "name": "WebRTC",
+    "name": "VRT.Transport.WebRTC",
     "rootNamespace": "",
     "references": [
-        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee"
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee",
+        "GUID:6f16117c2be38af4f989c1918efefead"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
