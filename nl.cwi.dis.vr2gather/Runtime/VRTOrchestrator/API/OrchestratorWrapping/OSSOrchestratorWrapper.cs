@@ -82,7 +82,7 @@ namespace VRT.Orchestrator.Wrapping {
             Socket = new SocketIOUnity(new Uri(orchestratorSocketUrl), new SocketIOOptions {
                 Transport = SocketIOClient.Transport.TransportProtocol.WebSocket,
                 Reconnection = false,
-                EIO = 4
+                EIO = EngineIO.V4
             });
             Socket.JsonSerializer = new NewtonsoftJsonSerializer();
 
