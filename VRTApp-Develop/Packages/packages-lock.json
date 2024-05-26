@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "com.itisnajim.socketiounity": {
-      "version": "git+https://github.com/itisnajim/SocketIOUnity.git",
+      "version": "git+https://github.com/dave30406/SocketIOUnity.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2"
       },
-      "hash": "c9e06b15391449ad42fd9b0f39fea48054751bcd"
+      "hash": "b43e1fa081328eea08f8a7c05c54eba14c97ae22"
     },
     "com.tivadar.best.http": {
       "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.http",
