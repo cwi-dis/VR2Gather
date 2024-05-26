@@ -90,8 +90,13 @@ namespace VRT.Transport.TCPReflector
         {
             if (_Instance == null)
             {
+                try {
+                    _Instance = new TransportProtocolTCPReflector(url);
+                }
+                catch(SocketException e) {
+                    throw new SystemException($"TransportProtocolTCPSFU: {url}: {e.Message}");
+                }
                 _InstanceURL = url;
-                _Instance = new TransportProtocolTCPReflector(url);
                 return _Instance;
             }
             if (_InstanceURL == url)

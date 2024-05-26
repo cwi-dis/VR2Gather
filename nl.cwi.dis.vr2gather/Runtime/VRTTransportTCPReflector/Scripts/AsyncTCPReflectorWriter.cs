@@ -88,6 +88,9 @@ namespace VRT.Transport.TCPReflector
             for (int i = 0; i < streams.Length; ++i)
             {
                 BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
+                if (chk == null) {
+                    continue;
+                }
                 connection.SendChunk(chk, streams[i].name);
                 
 #if VRT_WITH_STATS
