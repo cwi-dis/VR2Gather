@@ -38,9 +38,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-        [Tooltip("WebRTCController (GO will be enabled for WebRTC sessions)")]
-        public TransportProtocolWebRTC webRTCConnector = null;
-		[Tooltip("Prefab used to create players")]
+        [Tooltip("Prefab used to create players")]
         public GameObject PlayerPrefab;
         [Tooltip("Prefab used to create self-player")]
         public GameObject SelfPlayerPrefab;
@@ -141,13 +139,11 @@ namespace VRT.Pilots.Common
             // Initialize WebRTC, if needed and not initialized already
             if (SessionConfig.Instance.protocolType == "webrtc")
             {
-             
-                if (webRTCConnector == null)
+				TransportProtocolWebRTC webRTC = TransportProtocolWebRTC.Instance;
+                if (webRTC == null)
                 {
-                    throw new Exception($"SessionPlayersManager: No webRTCConnector but webRTC protocol requested");
+                    throw new Exception($"SessionPlayersManager: No TransportProtocolWebRTC.Instance but webRTC protocol requested");
                 }
-                webRTCConnector.enabled = true;
-                webRTCConnector.gameObject.SetActive(true);
                 int indexWithinCurrentSession = 0;
                 int ourWebRTCClientId = -1;
                 foreach (User user in OrchestratorController.Instance.CurrentSession.GetUsers())
@@ -167,7 +163,7 @@ namespace VRT.Pilots.Common
                     indexWithinCurrentSession++;
                 }
                 string peerExecutablePath = VRTConfig.Instance.LocalUser.PCSelfConfig.WebRTC.peerExecutablePath;
-                webRTCConnector.Initialize(peerExecutablePath, ourWebRTCClientId);
+                webRTC.Initialize(peerExecutablePath, ourWebRTCClientId);
                 webRTCInitialized = true;
             }
 
@@ -239,7 +235,9 @@ namespace VRT.Pilots.Common
             if (debug) Debug.Log($"SessionPlayersManager: All players instantiated");
             if (webRTCInitialized)
             {
-                webRTCConnector.AllConnectionsDone();
+				TransportProtocolWebRTC webRTC = TransportProtocolWebRTC.Instance;
+                
+                webRTC.AllConnectionsDone();
             }
         }
 

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System;
 using System.Diagnostics;
 using UnityEngine;
+using VRT.Core;
 
 using Debug = UnityEngine.Debug;
 using System.Runtime.InteropServices.ComTypes;
@@ -13,7 +14,7 @@ namespace VRT.Transport.WebRTC
     /// <summary>
     /// MonoBehaviour that controls the WebRTC peer process and the native unmanaged plugin that interfaces to it.
     /// </summary>
-    public class TransportProtocolWebRTC : MonoBehaviour
+    public class TransportProtocolWebRTC : TransportProtocol
     {
         public static TransportProtocolWebRTC Instance;
 
