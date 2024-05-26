@@ -7,11 +7,46 @@ using System.Text;
 
 using VRT.Orchestrator.WSManagement;
 using VRT.Orchestrator.Responses;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace VRT.Orchestrator.Wrapping {
+    public class TaskQueue
+    {
+        private ConcurrentQueue<Task> _tasks = new ConcurrentQueue<Task>();
+        private SemaphoreSlim _signal = new SemaphoreSlim(0);
+        private Task _processor;
+
+        public TaskQueue()
+        {
+            _processor = Task.Run(async () => await ProcessQueueAsync());
+        }
+
+        public void Enqueue(Task asyncAction)
+        {
+            _tasks.Enqueue(asyncAction);
+            _signal.Release();
+        }
+
+        private async Task ProcessQueueAsync()
+        {
+            while (true)
+            {
+                await _signal.WaitAsync();
+                if (_tasks.TryDequeue(out var task))
+                {
+                    await task;
+                }
+            }
+        }
+    }
+
     public class OSSOrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
     {
         private SocketIOUnity Socket;
+        private readonly object sendLock = new();
+        private TaskQueue _taskQueue = new TaskQueue();
 
         public static OSSOrchestratorWrapper instance;
         // Listener for the responses of the orchestrator
@@ -344,26 +379,26 @@ namespace VRT.Orchestrator.Wrapping {
         #region scene events
 
         public void SendSceneEventPacketToMaster(byte[] pByteArray) {
-            lock (this) {
-                Socket.Emit("SendSceneEventToMaster", 
+            lock (sendLock) {
+                _taskQueue.Enqueue(Socket.EmitAsync("SendSceneEventToMaster",
                     pByteArray
-                );
+                ));
             }
         }
 
         public void SendSceneEventPacketToUser(string pUserID, byte[] pByteArray) {
-            lock (this) {
-                Socket.Emit("SendSceneEventToUser",
+            lock (sendLock) {
+                _taskQueue.Enqueue(Socket.EmitAsync("SendSceneEventToUser",
                     pUserID, pByteArray
-                );
+                ));
             }
         }
 
         public void SendSceneEventPacketToAllUsers(byte[] pByteArray) {
-            lock (this) {
-                Socket.Emit("SendSceneEventToAllUsers",
+            lock (sendLock) {
+                _taskQueue.Enqueue(Socket.EmitAsync("SendSceneEventToAllUsers",
                     pByteArray
-                );
+                ));
             }
         }
 
