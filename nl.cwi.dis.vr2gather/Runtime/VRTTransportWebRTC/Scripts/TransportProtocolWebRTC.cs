@@ -13,9 +13,9 @@ namespace VRT.Transport.WebRTC
     /// <summary>
     /// MonoBehaviour that controls the WebRTC peer process and the native unmanaged plugin that interfaces to it.
     /// </summary>
-    public class WebRTCConnector : MonoBehaviour
+    public class TransportProtocolWebRTC : MonoBehaviour
     {
-        public static WebRTCConnector Instance;
+        public static TransportProtocolWebRTC Instance;
 
         [Tooltip("Path to WebRTC peer executable")]
         public string peerExecutablePath;

@@ -125,7 +125,7 @@ namespace VRT.Transport.WebRTC
                         {
                             fixed(byte* bufferPointer = messageBuffer)
                             {
-                                WebRTCConnector.WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)(hdr.Length + buf.Length), (uint)tile_number);
+                                TransportProtocolWebRTC.WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)(hdr.Length + buf.Length), (uint)tile_number);
                             }
                         }
                     }
@@ -193,7 +193,7 @@ namespace VRT.Transport.WebRTC
         public AsyncWebRTCWriter(string _url, string fourcc, OutgoingStreamDescription[] _descriptions) : base()
         {
             NoUpdateCallsNeeded();
-            if (WebRTCConnector.Instance == null)
+            if (TransportProtocolWebRTC.Instance == null)
             {
                 throw new System.Exception($"{Name()}: No WebRTCConnector in scene.");
             }
@@ -211,7 +211,7 @@ namespace VRT.Transport.WebRTC
             }
             uint fourccInt = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
             Uri url = new Uri(_url);
-            WebRTCConnector.Instance.StartWebRTCPeer(url);
+            TransportProtocolWebRTC.Instance.StartWebRTCPeer(url);
 
             WebRTCStreamDescription[] ourDescriptions = new WebRTCStreamDescription[_descriptions.Length];
             // We use the lowest ports for the first quality, for each tile.
@@ -246,7 +246,7 @@ namespace VRT.Transport.WebRTC
 
             Debug.Log($"{Name()}: Number of tracks: {(uint)nTracks}");
 
-            WebRTCConnector.Instance.PrepareForTransmission(nTracks);
+            TransportProtocolWebRTC.Instance.PrepareForTransmission(nTracks);
 
             pusherThreads = new WebRTCPushThread[nTracks];
             for (int i = 0; i < nTracks; i++)

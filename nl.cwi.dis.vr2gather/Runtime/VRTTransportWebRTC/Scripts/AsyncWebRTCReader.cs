@@ -111,7 +111,7 @@ namespace VRT.Transport.WebRTC
                         // xxxjack the following code is very inefficient (all data is copied).
                         // See the comment in AsyncWebRTCWriter for details, but suffice it to say here that it's much better if
                         // retreive_tile had two sets of pointer, len.
-                        int p_size = WebRTCConnector.WebRTCConnectorPinvoke.get_tile_size((uint)parent.client_id, (uint)thread_index);
+                        int p_size = TransportProtocolWebRTC.WebRTCConnectorPinvoke.get_tile_size((uint)parent.client_id, (uint)thread_index);
                         if (p_size > 0)
                         {
                             Debug.Log($"{Name()}: WebRTC frame available");
@@ -120,7 +120,7 @@ namespace VRT.Transport.WebRTC
                             {
                                 fixed (byte* bufferPointer = messageBuffer)
                                 {
-                                    WebRTCConnector.WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)parent.client_id, (uint)thread_index);
+                                    TransportProtocolWebRTC.WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)parent.client_id, (uint)thread_index);
                                 }
                             }
                             int fourccReceived = BitConverter.ToInt32(messageBuffer, 0);
@@ -213,7 +213,7 @@ namespace VRT.Transport.WebRTC
                 }
                 url = new Uri(_url);
                 client_id = _client_id;
-                WebRTCConnector.Instance.StartWebRTCPeer(url);
+                TransportProtocolWebRTC.Instance.StartWebRTCPeer(url);
             }
         }
 

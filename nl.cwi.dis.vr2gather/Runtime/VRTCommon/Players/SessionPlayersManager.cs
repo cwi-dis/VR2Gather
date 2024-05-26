@@ -39,7 +39,7 @@ namespace VRT.Pilots.Common
 		}
 
         [Tooltip("WebRTCController (GO will be enabled for WebRTC sessions)")]
-        public WebRTCConnector webRTCConnector = null;
+        public TransportProtocolWebRTC webRTCConnector = null;
 		[Tooltip("Prefab used to create players")]
         public GameObject PlayerPrefab;
         [Tooltip("Prefab used to create self-player")]
