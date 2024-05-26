@@ -5,7 +5,6 @@ using SocketIOClient.Newtonsoft.Json;
 using UnityEngine;
 using System.Text;
 
-using VRT.Orchestrator.WSManagement;
 using VRT.Orchestrator.Responses;
 using System.Collections.Concurrent;
 using System.Threading;
