@@ -9,47 +9,6 @@
       },
       "hash": "b43e1fa081328eea08f8a7c05c54eba14c97ae22"
     },
-    "com.tivadar.best.http": {
-      "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.http",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.burst": "1.8.7",
-        "com.unity.profiling.core": "1.0.0"
-      },
-      "hash": "52c88582db141dfe98ecaae48151fcef425ec526"
-    },
-    "com.tivadar.best.socketio": {
-      "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.socketio",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.burst": "1.8.7",
-        "com.tivadar.best.http": "3.0.0",
-        "com.tivadar.best.websockets": "3.0.0"
-      },
-      "hash": "52c88582db141dfe98ecaae48151fcef425ec526"
-    },
-    "com.tivadar.best.tlssecurity": {
-      "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.tlssecurity",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.burst": "1.8.7",
-        "com.tivadar.best.http": "3.0.0"
-      },
-      "hash": "52c88582db141dfe98ecaae48151fcef425ec526"
-    },
-    "com.tivadar.best.websockets": {
-      "version": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.websockets",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.burst": "1.8.7",
-        "com.tivadar.best.http": "3.0.0"
-      },
-      "hash": "52c88582db141dfe98ecaae48151fcef425ec526"
-    },
     "com.unity.ai.navigation": {
       "version": "1.1.5",
       "depth": 0,
@@ -125,13 +84,6 @@
       "dependencies": {
         "com.unity.modules.physics": "1.0.0"
       },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.profiling.core": {
-      "version": "1.0.2",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.recorder": {
@@ -266,10 +218,6 @@
       "dependencies": {
         "nl.cwi.dis.vr2gather.nativelibraries": "0.9.1",
         "nl.cwi.dis.cwipc": "7.5.1",
-        "com.tivadar.best.http": "3.0.0",
-        "com.tivadar.best.socketio": "3.0.0",
-        "com.tivadar.best.tlssecurity": "3.0.0",
-        "com.tivadar.best.websockets": "3.0.0",
         "com.unity.animation.rigging": "1.2.1",
         "com.unity.recorder": "4.0.2",
         "com.unity.textmeshpro": "3.0.8",
