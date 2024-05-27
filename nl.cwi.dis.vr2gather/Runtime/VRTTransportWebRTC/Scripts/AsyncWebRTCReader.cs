@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
+using VRT.Core;
 using Cwipc;
 using System.Runtime.InteropServices;
 using AOT;
@@ -15,6 +16,7 @@ namespace VRT.Transport.WebRTC
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
     /// <summary>
     /// Implementation of AsyncReader that connects to a TCP socket on a remote machine and receives
@@ -23,9 +25,17 @@ namespace VRT.Transport.WebRTC
     /// endianness conversion is done. After that we simply transmit the frame data bytes.
     /// <seealso cref="AsyncTCPWriter"/>
     /// </summary>
-    public class AsyncWebRTCReader : AsyncReader
+    public class AsyncWebRTCReader : AsyncReader, ITransportProtocolReader, ITransportProtocolReader_Tiled
     {
-        // xxxjack The next two types have to be replaced with whatever identifies our
+            static public ITransportProtocolReader Factory()
+        {
+            return new AsyncWebRTCReader();
+        }
+
+        static public ITransportProtocolReader_Tiled Factory_Tiled()
+        {
+            return new AsyncWebRTCReader();
+        }    // xxxjack The next two types have to be replaced with whatever identifies our
         // outgoing connection to our peer and whetever identifies the thing that we use to transmit a
         // sequence of frames over
         protected class XxxjackPeerConnection { };
@@ -33,9 +43,7 @@ namespace VRT.Transport.WebRTC
 
      
 
-        protected Uri url;
-        protected int client_id;
-        protected class ReceiverInfo
+       protected class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
             public XxxjackTrackOrStream trackOrStream;
@@ -49,6 +57,8 @@ namespace VRT.Transport.WebRTC
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
+        private TransportProtocolWebRTC connection;
+        
         // xxxjack Unsure whether we need a pull-thread for WebRTC. Maybe the package gives us per-stream
         // callbacks, then we don't need a thread.
         // But we should make sure (eventually) that the callbacks don't happen on the main thread, where they
@@ -194,28 +204,6 @@ namespace VRT.Transport.WebRTC
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
-        /// <summary>
-        /// Constructor that can be used by subclasses to create a multi-tile receiver.
-        /// The URL should be of the form tcp://host:port. Subsequent streams will increment the port number.
-        /// The subclass could initialize the receivers array and call Start().
-        /// </summary>
-        /// <param name="_url">The base URL for the streams</param>
-        protected AsyncWebRTCReader(string _url, int _client_id) : base()
-        {
-            NoUpdateCallsNeeded();
-            lock (this)
-            {
-                joinTimeout = 20000;
-
-                if (_url == "" || _url == null)
-                {
-                    throw new System.Exception($"{Name()}: WebRTC transport requires tcp://host:port/ URL, but no URL specified");
-                }
-                url = new Uri(_url);
-                client_id = _client_id;
-                TransportProtocolWebRTC.Instance.StartWebRTCPeer(url);
-            }
-        }
 
         /// <summary>
         /// Create a WebRTC reader (client).
@@ -224,10 +212,20 @@ namespace VRT.Transport.WebRTC
         /// <param name="_url">The server to connect to</param>
         /// <param name="fourcc">The 4CC of the frames expected on the stream</param>
         /// <param name="outQueue">The queue into which received frames will be deposited</param>
-        public AsyncWebRTCReader(string _url, int _client_id, string fourcc, QueueThreadSafe outQueue) : this(_url, _client_id)
+        public ITransportProtocolReader_Tiled Init(string _url, string userId, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
             lock (this)
             {
+                
+                TransportProtocolWebRTC.Instance.StartWebRTCPeer(url);
+                connection = TransportProtocolWebRTC.Connect(_url);
+            
+                for (int i = 0; i < this.descriptors.Length; ++i)
+                {
+                    this.descriptors[i].name = $"{userId}/{streamName}/{this.descriptors[i].tileNumber}";
+                    Debug.Log($"{Name()}:  xxxjack RegisterForDataStream {i}: {this.descriptors[i].name}");
+                    connection.RegisterIncomingStream(this.descriptors[i].name, this.descriptors[i].outQueue);
+                }
                 receivers = new ReceiverInfo[]
                 {
                     new ReceiverInfo()
@@ -240,8 +238,26 @@ namespace VRT.Transport.WebRTC
                 Start();
 
             }
+            return this;
         }
 
+        public ITransportProtocolReader Init(string remoteUrl, string userId, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
+        {
+            Init(
+                remoteUrl,
+                userId,
+                streamName,
+                fourcc,
+                new IncomingTileDescription[]
+                {
+                    new IncomingTileDescription()
+                    {
+                        outQueue = outQueue
+                    }
+                }
+            );
+            return this;   
+        }
         public override void Stop()
         {
             base.Stop();

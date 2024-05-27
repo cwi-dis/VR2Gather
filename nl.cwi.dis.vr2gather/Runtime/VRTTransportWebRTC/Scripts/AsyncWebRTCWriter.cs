@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Threading;
+using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -23,7 +24,7 @@ namespace VRT.Transport.WebRTC
     ///
     /// The class supports sending tiled streams, by creating multiple servers (on increasing port numbers).
     /// </summary>
-    public class AsyncWebRTCWriter : AsyncWriter
+    public class AsyncWebRTCWriter : AsyncWriter, ITransportProtocolWriter
     {
 
         // xxxjack The next two types have to be replaced with whatever identifies our
@@ -178,7 +179,11 @@ namespace VRT.Transport.WebRTC
         System.Diagnostics.Process process_writer;
         System.Diagnostics.Process process_reader;
 
-        protected AsyncWebRTCWriter() : base()
+    static public ITransportProtocolWriter Factory()
+        {
+            return new AsyncWebRTCWriter();
+        }
+                protected AsyncWebRTCWriter() : base()
         {
            
         }
@@ -190,7 +195,7 @@ namespace VRT.Transport.WebRTC
         /// <param name="_url">Where the server should ser on</param>
         /// <param name="fourcc">4CC media type</param>
         /// <param name="_descriptions">Array of stream descriptions</param>
-        public AsyncWebRTCWriter(string _url, string fourcc, OutgoingStreamDescription[] _descriptions) : base()
+        public ITransportProtocolWriter Init(string _url, string userId, string streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
             NoUpdateCallsNeeded();
             if (TransportProtocolWebRTC.Instance == null)
@@ -235,6 +240,7 @@ namespace VRT.Transport.WebRTC
             }
             descriptions = ourDescriptions;
             Start();
+            return this;
         }
 
         protected override void Start()

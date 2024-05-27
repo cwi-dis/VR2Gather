@@ -16,7 +16,12 @@ namespace VRT.Transport.WebRTC
     /// </summary>
     public class TransportProtocolWebRTC : TransportProtocol
     {
-        public static TransportProtocolWebRTC Instance;
+        public static void Register()
+        {
+            RegisterTransportProtocol("webrtc", AsyncWebRTCWriter.Factory, AsyncWebRTCReader.Factory, AsyncWebRTCReader.Factory_Tiled);
+        }
+        private static TransportProtocolWebRTC _Instance;
+        private static string _InstanceURL;
 
         [Tooltip("Path to WebRTC peer executable")]
         public string peerExecutablePath;
@@ -86,16 +91,6 @@ namespace VRT.Transport.WebRTC
                 ((Color)color).ToString(), ">", debug_string, "</color>");
             // Log the string
             Debug.Log(debug_string);
-        }
-
-
-        void Awake()
-        {
-            if (Instance != null)
-            {
-                Debug.LogWarning("WebRTCConnector: Instance already set, there should only be one in the scene");
-            }
-            Instance = this;
         }
 
         public void Initialize(string _peerExecutablePath, int _clientId)
@@ -206,8 +201,10 @@ namespace VRT.Transport.WebRTC
             }
         }
 
-        public void StartWebRTCPeer(Uri url)
+
+        public TransportProtocol
         {
+            Uri url = _url;
             string mySFUAddress = $"{url.Host}:{url.Port}";
             if (peerProcess != null)
             {
