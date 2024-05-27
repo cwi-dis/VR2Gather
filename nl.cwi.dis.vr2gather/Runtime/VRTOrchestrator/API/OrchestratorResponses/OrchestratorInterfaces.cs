@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using VRT.Orchestrator.Responses;
 
 //Interfaces to be implemented to supervise the orchestrator
 namespace VRT.Orchestrator.Responses
