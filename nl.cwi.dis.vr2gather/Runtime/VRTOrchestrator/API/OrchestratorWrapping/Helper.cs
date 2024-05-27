@@ -21,26 +21,10 @@
 //  concession of any license over these patents, trademarks, copyrights or 
 //  other intellectual property.
 
-using System.Collections.Generic;
-using Best.HTTP.JSON.LitJson;
-using System.Reflection;
-
 namespace VRT.Orchestrator.Wrapping
 {
     public static class Helper
     {
-        // Parse JsonData and returns the appropriate element
-        public static List<T> ParseElementsList<T>(JsonData dataList) where T : OrchestratorElement
-        {
-            List<T> list = new List<T>();
-            for (int i = 0; i < dataList.Count; i++)
-            {
-                T element = OrchestratorElement.ParseJsonData<T>(dataList[i]);
-                list.Add(element);
-            }
-            return list;
-        }
-
         public static double GetClockTimestamp(System.DateTime pDate)
         {
             return pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
