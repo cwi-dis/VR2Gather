@@ -38,7 +38,7 @@ using Statistics = Cwipc.Statistics;
 
 namespace VRT.Orchestrator.Wrapping
 {
-    public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
+    public class OrchestratorController : MonoBehaviour, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {
         [Tooltip("Enable trace logging output")]
         [SerializeField] private bool enableLogging = true;
@@ -207,7 +207,7 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
 #endif
-            orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this, this);
+            orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this);
             if (enableSocketioLogging) {
                 orchestratorWrapper.EnableSocketioLogging();
             }
@@ -266,20 +266,6 @@ namespace VRT.Orchestrator.Wrapping
             connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
             userIsLogged = false;
             OnConnectionEvent?.Invoke(false);
-        }
-
-#endregion
-
-#region Orchestrator Logs
-
-        // Display the sent message in the logs
-        public void OnOrchestratorRequest(string request) {
-            OnOrchestratorRequestEvent?.Invoke(request);
-        }
-
-        // Display the received message in the logs
-        public void OnOrchestratorResponse(int commandID, int status, string response) {
-            OnOrchestratorResponseEvent?.Invoke(response);
         }
 
 #endregion

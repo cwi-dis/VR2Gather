@@ -6,9 +6,6 @@ using UnityEngine;
 using System.Text;
 
 using VRT.Orchestrator.Responses;
-using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace VRT.Orchestrator.Wrapping {
     public class OrchestratorWrapper : IOrchestratorConnectionListener
@@ -20,9 +17,6 @@ namespace VRT.Orchestrator.Wrapping {
         // Listener for the responses of the orchestrator
         private IOrchestratorResponsesListener ResponsesListener;
 
-        // Listener for the messages of the orchestrator
-        private IOrchestratorMessagesListener MessagesListener;
-
         // Listener for the messages emitted spontaneously by the orchestrator
         private IUserMessagesListener UserMessagesListener;
 
@@ -32,7 +26,7 @@ namespace VRT.Orchestrator.Wrapping {
         public Action<UserDataStreamPacket> OnDataStreamReceived;
         private string myUserID = "";
 
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
             if (instance is null)
             {
@@ -40,7 +34,6 @@ namespace VRT.Orchestrator.Wrapping {
             }
 
             ResponsesListener = responsesListener;
-            MessagesListener = messagesListener;
             UserMessagesListener = userMessagesListener;
 
             UserSessionEventslisteners = new List<IUserSessionEventsListener> {
