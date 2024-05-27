@@ -59,7 +59,7 @@ namespace VRT.Orchestrator.Wrapping
         #region orchestration logics
 
         // the wrapper for the orchestrator
-        private OSSOrchestratorWrapper orchestratorWrapper;
+        private OrchestratorWrapper orchestratorWrapper;
         // the reference controller for singleton
         private static OrchestratorController instance;
 
@@ -207,7 +207,7 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
 #endif
-            orchestratorWrapper = new OSSOrchestratorWrapper(pUrl, this, this, this, this);
+            orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this, this);
             if (enableSocketioLogging) {
                 orchestratorWrapper.EnableSocketioLogging();
             }
