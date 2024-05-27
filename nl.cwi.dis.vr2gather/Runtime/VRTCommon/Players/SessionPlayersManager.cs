@@ -8,6 +8,7 @@ using VRT.Core;
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Responses;
 
 namespace VRT.Pilots.Common
 {

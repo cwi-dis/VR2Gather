@@ -5,7 +5,7 @@ using UnityEngine;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Transport.TCP;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Responses;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS

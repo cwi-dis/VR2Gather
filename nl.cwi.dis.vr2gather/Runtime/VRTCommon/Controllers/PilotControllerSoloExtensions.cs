@@ -19,11 +19,11 @@ namespace VRT.Pilots.Common
         public void Start()
         {
            Orchestrator.Wrapping.OrchestratorController.Instance.LocalUserSessionForDevelopmentTests();
-            Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
+            Orchestrator.Responses.User user = new Orchestrator.Responses.User()
             {
                 userId = "no-userid",
                 userName = "TestInteractionUser",
-                userData = new Orchestrator.Wrapping.UserData()
+                userData = new Orchestrator.Responses.UserData()
                 {
                     microphoneName = "None",
                     userRepresentationType = userRepresentation

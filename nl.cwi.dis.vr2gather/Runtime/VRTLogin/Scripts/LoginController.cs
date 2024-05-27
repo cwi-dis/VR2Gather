@@ -18,11 +18,11 @@ namespace VRT.Login
         public override void Start()
         {
             // Do not call base.Start(), we don't want to fade in for the login scene.
-            Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
+            Orchestrator.Responses.User user = new Orchestrator.Responses.User()
             {
                 userId = "no-userid",
                 userName = "TestInteractionUser",
-                userData = new Orchestrator.Wrapping.UserData()
+                userData = new Orchestrator.Responses.UserData()
                 {
                     microphoneName = "None",
                     userRepresentationType = UserRepresentationType.SimpleAvatar // xxxjack need correct one.
