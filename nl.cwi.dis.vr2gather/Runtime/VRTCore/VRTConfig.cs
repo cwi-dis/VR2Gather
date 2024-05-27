@@ -92,6 +92,16 @@ namespace VRT.Core
         }
         [Tooltip("Settable parameters for DASH protocol")]
         public _TransportDash TransportDash;
+        [Serializable]
+        public class _TransportWebRTC
+        {
+            public string peerExecutablePath;
+            public bool peerInWindow = false;
+            public bool peerWindowDontClose = false;
+            public int peerUDPPort = 8000;
+            public string peerIPAddress = "127.0.0.1";
+        }
+        public _TransportWebRTC TransportWebRTC;
 
         public Cwipc.CwipcConfig PCs;
 
@@ -196,12 +206,6 @@ namespace VRT.Core
                     public int octreeBits;
                 }
                 public _Encoder[] Encoders;
-                [Serializable]
-                public class _WebRTC
-                {
-                    public string peerExecutablePath;
-                }
-                public _WebRTC WebRTC;
             }
             public _PCSelfConfig PCSelfConfig;
 

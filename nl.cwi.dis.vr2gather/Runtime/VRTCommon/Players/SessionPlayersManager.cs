@@ -135,37 +135,7 @@ namespace VRT.Pilots.Common
         public void InstantiatePlayers()
 		{
 			var me = OrchestratorController.Instance.SelfUser;
-            bool webRTCInitialized = false;
-            // Initialize WebRTC, if needed and not initialized already
-            if (SessionConfig.Instance.protocolType == "webrtc")
-            {
-				TransportProtocolWebRTC webRTC = TransportProtocolWebRTC.Instance;
-                if (webRTC == null)
-                {
-                    throw new Exception($"SessionPlayersManager: No TransportProtocolWebRTC.Instance but webRTC protocol requested");
-                }
-                int indexWithinCurrentSession = 0;
-                int ourWebRTCClientId = -1;
-                foreach (User user in OrchestratorController.Instance.CurrentSession.GetUsers())
-                {
-                    bool isLocalPlayer = me.userId == user.userId;
-                    // This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
-                    // receiver side. The only reassonable way we have to create this is to use the index of this user within the array of
-                    // users in this session. We also need our own client ID before we can initialize the webRTC peer process.
-                    // This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
-                    // receiver side. The only reassonable way we have to create this is to use the index of this user within the array of
-                    // users in this session.
-                    user.webRTCClientId = indexWithinCurrentSession + 1;
-                    if (isLocalPlayer)
-                    {
-                        ourWebRTCClientId = user.webRTCClientId;
-                    }
-                    indexWithinCurrentSession++;
-                }
-                string peerExecutablePath = VRTConfig.Instance.LocalUser.PCSelfConfig.WebRTC.peerExecutablePath;
-                webRTC.Initialize(peerExecutablePath, ourWebRTCClientId);
-                webRTCInitialized = true;
-            }
+            
 
 			SetupConfigDistributors();
             if (debug) Debug.Log($"SessionPlayersManager: Instantiating players");
@@ -233,9 +203,38 @@ namespace VRT.Pilots.Common
 				RequestPlayerLocationData();
             }
             if (debug) Debug.Log($"SessionPlayersManager: All players instantiated");
-            if (webRTCInitialized)
+			//
+			// For WebRTC transport protocol there is some special handling required.
+			// We need to communicate our WebRTC client ID (index within the session) and we need
+			// to state that all incoming and outgoing connections have been specified (so the peer can be started)
+			//
+            // Initialize WebRTC, if needed and not initialized already
+            if (SessionConfig.Instance.protocolType == "webrtc")
             {
 				TransportProtocolWebRTC webRTC = TransportProtocolWebRTC.Instance;
+                if (webRTC == null)
+                {
+                    throw new Exception($"SessionPlayersManager: No TransportProtocolWebRTC.Instance but webRTC protocol requested");
+                }
+                int indexWithinCurrentSession = 0;
+                int ourWebRTCClientId = -1;
+                foreach (User user in OrchestratorController.Instance.CurrentSession.GetUsers())
+                {
+                    bool isLocalPlayer = me.userId == user.userId;
+                    // This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
+                    // receiver side. The only reassonable way we have to create this is to use the index of this user within the array of
+                    // users in this session. We also need our own client ID before we can initialize the webRTC peer process.
+                    // This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
+                    // receiver side. The only reassonable way we have to create this is to use the index of this user within the array of
+                    // users in this session.
+                    user.webRTCClientId = indexWithinCurrentSession + 1;
+                    if (isLocalPlayer)
+                    {
+                        ourWebRTCClientId = user.webRTCClientId;
+                    }
+                    indexWithinCurrentSession++;
+                }
+                webRTC.SetClientID(ourWebRTCClientId);
                 
                 webRTC.AllConnectionsDone();
             }
