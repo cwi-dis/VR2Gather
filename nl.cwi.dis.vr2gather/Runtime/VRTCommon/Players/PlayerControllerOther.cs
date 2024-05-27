@@ -8,7 +8,7 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerOther : PlayerControllerBase
     {
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
+        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Responses.User user)
         {
             if (_isLocalPlayer)
             {
