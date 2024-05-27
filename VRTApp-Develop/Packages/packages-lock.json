@@ -218,6 +218,7 @@
       "dependencies": {
         "nl.cwi.dis.vr2gather.nativelibraries": "0.9.1",
         "nl.cwi.dis.cwipc": "7.5.1",
+        "com.itisnajim.socketiounity": "1.1.4",
         "com.unity.animation.rigging": "1.2.1",
         "com.unity.recorder": "4.0.2",
         "com.unity.textmeshpro": "3.0.8",
