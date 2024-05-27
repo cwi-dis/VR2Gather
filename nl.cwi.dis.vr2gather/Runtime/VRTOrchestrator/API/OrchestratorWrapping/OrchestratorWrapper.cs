@@ -48,13 +48,13 @@ namespace VRT.Orchestrator.Wrapping {
         }
     }
 
-    public class OSSOrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
+    public class OrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
     {
         private SocketIOUnity Socket;
         private readonly object sendLock = new();
         private TaskQueue _taskQueue = new TaskQueue();
 
-        public static OSSOrchestratorWrapper instance;
+        public static OrchestratorWrapper instance;
         // Listener for the responses of the orchestrator
         private IOrchestratorResponsesListener ResponsesListener;
 
@@ -70,7 +70,7 @@ namespace VRT.Orchestrator.Wrapping {
         public Action<UserDataStreamPacket> OnDataStreamReceived;
         private string myUserID = "";
 
-        public OSSOrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
             if (instance is null)
             {
