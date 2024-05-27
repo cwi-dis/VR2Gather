@@ -21,12 +21,10 @@
 //  concession of any license over these patents, trademarks, copyrights or 
 //  other intellectual property.
 
-using Best.HTTP.JSON.LitJson;
 using VRT.Core;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
-using VRT.Orchestrator.Responses;
 
 namespace VRT.Orchestrator.Wrapping
 {
@@ -45,25 +43,9 @@ namespace VRT.Orchestrator.Wrapping
             return string.Empty;
         }
 
-        // Parse a JSonData to a C# object
         public static T ParseJsonString<T>(string data)
         {
-            try
-            {
-                return JsonMapper.ToObject<T>(data);
-
-            }
-            catch (JsonException ex)
-            {
-                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON. See log message.");
-                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
-                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data}");
-                return default(T);
-            }
-        }
-        public static T ParseJsonData<T>(JsonData data)
-        {
-            return ParseJsonString<T>(data.ToJson());
+            return JsonUtility.FromJson<T>(data);
         }
     }
 
@@ -103,10 +85,8 @@ namespace VRT.Orchestrator.Wrapping
         // empty constructor callled by the JsonData parser
         public UserData() { }
 
-
-        public string AsJsonString()
-        {
-            return JsonMapper.ToJson(this);
+        public string AsJsonString() {
+            return JsonUtility.ToJson(this);
         }
     }
 
