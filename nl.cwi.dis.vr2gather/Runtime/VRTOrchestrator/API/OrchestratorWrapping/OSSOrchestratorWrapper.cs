@@ -95,7 +95,6 @@ namespace VRT.Orchestrator.Wrapping {
             Socket.OnConnected += (sender, e) => OnSocketConnect();
             Socket.OnDisconnected += (sender, e) =>
             {
-                Debug.LogError($"DISCONNECT: {sender} {e}");
                 OnSocketDisconnect();
             };
             Socket.OnError += (sender, e) =>
