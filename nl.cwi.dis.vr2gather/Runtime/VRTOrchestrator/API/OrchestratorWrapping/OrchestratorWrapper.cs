@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace VRT.Orchestrator.Wrapping {
-    public class OrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
+    public class OrchestratorWrapper : IOrchestratorConnectionListener
     {
         private SocketIOUnity Socket;
         private readonly object sendLock = new();
@@ -119,18 +119,6 @@ namespace VRT.Orchestrator.Wrapping {
                     ResponsesListener.OnDisconnect();
                 });
             }
-        }
-
-        public void OnOrchestratorRequest(string request)
-        {
-            Debug.LogWarning($"OnOrchestratorRequest called: {request}");
-            throw new NotImplementedException();
-        }
-
-        public void OnOrchestratorResponse(int commandID, int status, string response)
-        {
-            Debug.LogWarning($"OnOrchestratorResponse called: {commandID} {status} {response}");
-            throw new NotImplementedException();
         }
 
         public void OnSocketConnecting()
