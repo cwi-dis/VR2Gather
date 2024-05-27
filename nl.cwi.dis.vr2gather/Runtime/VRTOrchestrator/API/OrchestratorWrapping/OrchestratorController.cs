@@ -356,8 +356,8 @@ namespace VRT.Orchestrator.Wrapping
         long timeOfGetNTPTimeRequest = 0;
 
         public void GetNTPTime() {
-            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeNow: " + Helper.GetClockTimestamp(DateTime.Now));
-            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeUTC: " + Helper.GetClockTimestamp(DateTime.UtcNow));
+            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeNow: " + GetClockTimestamp(DateTime.Now));
+            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeUTC: " + GetClockTimestamp(DateTime.UtcNow));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             timeOfGetNTPTimeRequest = (long)sinceEpoch.TotalMilliseconds;
             orchestratorWrapper.GetNTPTime();
@@ -370,8 +370,8 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnGetNTPTimeResponse: NtpTime: " + ntpTime.Timestamp);
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetNTPTimeResponse: DateTimeUTC: " + Helper.GetClockTimestamp(DateTime.UtcNow));
-            if (enableLogging) Debug.Log("[OrchestratorController: OnGetNTPTimeResponse: DateTimeNow: " + Helper.GetClockTimestamp(DateTime.Now));
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetNTPTimeResponse: DateTimeUTC: " + GetClockTimestamp(DateTime.UtcNow));
+            if (enableLogging) Debug.Log("[OrchestratorController: OnGetNTPTimeResponse: DateTimeNow: " + GetClockTimestamp(DateTime.Now));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
             long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;
@@ -761,8 +761,17 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 
-#endregion
+        #endregion
 
-#endregion
+        #region helper
+
+        public static double GetClockTimestamp(System.DateTime pDate)
+        {
+            return pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
+        }
+
+        #endregion
+
+        #endregion
     }
 }
