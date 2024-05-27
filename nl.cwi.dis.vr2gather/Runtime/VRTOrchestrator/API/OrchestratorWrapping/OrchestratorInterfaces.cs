@@ -35,12 +35,6 @@ namespace VRT.Orchestrator.Wrapping
         void OnSocketError(ResponseStatus message);
     }
 
-    // interface to implement to be updated from messages exchanged on the socketio
-    public interface IMessagesListener
-    {
-        void OnOrchestratorResponse(int commandID, int status, string response);
-        void OnOrchestratorRequest(string request);
-    }
     // Interface to implement to listen the user messages emitted spontaneously
     // by the orchestrator
     public interface IUserMessagesListener
