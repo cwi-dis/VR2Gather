@@ -16,6 +16,7 @@ namespace VRT.Orchestrator.Wrapping {
         private ConcurrentQueue<Task> _tasks = new ConcurrentQueue<Task>();
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
         private Task _processor;
+        private bool _queueActive;
 
         public TaskQueue()
         {
@@ -30,7 +31,7 @@ namespace VRT.Orchestrator.Wrapping {
 
         private async Task ProcessQueueAsync()
         {
-            while (true)
+            while (_queueActive)
             {
                 await _signal.WaitAsync();
                 if (_tasks.TryDequeue(out var task))
@@ -38,6 +39,12 @@ namespace VRT.Orchestrator.Wrapping {
                     await task;
                 }
             }
+
+            Debug.Log("TaskQueue terminated");
+        }
+
+        public void CloseQueue() {
+            _queueActive = false;
         }
     }
 
@@ -136,6 +143,7 @@ namespace VRT.Orchestrator.Wrapping {
 
         public void Disconnect() {
             Debug.Log("DISCONNECT called");
+            _taskQueue.CloseQueue();
             Socket.Disconnect();        
         }
 
