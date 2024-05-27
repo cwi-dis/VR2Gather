@@ -1388,7 +1388,7 @@ namespace VRT.Login
         {
             // The final step in connecting to the orchestrator and logging in: we have the NTP time.
             // We are now fully logged in.
-            double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+            double difference = OrchestratorController.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
             if (developerMode) Debug.Log("OrchestratorLogin: OnGetNTPTimeResponse: Difference: " + difference);
             if (Math.Abs(difference) >= VRTConfig.Instance.ntpSyncThreshold)
             {
