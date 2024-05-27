@@ -80,11 +80,4 @@ namespace VRT.Orchestrator.Wrapping
         void OnSendMessageToAllResponse(ResponseStatus status);
 
     }
-
-    // interface to implement to be updated from messages exchanged on the socketio
-    public interface IOrchestratorMessagesListener
-    {
-        void OnOrchestratorResponse(int commandID, int status, string response);
-        void OnOrchestratorRequest(string request);
-    }
 }
