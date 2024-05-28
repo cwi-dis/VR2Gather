@@ -12,7 +12,10 @@ using Cwipc;
 
 namespace VRT.Transport.WebRTC
 {
-    public class TransportProtocolWebRTC : TransportProtocol
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+  
+   public class TransportProtocolWebRTC : TransportProtocol
     {
         public static void Register()
         {
@@ -23,6 +26,8 @@ namespace VRT.Transport.WebRTC
 
         const string logFileDirectory = "";
         const int debugLevel = 1;
+
+        const string api_version = "1.0";
         private string peerSFUAddress;
 
         // Settable parameters from config.json:
@@ -37,7 +42,7 @@ namespace VRT.Transport.WebRTC
         
         private Process peerProcess;
         private int nTransmissionTracks = 0;
-        private int maxReceiverTracks = 9;
+        private int maxReceiverTracks = 9; // xxxjack needs to be set dynamically
      
         public static string Name() {
             return "TransportProtocolWebRTC";
@@ -168,5 +173,37 @@ namespace VRT.Transport.WebRTC
             nTransmissionTracks += _nTracks;
         }
 
+        public NativeMemoryChunk GetNextTile(int thread_index, uint fourcc)
+        {
+            // [jvdhooft]
+            // xxxjack the following code is very inefficient (all data is copied).
+            // See the comment in AsyncWebRTCWriter for details, but suffice it to say here that it's much better if
+            // retreive_tile had two sets of pointer, len.
+            int p_size = WebRTCConnectorPinvoke.get_tile_size((uint)clientId, (uint)thread_index);
+            if (p_size <= 0)
+            {
+                return null;
+            }
+            Debug.Log($"{Name()}: WebRTC frame available for {thread_index}");
+            byte[] messageBuffer = new byte[p_size];
+            unsafe
+            {
+                fixed (byte* bufferPointer = messageBuffer)
+                {
+                    WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)clientId, (uint)thread_index);
+                }
+            }
+            int fourccReceived = BitConverter.ToInt32(messageBuffer, 0);
+            if (fourccReceived != fourcc)
+            {
+                Debug.LogError($"{Name()}: expected 4CC 0x{fourcc:x} got 0x{fourccReceived:x}");
+            }
+            int dataSize = BitConverter.ToInt32(messageBuffer, 4);
+            Timestamp timestamp = BitConverter.ToInt64(messageBuffer, 8);
+            NativeMemoryChunk mc = new NativeMemoryChunk(dataSize);
+            mc.metadata.timestamp = timestamp;
+            System.Runtime.InteropServices.Marshal.Copy(messageBuffer[16..], 0, mc.pointer, dataSize);
+            return mc;
+        }
     }
 }

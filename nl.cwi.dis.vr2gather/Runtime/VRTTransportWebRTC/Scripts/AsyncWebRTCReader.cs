@@ -8,6 +8,8 @@ using VRT.Core;
 using Cwipc;
 using System.Runtime.InteropServices;
 using AOT;
+using UnityEditor.MemoryProfiler;
+
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -43,7 +45,7 @@ namespace VRT.Transport.WebRTC
 
      
 
-       protected class ReceiverInfo
+        protected class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
             public XxxjackTrackOrStream trackOrStream;
@@ -53,7 +55,6 @@ namespace VRT.Transport.WebRTC
         }
         protected XxxjackPeerConnection peerConnection;
         protected ReceiverInfo[] receivers;
-   
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -117,35 +118,12 @@ namespace VRT.Transport.WebRTC
                         {
                             return;
                         }
-                        // [jvdhooft]
-                        // xxxjack the following code is very inefficient (all data is copied).
-                        // See the comment in AsyncWebRTCWriter for details, but suffice it to say here that it's much better if
-                        // retreive_tile had two sets of pointer, len.
-                        int p_size = TransportProtocolWebRTC.WebRTCConnectorPinvoke.get_tile_size((uint)parent.client_id, (uint)thread_index);
-                        if (p_size > 0)
+                        NativeMemoryChunk mc = parent.connection.GetNextTile(thread_index, receiverInfo.fourcc);
+                        if (mc != null)
                         {
-                            Debug.Log($"{Name()}: WebRTC frame available");
-                            byte[] messageBuffer = new byte[p_size];
-                            unsafe
-                            {
-                                fixed (byte* bufferPointer = messageBuffer)
-                                {
-                                    TransportProtocolWebRTC.WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)parent.client_id, (uint)thread_index);
-                                }
-                            }
-                            int fourccReceived = BitConverter.ToInt32(messageBuffer, 0);
-                            if (fourccReceived != receiverInfo.fourcc)
-                            {
-                                Debug.LogError($"{Name()}: expected 4CC 0x{receiverInfo.fourcc:x} got 0x{fourccReceived:x}");
-                            }
-                            int dataSize = BitConverter.ToInt32(messageBuffer, 4);
-                            Timestamp timestamp = BitConverter.ToInt64(messageBuffer, 8);
-                            NativeMemoryChunk mc = new NativeMemoryChunk(dataSize);
-                            mc.metadata.timestamp = timestamp;
-                            System.Runtime.InteropServices.Marshal.Copy(messageBuffer[16..], 0, mc.pointer, dataSize);
                             bool ok = receiverInfo.outQueue.Enqueue(mc);
 #if VRT_WITH_STATS
-                            stats.statsUpdate(dataSize, !ok);
+                            stats.statsUpdate(mc.length, !ok);
 #endif
                         } else
                         {
@@ -212,20 +190,13 @@ namespace VRT.Transport.WebRTC
         /// <param name="_url">The server to connect to</param>
         /// <param name="fourcc">The 4CC of the frames expected on the stream</param>
         /// <param name="outQueue">The queue into which received frames will be deposited</param>
-        public ITransportProtocolReader_Tiled Init(string _url, string userId, string streamName, string fourcc, IncomingTileDescription[] descriptors)
+        public ITransportProtocolReader Init(string _url, string userId, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
             lock (this)
             {
                 
-                TransportProtocolWebRTC.Instance.StartWebRTCPeer(url);
                 connection = TransportProtocolWebRTC.Connect(_url);
-            
-                for (int i = 0; i < this.descriptors.Length; ++i)
-                {
-                    this.descriptors[i].name = $"{userId}/{streamName}/{this.descriptors[i].tileNumber}";
-                    Debug.Log($"{Name()}:  xxxjack RegisterForDataStream {i}: {this.descriptors[i].name}");
-                    connection.RegisterIncomingStream(this.descriptors[i].name, this.descriptors[i].outQueue);
-                }
+
                 receivers = new ReceiverInfo[]
                 {
                     new ReceiverInfo()
@@ -236,28 +207,10 @@ namespace VRT.Transport.WebRTC
                     },
                 };
                 Start();
-
             }
             return this;
         }
 
-        public ITransportProtocolReader Init(string remoteUrl, string userId, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
-        {
-            Init(
-                remoteUrl,
-                userId,
-                streamName,
-                fourcc,
-                new IncomingTileDescription[]
-                {
-                    new IncomingTileDescription()
-                    {
-                        outQueue = outQueue
-                    }
-                }
-            );
-            return this;   
-        }
         public override void Stop()
         {
             base.Stop();
@@ -294,7 +247,7 @@ namespace VRT.Transport.WebRTC
                 for (int i = 0; i < threadCount; i++)
                 {
                     threads[i] = new WebRTCPullThread(this, i, receivers[i]);
-                    string msg = $"pull_thread={threads[i].Name()}, client_id={client_id}";
+                    string msg = $"pull_thread={threads[i].Name()}, index={i}";
                     if (receivers[i].tileNumber >= 0)
                     {
                         msg += $", tile={receivers[i].tileNumber}";

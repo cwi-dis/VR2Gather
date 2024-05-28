@@ -3,15 +3,15 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using Cwipc;
+using VRT.Core;
 
 namespace VRT.Transport.WebRTC
 {
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
-    public class AsyncWebRTCPCReader : AsyncWebRTCReader
+    public class AsyncWebRTCReader_Tiled : AsyncWebRTCReader
     {
-        public AsyncWebRTCPCReader(string _url, int _client_id, string fourcc, IncomingTileDescription[] _tileDescriptors)
-        : base(_url, _client_id)
+        public ITransportProtocolReader_Tiled Init(string remoteUrl, string userId, string streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
             lock (this)
             {
@@ -30,6 +30,7 @@ namespace VRT.Transport.WebRTC
                 }
                 Start();
             }
+            return this;
         }
 
         public void setTileQualityIndex(int tileIndex, int qualityIndex)
