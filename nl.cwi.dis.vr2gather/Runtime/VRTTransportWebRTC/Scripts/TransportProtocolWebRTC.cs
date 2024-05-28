@@ -21,7 +21,7 @@ namespace VRT.Transport.WebRTC
         {
             RegisterTransportProtocol("webrtc", AsyncWebRTCWriter.Factory, AsyncWebRTCReader.Factory, AsyncWebRTCReader_Tiled.Factory_Tiled);
         }
-        public static TransportProtocolWebRTC Instance;
+        private static TransportProtocolWebRTC _Instance;
         private static string _InstanceURL;
 
         const string logFileDirectory = "";
@@ -50,18 +50,22 @@ namespace VRT.Transport.WebRTC
 
         public static TransportProtocolWebRTC Connect(string url)
         {
-            if (Instance == null)
+            if (_Instance == null)
             {
                 
-                Instance = new TransportProtocolWebRTC(url);
+                _Instance = new TransportProtocolWebRTC(url);
                 _InstanceURL = url;
-                return Instance;
+                return _Instance;
             }
             if (_InstanceURL == url)
             {
-                return Instance;
+                return _Instance;
             }
             throw new System.Exception($"{Name()}: request connection to {url} but {_InstanceURL} already connected");
+        }
+
+        public static TransportProtocolWebRTC GetInstance() {
+            return _Instance;
         }
         private TransportProtocolWebRTC(string _url) 
         {

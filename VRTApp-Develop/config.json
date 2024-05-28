@@ -1,15 +1,5 @@
 {
-    "orchestratorURL" : "http://192.168.1.119:8090",
-    "targetFrameRate": -1,
-    "ntpSyncThreshold": 0.100,
-    "statsInterval": 10.0,
-    "statsOutputFile": "",
-    "statsOutputFileAppend": false,
-    "ffmpegDLLDir": "../ffmpeg/x64",
-    "ScreenshotTool": {
-        "takeScreenshot": false,
-        "screenshotTargetDirectory": ""
-    },
+    "orchestratorURL": "http://flauwte.huiskamer.private:8090",
     "AutoStart": {
         "autoLogin": true,
         "autoCreate": false,
@@ -25,55 +15,18 @@
         "autoStopAfterLeave": false,
         "autoDelay": 1.5
     },
-    "Macintosh": {
-        "SIGNALS_SMD_PATH": "Assets/ExternalAssets/VR2G-nativeLibraries/VRTNativeLibraries/Plugins/mac/"
-    },
-    "PCs": {
-        "Codec": "cwi1",
-        "defaultCellSize": 0.002,
-        "cellSizeFactor": 1.0,
-        "debugColorize": false,
-        "timeoutBeforeGhosting": 5.0,
-        "decoderQueueSizeOverride": 0,
-        "preparerQueueSizeOverride": 0,
-        "encoderParallelism": 0,
-        "decoderParallelism": 0
-    },
-    "Voice": {
-        "audioFps": 50,
-        "maxPlayoutLatency": 0.300,
-        "maxPlayoutAhead": 0.066,
-        "ignoreSynchronizer": false
-    },
-    "Synchronizer": {
-        "debugSynchronizer": false,
-        "debugJitterBuffer": false,
-        "minLatency": 100,
-        "maxLatency": 5000,
-        "latencyMaxDecrease": 1,
-        "latencyMaxIncrease": 33,
-        "acceptDesyncOnDataUnavailable": false
+    "TransportWebRTC": {
+        "peerExecutablePath": "../webRTC-helpers/webRTC-peer-%PLATFORM%.exe",
+        "peerInWindow": true,
+        "peerWindowDontClose": true,
+        "peerUDPPort": 8000,
+        "peerIPAddress": "127.0.0.1"
     },
     "LocalUser": {
-        "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
             "capturerTypeName": "developer",
-            "CameraReaderConfig": {
-                "configFilename": ""
-            },
-            "RemoteCameraReaderConfig": {
-                "url": "",
-                "isCompressed": false
-            },
-            "ProxyReaderConfig": {
-                "localIP": "",
-                "port": 9335
-            },
             "SynthReaderConfig": {
                 "nPoints": 16000
-            },
-            "PrerecordedReaderConfig": {
-                "folder": "../cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
             "frameRate": 15.0,
@@ -82,15 +35,7 @@
                 {
                     "octreeBits": 9
                 }
-            ],
-            "Bin2Dash": {
-                "segmentSize": 1000,
-                "segmentLife": 16000
-            },
-            "AudioBin2Dash": {
-                "segmentSize": 1000,
-                "segmentLife": 16000
-            }
+            ]
         }
     }
 }

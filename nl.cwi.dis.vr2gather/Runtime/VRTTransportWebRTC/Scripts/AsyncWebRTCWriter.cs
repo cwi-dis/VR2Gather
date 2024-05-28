@@ -172,10 +172,7 @@ namespace VRT.Transport.WebRTC
         public ITransportProtocolWriter Init(string _url, string userId, string streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
             NoUpdateCallsNeeded();
-            if (TransportProtocolWebRTC.Instance == null)
-            {
-                throw new System.Exception($"{Name()}: No WebRTCConnector in scene.");
-            }
+            connection = TransportProtocolWebRTC.Connect(_url);
             if (string.IsNullOrEmpty(_url))
             {
                 throw new System.Exception($"{Name()}: No WebRTC SFU URL found in session description.");
@@ -225,7 +222,7 @@ namespace VRT.Transport.WebRTC
 
             Debug.Log($"{Name()}: Number of tracks: {(uint)nTracks}");
 
-            TransportProtocolWebRTC.Instance.PrepareForTransmission(nTracks);
+            connection.PrepareForTransmission(nTracks);
 
             pusherThreads = new WebRTCPushThread[nTracks];
             for (int i = 0; i < nTracks; i++)

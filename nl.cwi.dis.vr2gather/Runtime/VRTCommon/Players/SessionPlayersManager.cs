@@ -211,7 +211,7 @@ namespace VRT.Pilots.Common
             // Initialize WebRTC, if needed and not initialized already
             if (SessionConfig.Instance.protocolType == "webrtc")
             {
-				TransportProtocolWebRTC webRTC = TransportProtocolWebRTC.Instance;
+				TransportProtocolWebRTC webRTC = TransportProtocolWebRTC.GetInstance();
                 if (webRTC == null)
                 {
                     throw new Exception($"SessionPlayersManager: No TransportProtocolWebRTC.Instance but webRTC protocol requested");
