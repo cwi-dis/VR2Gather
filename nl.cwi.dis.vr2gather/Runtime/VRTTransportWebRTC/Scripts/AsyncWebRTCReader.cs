@@ -27,17 +27,15 @@ namespace VRT.Transport.WebRTC
     /// endianness conversion is done. After that we simply transmit the frame data bytes.
     /// <seealso cref="AsyncTCPWriter"/>
     /// </summary>
-    public class AsyncWebRTCReader : AsyncReader, ITransportProtocolReader, ITransportProtocolReader_Tiled
+    public class AsyncWebRTCReader : AsyncReader, ITransportProtocolReader
     {
             static public ITransportProtocolReader Factory()
         {
             return new AsyncWebRTCReader();
         }
 
-        static public ITransportProtocolReader_Tiled Factory_Tiled()
-        {
-            return new AsyncWebRTCReader();
-        }    // xxxjack The next two types have to be replaced with whatever identifies our
+        
+        // xxxjack The next two types have to be replaced with whatever identifies our
         // outgoing connection to our peer and whetever identifies the thing that we use to transmit a
         // sequence of frames over
         protected class XxxjackPeerConnection { };
@@ -58,7 +56,7 @@ namespace VRT.Transport.WebRTC
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        private TransportProtocolWebRTC connection;
+        protected TransportProtocolWebRTC connection;
         
         // xxxjack Unsure whether we need a pull-thread for WebRTC. Maybe the package gives us per-stream
         // callbacks, then we don't need a thread.

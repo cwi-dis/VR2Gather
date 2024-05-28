@@ -9,8 +9,13 @@ namespace VRT.Transport.WebRTC
 {
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
-    public class AsyncWebRTCReader_Tiled : AsyncWebRTCReader
+    public class AsyncWebRTCReader_Tiled : AsyncWebRTCReader, ITransportProtocolReader_Tiled
     {
+        static public ITransportProtocolReader_Tiled Factory_Tiled()
+        {
+            return new AsyncWebRTCReader_Tiled();
+        }
+
         public ITransportProtocolReader_Tiled Init(string remoteUrl, string userId, string streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
             lock (this)

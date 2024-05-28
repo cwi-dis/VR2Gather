@@ -19,7 +19,7 @@ namespace VRT.Transport.WebRTC
     {
         public static void Register()
         {
-            RegisterTransportProtocol("webrtc", AsyncWebRTCWriter.Factory, AsyncWebRTCReader.Factory, AsyncWebRTCReader.Factory_Tiled);
+            RegisterTransportProtocol("webrtc", AsyncWebRTCWriter.Factory, AsyncWebRTCReader.Factory, AsyncWebRTCReader_Tiled.Factory_Tiled);
         }
         public static TransportProtocolWebRTC Instance;
         private static string _InstanceURL;
@@ -204,6 +204,38 @@ namespace VRT.Transport.WebRTC
             mc.metadata.timestamp = timestamp;
             System.Runtime.InteropServices.Marshal.Copy(messageBuffer[16..], 0, mc.pointer, dataSize);
             return mc;
+        }
+
+        public bool SendTile(NativeMemoryChunk mc, int tile_number, uint fourcc)
+        {
+            // [jvdhooft]
+            // xxxjack the following code is very inefficient (all data is copied).
+            // NativeMemoryChunk has the data in an unmanaged buffer, and here we are copying it back to a
+            // managed byte array so that we can prepend the header.
+            //
+            // It would be better if send_tile would have two ptr, len sets so we could use the first one for the header
+            // and the second one for the data.
+            byte[] hdr = new byte[16];
+            var hdr1 = BitConverter.GetBytes(fourcc);
+            hdr1.CopyTo(hdr, 0);
+            var hdr2 = BitConverter.GetBytes((Int32)mc.length);
+            hdr2.CopyTo(hdr, 4);
+            var hdr3 = BitConverter.GetBytes(mc.metadata.timestamp);
+            hdr3.CopyTo(hdr, 8);
+            var buf = new byte[mc.length];
+            System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
+            mc.free();
+            byte[] messageBuffer = new byte[hdr.Length + buf.Length];
+            System.Buffer.BlockCopy(hdr, 0, messageBuffer, 0, hdr.Length);
+            System.Buffer.BlockCopy(buf, 0, messageBuffer, hdr.Length, buf.Length);
+            unsafe
+            {
+                fixed(byte* bufferPointer = messageBuffer)
+                {
+                    WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)(hdr.Length + buf.Length), (uint)tile_number);
+                }
+            }
+            return true;           
         }
     }
 }
