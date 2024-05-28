@@ -63,9 +63,10 @@ namespace VRT.Orchestrator.Wrapping
         private bool connectedToOrchestrator = false;
         private bool hasBeenConnectedToOrchestrator = false;
         private bool autoStopOnLeave = false;
-#endregion
 
-#region public
+        #endregion
+
+        #region public
 
         //Orchestrator Controller Singleton
         public static OrchestratorController Instance {
@@ -134,9 +135,9 @@ namespace VRT.Orchestrator.Wrapping
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public Session CurrentSession { get { return mySession; } }
 
-#endregion
+        #endregion
 
-#region Unity
+        #region Unity
 
         private void Awake() {
             if (instance == null) {
@@ -173,11 +174,9 @@ namespace VRT.Orchestrator.Wrapping
             _OptionalStopOnLeave();
         }
 
-#endregion
+        #endregion
 
-#region Commands
-
-#region Socket.io connect
+        #region Socket.io connect
 
         // Connect to the orchestrator
         public void SocketConnect(string pUrl) {
@@ -246,9 +245,9 @@ namespace VRT.Orchestrator.Wrapping
             OnConnectionEvent?.Invoke(false);
         }
 
-#endregion
+        #endregion
 
-#region Login/Logout
+        #region Login/Logout
 
         public void Login(string pName, string pPassword) {
             SelfUser = new User();
@@ -324,11 +323,16 @@ namespace VRT.Orchestrator.Wrapping
             OnLogoutEvent?.Invoke(userLoggedOutSucessfully);
         }
 
-#endregion
+        #endregion
 
-#region NTP clock
+        #region NTP clock
 
         long timeOfGetNTPTimeRequest = 0;
+
+        public static double GetClockTimestamp(System.DateTime pDate)
+        {
+            return pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
+        }
 
         public void GetNTPTime() {
             if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeNow: " + GetClockTimestamp(DateTime.Now));
@@ -357,9 +361,9 @@ namespace VRT.Orchestrator.Wrapping
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
-#endregion
+        #endregion
 
-#region Sessions
+        #region Sessions
 
         public void GetSessions() {
             orchestratorWrapper.GetSessions();
@@ -577,9 +581,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-#endregion
+        #endregion
 
-#region Users
+        #region Users
 
         // xxxjack can go
         public void UpdateUserDataKey(string pKey, string pValue) {
@@ -607,10 +611,9 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
         }
 
-#endregion
+        #endregion
 
-
-#region Messages
+        #region Messages
 
         public void SendMessage(string pMessage, string pUserID) {
             orchestratorWrapper.SendMessage(pMessage, pUserID);
@@ -654,9 +657,9 @@ namespace VRT.Orchestrator.Wrapping
             OnUserMessageReceivedEvent?.Invoke(userMessage);
         }
 
-#endregion
+        #endregion
 
-#region Events
+        #region Events
 
         public void SendEventToMaster(string pEventData) {
             byte[] lData = Encoding.ASCII.GetBytes(pEventData);
@@ -699,10 +702,10 @@ namespace VRT.Orchestrator.Wrapping
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }
-#endregion
 
+        #endregion
 
-#region Logics
+        #region Logics
 
         private IEnumerator WaitForEmptySessionToDelete() {
             if (mySession == null) {
@@ -723,29 +726,15 @@ namespace VRT.Orchestrator.Wrapping
             _OptionalStopOnLeave();
         }
 
-#endregion
+        #endregion
 
-
-
-#region Errors
+        #region Errors
 
         public void OnError(ResponseStatus status) {
             if (enableLogging) Debug.Log("OrchestratorController: OnError: Error code: " + status.Error + "::Error message: " + status.Message);
 
             OnErrorEvent?.Invoke(status);
         }
-
-
-        #endregion
-
-        #region helper
-
-        public static double GetClockTimestamp(System.DateTime pDate)
-        {
-            return pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
-        }
-
-        #endregion
 
         #endregion
     }
