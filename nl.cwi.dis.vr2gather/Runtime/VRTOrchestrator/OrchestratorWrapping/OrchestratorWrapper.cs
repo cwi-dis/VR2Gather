@@ -80,8 +80,6 @@ namespace VRT.Orchestrator.Wrapping {
             OnSocketConnecting();
         }
 
-        public void EnableSocketioLogging() { }
-
         public void OnSocketConnect()
         {
             if (ResponsesListener == null)

@@ -24,9 +24,6 @@ namespace VRT.Orchestrator.Wrapping
         [Tooltip("Enable trace logging output")]
         [SerializeField] private bool enableLogging = true;
 
-        [Tooltip("Enable socketIO debugging")]
-        [SerializeField] private bool enableSocketioLogging = false;
-
         #region enum
 
         public enum orchestratorConnectionStatus {
@@ -188,9 +185,6 @@ namespace VRT.Orchestrator.Wrapping
             Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
 #endif
             orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this);
-            if (enableSocketioLogging) {
-                orchestratorWrapper.EnableSocketioLogging();
-            }
             orchestratorWrapper.Connect();
         }
 
