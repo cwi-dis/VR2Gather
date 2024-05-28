@@ -23,6 +23,11 @@ namespace VRT.Orchestrator.Responses
         {
             return JsonUtility.FromJson<T>(data);
         }
+
+        public string AsJsonString()
+        {
+            return JsonUtility.ToJson(this);
+        }
     }
 
     public class User: OrchestratorElement
@@ -60,10 +65,6 @@ namespace VRT.Orchestrator.Responses
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
-
-        public string AsJsonString() {
-            return JsonUtility.ToJson(this);
-        }
     }
 
     public class SfuData : OrchestratorElement
