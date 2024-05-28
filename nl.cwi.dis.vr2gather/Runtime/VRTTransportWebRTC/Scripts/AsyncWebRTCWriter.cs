@@ -32,7 +32,8 @@ namespace VRT.Transport.WebRTC
         protected class XxxjackPeerConnection { };
         protected class XxxjackTrackOrStream { };
 
-       
+        // Matthias: temp until we split this into two type of writers
+        private bool isAudio;
 
         protected struct WebRTCStreamDescription
         {
@@ -54,7 +55,7 @@ namespace VRT.Transport.WebRTC
             WebRTCStreamDescription description;
             System.Threading.Thread myThread;
             int tile_number;
-          
+
             public WebRTCPushThread(AsyncWebRTCWriter _parent, WebRTCStreamDescription _description, int _tile_number)
             {
                 parent = _parent;
@@ -123,9 +124,17 @@ namespace VRT.Transport.WebRTC
                         System.Buffer.BlockCopy(buf, 0, messageBuffer, hdr.Length, buf.Length);
                         unsafe
                         {
-                            fixed(byte* bufferPointer = messageBuffer)
+                            fixed (byte* bufferPointer = messageBuffer)
                             {
-                                WebRTCConnector.WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)(hdr.Length + buf.Length), (uint)tile_number);
+                                if (parent.isAudio)
+                                {
+                                    WebRTCConnector.WebRTCConnectorPinvoke.send_audio(bufferPointer, (uint)(hdr.Length + buf.Length));
+                                }
+                                else
+                                {
+                                    WebRTCConnector.WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)(hdr.Length + buf.Length), (uint)tile_number);
+                                }
+
                             }
                         }
                     }
@@ -155,7 +164,7 @@ namespace VRT.Transport.WebRTC
 
                 public void statsUpdate(int nBytes)
                 {
- 
+
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
                     statsAggregatePackets++;
@@ -173,14 +182,14 @@ namespace VRT.Transport.WebRTC
             protected Stats stats;
 #endif
         }
- 
+
         WebRTCPushThread[] pusherThreads;
         System.Diagnostics.Process process_writer;
         System.Diagnostics.Process process_reader;
 
         protected AsyncWebRTCWriter() : base()
         {
-           
+
         }
 
         /// <summary>
@@ -190,8 +199,11 @@ namespace VRT.Transport.WebRTC
         /// <param name="_url">Where the server should ser on</param>
         /// <param name="fourcc">4CC media type</param>
         /// <param name="_descriptions">Array of stream descriptions</param>
-        public AsyncWebRTCWriter(string _url, string fourcc, OutgoingStreamDescription[] _descriptions) : base()
+        /// <param name="_isAudio" default="false">Is this an audio writer</param>
+        // TODO: probably just have both an audio and video writer that inheritc from AsyncWebRTCWriter
+        public AsyncWebRTCWriter(string _url, string fourcc, OutgoingStreamDescription[] _descriptions, bool _isAudio = false) : base()
         {
+            isAudio = _isAudio;
             NoUpdateCallsNeeded();
             if (WebRTCConnector.Instance == null)
             {
@@ -205,6 +217,10 @@ namespace VRT.Transport.WebRTC
             {
                 throw new System.Exception($"{Name()}: descriptions is null or empty");
             }
+            if (isAudio && _descriptions.Length > 1)
+            {
+                throw new System.Exception($"{Name()}: There is currently no support for multiple audio input when using WebRTC.");
+            }
             if (fourcc.Length != 4)
             {
                 throw new System.Exception($"{Name()}: 4CC is \"{fourcc}\" which is not exactly 4 characters");
@@ -214,27 +230,53 @@ namespace VRT.Transport.WebRTC
             WebRTCConnector.Instance.StartWebRTCPeer(url);
 
             WebRTCStreamDescription[] ourDescriptions = new WebRTCStreamDescription[_descriptions.Length];
+            // Matthias: is this also the case for webrtc?
             // We use the lowest ports for the first quality, for each tile.
             // The the next set of ports is used for the next quality, and so on.
-            int maxTileNumber = -1;
-            for(int i=0; i<_descriptions.Length; i++)
-            {
-                if (_descriptions[i].tileNumber > maxTileNumber) maxTileNumber = (int)_descriptions[i].tileNumber;
-            }
-            int portsPerQuality = maxTileNumber+1;
-            for(int i=0; i<_descriptions.Length; i++)
-            {
-                ourDescriptions[i] = new WebRTCStreamDescription
-                {
-                    index = (int)_descriptions[i].tileNumber + (portsPerQuality * _descriptions[i].qualityIndex),
-                    trackOrStream = new XxxjackTrackOrStream(),
-                    fourcc = fourccInt,
-                    inQueue = _descriptions[i].inQueue
 
-                };
+            // Different from audio
+            if (!isAudio)
+            {
+                int maxTileNumber = -1;
+                for (int i = 0; i < _descriptions.Length; i++)
+                {
+                    if (_descriptions[i].tileNumber > maxTileNumber) maxTileNumber = (int)_descriptions[i].tileNumber;
+                }
+                int portsPerQuality = maxTileNumber + 1;
+                for (int i = 0; i < _descriptions.Length; i++)
+                {
+                    ourDescriptions[i] = new WebRTCStreamDescription
+                    {
+                        index = (int)_descriptions[i].tileNumber + (portsPerQuality * _descriptions[i].qualityIndex),
+                        trackOrStream = new XxxjackTrackOrStream(),
+                        fourcc = fourccInt,
+                        inQueue = _descriptions[i].inQueue
+
+                    };
+                }
+
+            }
+            else
+            {
+                if (_descriptions.Length == 1)
+                {
+                    ourDescriptions[0] = new WebRTCStreamDescription
+                    {
+                        // Different from audio
+                        // Just use audio = 99 for now
+                        // This probably isnt correct
+                        index = 99,
+                        trackOrStream = new XxxjackTrackOrStream(),
+                        fourcc = fourccInt,
+                        inQueue = _descriptions[0].inQueue
+
+                    };
+                }
+
             }
             descriptions = ourDescriptions;
             Start();
+
         }
 
         protected override void Start()
@@ -246,16 +288,25 @@ namespace VRT.Transport.WebRTC
 
             Debug.Log($"{Name()}: Number of tracks: {(uint)nTracks}");
 
-            WebRTCConnector.Instance.PrepareForTransmission(nTracks);
+            // matthias Audio is still a track so we need to be really careful when using tracks as a term for tiles
+            if (!isAudio)
+            {
+                WebRTCConnector.Instance.PrepareForTransmission(nTracks);
+            }
+
 
             pusherThreads = new WebRTCPushThread[nTracks];
             for (int i = 0; i < nTracks; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new WebRTCPushThread(this, descriptions[i], i);
+                if (isAudio)
+                {
+                    stream_number = -1;
+                }
+                pusherThreads[i] = new WebRTCPushThread(this, descriptions[i], stream_number);
 #if VRT_WITH_STATS
-                Statistics.Output(base.Name(), $"pusher={pusherThreads[i].Name()}, stream={i}");
+                Statistics.Output(base.Name(), $"pusher={pusherThreads[i].Name()}, stream={i}, type={(isAudio ? "Audio" : "Video")}");
 #endif
             }
             foreach (var t in pusherThreads)
@@ -296,7 +347,7 @@ namespace VRT.Transport.WebRTC
             Debug.Log($"{Name()} Stopped");
         }
 
-        protected override void AsyncUpdate() {}
+        protected override void AsyncUpdate() { }
 
 #if xxxjack_disabled
         public override SyncConfig.ClockCorrespondence GetSyncInfo()

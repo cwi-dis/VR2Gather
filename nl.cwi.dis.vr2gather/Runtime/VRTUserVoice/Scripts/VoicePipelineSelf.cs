@@ -4,6 +4,7 @@ using UnityEngine;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Transport.TCP;
+using VRT.Transport.WebRTC;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
@@ -96,6 +97,13 @@ namespace VRT.UserRepresentation.Voice
                 writer = new AsyncTCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
+#endif
+            }
+            else if (proto == SessionConfig.ProtocolType.WebRTC)
+            {
+                writer = new AsyncWebRTCWriter(user.sfuData.url_gen, audioCodec, b2dStreams, true);
+#if VRT_WITH_STATS
+                Statistics.Output(Name(), $"proto=webrtc, url={user.userData.userAudioUrl}, codec={audioCodec}");
 #endif
             }
             else

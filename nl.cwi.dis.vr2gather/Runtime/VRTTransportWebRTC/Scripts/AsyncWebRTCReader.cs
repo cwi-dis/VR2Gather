@@ -31,10 +31,11 @@ namespace VRT.Transport.WebRTC
         protected class XxxjackPeerConnection { };
         protected class XxxjackTrackOrStream { };
 
-     
+
 
         protected Uri url;
         protected int client_id;
+        protected bool isAudio;
         protected class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
@@ -45,7 +46,7 @@ namespace VRT.Transport.WebRTC
         }
         protected XxxjackPeerConnection peerConnection;
         protected ReceiverInfo[] receivers;
-   
+
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -60,7 +61,7 @@ namespace VRT.Transport.WebRTC
             int thread_index;
             ReceiverInfo receiverInfo;
             System.Threading.Thread myThread;
-            
+
             public WebRTCPullThread(AsyncWebRTCReader _parent, int _thread_index, ReceiverInfo _receiverInfo)
             {
                 parent = _parent;
@@ -83,7 +84,8 @@ namespace VRT.Transport.WebRTC
                 myThread.Start();
             }
 
-            public void Stop() {
+            public void Stop()
+            {
                 stopping = true;
                 // [jvdhooft]
                 Debug.Log($"{Name()}: Thread stopping");
@@ -98,6 +100,9 @@ namespace VRT.Transport.WebRTC
             {
                 try
                 {
+                    // matthias This whole part needs to be rewritten to fix couple of things:
+                    //                  * memory problems i.e. copying data
+                    //                  * using callbacks instead of sleep, 1. sleep is not precise 2. its waste of cpu cycles
                     while (!stopping)
                     {
                         //
@@ -111,16 +116,35 @@ namespace VRT.Transport.WebRTC
                         // xxxjack the following code is very inefficient (all data is copied).
                         // See the comment in AsyncWebRTCWriter for details, but suffice it to say here that it's much better if
                         // retreive_tile had two sets of pointer, len.
-                        int p_size = WebRTCConnector.WebRTCConnectorPinvoke.get_tile_size((uint)parent.client_id, (uint)thread_index);
+
+
+                        int p_size = 0;
+                        if (parent.isAudio)
+                        {
+                            p_size = WebRTCConnector.WebRTCConnectorPinvoke.get_audio_size((uint)parent.client_id);
+                        }
+                        else
+                        {
+                            p_size = WebRTCConnector.WebRTCConnectorPinvoke.get_tile_size((uint)parent.client_id, (uint)thread_index);
+                        }
+
                         if (p_size > 0)
                         {
-                            Debug.Log($"{Name()}: WebRTC frame available");
+                            Debug.Log($"{Name()}: WebRTC {(parent.isAudio ? "audio" : "video")} frame available");
                             byte[] messageBuffer = new byte[p_size];
                             unsafe
                             {
                                 fixed (byte* bufferPointer = messageBuffer)
                                 {
-                                    WebRTCConnector.WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)parent.client_id, (uint)thread_index);
+                                    if (parent.isAudio)
+                                    {
+                                        WebRTCConnector.WebRTCConnectorPinvoke.retrieve_audio(bufferPointer, (uint)p_size, (uint)parent.client_id);
+                                    }
+                                    else
+                                    {
+                                        WebRTCConnector.WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)parent.client_id, (uint)thread_index);
+                                    }
+
                                 }
                             }
                             int fourccReceived = BitConverter.ToInt32(messageBuffer, 0);
@@ -137,12 +161,13 @@ namespace VRT.Transport.WebRTC
 #if VRT_WITH_STATS
                             stats.statsUpdate(dataSize, !ok);
 #endif
-                        } else
+                        }
+                        else
                         {
                             Thread.Sleep(1);
                         }
                     }
-                 }
+                }
 #pragma warning disable CS0168
                 catch (System.Exception e)
                 {
@@ -169,7 +194,7 @@ namespace VRT.Transport.WebRTC
                 double statsTotalPackets;
                 int statsAggregatePackets;
                 double statsDroppedPackets;
-                
+
                 public void statsUpdate(int nBytes, bool dropped)
                 {
                     statsTotalBytes += nBytes;
@@ -178,7 +203,7 @@ namespace VRT.Transport.WebRTC
                     if (dropped) statsDroppedPackets++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, receive_bandwidth={(int)(statsTotalBytes/Interval())}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, aggregate_packets={statsAggregatePackets}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, receive_bandwidth={(int)(statsTotalBytes / Interval())}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, aggregate_packets={statsAggregatePackets}");
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
@@ -200,7 +225,7 @@ namespace VRT.Transport.WebRTC
         /// The subclass could initialize the receivers array and call Start().
         /// </summary>
         /// <param name="_url">The base URL for the streams</param>
-        protected AsyncWebRTCReader(string _url, int _client_id) : base()
+        protected AsyncWebRTCReader(string _url, int _client_id, bool _isAudio = false) : base()
         {
             NoUpdateCallsNeeded();
             lock (this)
@@ -209,10 +234,11 @@ namespace VRT.Transport.WebRTC
 
                 if (_url == "" || _url == null)
                 {
-                    throw new System.Exception($"{Name()}: WebRTC transport requires tcp://host:port/ URL, but no URL specified");
+                    throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, but no URL specified");
                 }
                 url = new Uri(_url);
                 client_id = _client_id;
+                isAudio = _isAudio;
                 WebRTCConnector.Instance.StartWebRTCPeer(url);
             }
         }
@@ -224,7 +250,7 @@ namespace VRT.Transport.WebRTC
         /// <param name="_url">The server to connect to</param>
         /// <param name="fourcc">The 4CC of the frames expected on the stream</param>
         /// <param name="outQueue">The queue into which received frames will be deposited</param>
-        public AsyncWebRTCReader(string _url, int _client_id, string fourcc, QueueThreadSafe outQueue) : this(_url, _client_id)
+        public AsyncWebRTCReader(string _url, int _client_id, string fourcc, QueueThreadSafe outQueue, bool _isAudio = false) : this(_url, _client_id, _isAudio)
         {
             lock (this)
             {
@@ -250,14 +276,14 @@ namespace VRT.Transport.WebRTC
 
         protected override void Start()
         {
-           base.Start();
+            base.Start();
             InitThreads();
         }
 
         public override void AsyncOnStop()
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping threads");
-            foreach(var t in threads)
+            foreach (var t in threads)
             {
                 t.Stop();
                 t.Join();
@@ -275,13 +301,22 @@ namespace VRT.Transport.WebRTC
             {
                 int threadCount = receivers.Length;
                 threads = new WebRTCPullThread[threadCount];
+                string thread_type = isAudio ? "audio" : "video";
                 for (int i = 0; i < threadCount; i++)
                 {
                     threads[i] = new WebRTCPullThread(this, i, receivers[i]);
-                    string msg = $"pull_thread={threads[i].Name()}, client_id={client_id}";
+                    string msg = $"pull_thread={threads[i].Name()}, client_id={client_id}, type={thread_type}";
                     if (receivers[i].tileNumber >= 0)
                     {
-                        msg += $", tile={receivers[i].tileNumber}";
+                        if (isAudio)
+                        {
+                            msg += $", audio={receivers[i].tileNumber}";
+                        }
+                        else
+                        {
+                            msg += $", tile={receivers[i].tileNumber}";
+                        }
+
                     }
 #if VRT_WITH_STATS
                     Statistics.Output(base.Name(), msg);

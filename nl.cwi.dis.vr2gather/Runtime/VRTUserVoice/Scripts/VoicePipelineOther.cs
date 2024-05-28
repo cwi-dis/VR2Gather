@@ -4,6 +4,7 @@ using UnityEngine;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Transport.TCP;
+using VRT.Transport.WebRTC;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
@@ -96,6 +97,13 @@ namespace VRT.UserRepresentation.Voice
                 reader = new AsyncTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
+#endif
+            }
+            else if (proto == SessionConfig.ProtocolType.WebRTC)
+            {
+                reader = new AsyncWebRTCReader(user.sfuData.url_gen, user.webRTCClientId, audioCodec, _readerOutputQueue, true);
+#if VRT_WITH_STATS
+                Statistics.Output(Name(), $"proto=webrtc, user={user}, streamName={_streamName}, codec={audioCodec}");
 #endif
             }
             else

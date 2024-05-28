@@ -8,6 +8,9 @@ using Debug = UnityEngine.Debug;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Policy;
 
+// TODO matthias: Remove this for cleaner solution
+using System.Threading;
+
 namespace VRT.Transport.WebRTC
 {
     /// <summary>
@@ -55,6 +58,8 @@ namespace VRT.Transport.WebRTC
                 UInt32 number_of_tiles, UInt32 client_id, string api_version);
             [DllImport("WebRTCConnector")]
             public static extern void clean_up();
+
+            // Point cloud functions
             [DllImport("WebRTCConnector")]
             public static extern int send_tile(byte* data, UInt32 size, UInt32 tile_number);
             [DllImport("WebRTCConnector")]
@@ -62,6 +67,15 @@ namespace VRT.Transport.WebRTC
             [DllImport("WebRTCConnector")]
             public static extern void retrieve_tile(byte* buffer, UInt32 size, UInt32 client_id, UInt32 tile_number);
 
+            // Audio frame functions
+            [DllImport("WebRTCConnector")]
+            public static extern int send_audio(byte* data, UInt32 size);
+            [DllImport("WebRTCConnector")]
+            public static extern int get_audio_size(UInt32 client_id);
+            [DllImport("WebRTCConnector")]
+            public static extern void retrieve_audio(byte* buffer, UInt32 size, UInt32 client_id);
+
+            // Control packet functions
             [DllImport("WebRTCConnector")]
             public static extern int send_control(byte* data, UInt32 size);
             [DllImport("WebRTCConnector")]
@@ -99,11 +113,12 @@ namespace VRT.Transport.WebRTC
 
         public void Initialize(string _peerExecutablePath, int _clientId)
         {
-            if (!string.IsNullOrEmpty(_peerExecutablePath)) {
+            if (!string.IsNullOrEmpty(_peerExecutablePath))
+            {
                 peerExecutablePath = _peerExecutablePath;
             }
             clientId = _clientId;
-       
+
         }
 
         public void AllConnectionsDone()
@@ -117,10 +132,11 @@ namespace VRT.Transport.WebRTC
             // xxxjack this is not correct for built Unity players.
             string appPath = System.IO.Path.GetDirectoryName(Application.dataPath);
             peerExecutablePath = System.IO.Path.Combine(appPath, peerExecutablePath);
-            
+
             // Replace %PLATFORM% in peerExecutablePath
             string platform = "unknown";
-            switch(Application.platform) {
+            switch (Application.platform)
+            {
                 case RuntimePlatform.OSXEditor:
                 case RuntimePlatform.OSXPlayer:
                     platform = "macos";
@@ -128,8 +144,8 @@ namespace VRT.Transport.WebRTC
                 case RuntimePlatform.Android:
                     platform = "android";
                     break;
-                    case RuntimePlatform.WindowsEditor:
-                    case RuntimePlatform.WindowsPlayer:
+                case RuntimePlatform.WindowsEditor:
+                case RuntimePlatform.WindowsPlayer:
                     platform = "win";
                     break;
             }
@@ -167,7 +183,9 @@ namespace VRT.Transport.WebRTC
             {
                 nTracks = nTransmissionTracks;
             }
-            //Thread.Sleep(2000);
+            // matthias need to find a way to check if peer process has fully started i.e. bound port
+            // matthias if we dont wait here we get a long time before we see frames due to recvfrom errors caused by using sendto to a non bound port
+            Thread.Sleep(2000);
             WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)clientId, api_version);
             //Thread.Sleep(1000);
             peerConnected = true;
@@ -218,7 +236,7 @@ namespace VRT.Transport.WebRTC
                 return;
             }
             peerSFUAddress = mySFUAddress;
-           
+
         }
 
         public void PrepareForTransmission(int _nTracks)
