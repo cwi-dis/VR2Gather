@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using VRT.Orchestrator.Wrapping;
-
-namespace VRT.Orchestrator.Responses { 
+﻿namespace VRT.Orchestrator.Responses { 
     public interface IOrchestratorResponseBody { }
 
     public class OrchestratorResponse<T>
