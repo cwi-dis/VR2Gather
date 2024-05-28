@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using VRT.Orchestrator.Responses;
+using VRT.Orchestrator.Elements;
 
 //Interfaces to be implemented to supervise the orchestrator
-namespace VRT.Orchestrator.Responses
+namespace VRT.Orchestrator.Interfaces
 {
     public interface IOrchestratorConnectionListener
     {

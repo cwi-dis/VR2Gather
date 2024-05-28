@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
-using VRT.Pilots.Common;
 
 namespace VRT.Pilots.Common
 {
@@ -19,11 +16,11 @@ namespace VRT.Pilots.Common
         public void Start()
         {
            Orchestrator.Wrapping.OrchestratorController.Instance.LocalUserSessionForDevelopmentTests();
-            Orchestrator.Responses.User user = new Orchestrator.Responses.User()
+            Orchestrator.Elements.User user = new Orchestrator.Elements.User()
             {
                 userId = "no-userid",
                 userName = "TestInteractionUser",
-                userData = new Orchestrator.Responses.UserData()
+                userData = new Orchestrator.Elements.UserData()
                 {
                     microphoneName = "None",
                     userRepresentationType = userRepresentation

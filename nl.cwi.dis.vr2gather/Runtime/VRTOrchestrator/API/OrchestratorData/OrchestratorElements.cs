@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRT.Orchestrator.Responses
+namespace VRT.Orchestrator.Elements
 {
     // Base class for the elements returned by the orchestrator
     public abstract class OrchestratorElement

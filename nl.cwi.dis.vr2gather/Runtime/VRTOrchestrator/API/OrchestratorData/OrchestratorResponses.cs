@@ -1,4 +1,6 @@
-﻿namespace VRT.Orchestrator.Responses { 
+﻿using VRT.Orchestrator.Elements;
+
+namespace VRT.Orchestrator.Responses { 
     public interface IOrchestratorResponseBody { }
 
     // class that describes the status for the response from the orchestrator

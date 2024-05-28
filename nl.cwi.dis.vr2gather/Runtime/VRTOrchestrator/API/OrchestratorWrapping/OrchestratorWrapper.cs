@@ -6,6 +6,8 @@ using UnityEngine;
 using System.Text;
 
 using VRT.Orchestrator.Responses;
+using VRT.Orchestrator.Interfaces;
+using VRT.Orchestrator.Elements;
 
 namespace VRT.Orchestrator.Wrapping {
     public class OrchestratorWrapper : IOrchestratorConnectionListener

@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
 
     public class PlayerControllerOther : PlayerControllerBase
     {
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Responses.User user)
+        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Elements.User user)
         {
             if (_isLocalPlayer)
             {
