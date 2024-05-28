@@ -1,6 +1,20 @@
 ﻿namespace VRT.Orchestrator.Responses { 
     public interface IOrchestratorResponseBody { }
 
+    // class that describes the status for the response from the orchestrator
+    public class ResponseStatus
+    {
+        public int Error;
+        public string Message;
+
+        public ResponseStatus(int error, string message)
+        {
+            this.Error = error;
+            this.Message = message;
+        }
+        public ResponseStatus() : this(0, "OK") { }
+    }
+
     public class OrchestratorResponse<T>
     {
         public int error { get; set; }
@@ -37,20 +51,6 @@
 
     public class SceneEvent {
         public string sceneEventFrom;
-    }
-
-    // class that describes the status for the response from the orchestrator
-    public class ResponseStatus
-    {
-        public int Error;
-        public string Message;
-
-        public ResponseStatus(int error, string message)
-        {
-            this.Error = error;
-            this.Message = message;
-        }
-        public ResponseStatus() : this(0, "OK") { }
     }
 
     // class that stores a user data-stream packet incoming from the orchestrator
