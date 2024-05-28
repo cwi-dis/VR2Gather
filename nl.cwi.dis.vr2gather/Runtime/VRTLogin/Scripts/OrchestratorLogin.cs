@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using VRT.Orchestrator.Wrapping;
 using VRT.Orchestrator.Responses;
-using VRT.UserRepresentation.Voice;
+using VRT.Orchestrator.Elements;
 using VRT.Core;
 using VRT.Pilots.Common;
 #if UNITY_EDITOR

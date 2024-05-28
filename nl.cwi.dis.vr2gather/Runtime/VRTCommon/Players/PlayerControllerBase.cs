@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Reflection;
 using TMPro;
 using VRT.Core;
 using System;
@@ -41,7 +40,7 @@ namespace VRT.Pilots.Common
         [Tooltip("True if this user has a visual representation")]
         [DisableEditing] [SerializeField] private bool _isVisible;
         [Tooltip("Orchestrator User structure for this player")]
-        [DisableEditing][SerializeField] protected VRT.Orchestrator.Responses.User user;
+        [DisableEditing][SerializeField] protected VRT.Orchestrator.Elements.User user;
         protected bool isInitialized = false;
 
         // May be set by subclasses to indicate this player should not transmit
@@ -73,8 +72,8 @@ namespace VRT.Pilots.Common
         {
         }
 
-        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Responses.User user);
-        protected void _SetupCommon(VRT.Orchestrator.Responses.User _user)
+        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Elements.User user);
+        protected void _SetupCommon(VRT.Orchestrator.Elements.User _user)
         {
             if (playerNetworkController == null)
             {
@@ -205,7 +204,7 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void LoadVoicePipeline(VRT.Orchestrator.Responses.User user)
+        public void LoadVoicePipeline(VRT.Orchestrator.Elements.User user)
         {
             if (isPreviewPlayer) return;
             if (user.userData.microphoneName == "None")
