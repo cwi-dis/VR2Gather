@@ -404,7 +404,6 @@ namespace VRT.Orchestrator.Wrapping {
                 var data = response.GetValue<byte[]>(2);
 
                 var packet = new UserDataStreamPacket(userId, type, "", data);
-                Debug.Log($"DATA: {userId} {type} {data}");
 
                 UnityThread.executeInUpdate(() =>
                 {
