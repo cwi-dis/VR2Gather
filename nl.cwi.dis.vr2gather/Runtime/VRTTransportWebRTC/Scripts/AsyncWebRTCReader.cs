@@ -259,7 +259,7 @@ namespace VRT.Transport.WebRTC
                 for (int i = 0; i < threadCount; i++)
                 {
                     threads[i] = new WebRTCPullThread(this, i, receivers[i]);
-                    string msg = $"pull_thread={threads[i].Name()}, index={i}";
+                    string msg = $"pull_thread={threads[i].Name()}, clientId={clientId}, index={i}";
                     if (receivers[i].tileNumber >= 0)
                     {
                         msg += $", tile={receivers[i].tileNumber}";

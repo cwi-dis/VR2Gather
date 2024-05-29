@@ -9,6 +9,7 @@ using Debug = UnityEngine.Debug;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Policy;
 using Cwipc;
+using UnityEngine.Animations;
 
 namespace VRT.Transport.WebRTC
 {
@@ -258,7 +259,7 @@ namespace VRT.Transport.WebRTC
                 {
                     fixed (byte* bufferPointer = messageBuffer)
                     {
-                        WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)myClientId, (uint)thread_index);
+                        WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)_clientId, (uint)thread_index);
                     }
                 }
                 int fourccReceived = BitConverter.ToInt32(messageBuffer, 0);
