@@ -5,6 +5,8 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Elements;
 using Cwipc;
 using System.Runtime.InteropServices;
 using AOT;
@@ -56,7 +58,7 @@ namespace VRT.Transport.WebRTC
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        int clientId; // WebRTC client ID for the client we are receiving from.
+        protected int clientId; // WebRTC client ID for the client we are receiving from.
 
         protected TransportProtocolWebRTC connection;
         
@@ -198,8 +200,8 @@ namespace VRT.Transport.WebRTC
                 connection = TransportProtocolWebRTC.Connect(_url);
 
 
-                clientId = (1 - connection.myClientId);
-                Debug.LogWarning($"{Name()}: invented client-id {clientId} for remote sender");
+                clientId = GetClientIdFromUserId(userId);
+                Debug.LogWarning($"{Name()}: Use client-id {clientId} for remote sender");
                 receivers = new ReceiverInfo[]
                 {
                     new ReceiverInfo()
@@ -212,6 +214,11 @@ namespace VRT.Transport.WebRTC
                 Start();
             }
             return this;
+        }
+
+        protected int GetClientIdFromUserId(string userId) {
+            User user = OrchestratorController.Instance.CurrentSession.GetUser(userId);
+            return user.webRTCClientId;
         }
 
         public override void Stop()

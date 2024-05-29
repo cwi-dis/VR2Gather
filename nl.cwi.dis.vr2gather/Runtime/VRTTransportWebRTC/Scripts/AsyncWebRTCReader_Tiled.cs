@@ -19,7 +19,9 @@ namespace VRT.Transport.WebRTC
         public ITransportProtocolReader_Tiled Init(string _url, string userId, string streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
             connection = TransportProtocolWebRTC.Connect(_url);
-
+            clientId = GetClientIdFromUserId(userId);
+            Debug.LogWarning($"{Name()}: Use client-id {clientId} for remote sender");
+               
             lock (this)
             {
                 int nTiles = _tileDescriptors.Length;
