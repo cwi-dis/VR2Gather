@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.itisnajim.socketiounity": {
-      "version": "git+https://github.com/dave30406/SocketIOUnity.git#b43e1fa081328eea08f8a7c05c54eba14c97ae22",
+      "version": "git+https://github.com/troeggla/SocketIOUnity.git#b43e1fa081328eea08f8a7c05c54eba14c97ae22",
       "depth": 0,
       "source": "git",
       "dependencies": {
