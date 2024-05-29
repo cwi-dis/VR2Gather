@@ -294,7 +294,7 @@ namespace VRT.Transport.WebRTC
                         actualLength = WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)dataLength, (uint)tile_number);
                     }
                 }
-                if (actualLength != dataLength) {
+                if (actualLength < dataLength) {
                     Debug.LogWarning($"{Name()}: send_tile(..., {dataLength}) returned {actualLength}");
                 }
                 return true;                  
