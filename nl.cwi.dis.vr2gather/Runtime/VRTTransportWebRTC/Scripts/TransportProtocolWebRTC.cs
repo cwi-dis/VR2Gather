@@ -236,7 +236,7 @@ namespace VRT.Transport.WebRTC
 
         public NativeMemoryChunk GetNextTile(int thread_index, uint fourcc)
         {
-            lock(this)
+            // xxxjack causes a deadlock: lock(this)
             {
                 if (!peerConnected)
                 {
@@ -276,7 +276,7 @@ namespace VRT.Transport.WebRTC
 
         public bool SendTile(NativeMemoryChunk mc, int tile_number, uint fourcc)
         {
-            lock(this)
+            // xxxjack causes a deadlock: lock(this)
             {
                 if (!peerConnected)
                 {
