@@ -56,6 +56,8 @@ namespace VRT.Transport.WebRTC
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
+        int clientId; // WebRTC client ID for the client we are receiving from.
+
         protected TransportProtocolWebRTC connection;
         
         // xxxjack Unsure whether we need a pull-thread for WebRTC. Maybe the package gives us per-stream
@@ -116,7 +118,7 @@ namespace VRT.Transport.WebRTC
                         {
                             return;
                         }
-                        NativeMemoryChunk mc = parent.connection.GetNextTile(thread_index, receiverInfo.fourcc);
+                        NativeMemoryChunk mc = parent.connection.GetNextTile(parent.clientId, thread_index, receiverInfo.fourcc);
                         if (mc != null)
                         {
                             bool ok = receiverInfo.outQueue.Enqueue(mc);
@@ -195,6 +197,9 @@ namespace VRT.Transport.WebRTC
                 
                 connection = TransportProtocolWebRTC.Connect(_url);
 
+
+                clientId = (1 - connection.myClientId);
+                Debug.LogWarning($"{Name()}: invented client-id {clientId} for remote sender");
                 receivers = new ReceiverInfo[]
                 {
                     new ReceiverInfo()

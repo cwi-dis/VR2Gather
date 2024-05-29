@@ -37,7 +37,7 @@ namespace VRT.Transport.WebRTC
         public int peerUDPPort = 8000;
         public string peerIPAddress = "127.0.0.1";
         
-        public int clientId = -1;
+        public int myClientId = -1;
         public bool peerConnected = false;
         
         private Process peerProcess;
@@ -82,13 +82,13 @@ namespace VRT.Transport.WebRTC
 
         public void SetClientID(int _clientId)
         {
-            clientId = _clientId;
+            myClientId = _clientId;
         }
 
         public void AllConnectionsDone()
         {
             lock(this) {
-                if (clientId < 0) {
+                if (myClientId < 0) {
                     Debug.LogError($"{Name()}: AllConnectionsDone called but clientID not yet set");
                     return;
                 }
@@ -127,7 +127,7 @@ namespace VRT.Transport.WebRTC
 
                 peerProcess = new Process();
                 peerProcess.StartInfo.FileName = peerExecutablePath;
-                peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {clientId}";
+                peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId}";
                 peerProcess.StartInfo.CreateNoWindow = !peerInWindow;
     #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 if (peerInWindow && peerWindowDontClose)
@@ -163,7 +163,7 @@ namespace VRT.Transport.WebRTC
                 }
                 Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}");
                 //Thread.Sleep(2000);
-                int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)clientId, api_version);
+                int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)myClientId, api_version);
                 //Thread.Sleep(1000);
                 peerConnected = true;
                 Debug.Log($"{Name()}: WebRTCConnector initialized, status={status}");                
@@ -234,7 +234,7 @@ namespace VRT.Transport.WebRTC
             }
         }
 
-        public NativeMemoryChunk GetNextTile(int thread_index, uint fourcc)
+        public NativeMemoryChunk GetNextTile(int _clientId, int thread_index, uint fourcc)
         {
             // xxxjack causes a deadlock: lock(this)
             {
@@ -247,7 +247,7 @@ namespace VRT.Transport.WebRTC
                 // xxxjack the following code is very inefficient (all data is copied).
                 // See the comment in AsyncWebRTCWriter for details, but suffice it to say here that it's much better if
                 // retreive_tile had two sets of pointer, len.
-                int p_size = WebRTCConnectorPinvoke.get_tile_size((uint)clientId, (uint)thread_index);
+                int p_size = WebRTCConnectorPinvoke.get_tile_size((uint)_clientId, (uint)thread_index);
                 if (p_size <= 0)
                 {
                     return null;
@@ -258,7 +258,7 @@ namespace VRT.Transport.WebRTC
                 {
                     fixed (byte* bufferPointer = messageBuffer)
                     {
-                        WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)clientId, (uint)thread_index);
+                        WebRTCConnectorPinvoke.retrieve_tile(bufferPointer, (uint)p_size, (uint)myClientId, (uint)thread_index);
                     }
                 }
                 int fourccReceived = BitConverter.ToInt32(messageBuffer, 0);
