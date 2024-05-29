@@ -46,6 +46,7 @@ namespace VRT.Transport.WebRTC
         private int nReceivers = 0;
         private int nTransmitterTracks = 0;
         private int nReceiverTracks = 0; // xxxjack needs to be set dynamically
+        private int maxReceiverTracks = 9;
      
         public static string Name() {
             return "TransportProtocolWebRTC";
@@ -156,7 +157,11 @@ namespace VRT.Transport.WebRTC
                 {
                     nTracks = nTransmitterTracks;
                 }
-                Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}");
+                if (maxReceiverTracks > nTracks)
+                {
+                    nTracks = maxReceiverTracks;
+                }
+                Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}");
                 //Thread.Sleep(2000);
                 int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)clientId, api_version);
                 //Thread.Sleep(1000);
@@ -188,13 +193,26 @@ namespace VRT.Transport.WebRTC
 
         public void RegisterTransmitter(int _nTracks)
         {
+            if (peerConnected) {
+                throw new Exception($"{Name()}: RegisterTransmitter() called after peer started");
+            }
             nTransmitterTracks += _nTracks;
             nTransmitters++;
         }
 
         public void RegisterReceiver(int _nTracks)
         {
+#if disabled
+            // Unfortunately this doesn't work: the receivers aren't started until the
+            // session is well underway.
+            if (peerConnected) {
+                throw new Exception($"{Name()}: RegisterReceiver() called after peer started");
+            }
+#endif
             nReceiverTracks += _nTracks;
+            if (nReceiverTracks > maxReceiverTracks) {
+                Debug.LogWarning($"{Name()}: Too many receiver tracks: {nReceiverTracks}, max={maxReceiverTracks}")
+            }
             nReceivers++;
         }
 
