@@ -319,5 +319,91 @@ namespace VRT.Transport.WebRTC
                 return true;                  
             }
         }
+    
+        public NativeMemoryChunk GetNextAudioFrame(int _clientId, uint fourcc)
+        {
+            // xxxjack causes a deadlock: lock(this)
+            {
+                if (!peerConnected)
+                {
+                    Debug.LogWarning($"{Name()}: GetNextTile() called before peer connection");
+                    return null;
+                }
+                // [jvdhooft]
+                // xxxjack the following code is very inefficient (all data is copied).
+                // See the comment in AsyncWebRTCWriter for details, but suffice it to say here that it's much better if
+                // retreive_tile had two sets of pointer, len.
+                int p_size = WebRTCConnectorPinvoke.get_audio_size((uint)_clientId);
+                if (p_size <= 0)
+                {
+                    return null;
+                }
+                Debug.Log($"{Name()}: WebRTC audio frame available, size={p_size}");
+                byte[] messageBuffer = new byte[p_size];
+                unsafe
+                {
+                    fixed (byte* bufferPointer = messageBuffer)
+                    {
+                        WebRTCConnectorPinvoke.retrieve_audio(bufferPointer, (uint)p_size, (uint)_clientId);
+                    }
+                }
+                int fourccReceived = BitConverter.ToInt32(messageBuffer, 0);
+                if (fourccReceived != fourcc)
+                {
+                    Debug.LogError($"{Name()}: expected 4CC 0x{fourcc:x} got 0x{fourccReceived:x}");
+                }
+                int dataSize = BitConverter.ToInt32(messageBuffer, 4);
+                Timestamp timestamp = BitConverter.ToInt64(messageBuffer, 8);
+                NativeMemoryChunk mc = new NativeMemoryChunk(dataSize);
+                mc.metadata.timestamp = timestamp;
+                System.Runtime.InteropServices.Marshal.Copy(messageBuffer[16..], 0, mc.pointer, dataSize);
+                return mc;            
+            }
+        }
+
+        public bool SendAudioFrame(NativeMemoryChunk mc, uint fourcc)
+        {
+            // xxxjack causes a deadlock: lock(this)
+            {
+                if (!peerConnected)
+                {
+                    Debug.LogWarning($"{Name()}: SendAudioFrame() called before peer connection");
+                    return false;
+                }
+                // [jvdhooft]
+                // xxxjack the following code is very inefficient (all data is copied).
+                // NativeMemoryChunk has the data in an unmanaged buffer, and here we are copying it back to a
+                // managed byte array so that we can prepend the header.
+                //
+                // It would be better if send_tile would have two ptr, len sets so we could use the first one for the header
+                // and the second one for the data.
+                byte[] hdr = new byte[16];
+                var hdr1 = BitConverter.GetBytes(fourcc);
+                hdr1.CopyTo(hdr, 0);
+                var hdr2 = BitConverter.GetBytes((Int32)mc.length);
+                hdr2.CopyTo(hdr, 4);
+                var hdr3 = BitConverter.GetBytes(mc.metadata.timestamp);
+                hdr3.CopyTo(hdr, 8);
+                var buf = new byte[mc.length];
+                System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
+                mc.free();
+                byte[] messageBuffer = new byte[hdr.Length + buf.Length];
+                System.Buffer.BlockCopy(hdr, 0, messageBuffer, 0, hdr.Length);
+                System.Buffer.BlockCopy(buf, 0, messageBuffer, hdr.Length, buf.Length);
+                int actualLength;
+                int dataLength = hdr.Length + buf.Length;
+                unsafe
+                {
+                    fixed(byte* bufferPointer = messageBuffer)
+                    {
+                        actualLength = WebRTCConnectorPinvoke.send_audio(bufferPointer, (uint)dataLength);
+                    }
+                }
+                if (actualLength < dataLength) {
+                    Debug.LogWarning($"{Name()}: send_audio(..., {dataLength}) returned {actualLength}");
+                }
+                return true;                  
+            }
+        }
     }
 }

@@ -51,6 +51,8 @@ namespace VRT.Transport.WebRTC
 
         protected WebRTCStreamDescription[] descriptions;
 
+        protected bool isAudio;
+
         protected class WebRTCPushThread
         {
             AsyncWebRTCWriter parent;
@@ -104,7 +106,13 @@ namespace VRT.Transport.WebRTC
 #if VRT_WITH_STATS
                         stats.statsUpdate(mc.length);
 #endif
-                        parent.connection.SendTile(mc, tile_number, description.fourcc);
+                        if (parent.isAudio) {
+                            parent.connection.SendAudioFrame(mc, description.fourcc);
+                        }
+                        else
+                        {
+                            parent.connection.SendTile(mc, tile_number, description.fourcc);
+                        }
 
                     }
                     Debug.Log($"{Name()}: Thread stopped");
@@ -173,6 +181,7 @@ namespace VRT.Transport.WebRTC
         {
             NoUpdateCallsNeeded();
             connection = TransportProtocolWebRTC.Connect(_url);
+            isAudio = (streamName == "audio");
             if (string.IsNullOrEmpty(_url))
             {
                 throw new System.Exception($"{Name()}: No WebRTC SFU URL found in session description.");

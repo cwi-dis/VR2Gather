@@ -55,6 +55,14 @@ namespace VRT.Transport.WebRTC
         [DllImport("WebRTCConnector")]
         public static extern void retrieve_tile(byte* buffer, UInt32 size, UInt32 client_id, UInt32 tile_number);
 
+        // Audio frame functions
+        [DllImport("WebRTCConnector")]
+        public static extern int send_audio(byte* data, UInt32 size);
+        [DllImport("WebRTCConnector")]
+        public static extern int get_audio_size(UInt32 client_id);
+        [DllImport("WebRTCConnector")]
+        public static extern void retrieve_audio(byte* buffer, UInt32 size, UInt32 client_id);
+
         [DllImport("WebRTCConnector")]
         public static extern int send_control(byte* data, UInt32 size);
         [DllImport("WebRTCConnector")]

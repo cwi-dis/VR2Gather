@@ -61,6 +61,8 @@ namespace VRT.Transport.WebRTC
         protected int clientId; // WebRTC client ID for the client we are receiving from.
 
         protected TransportProtocolWebRTC connection;
+
+        protected bool isAudio;
         
         // xxxjack Unsure whether we need a pull-thread for WebRTC. Maybe the package gives us per-stream
         // callbacks, then we don't need a thread.
@@ -120,7 +122,14 @@ namespace VRT.Transport.WebRTC
                         {
                             return;
                         }
-                        NativeMemoryChunk mc = parent.connection.GetNextTile(parent.clientId, thread_index, receiverInfo.fourcc);
+                        NativeMemoryChunk mc;
+                        if (parent.isAudio) {
+                            mc = parent.connection.GetNextAudioFrame(parent.clientId, receiverInfo.fourcc);
+                        }
+                        else
+                        {
+                            mc = parent.connection.GetNextTile(parent.clientId, thread_index, receiverInfo.fourcc);
+                        }
                         if (mc != null)
                         {
                             bool ok = receiverInfo.outQueue.Enqueue(mc);
