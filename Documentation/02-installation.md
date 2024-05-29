@@ -61,7 +61,12 @@ If you already have a Unity project and want to add VR2Gather to it:
   ```
   git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc
   ```
-
+- Add the Unity SocketIO package by itisnajim. By github URL:
+  
+  ```
+  git+https://github.com/troeggla/SocketIOUnity.git#b43e1fa081328eea08f8a7c05c54eba14c97ae22
+  ```
+  
 - Add the `nl.cwi.dis.vr2gather.nativelibraries` package, by github url:
  
   ```
@@ -74,13 +79,13 @@ If you already have a Unity project and want to add VR2Gather to it:
   ```
   git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather
   ```
-- FAdd the _VR2Gather Essential Assets_ from Package Manager->VR2Gather->Samples tab. These are some essential assets, the most important one being the `LoginManager` scene that must be used as the first scene in your application (because it creates the shared session).
+- Add the _VR2Gather Essential Assets_ from Package Manager->VR2Gather->Samples tab. These are some essential assets, the most important one being the `LoginManager` scene that must be used as the first scene in your application (because it creates the shared session).
 
 - Next, in _Project Settings_, you probably want to add an XR plugin (for example _OpenXR_) and you probably want to add at least one Interaction Profile (for example Oculus Touch Controller).
 
 - You may also need to add all the scenes you need to the _Build Settings_.
 
-You should now be able to run the two "default experiences": _Pilot 0_ and _Technical Playground_.
+You should now be able to run the two "example experiences": _Pilot 0_ and _Technical Playground_. The first one is a minimal space for at most 4 people to meet. The second one is similar, but it has a few extra objects such as a mirror and some shared objects such as a "photo camera" that you can use to take pictures, and mud balls that you can throw at each other.
 
 You will not yet be able to use your own scenes with VR2Gather support: see [Creating an experience](10-createnew.md) for instructions on how to modify your scene and how to include it as a scenario for VR2Gather.
 
