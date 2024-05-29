@@ -16,8 +16,10 @@ namespace VRT.Transport.WebRTC
             return new AsyncWebRTCReader_Tiled();
         }
 
-        public ITransportProtocolReader_Tiled Init(string remoteUrl, string userId, string streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
+        public ITransportProtocolReader_Tiled Init(string _url, string userId, string streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
+            connection = TransportProtocolWebRTC.Connect(_url);
+
             lock (this)
             {
                 int nTiles = _tileDescriptors.Length;

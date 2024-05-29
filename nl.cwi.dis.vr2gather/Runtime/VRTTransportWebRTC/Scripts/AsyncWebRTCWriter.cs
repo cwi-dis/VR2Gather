@@ -222,7 +222,7 @@ namespace VRT.Transport.WebRTC
 
             Debug.Log($"{Name()}: Number of tracks: {(uint)nTracks}");
 
-            connection.PrepareForTransmission(nTracks);
+            connection.RegisterTransmitter(nTracks);
 
             pusherThreads = new WebRTCPushThread[nTracks];
             for (int i = 0; i < nTracks; i++)
@@ -242,6 +242,8 @@ namespace VRT.Transport.WebRTC
 
         public override void AsyncOnStop()
         {
+            connection.UnregisterTransmitter();
+            connection = null;
             // Signal that no more data is forthcoming to every pusher
             for (int i = 0; i < descriptions.Length; i++)
             {

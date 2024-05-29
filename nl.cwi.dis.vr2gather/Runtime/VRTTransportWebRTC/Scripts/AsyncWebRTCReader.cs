@@ -217,7 +217,8 @@ namespace VRT.Transport.WebRTC
 
         protected override void Start()
         {
-           base.Start();
+            base.Start();
+            connection.RegisterReceiver(receivers.Length);
             InitThreads();
         }
 
@@ -229,6 +230,7 @@ namespace VRT.Transport.WebRTC
                 t.Stop();
                 t.Join();
             }
+            connection.UnregisterReceiver();
             base.AsyncOnStop();
         }
 

@@ -1,5 +1,5 @@
 {
-    "orchestratorURL": "http://flauwte.huiskamer.private:8090",
+    "orchestratorURL": "http://192.168.1.119:8090",
     "AutoStart": {
         "autoLogin": true,
         "autoCreate": false,
