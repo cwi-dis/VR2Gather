@@ -211,7 +211,7 @@ namespace VRT.Transport.WebRTC
 #endif
             nReceiverTracks += _nTracks;
             if (nReceiverTracks > maxReceiverTracks) {
-                Debug.LogWarning($"{Name()}: Too many receiver tracks: {nReceiverTracks}, max={maxReceiverTracks}")
+                Debug.LogWarning($"{Name()}: Too many receiver tracks: {nReceiverTracks}, max={maxReceiverTracks}");
             }
             nReceivers++;
         }
