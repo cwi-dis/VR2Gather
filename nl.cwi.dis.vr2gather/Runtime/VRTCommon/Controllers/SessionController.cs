@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Responses;
 using VRT.Pilots.Common;
 using VRT.Core;
 

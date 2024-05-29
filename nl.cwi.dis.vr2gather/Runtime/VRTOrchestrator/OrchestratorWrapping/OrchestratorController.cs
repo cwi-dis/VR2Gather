@@ -1,49 +1,28 @@
-﻿//  © - 2020 – viaccess orca 
-//  
-//  Copyright
-//  This code is strictly confidential and the receiver is obliged to use it 
-//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
-//  be reproduced or transmitted in any form or by any means, electronic or 
-//  mechanical, including photocopying, recording, or by any information 
-//  storage and retrieval system, without permission in writing from 
-//  Viaccess S.A. The information in this code is subject to change without 
-//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
-//  you find any problems with this code or wish to make comments, please 
-//  report them to Viaccess-Orca.
-//  
-//  Trademarks
-//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
-//  other countries. All other product and company names mentioned herein are
-//  the trademarks of their respective owners. Viaccess S.A may hold patents,
-//  patent applications, trademarks, copyrights or other intellectual property
-//  rights over the code hereafter. Unless expressly specified otherwise in a 
-//  written license agreement, the delivery of this code does not imply the 
-//  concession of any license over these patents, trademarks, copyrights or 
-//  other intellectual property.
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
-using static VRT.Core.NTPTools;
+
+using VRT.Orchestrator.Responses;
+using VRT.Orchestrator.Interfaces;
+using VRT.Orchestrator.Elements;
+
 #if UNITY_EDITOR
 using UnityEditor.Search;
 #endif
+
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Orchestrator.Wrapping
 {
-    public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
+    public class OrchestratorController : MonoBehaviour, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {
         [Tooltip("Enable trace logging output")]
-        [SerializeField] private bool enableLogging = false;
-
-        [Tooltip("Enable socketIO debugging")]
-        [SerializeField] private bool enableSocketioLogging = false;
+        [SerializeField] private bool enableLogging = true;
 
         #region enum
 
@@ -84,9 +63,10 @@ namespace VRT.Orchestrator.Wrapping
         private bool connectedToOrchestrator = false;
         private bool hasBeenConnectedToOrchestrator = false;
         private bool autoStopOnLeave = false;
-#endregion
 
-#region public
+        #endregion
+
+        #region public
 
         //Orchestrator Controller Singleton
         public static OrchestratorController Instance {
@@ -155,9 +135,9 @@ namespace VRT.Orchestrator.Wrapping
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public Session CurrentSession { get { return mySession; } }
 
-#endregion
+        #endregion
 
-#region Unity
+        #region Unity
 
         private void Awake() {
             if (instance == null) {
@@ -184,6 +164,8 @@ namespace VRT.Orchestrator.Wrapping
 
         private void OnDestroy() {
             Debug.Log($"{gameObject.name}: OrchestratorController.OnDestroy() called. Will close orchestrator connection. ");
+            orchestratorWrapper.Disconnect();
+
             if (mySession != null) {
 #if VRT_WITH_STATS
                 Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
@@ -192,11 +174,9 @@ namespace VRT.Orchestrator.Wrapping
             _OptionalStopOnLeave();
         }
 
-#endregion
+        #endregion
 
-#region Commands
-
-#region Socket.io connect
+        #region Socket.io connect
 
         // Connect to the orchestrator
         public void SocketConnect(string pUrl) {
@@ -204,10 +184,7 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
 #endif
-            orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this, this);
-            if (enableSocketioLogging) {
-                orchestratorWrapper.EnableSocketioLogging();
-            }
+            orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this);
             orchestratorWrapper.Connect();
         }
 
@@ -265,23 +242,9 @@ namespace VRT.Orchestrator.Wrapping
             OnConnectionEvent?.Invoke(false);
         }
 
-#endregion
+        #endregion
 
-#region Orchestrator Logs
-
-        // Display the sent message in the logs
-        public void OnOrchestratorRequest(string request) {
-            OnOrchestratorRequestEvent?.Invoke(request);
-        }
-
-        // Display the received message in the logs
-        public void OnOrchestratorResponse(int commandID, int status, string response) {
-            OnOrchestratorResponseEvent?.Invoke(response);
-        }
-
-#endregion
-
-#region Login/Logout
+        #region Login/Logout
 
         public void Login(string pName, string pPassword) {
             SelfUser = new User();
@@ -357,18 +320,20 @@ namespace VRT.Orchestrator.Wrapping
             OnLogoutEvent?.Invoke(userLoggedOutSucessfully);
         }
 
-        public void SignIn(string pName, string pPassword) {
-        }
+        #endregion
 
-#endregion
-
-#region NTP clock
+        #region NTP clock
 
         long timeOfGetNTPTimeRequest = 0;
 
+        public static double GetClockTimestamp(System.DateTime pDate)
+        {
+            return pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
+        }
+
         public void GetNTPTime() {
-            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeNow: " + Helper.GetClockTimestamp(DateTime.Now));
-            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeUTC: " + Helper.GetClockTimestamp(DateTime.UtcNow));
+            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeNow: " + GetClockTimestamp(DateTime.Now));
+            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeUTC: " + GetClockTimestamp(DateTime.UtcNow));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             timeOfGetNTPTimeRequest = (long)sinceEpoch.TotalMilliseconds;
             orchestratorWrapper.GetNTPTime();
@@ -381,8 +346,8 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnGetNTPTimeResponse: NtpTime: " + ntpTime.Timestamp);
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetNTPTimeResponse: DateTimeUTC: " + Helper.GetClockTimestamp(DateTime.UtcNow));
-            if (enableLogging) Debug.Log("[OrchestratorController: OnGetNTPTimeResponse: DateTimeNow: " + Helper.GetClockTimestamp(DateTime.Now));
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetNTPTimeResponse: DateTimeUTC: " + GetClockTimestamp(DateTime.UtcNow));
+            if (enableLogging) Debug.Log("[OrchestratorController: OnGetNTPTimeResponse: DateTimeNow: " + GetClockTimestamp(DateTime.Now));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
             long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;
@@ -393,9 +358,9 @@ namespace VRT.Orchestrator.Wrapping
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
-#endregion
+        #endregion
 
-#region Sessions
+        #region Sessions
 
         public void GetSessions() {
             orchestratorWrapper.GetSessions();
@@ -613,13 +578,12 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-#endregion
+        #endregion
 
-#region Users
+        #region Users
 
         // xxxjack can go
         public void UpdateUserDataKey(string pKey, string pValue) {
-            orchestratorWrapper.UpdateUserData(pKey, pValue);
         }
 
         public void OnUpdateUserDataResponse(ResponseStatus status) {
@@ -644,10 +608,9 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
         }
 
-#endregion
+        #endregion
 
-
-#region Messages
+        #region Messages
 
         public void SendMessage(string pMessage, string pUserID) {
             orchestratorWrapper.SendMessage(pMessage, pUserID);
@@ -691,9 +654,9 @@ namespace VRT.Orchestrator.Wrapping
             OnUserMessageReceivedEvent?.Invoke(userMessage);
         }
 
-#endregion
+        #endregion
 
-#region Events
+        #region Events
 
         public void SendEventToMaster(string pEventData) {
             byte[] lData = Encoding.ASCII.GetBytes(pEventData);
@@ -724,22 +687,22 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void OnMasterEventReceived(UserEvent pMasterEventData) {
-            if (pMasterEventData.fromId != SelfUser.userId) {
-                //if (enableLogging) Debug.Log("OrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.fromId + " sent: " + pMasterEventData.message);
+            if (pMasterEventData.sceneEventFrom != SelfUser.userId) {
+                if (enableLogging) Debug.Log("OrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.sceneEventFrom + " sent: " + pMasterEventData.sceneEventData);
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
         }
 
         public void OnUserEventReceived(UserEvent pUserEventData) {
-            if (pUserEventData.fromId != SelfUser.userId) {
-                //if (enableLogging) Debug.Log("OrchestratorController: OnUserEventReceived: User: " + pUserEventData.fromId + " sent: " + pUserEventData.message);
+            if (pUserEventData.sceneEventFrom != SelfUser.userId) {
+                if (enableLogging) Debug.Log("OrchestratorController: OnUserEventReceived: User: " + pUserEventData.sceneEventFrom + " sent: " + pUserEventData.sceneEventData);
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }
-#endregion
 
+        #endregion
 
-#region Logics
+        #region Logics
 
         private IEnumerator WaitForEmptySessionToDelete() {
             if (mySession == null) {
@@ -760,11 +723,9 @@ namespace VRT.Orchestrator.Wrapping
             _OptionalStopOnLeave();
         }
 
-#endregion
+        #endregion
 
-
-
-#region Errors
+        #region Errors
 
         public void OnError(ResponseStatus status) {
             if (enableLogging) Debug.Log("OrchestratorController: OnError: Error code: " + status.Error + "::Error message: " + status.Message);
@@ -772,9 +733,6 @@ namespace VRT.Orchestrator.Wrapping
             OnErrorEvent?.Invoke(status);
         }
 
-
-#endregion
-
-#endregion
+        #endregion
     }
 }

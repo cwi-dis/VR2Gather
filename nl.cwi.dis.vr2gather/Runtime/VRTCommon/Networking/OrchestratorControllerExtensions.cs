@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Responses;
 
 namespace VRT.Pilots.Common
 {
@@ -210,12 +211,12 @@ namespace VRT.Pilots.Common
 
 		private static void ForwardMasterEvent(UserEvent userEvent)
 		{
-			_MessageForwarderManager.Forward(userEvent.message);
+			_MessageForwarderManager.Forward(userEvent.sceneEventData);
 		}
 
 		private static void ForwardUserEvent(UserEvent userEvent)
 		{
-			_MessageForwarderManager.Forward(userEvent.message);
+			_MessageForwarderManager.Forward(userEvent.sceneEventData);
 		}
 	}
 }

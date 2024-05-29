@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System;
+﻿using System;
 using UnityEngine;
-using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
+using VRT.Orchestrator.Responses;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -51,6 +48,7 @@ namespace VRT.Transport.SocketIO
                     Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name} from {userId}");
                     OrchestratorWrapper.instance.RegisterForDataStream(userId, this.descriptors[i].name);
                 }
+
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
 #if VRT_WITH_STATS
                 stats = new Stats(Name());

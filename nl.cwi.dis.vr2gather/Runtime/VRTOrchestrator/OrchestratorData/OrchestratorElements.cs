@@ -1,33 +1,8 @@
-﻿//  © - 2020 – viaccess orca 
-//  
-//  Copyright
-//  This code is strictly confidential and the receiver is obliged to use it 
-//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
-//  be reproduced or transmitted in any form or by any means, electronic or 
-//  mechanical, including photocopying, recording, or by any information 
-//  storage and retrieval system, without permission in writing from 
-//  Viaccess S.A. The information in this code is subject to change without 
-//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
-//  you find any problems with this code or wish to make comments, please 
-//  report them to Viaccess-Orca.
-//  
-//  Trademarks
-//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
-//  other countries. All other product and company names mentioned herein are
-//  the trademarks of their respective owners. Viaccess S.A may hold patents,
-//  patent applications, trademarks, copyrights or other intellectual property
-//  rights over the code hereafter. Unless expressly specified otherwise in a 
-//  written license agreement, the delivery of this code does not imply the 
-//  concession of any license over these patents, trademarks, copyrights or 
-//  other intellectual property.
-
-using Best.HTTP.JSON.LitJson;
-using VRT.Core;
+﻿using VRT.Core;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator.Elements
 {
     // Base class for the elements returned by the orchestrator
     public abstract class OrchestratorElement
@@ -44,25 +19,14 @@ namespace VRT.Orchestrator.Wrapping
             return string.Empty;
         }
 
-        // Parse a JSonData to a C# object
         public static T ParseJsonString<T>(string data)
         {
-            try
-            {
-                return JsonMapper.ToObject<T>(data);
-
-            }
-            catch (JsonException ex)
-            {
-                UnityEngine.Debug.LogError("OrchestratorElements: Error parsing JSON. See log message.");
-                UnityEngine.Debug.Log($"OrchestratorElements: Exception: {ex}");
-                UnityEngine.Debug.Log($"OrchestratorElements: JSON data: {data}");
-                return default(T);
-            }
+            return JsonUtility.FromJson<T>(data);
         }
-        public static T ParseJsonData<T>(JsonData data)
+
+        public string AsJsonString()
         {
-            return ParseJsonString<T>(data.ToJson());
+            return JsonUtility.ToJson(this);
         }
     }
 
@@ -102,12 +66,6 @@ namespace VRT.Orchestrator.Wrapping
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
-
-
-        public string AsJsonString()
-        {
-            return JsonMapper.ToJson(this);
-        }
     }
 
     public class SfuData : OrchestratorElement
@@ -131,7 +89,7 @@ namespace VRT.Orchestrator.Wrapping
     public class NtpClock: OrchestratorElement
     {
         public string ntpDate;
-        public System.Int64 ntpTimeMs;
+        public long ntpTimeMs;
 
         public NtpClock() { }
 

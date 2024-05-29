@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using VRT.Orchestrator.Wrapping;
-using VRT.UserRepresentation.Voice;
+using VRT.Orchestrator.Responses;
+using VRT.Orchestrator.Elements;
 using VRT.Core;
 using VRT.Pilots.Common;
 #if UNITY_EDITOR
@@ -1387,7 +1388,7 @@ namespace VRT.Login
         {
             // The final step in connecting to the orchestrator and logging in: we have the NTP time.
             // We are now fully logged in.
-            double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+            double difference = OrchestratorController.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
             if (developerMode) Debug.Log("OrchestratorLogin: OnGetNTPTimeResponse: Difference: " + difference);
             if (Math.Abs(difference) >= VRTConfig.Instance.ntpSyncThreshold)
             {
@@ -1523,12 +1524,12 @@ namespace VRT.Login
 
         private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
         {
-            Debug.LogError("OrchestratorLogin: OnMasterEventReceivedHandler: Unexpected message from " + pMasterEventData.fromId + ": " + pMasterEventData.message);
+            Debug.LogError("OrchestratorLogin: OnMasterEventReceivedHandler: Unexpected message from " + pMasterEventData.sceneEventFrom + ": " + pMasterEventData.sceneEventData);
         }
 
         private void OnUserEventReceivedHandler(UserEvent pUserEventData)
         {
-            Debug.LogError("OrchestratorLogin: OnUserEventReceivedHandler: Unexpected message from " + pUserEventData.fromId + ": " + pUserEventData.message);
+            Debug.LogError("OrchestratorLogin: OnUserEventReceivedHandler: Unexpected message from " + pUserEventData.sceneEventFrom + ": " + pUserEventData.sceneEventData);
         }
         #endregion
     }
