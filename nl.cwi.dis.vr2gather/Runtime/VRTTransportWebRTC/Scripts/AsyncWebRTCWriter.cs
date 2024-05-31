@@ -235,6 +235,7 @@ namespace VRT.Transport.WebRTC
 #if VRT_WITH_STATS
             Statistics.Output(Name(), $"url={_url}, stream={streamName}, nStream={descriptions.Length}");
 #endif
+            Start();
             return this;
         }
 
