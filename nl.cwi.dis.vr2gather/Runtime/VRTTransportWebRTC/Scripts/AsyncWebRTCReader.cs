@@ -139,6 +139,9 @@ namespace VRT.Transport.WebRTC
                             return;
                         }
                         NativeMemoryChunk mc;
+                        if (parent.clientId <= 0) {
+                            Debug.LogError($"{Name()}: parent.clientId={parent.clientId}");
+                        }
                         if (parent.isAudio) {
                             mc = parent.connection.GetNextAudioFrame(parent.clientId, receiverInfo.fourcc);
                         }
