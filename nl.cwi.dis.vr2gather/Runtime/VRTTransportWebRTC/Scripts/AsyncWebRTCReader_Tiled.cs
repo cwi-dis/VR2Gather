@@ -18,6 +18,7 @@ namespace VRT.Transport.WebRTC
 
         public ITransportProtocolReader_Tiled Init(string _url, string userId, string streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
+            NoUpdateCallsNeeded();
             connection = TransportProtocolWebRTC.Connect(_url);
             clientId = GetClientIdFromUserId(userId);
             isAudio = streamName == "audio";    

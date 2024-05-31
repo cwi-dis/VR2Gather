@@ -114,6 +114,17 @@ namespace VRT.Transport.WebRTC
                 myThread.Join();
             }
 
+
+            public bool Join(int joinTimeout)
+            {
+                return myThread.Join(joinTimeout);
+            }
+
+            public void Abort() {
+                myThread.Abort();
+            }
+
+
             protected void run()
             {
                 try
@@ -208,6 +219,7 @@ namespace VRT.Transport.WebRTC
         /// <param name="outQueue">The queue into which received frames will be deposited</param>
         public ITransportProtocolReader Init(string _url, string userId, string streamName, int streamNumber, string fourcc, QueueThreadSafe outQueue)
         {
+            NoUpdateCallsNeeded();
             lock (this)
             {
                 
@@ -241,6 +253,20 @@ namespace VRT.Transport.WebRTC
         {
             base.Stop();
             _closeQueues();
+            if (debugThreading) Debug.Log($"{Name()}: Stopping threads");
+            foreach(var t in threads)
+            {
+                t.Stop();
+            }
+            connection.UnregisterReceiver();
+            foreach(var t in threads)
+            {
+                if (!t.Join(joinTimeout))
+                {
+                    Debug.LogWarning($"{Name()}: thread did not stop in {joinTimeout}ms. Aborting.");
+                    t.Abort();
+                }            
+            }
         }
 
         protected override void Start()
@@ -248,18 +274,6 @@ namespace VRT.Transport.WebRTC
             base.Start();
             connection.RegisterReceiver(receivers.Length);
             InitThreads();
-        }
-
-        public override void AsyncOnStop()
-        {
-            if (debugThreading) Debug.Log($"{Name()}: Stopping threads");
-            foreach(var t in threads)
-            {
-                t.Stop();
-                t.Join();
-            }
-            connection.UnregisterReceiver();
-            base.AsyncOnStop();
         }
 
         protected override void AsyncUpdate()

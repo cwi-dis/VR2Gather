@@ -98,6 +98,15 @@ namespace VRT.Transport.WebRTC
                 myThread.Join();
             }
 
+            public bool Join(int joinTimeout)
+            {
+                return myThread.Join(joinTimeout);
+            }
+
+            public void Abort() {
+                myThread.Abort();
+            }
+
             protected void run()
             {
                 try
@@ -256,8 +265,9 @@ namespace VRT.Transport.WebRTC
             }
         }
 
-        public override void AsyncOnStop()
+        public override void Stop()
         {
+            base.Stop();
             connection.UnregisterTransmitter();
             connection = null;
             // Signal that no more data is forthcoming to every pusher
@@ -271,20 +281,15 @@ namespace VRT.Transport.WebRTC
                 }
             }
 
-            // [jvdhooft[
-            /*
-            // Close existing processes
-            process_writer.Close();
-            process_reader.Close();
-            */
-
-            // Stop our thread
-            base.AsyncOnStop();
             // wait for pusherThreads to terminate
             foreach (var t in pusherThreads)
             {
                 t.Stop();
-                t.Join();
+                if (!t.Join(joinTimeout))
+                {
+                    Debug.LogWarning($"{Name()}: thread did not stop in {joinTimeout}ms. Aborting.");
+                    t.Abort();
+                }            
             }
 
             Debug.Log($"{Name()} Stopped");
