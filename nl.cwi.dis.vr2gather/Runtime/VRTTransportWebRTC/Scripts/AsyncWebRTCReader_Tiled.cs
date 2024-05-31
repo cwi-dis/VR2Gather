@@ -20,8 +20,7 @@ namespace VRT.Transport.WebRTC
         {
             connection = TransportProtocolWebRTC.Connect(_url);
             clientId = GetClientIdFromUserId(userId);
-            Debug.LogWarning($"{Name()}: Use client-id {clientId} for remote sender");
-               
+            isAudio = streamName == "audio";    
             lock (this)
             {
                 int nTiles = _tileDescriptors.Length;
