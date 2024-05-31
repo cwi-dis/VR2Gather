@@ -176,6 +176,9 @@ namespace VRT.Transport.WebRTC
 
         public void Stop()
         {
+            if (nReceivers != 0 || nTransmitters != 0) {
+                Debug.LogError($"{Name()}: Stop() called while nReceivers={nReceivers}, nTransmitters={nTransmitters}");
+            }
             WebRTCConnectorPinvoke.clean_up();
             peerConnected = false;
             if (peerProcess != null)

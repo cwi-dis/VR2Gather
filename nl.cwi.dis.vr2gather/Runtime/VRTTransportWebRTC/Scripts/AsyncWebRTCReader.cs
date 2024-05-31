@@ -295,7 +295,7 @@ namespace VRT.Transport.WebRTC
                         msg += $", tile={receivers[i].tileNumber}";
                     }
 #if VRT_WITH_STATS
-                    Statistics.Output(base.Name(), msg);
+                    Statistics.Output(Name(), msg);
 #endif
                 }
                 foreach (var t in threads)
