@@ -207,8 +207,7 @@ namespace VRT.Transport.WebRTC
             {
                 
                 connection = TransportProtocolWebRTC.Connect(_url);
-
-
+                isAudio = (streamName == "audio");
                 clientId = GetClientIdFromUserId(userId);
                 Debug.LogWarning($"{Name()}: Use client-id {clientId} for remote sender");
                 receivers = new ReceiverInfo[]
