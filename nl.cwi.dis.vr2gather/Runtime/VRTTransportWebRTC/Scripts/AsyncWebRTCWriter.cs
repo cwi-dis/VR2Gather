@@ -53,6 +53,11 @@ namespace VRT.Transport.WebRTC
 
         protected bool isAudio;
 
+        public override string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
+
         protected class WebRTCPushThread
         {
             AsyncWebRTCWriter parent;
@@ -218,7 +223,9 @@ namespace VRT.Transport.WebRTC
                 };
             }
             descriptions = ourDescriptions;
-            Start();
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"url={_url}, stream={streamName}, nStream={descriptions.Length}");
+#endif
             return this;
         }
 
@@ -240,7 +247,7 @@ namespace VRT.Transport.WebRTC
                 int stream_number = i;
                 pusherThreads[i] = new WebRTCPushThread(this, descriptions[i], i);
 #if VRT_WITH_STATS
-                Statistics.Output(base.Name(), $"pusher={pusherThreads[i].Name()}, stream={i}");
+                Statistics.Output(Name(), $"pusher={pusherThreads[i].Name()}, stream={i}");
 #endif
             }
             foreach (var t in pusherThreads)

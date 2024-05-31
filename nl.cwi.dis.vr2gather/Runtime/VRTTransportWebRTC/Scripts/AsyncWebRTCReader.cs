@@ -64,6 +64,11 @@ namespace VRT.Transport.WebRTC
 
         protected bool isAudio;
         
+        public override string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
+
         // xxxjack Unsure whether we need a pull-thread for WebRTC. Maybe the package gives us per-stream
         // callbacks, then we don't need a thread.
         // But we should make sure (eventually) that the callbacks don't happen on the main thread, where they
@@ -219,6 +224,9 @@ namespace VRT.Transport.WebRTC
                         fourcc = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3])
                     },
                 };
+#if VRT_WITH_STATS
+                Statistics.Output(Name(), $"url={_url}, stream={streamName}, nStream={1}, clientId={clientId}");
+#endif
                 Start();
             }
             return this;

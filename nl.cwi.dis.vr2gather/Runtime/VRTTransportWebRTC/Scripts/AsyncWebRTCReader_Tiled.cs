@@ -36,6 +36,9 @@ namespace VRT.Transport.WebRTC
                     ri.fourcc = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
                     receivers[ti] = ri;
                 }
+#if VRT_WITH_STATS
+                Statistics.Output(Name(), $"url={_url}, stream={streamName}, nStream={nTiles}, clientId={clientId}");
+#endif
                 Start();
             }
             return this;
