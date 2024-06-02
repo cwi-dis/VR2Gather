@@ -14,12 +14,12 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "",
+        "autoCreateForUser": "beelzebub",
         "sessionName": "test-session",
-        "sessionScenario": "Technical Playground",
-        "sessionTransportProtocol": "socketio",
-        "sessionUncompressed": false,
-        "sessionUncompressedAudio": false,
+        "sessionScenario": "Pilot0",
+        "sessionTransportProtocol": "tcp",
+        "sessionUncompressed": true,
+        "sessionUncompressedAudio": true,
         "autoStartWith": 2,
         "autoLeaveAfter": 0.0,
         "autoStopAfterLeave": false,
@@ -75,7 +75,7 @@
             "PrerecordedReaderConfig": {
                 "folder": "../cwipc_test/Samples/loot-150K-4tiles"
             },
-            "voxelSize": 0.0,
+            "voxelSize": 0.01,
             "frameRate": 15.0,
             "tiled": false,
             "Encoders": [
