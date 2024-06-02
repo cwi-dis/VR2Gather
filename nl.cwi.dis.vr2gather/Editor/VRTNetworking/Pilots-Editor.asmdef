@@ -1,5 +1,6 @@
 {
-    "name": "Pilots-Editor",
+    "name": "VRT.Pilots.Common.Editor",
+    "rootNamespace": "",
     "references": [
         "GUID:8830b9e06f5eb184f963f1aec82206c7"
     ],

@@ -1,17 +1,16 @@
 {
-    "name": "Pilots",
+    "name": "VRT.Pilots.Common",
     "rootNamespace": "",
     "references": [
-        "VRTCore",
-        "VRTeleporter",
-        "Dash",
-        "Orchestrator",
-        "Voice",
-        "UnityEngine.SpatialTracking",
-        "Unity.TextMeshPro",
-        "Unity.InputSystem",
-        "Cwipc",
-        "Unity.XR.Interaction.Toolkit"
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:30bd862cd7044fd4484784b07598041d",
+        "GUID:483ef9d2ea25bb34cb9cdc48962c5283",
+        "GUID:6f443a5d6715b3048a4c955e8bae1e88",
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee",
+        "GUID:ba171b3dd2a51234ab864770f99741a5",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:fe685ec1767f73d42b749ea8045bfe43"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

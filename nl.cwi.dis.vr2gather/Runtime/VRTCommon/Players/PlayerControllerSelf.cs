@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
 
@@ -19,7 +16,7 @@ namespace VRT.Pilots.Common
             isPreviewPlayer = previewPlayer;
         }
 
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
+        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Elements.User user)
         {
             if (!_isLocalPlayer)
             {

@@ -18,7 +18,7 @@ Except where otherwise noted VR2Gather is copyright Centrum Wiskunde & Informati
 
 VR2Gather requires Unity 2022.3.
 
-VR2Gather requires a fair number of Unity packages and native packages. Almost all of these are either freely available through the Unity Package Manager, or available as open source.
+VR2Gather requires a fair number of Unity packages and native packages. All of these are either freely available through the Unity Package Manager, or available as open source.
 
 Please read the [Installation guide](Documentation/02-installation.md).
 

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Responses;
 using VRT.Pilots.Common;
 using VRT.Core;
 
@@ -83,6 +84,19 @@ namespace VRT.Pilots.Common
         private void OnConnectionEventHandler(bool connected)
         {
             Debug.LogWarning($"{Name()}: Unexpected Connection event, connected={connected}");
+            if (!connected)
+            {
+                // We should handle this more gracefully, by letting the user continue is disconnected mode or something...
+                Debug.LogError($"{Name()}: Orchestrator disconnect. Quit application, sorry...");
+#if UNITY_EDITOR
+                // Application.Quit() does not work in the editor so
+                // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+
+            }
         }
 
   

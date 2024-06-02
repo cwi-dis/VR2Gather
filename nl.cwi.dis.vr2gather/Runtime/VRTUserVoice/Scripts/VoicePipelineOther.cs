@@ -1,11 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System;
 using UnityEngine;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
-using VRT.Transport.TCP;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Elements;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS
@@ -21,7 +16,7 @@ namespace VRT.UserRepresentation.Voice
 
     public class VoicePipelineOther : MonoBehaviour
     {
-        AsyncReader reader;
+        ITransportProtocolReader reader;
         AsyncWorker codec;
         AsyncVoicePreparer preparer;
         public AudioSource audioSource;
@@ -98,7 +93,7 @@ namespace VRT.UserRepresentation.Voice
 
             string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
-            SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
+            string proto = SessionConfig.Instance.protocolType;
 
             preparerQueue = new QueueThreadSafe("VoicePreparer", preparerQueueSize, true);
             QueueThreadSafe _readerOutputQueue = preparerQueue;
@@ -108,29 +103,20 @@ namespace VRT.UserRepresentation.Voice
                 codec = new AsyncVoiceDecoder(decoderQueue, preparerQueue);
                 _readerOutputQueue = decoderQueue;
             }
+            string url = user.sfuData.url_gen;
+            // Backward compatible trick for 
+            switch(proto)
+            {
+                case "tcp":
+                    url = user.userData.userAudioUrl;
+                    break;
+            }
+            reader = TransportProtocol.NewReader(proto).Init(url, user.userId, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
+#endif
 
-            if (proto == SessionConfig.ProtocolType.Dash)
-            {
-                reader = new AsyncSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=dash, url={user.sfuData.url_audio}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
-#endif
-            }
-            else
-            if (proto == SessionConfig.ProtocolType.TCP)
-            {
-                reader = new AsyncTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=tcp, url={user.userData.userAudioUrl}, codec={audioCodec}");
-#endif
-            }
-            else
-            {
-                reader = new AsyncSocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
-                Statistics.Output(Name(), $"proto=socketio, user={user}, streamName={_streamName}, codec={audioCodec}");
-#endif
-            }
+            
 
             preparer = new AsyncVoicePreparer(preparerQueue);
             string synchronizerName = "none";

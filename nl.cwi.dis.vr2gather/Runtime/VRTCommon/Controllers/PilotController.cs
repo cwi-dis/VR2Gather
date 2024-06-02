@@ -155,7 +155,7 @@ namespace VRT.Pilots.Common
                 }
                 else
                 {
-                    LoadNewScene("LoginManager");
+                    LoadNewScene("VRTLoginManager");
                 }
                 return true;
             }

@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2024-06-02
+
+- Skewed teleport line fixed (#175)
+- Strange center-screen shape when not using HMD fixed (#135)
+
+## [1.0.0] - 2024-05-28
+
+- BestHTTP socketio replaced by open source package from itisnajim (#169)
+
+## [0.9.8] - 2024-05-26
+
+- Implemented tcpreflector transport protocol (#168)
+- Implemented abstract transport protocol handlers, to enable easy addition of protocols (#150)
+- Single port specified for tcp (point to point) audio transport, other ports are computed from that
+
+## [0.9.7] - 2024-05-17
+
+- Cleaner reaction to orchestrator disconnection (#173)
+- Changed assembly names to match namespace names, at least somewhat. (#157)
+
 ## [0.9.6] - 2024-05-06
 
 - Conversational audio handling implemented differently. (partial #144)

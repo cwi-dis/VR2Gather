@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
@@ -6,9 +5,9 @@ using VRT.Core;
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.UserRepresentation.Voice;
-using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
-using VRT.Orchestrator.Wrapping;
+using VRT.Transport.TCP;
+using VRT.Orchestrator.Elements;
 using Cwipc;
 using VRT.Pilots.Common;
 
@@ -23,6 +22,9 @@ namespace VRT.UserRepresentation.PointCloud
 
     public class PointCloudPipelineOther : PointCloudPipelineBase
     {
+        protected ITransportProtocolReader_Tiled reader;
+        
+        protected List<AbstractPointCloudDecoder> decoders = new List<AbstractPointCloudDecoder>();
 
         public static void Register()
         {
@@ -127,22 +129,17 @@ namespace VRT.UserRepresentation.PointCloud
                 Statistics.Output(Name(), $"tile={tileIndex}, tile_number={tilesToReceive[tileIndex].tileNumber}, decoder={decoder.Name()}");
 #endif
             };
-
-            switch (SessionConfig.Instance.protocolType)
+            // We need some backward-compatibility hacks, depending on protocol type.
+            // We need some backward-compatibility hacks, depending on protocol type.
+            string url = user.sfuData.url_gen;
+            string proto = SessionConfig.Instance.protocolType;
+            switch (proto)
             {
-                case SessionConfig.ProtocolType.None:
-                case SessionConfig.ProtocolType.SocketIO:
-                    reader = new AsyncSocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
+                case "tcp":
+                    url = user.userData.userAudioUrl;
                     break;
-                case SessionConfig.ProtocolType.Dash:
-                    reader = new AsyncSubPCReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
-                    break;
-                case SessionConfig.ProtocolType.TCP:
-                    reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
-                    break;
-                default:
-                    throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
             }
+            reader = TransportProtocol.NewReader_Tiled(proto).Init(url, user.userId, "pointcloud", pointcloudCodec, tilesToReceive);
 
             string synchronizerName = "none";
             if (synchronizer != null && synchronizer.isEnabled())
@@ -150,8 +147,17 @@ namespace VRT.UserRepresentation.PointCloud
                 synchronizerName = synchronizer.Name();
             }
 #if VRT_WITH_STATS
-            Statistics.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
+            Statistics.Output(Name(), $"reader={reader.Name()}, codec={pointcloudCodec}, synchronizer={synchronizerName}");
 #endif
+        }
+        new void OnDestroy()
+        {
+            reader?.StopAndWait();
+            foreach (var decoder in decoders)
+            {
+                decoder?.StopAndWait();
+            }
+            base.OnDestroy();
         }
 
         public void SetTilingConfig(PointCloudNetworkTileDescription config)
@@ -242,7 +248,7 @@ namespace VRT.UserRepresentation.PointCloud
                 _prreader.SelectTileQualities(tileQualities);
                 return;
             }
-            AsyncSubPCReader _subreader = reader as AsyncSubPCReader;
+            AsyncDashReader_Tiled _subreader = reader as AsyncDashReader_Tiled;
             if (_subreader != null)
             {
                 for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
@@ -253,7 +259,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 return;
             }
-            AsyncTCPPCReader _tcpreader = reader as AsyncTCPPCReader;
+            AsyncTCPDirectReader_Tiled _tcpreader = reader as AsyncTCPDirectReader_Tiled;
             if (_tcpreader != null)
             {
                 for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
@@ -287,13 +293,13 @@ namespace VRT.UserRepresentation.PointCloud
             }
             // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
             VoicePipelineOther voiceReceiver = gameObject.transform.parent.GetComponentInChildren<VoicePipelineOther>();
-            if (voiceReceiver != null)
+            if (voiceReceiver != null && voiceReceiver.enabled && voiceReceiver.gameObject.activeInHierarchy)
             {
                 voiceReceiver.SetSyncInfo(config.audio);
             }
             else
             {
-                Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver");
+                Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver for this player");
             }
             //Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
 

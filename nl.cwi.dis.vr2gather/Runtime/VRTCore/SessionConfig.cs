@@ -7,39 +7,16 @@ using VRT.Core;
 
 namespace VRT.Core
 {
+    
 
-   
     /// <summary>
     /// Per-session parameters that should be the same for all participants in the experience.
     /// </summary>
     public class SessionConfig
     {
-        public static SessionConfig.ProtocolType ProtocolFromString(string s)
-        {
-            switch (s.ToLower())
-            {
-                case "socketio":
-                    return SessionConfig.ProtocolType.SocketIO;
-                case "dash":
-                    return SessionConfig.ProtocolType.Dash;
-                case "tcp":
-                    return SessionConfig.ProtocolType.TCP;
-            }
-            throw new System.Exception($"Unknown protocoltype \"{s}\"");
-        }
 
-        public static string ProtocolToString(SessionConfig.ProtocolType v)
-        {
-            return v.ToString().ToLower();
-        }
 
-        public enum ProtocolType
-        {
-            None = 0,
-            SocketIO = 1,
-            Dash = 2,
-            TCP = 3,
-        };
+        
 
         /// <summary>
 		/// The experience name (so _not_ the session name or the scene name)
@@ -52,7 +29,7 @@ namespace VRT.Core
         /// <summary>
 		/// The transport protocol to use (socketio, tcp, dash)
 		/// </summary>
-        public ProtocolType protocolType = ProtocolType.SocketIO;
+        public string protocolType = "socketio";
         /// <summary>
 		/// The codec to use for webcam video (4CC)
 		/// </summary>

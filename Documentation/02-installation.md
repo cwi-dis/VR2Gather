@@ -36,14 +36,6 @@ If you don't have an RGBD camera you need not bother with Intel Realsense or Mic
 
 > You will later add the `cwipc_unity` package to your Unity project, but this package still requires the `cwipc` native package to be installed on your machine.
 
-### BestHTTP
-
-You need a copy of the **Best Socket.IO Bundle** (the successor to BestHTTP) by Tivadar György Nagy. There are a number of ways to get this:
-
-- We (the CWI DIS group) have a license for a limited number of seats. If you are a member of the CWI DIS group you will have access to our copy. It will be automatically pulled in as a Unity git package from a repository you should have access to.
-- If you are a close collaborator with the CWI DIS group: we may have a seat license to share. Contact us, and we will give you access to the private git submodule.
-- Otherwise you will have to buy your own seat license and install it through the Unity Package Manager.
-
 ## Creating a Unity project with VR2Gather
 
 ### Porting an "old" VR2Gather project
@@ -57,20 +49,24 @@ If you are starting from scratch it is easiest to make a copy of our empty `VRTA
 - You can find it at the top level of the <https://github.com/cwi-dis/VR2Gather> repository.
 - You may be able to download it as a ZIP file, instructions to be provided later.
 
-This project is pre-configured so it already includes the VR2Gather package and all if its dependencies. **But note:** it has references to our private (CWI DIS) BestHTTP packages, see the note above.
+This project is pre-configured so it already includes the VR2Gather package and all if its dependencies.
 
 ### Adding VR2Gather to an existing Unity project
 
 If you already have a Unity project and want to add VR2Gather to it:
 
 - Ensure you use the new Input System (not the old Input Manager)
-- Add the 4 **Best Socket.IO Bundle** packages mentioned above to your project.
 - Add the `nl.cwi.dis.cwipc` package, by github url:
 
   ```
   git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc
   ```
-
+- Add the Unity SocketIO package by itisnajim. By github URL:
+  
+  ```
+  git+https://github.com/troeggla/SocketIOUnity.git#b43e1fa081328eea08f8a7c05c54eba14c97ae22
+  ```
+  
 - Add the `nl.cwi.dis.vr2gather.nativelibraries` package, by github url:
  
   ```
@@ -83,13 +79,13 @@ If you already have a Unity project and want to add VR2Gather to it:
   ```
   git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather
   ```
-- FAdd the _VR2Gather Essential Assets_ from Package Manager->VR2Gather->Samples tab. These are some essential assets, the most important one being the `LoginManager` scene that must be used as the first scene in your application (because it creates the shared session).
+- Add the _VR2Gather Essential Assets_ from Package Manager->VR2Gather->Samples tab. These are some essential assets, the most important one being the `LoginManager` scene that must be used as the first scene in your application (because it creates the shared session).
 
 - Next, in _Project Settings_, you probably want to add an XR plugin (for example _OpenXR_) and you probably want to add at least one Interaction Profile (for example Oculus Touch Controller).
 
 - You may also need to add all the scenes you need to the _Build Settings_.
 
-You should now be able to run the two "default experiences": _Pilot 0_ and _Technical Playground_.
+You should now be able to run the two "example experiences": _Pilot 0_ and _Technical Playground_. The first one is a minimal space for at most 4 people to meet. The second one is similar, but it has a few extra objects such as a mirror and some shared objects such as a "photo camera" that you can use to take pictures, and mud balls that you can throw at each other.
 
 You will not yet be able to use your own scenes with VR2Gather support: see [Creating an experience](10-createnew.md) for instructions on how to modify your scene and how to include it as a scenario for VR2Gather.
 

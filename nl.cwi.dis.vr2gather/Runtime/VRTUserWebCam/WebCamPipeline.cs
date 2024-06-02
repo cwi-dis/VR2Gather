@@ -1,16 +1,10 @@
 ﻿#define NO_VOICE
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using Cwipc;
 using VRT.Video;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
-using VRT.Transport.TCP;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Elements;
 using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.WebCam
@@ -31,10 +25,10 @@ namespace VRT.UserRepresentation.WebCam
 
 
         AsyncWebCamReader webReader;
-        AsyncWorker reader;
+        ITransportProtocolReader reader;
         AsyncWorker encoder;
         AsyncVideoDecoder decoder;
-        AsyncWorker writer;
+        ITransportProtocolWriter writer;
         AsyncVideoPreparer preparer;
 
         QueueThreadSafe encoderQueue;
@@ -109,9 +103,6 @@ namespace VRT.UserRepresentation.WebCam
                     //
                     // Create bin2dash writer for PC transmission
                     //
-                    var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
-                    if (Bin2Dash == null)
-                        throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                     try
                     {
                         OutgoingStreamDescription[] dashStreamDescriptions = new OutgoingStreamDescription[1] {
@@ -121,24 +112,20 @@ namespace VRT.UserRepresentation.WebCam
                                 inQueue = writerQueue
                                 }
                             };
-                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
+                        // We need some backward-compatibility hacks, depending on protocol type.
+                        string url = user.sfuData.url_gen;
+                        string proto = SessionConfig.Instance.protocolType;
+                        switch (proto)
                         {
-                            writer = new AsyncB2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            case "tcp":
+                                url = user.userData.userAudioUrl;
+                                break;
                         }
-                        else
-                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
-                        {
-                            writer = new AsyncTCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
-                        }
-                        else
-                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
-                        {
-                            writer = new AsyncSocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
-                        }
-                        else
-                        {
-                            Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
-                        }
+                        writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "webcam", "wcwc", dashStreamDescriptions);
+#if VRT_WITH_STATS
+                        Statistics.Output(Name(), $"proto={proto}, url={url}");
+#endif
+
 
                     }
                     catch (System.EntryPointNotFoundException e)
@@ -163,25 +150,19 @@ namespace VRT.UserRepresentation.WebCam
             }
             else
             {
-       
-                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
+                // We need some backward-compatibility hacks, depending on protocol type.
+                string url = user.sfuData.url_gen;
+                string proto = SessionConfig.Instance.protocolType;
+                switch (proto)
                 {
-                    reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                    case "tcp":
+                        url = user.userData.userAudioUrl;
+                        break;
                 }
-                else
-                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
-                {
-                    reader = new AsyncTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
-                }
-                else
-                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
-                {
-                    reader = new AsyncSocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
-                }
-                else
-                {
-                    Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
-                }
+                reader = TransportProtocol.NewReader(proto).Init(url, user.userId, "webcam", 0, "wcwc", videoCodecQueue);
+#if VRT_WITH_STATS
+                Statistics.Output(Name(), $"proto={proto}, url={url}");
+#endif
 
                 //
                 // Create video decoder.
@@ -271,15 +252,7 @@ namespace VRT.UserRepresentation.WebCam
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            AsyncB2DWriter pcWriter = (AsyncB2DWriter)writer;
-            if (pcWriter != null)
-            {
-                rv.visuals = pcWriter.GetSyncInfo();
-            }
-            else
-            {
-                Debug.LogWarning("WebCamPipeline: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
-            }
+            rv.visuals = writer.GetSyncInfo();
             return rv;
         }
 
@@ -290,16 +263,8 @@ namespace VRT.UserRepresentation.WebCam
                 Debug.LogError("Programmer error: WebCamPipeline: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            AsyncSubPCReader pcReader = (AsyncSubPCReader)reader;
-            if (pcReader != null)
-            {
-                pcReader.SetSyncInfo(config.visuals);
-            }
-            else
-            {
-                Debug.LogWarning("WebCamPipeline: SetSyncConfig: reader is not a PCSubReader");
-            }
-
+            reader.SetSyncInfo(config.visuals);
+        
         }
 
         public new float GetBandwidthBudget()

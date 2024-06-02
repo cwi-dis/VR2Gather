@@ -1,9 +1,5 @@
 {
   "dependencies": {
-    "com.tivadar.best.http": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.http",
-    "com.tivadar.best.socketio": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.socketio",
-    "com.tivadar.best.tlssecurity": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.tlssecurity",
-    "com.tivadar.best.websockets": "git+ssh://git@github.com/cwi-dis/VR2G-besthttp?path=/BestHTTP/com.tivadar.best.websockets",
     "com.unity.collab-proxy": "2.3.1",
     "com.unity.feature.development": "1.0.1",
     "com.unity.textmeshpro": "3.0.6",
@@ -14,9 +10,10 @@
     "com.unity.xr.management": "4.4.1",
     "com.unity.xr.oculus": "4.2.0",
     "com.unity.xr.openxr": "1.10.0",
-    "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
+    "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#v7.5.4",
     "nl.cwi.dis.vr2gather": "git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather",
     "nl.cwi.dis.vr2gather.nativelibraries": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
+    "com.itisnajim.socketiounity": "git+https://github.com/troeggla/SocketIOUnity.git#b43e1fa081328eea08f8a7c05c54eba14c97ae22",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

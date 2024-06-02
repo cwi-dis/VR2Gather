@@ -42,7 +42,7 @@ public class KinectJointPoseProvider : BasePoseProvider
             gameObject.SetActive(false);
             return;
         }
-        pc_reader = pc_pipeline.reader as AsyncKinectReader;
+        pc_reader = pc_pipeline.GetReader() as AsyncKinectReader;
         if (pc_reader == null || !pc_reader.supports_skeleton())
         {
             Debug.LogWarning($"{Name()}: no skeleton support in pc_reader, disabling GameObject {gameObject.name}");

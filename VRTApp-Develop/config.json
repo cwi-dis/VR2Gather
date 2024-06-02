@@ -1,5 +1,4 @@
 {
-    "orchestratorURL": "http://192.16.197.145:8090/",
     "targetFrameRate": -1,
     "ntpSyncThreshold": 0.100,
     "statsInterval": 10.0,
