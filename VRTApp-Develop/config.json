@@ -15,7 +15,7 @@
         "autoJoin": false,
         "autoCreateForUser": "beelzebub",
         "sessionName": "test-session",
-        "sessionScenario": "Pilot0",
+        "sessionScenario": "Pilot 0",
         "sessionTransportProtocol": "tcp",
         "sessionUncompressed": true,
         "sessionUncompressedAudio": true,
