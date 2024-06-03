@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Management;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -10,7 +11,15 @@ namespace VRT.Core
     public class VRTConfig : MonoBehaviour
     {
         
-      
+        public static bool ISXRActive() {
+                if (XRGeneralSettings.Instance == null) {
+                    return false;
+                }
+                if (XRGeneralSettings.Instance.Manager == null) {
+                    return false;
+                }
+                return XRGeneralSettings.Instance.Manager.activeLoader != null;
+            }      
 
         [Tooltip("Orchestrator SocketIO endpoint URL")]
         public string orchestratorURL = "";
