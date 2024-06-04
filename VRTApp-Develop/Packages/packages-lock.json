@@ -205,11 +205,11 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#v7.5.4",
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "be9f3420a5826ca9a7b9f4f9c7b57f007873d671"
+      "hash": "c60036e4020d45cbe4a559ffaeb73c6f1cfc2c43"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",

@@ -309,7 +309,7 @@ namespace VRT.Core
             }
         }
 
-        public Timestamp GetBestTimestampForCurrentFrame()
+        public Timestamp GetBestTimestampForCurrentFrame(bool isAudio=false)
         {
             _Reset();
             if (bestTimestampForCurrentFrame == 0) _ComputeTimestampForCurrentFrame();

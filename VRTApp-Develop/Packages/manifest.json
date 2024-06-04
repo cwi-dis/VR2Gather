@@ -12,7 +12,7 @@
         "com.unity.xr.management": "4.4.1",
         "com.unity.xr.oculus": "4.2.0",
         "com.unity.xr.openxr": "1.10.0",
-        "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#v7.5.4",
+        "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
         "nl.cwi.dis.vr2gather": "file:../../nl.cwi.dis.vr2gather",
         "nl.cwi.dis.vr2gather.nativelibraries": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
         "com.itisnajim.socketiounity": "git+https://github.com/troeggla/SocketIOUnity.git#b43e1fa081328eea08f8a7c05c54eba14c97ae22",
