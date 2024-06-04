@@ -519,7 +519,7 @@ namespace VRT.Login
 
         private void StartDeveloperSceneButtonPressed()
         {
-            PilotController.LoadScene("SoloPlayground");
+            PilotController.Instance.LoadNewScene("SoloPlayground");
         }
 
         public void ChangeState(State _state)
