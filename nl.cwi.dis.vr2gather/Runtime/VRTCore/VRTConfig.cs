@@ -102,7 +102,13 @@ namespace VRT.Core
         [Tooltip("Settable parameters for DASH protocol")]
         public _TransportDash TransportDash;
 
-        public Cwipc.CwipcConfig PCs;
+        [Serializable]
+        public class _PC : Cwipc.CwipcConfig {
+            [Tooltip("If non-zero, sets the limit on the number of point clouds buffered for output (otherwise a sensible default is used)")]
+            public int preparerQueueSize = 0;
+
+        }
+        public _PC PCs;
 
         [Serializable]
         public class _Voice
@@ -113,6 +119,8 @@ namespace VRT.Core
             public float maxPlayoutLatency = 0.3f;
             [Tooltip("If voice output is further ahead of its natural playout time than this we will insert silence to allow the other streams to catch up")]
             public float maxPlayoutAhead = 0.066f;
+            [Tooltip("If non-zero, sets the limit on the number of audio packets buffered for voice output (otherwise a sensible default is used)")]
+            public int preparerQueueSize = 0;
             [Tooltip("If true voice output will run at its own speed, unsynchronized with other streams, its natural playout clock determined by the local system clock")]
             public bool ignoreSynchronizer = false;
         }

@@ -95,6 +95,10 @@ namespace VRT.UserRepresentation.Voice
             bool audioIsEncoded = audioCodec == "VR2A";
             string proto = SessionConfig.Instance.protocolType;
 
+            if (VRTConfig.Instance.Voice.preparerQueueSize > 0) {
+                preparerQueueSize = VRTConfig.Instance.Voice.preparerQueueSize;
+                Statistics.Output(Name(), $"preparer_queue_size={preparerQueueSize}");
+            }
             preparerQueue = new QueueThreadSafe("VoicePreparer", preparerQueueSize, true);
             QueueThreadSafe _readerOutputQueue = preparerQueue;
             if (audioIsEncoded)
