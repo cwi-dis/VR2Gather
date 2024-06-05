@@ -36,13 +36,15 @@
         "decoderQueueSizeOverride": 0,
         "preparerQueueSizeOverride": 0,
         "encoderParallelism": 0,
-        "decoderParallelism": 0
+        "decoderParallelism": 0,
+        "preparerQueueSize": 30
     },
     "Voice": {
         "audioFps": 50,
         "maxPlayoutLatency": 2.0,
         "maxPlayoutAhead": 0.300,
-        "ignoreSynchronizer": false
+        "ignoreSynchronizer": false,
+        "preparerQueueSize": 100
     },
     "Synchronizer": {
         "debugSynchronizer": false,
