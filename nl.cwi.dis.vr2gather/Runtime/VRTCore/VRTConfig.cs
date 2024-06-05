@@ -107,9 +107,13 @@ namespace VRT.Core
         [Serializable]
         public class _Voice
         {
+            [Tooltip("Approximate voice input frame rate (will be rounded down to intgral number of DSP buffers)")]
             public int audioFps = 50;
+            [Tooltip("If > 0, voice output is further behind its natural playout time than this, and data is available, we will drop packets to catch up")]
             public float maxPlayoutLatency = 0.3f;
+            [Tooltip("If voice output is further ahead of its natural playout time than this we will insert silence to allow the other streams to catch up")]
             public float maxPlayoutAhead = 0.066f;
+            [Tooltip("If true voice output will run at its own speed, unsynchronized with other streams, its natural playout clock determined by the local system clock")]
             public bool ignoreSynchronizer = false;
         }
         [Tooltip("Conversational audio settings")]
