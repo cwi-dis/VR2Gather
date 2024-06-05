@@ -40,8 +40,8 @@
     },
     "Voice": {
         "audioFps": 50,
-        "maxPlayoutLatency": 0.300,
-        "maxPlayoutAhead": 0.066,
+        "maxPlayoutLatency": 2.0,
+        "maxPlayoutAhead": 0.300,
         "ignoreSynchronizer": false
     },
     "Synchronizer": {
