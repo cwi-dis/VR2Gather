@@ -148,7 +148,7 @@ namespace VRT.UserRepresentation.Voice
                 if (InQueue.IsClosed()) return false; // We are shutting down
                 return _FillAudioFrame(bestTimestamp);
             }
-         }
+        }
 
         bool _FillAudioFrame(Timestamp minTimestamp)
         {
