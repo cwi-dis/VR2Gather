@@ -13,7 +13,7 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "beelzebub",
+        "autoCreateForUser": "fiddlehead",
         "sessionName": "test-session",
         "sessionScenario": "Pilot 0",
         "sessionTransportProtocol": "tcp",
