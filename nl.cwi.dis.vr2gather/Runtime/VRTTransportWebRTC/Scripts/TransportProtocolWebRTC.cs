@@ -25,7 +25,7 @@ namespace VRT.Transport.WebRTC
         private static TransportProtocolWebRTC _Instance;
         private static string _InstanceURL;
 
-        const string logFileDirectory = "";
+        const string logFileDirectory = null;
         const int debugLevel = 1;
 
         const string api_version = "1.0";

@@ -9,6 +9,7 @@ using Debug = UnityEngine.Debug;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Policy;
 using Cwipc;
+using System.ComponentModel.Composition;
 
 namespace VRT.Transport.WebRTC
 {
@@ -16,26 +17,34 @@ namespace VRT.Transport.WebRTC
     public unsafe class WebRTCConnectorPinvoke
     {
         // Create string param callback delegate
-        public delegate void debugCallback(IntPtr request, int color, int size);
+        public delegate void debugCallback(IntPtr request, int console_level, int color, int size);
 
         enum Color { red, green, blue, black, white, yellow, orange };
 
         [MonoPInvokeCallback(typeof(debugCallback))]
-        static void OnDebugCallback(IntPtr request, int color, int size)
+        static void OnDebugCallback(IntPtr message, int console_level, int color, int size)
         {
             // Ptr to string
-            string debug_string = Marshal.PtrToStringAnsi(request, size);
+            string debug_string = Marshal.PtrToStringAnsi(message, size);
             // Add specified color
             debug_string = $"WebRTCConnectorPinvoke: <color={((Color)color).ToString()}>{debug_string}</color>";
-            // Log the string
-            Debug.Log(debug_string);
+            // Output the message
+            if (console_level == 0)
+            {
+                Debug.Log(debug_string);
+            } else if (console_level == 1)
+            {
+                Debug.LogWarning(debug_string);
+            } else
+            {
+                Debug.LogError(debug_string);
+            }
         }
 
         public static void ConfigureDebug(string logFileDirectory, int debugLevel)
         {
             Debug.Log($"WebRTCConnector: Installing message callback");
             WebRTCConnectorPinvoke.RegisterDebugCallback(OnDebugCallback);
-            
             WebRTCConnectorPinvoke.set_logging(logFileDirectory, debugLevel);
         }
         
