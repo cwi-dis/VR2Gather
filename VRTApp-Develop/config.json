@@ -1,5 +1,5 @@
 {
-    "orchestratorURL": "http://193.190.127.152:8090",
+    "orchestratorURL": "http://10.10.130.215:8090",
     "AutoStart": {
         "autoLogin": true,
         "autoCreate": false,
@@ -21,8 +21,8 @@
         "peerWindowDontClose": true,
         "peerUDPPort": 8000,
         "peerIPAddress": "127.0.0.1",
-        "logFileDirectory": "C:\\Users\\matth",
-        "debugLevel": 2
+        "logFileDirectory": null,
+        "debugLevel": 0
     },
     "LocalUser": {
         "PCSelfConfig": {
