@@ -1,5 +1,5 @@
 {
-    "orchestratorURL": "http://193.190.127.152:8090",
+    "orchestratorURL": "http://10.10.130.215:8090",
     "AutoStart": {
         "autoLogin": true,
         "autoCreate": false,

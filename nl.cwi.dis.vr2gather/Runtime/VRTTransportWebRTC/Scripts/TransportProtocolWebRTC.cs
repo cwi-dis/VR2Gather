@@ -26,7 +26,7 @@ namespace VRT.Transport.WebRTC
         private static string _InstanceURL;
 
         const string logFileDirectory = null;
-        const int debugLevel = 1;
+        const int debugLevel = 2;
 
         const string api_version = "1.0";
         private string peerSFUAddress;
@@ -98,6 +98,19 @@ namespace VRT.Transport.WebRTC
                     Debug.LogWarning($"{Name()}: second call to AllConnectionsDone");
                     return;
                 }
+                int nTracks = nReceiverTracks;
+                if (nTransmitterTracks > nTracks)
+                {
+                    nTracks = nTransmitterTracks;
+                }
+                if (maxReceiverTracks > nTracks)
+                {
+                    nTracks = maxReceiverTracks;
+                }
+
+                Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}");
+                //Thread.Sleep(2000);
+                int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)myClientId, api_version);
                 // Get settings from the config file
                 peerExecutablePath = VRTConfig.Instance.TransportWebRTC.peerExecutablePath;
                 peerInWindow = VRTConfig.Instance.TransportWebRTC.peerInWindow;
@@ -153,18 +166,8 @@ namespace VRT.Transport.WebRTC
                     peerProcess = null;
                 }
 
-                int nTracks = nReceiverTracks;
-                if (nTransmitterTracks > nTracks)
-                {
-                    nTracks = nTransmitterTracks;
-                }
-                if (maxReceiverTracks > nTracks)
-                {
-                    nTracks = maxReceiverTracks;
-                }
-                Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}");
-                //Thread.Sleep(2000);
-                int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)myClientId, api_version);
+                
+               
                 //Thread.Sleep(1000);
                 peerConnected = true;
                 Debug.Log($"{Name()}: WebRTCConnector initialized, status={status}");                
