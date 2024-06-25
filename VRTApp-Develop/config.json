@@ -1,5 +1,5 @@
 {
-    "orchestratorURL": "http://10.10.130.215:8090",
+    "orchestratorURL": "http://193.190.127.152:8090",
     "AutoStart": {
         "autoLogin": true,
         "autoCreate": false,
@@ -20,7 +20,9 @@
         "peerInWindow": true,
         "peerWindowDontClose": true,
         "peerUDPPort": 8000,
-        "peerIPAddress": "127.0.0.1"
+        "peerIPAddress": "127.0.0.1",
+        "logFileDirectory": "C:\\Users\\matth",
+        "debugLevel": 2
     },
     "LocalUser": {
         "PCSelfConfig": {
@@ -30,7 +32,7 @@
             },
             "voxelSize": 0.0,
             "frameRate": 15.0,
-            "tiled": false,
+            "tiled": true,
             "Encoders": [
                 {
                     "octreeBits": 9

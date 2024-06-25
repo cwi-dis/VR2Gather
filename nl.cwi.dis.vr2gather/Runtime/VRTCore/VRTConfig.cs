@@ -100,6 +100,8 @@ namespace VRT.Core
             public bool peerWindowDontClose = false;
             public int peerUDPPort = 8000;
             public string peerIPAddress = "127.0.0.1";
+            public string logFileDirectory = null;
+            public int debugLevel = 0;
         }
         public _TransportWebRTC TransportWebRTC;
 

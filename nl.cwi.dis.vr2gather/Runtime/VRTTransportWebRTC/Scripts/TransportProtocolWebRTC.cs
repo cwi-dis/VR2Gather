@@ -25,8 +25,8 @@ namespace VRT.Transport.WebRTC
         private static TransportProtocolWebRTC _Instance;
         private static string _InstanceURL;
 
-        const string logFileDirectory = null;
-        const int debugLevel = 2;
+        public string logFileDirectory = null;
+        public int debugLevel = 0;
 
         const string api_version = "1.0";
         private string peerSFUAddress;
@@ -76,6 +76,8 @@ namespace VRT.Transport.WebRTC
         {
             Uri url = new(_url);
             peerSFUAddress = $"{url.Host}:{url.Port}";
+            logFileDirectory = VRTConfig.Instance.TransportWebRTC.logFileDirectory;
+            debugLevel = VRTConfig.Instance.TransportWebRTC.debugLevel;
             WebRTCConnectorPinvoke.ConfigureDebug(logFileDirectory, debugLevel);
         }
 
@@ -141,7 +143,7 @@ namespace VRT.Transport.WebRTC
 
                 peerProcess = new Process();
                 peerProcess.StartInfo.FileName = peerExecutablePath;
-                peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId}";
+                peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId} -t {nTransmitterTracks}";
                 peerProcess.StartInfo.CreateNoWindow = !peerInWindow;
     #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 if (peerInWindow && peerWindowDontClose)
