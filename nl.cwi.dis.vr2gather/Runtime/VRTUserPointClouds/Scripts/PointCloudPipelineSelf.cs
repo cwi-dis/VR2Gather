@@ -74,7 +74,8 @@ namespace VRT.UserRepresentation.PointCloud
             }
            
 #if VRT_WITH_STATS
-            Statistics.Output(Name(), $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
+            int selfness = preview ? -1 : 1;
+            Statistics.Output(Name(), $"self={selfness}, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
 #endif
             _InitForSelfUser(cfg.PCSelfConfig, preview);
             
