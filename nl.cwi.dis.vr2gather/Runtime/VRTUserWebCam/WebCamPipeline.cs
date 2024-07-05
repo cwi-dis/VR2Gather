@@ -55,7 +55,7 @@ namespace VRT.UserRepresentation.WebCam
         /// <param name="cfg"> Config file json </param>
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false, GameObject playerGO = null)
         {
             User user = (User)_user;
             if (user == null || user.userData == null)

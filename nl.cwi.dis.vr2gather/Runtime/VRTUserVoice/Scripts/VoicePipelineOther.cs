@@ -51,7 +51,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
         // Start is called before the first frame update
-        public void Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
+        public void Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview, GameObject playerGO)
         //public void Init(User user, string _streamName, int _streamNumber)
         {
             User user = (User)_user;
@@ -61,12 +61,20 @@ namespace VRT.UserRepresentation.Voice
             {
                 Debug.LogError($"{Name()}: preview==true not supported");
             }
+            if (isLocalPlayer)
+            {
+                Debug.LogError("${Name()}: Init() called with isLocalPlayer==true");
+            }
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif
             if (synchronizer == null)
             {
-                synchronizer = FindObjectOfType<VRTSynchronizer>();
+                synchronizer = gameObject?.GetComponentInChildren<VRTSynchronizer>();
+            }
+            if (synchronizer == null)
+            {
+                Debug.LogWarning($"{Name()}: No synchronizer for user {user.GetId()}");
             }
             VoiceDspController.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
             if (audioSource == null)
