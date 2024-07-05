@@ -274,7 +274,13 @@ namespace VRT.Pilots.Common
 			Destroy(player.gameObject);
 		}
 
-#region Player Locations
+		public List<PlayerNetworkControllerBase> GetAllUsers()
+		{
+			return AllUsers;
+		}
+
+
+		#region Player Locations
 		private void SendPlayerLocationData(string userId = null)
 		{
 			PlayerLocationData data = new PlayerLocationData(Players.Count);
