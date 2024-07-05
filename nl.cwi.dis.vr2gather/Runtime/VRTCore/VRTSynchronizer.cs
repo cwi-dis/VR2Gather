@@ -188,7 +188,7 @@ namespace VRT.Core
             _AdjustParameters();
 
 #if VRT_WITH_STATS
-            stats.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
+            stats?.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
 #endif
         }
 
