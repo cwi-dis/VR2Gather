@@ -48,15 +48,20 @@ namespace VRT.Transport.WebRTC
             WebRTCConnectorPinvoke.set_logging(logFileDirectory, debugLevel);
         }
         
+        // Logging in Unity
         [DllImport("WebRTCConnector")]
         public static extern void set_logging(string log_directory, int logLevel);
         [DllImport("WebRTCConnector", CallingConvention = CallingConvention.Cdecl)]
         public static extern void RegisterDebugCallback(debugCallback cb);
+
+        // Initialization and cleanup
         [DllImport("WebRTCConnector")]
         public static extern int initialize(string ip_send, UInt32 port_send, string ip_recv, UInt32 port_recv,
             UInt32 number_of_tiles, UInt32 client_id, string api_version);
         [DllImport("WebRTCConnector")]
         public static extern void clean_up();
+
+        // Video data
         [DllImport("WebRTCConnector")]
         public static extern int send_tile(byte* data, UInt32 size, UInt32 tile_number);
         [DllImport("WebRTCConnector")]
@@ -64,7 +69,7 @@ namespace VRT.Transport.WebRTC
         [DllImport("WebRTCConnector")]
         public static extern void retrieve_tile(byte* buffer, UInt32 size, UInt32 client_id, UInt32 tile_number);
 
-        // Audio frame functions
+        // Audio data
         [DllImport("WebRTCConnector")]
         public static extern int send_audio(byte* data, UInt32 size);
         [DllImport("WebRTCConnector")]
@@ -72,11 +77,8 @@ namespace VRT.Transport.WebRTC
         [DllImport("WebRTCConnector")]
         public static extern void retrieve_audio(byte* buffer, UInt32 size, UInt32 client_id);
 
+        // Control messages (e.g., quality decision-making)
         [DllImport("WebRTCConnector")]
-        public static extern int send_control(byte* data, UInt32 size);
-        [DllImport("WebRTCConnector")]
-        public static extern int get_control_size();
-        [DllImport("WebRTCConnector")]
-        public static extern void retrieve_control(byte* buffer);
+        public static extern int send_control_packet(byte* data, UInt32 size);
     }
 }
