@@ -25,7 +25,13 @@ namespace VRT.Transport.WebRTC
         static void OnDebugCallback(IntPtr message, int console_level, int color, int size)
         {
             // Ptr to string
-            string debug_string = Marshal.PtrToStringAnsi(message, size);
+            string debug_string;
+            try {
+                debug_string = Marshal.PtrToStringAnsi(message, size);
+            }
+            catch(ArgumentException) {
+                debug_string = $"OnDebugCallback: Marshal.PtrToStringAnsi() raised an exception (string size={size})";
+            }
             // Add specified color
             debug_string = $"WebRTCConnectorPinvoke: <color={((Color)color).ToString()}>{debug_string}</color>";
             // Output the message
