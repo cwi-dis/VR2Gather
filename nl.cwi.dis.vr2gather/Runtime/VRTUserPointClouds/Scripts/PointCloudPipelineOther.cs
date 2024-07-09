@@ -42,7 +42,7 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false, GameObject playerGO = null)
         {
             if (isLocalPlayer)
             {
@@ -61,20 +61,25 @@ namespace VRT.UserRepresentation.PointCloud
             user = (User)_user;
             SetupConfigDistributors();
 
-            // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
             {
-                synchronizer = FindObjectOfType<VRTSynchronizer>();
+                synchronizer = playerGO?.GetComponentInChildren<VRTSynchronizer>();
             }
-            // xxxjack this links tileSelector for all instances, including self. Is that correct?
-            // xxxjack also: it my also reuse tileSelector for all instances. That is definitely not correct.
+            if (synchronizer == null)
+            {
+                Debug.LogWarning($"{Name()}: No synchronizer for user {user.GetId()}");
+            }
             if (tileSelector == null)
             {
-                tileSelector = FindObjectOfType<LiveTileSelector>();
+                tileSelector = playerGO?.GetComponentInChildren<BaseTileSelector>();
+            }
+            if (tileSelector == null)
+            {
+                Debug.LogWarning($"{Name()}: No tileselector for user {user.GetId()}");
             }
             
 #if VRT_WITH_STATS
-                    Statistics.Output(Name(), $"self=0, userid={user.userId}");
+            Statistics.Output(Name(), $"self=0, userid={user.userId}");
 #endif
             //
             // Determine how many tiles (and therefore decode/render pipelines) we need

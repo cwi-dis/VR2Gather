@@ -154,7 +154,7 @@ namespace VRT.Pilots.Common
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, userRepresentation, isLocalPlayer);
                     try
                     {
-                        pcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
+                        pcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer, playerGO: this.gameObject);
                     }
                     catch (Exception e)
                     {
@@ -240,7 +240,7 @@ namespace VRT.Pilots.Common
                 {
                     voicePipelineOther = voice.AddComponent<VoicePipelineOther> ();
                 }
-                voicePipelineOther.Init(isLocalPlayer, user, null, isPreviewPlayer);
+                voicePipelineOther.Init(isLocalPlayer, user, null, isPreviewPlayer, this.gameObject);
             }
         }
     

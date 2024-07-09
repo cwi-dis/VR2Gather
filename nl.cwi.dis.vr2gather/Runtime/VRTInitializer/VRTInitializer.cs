@@ -16,6 +16,7 @@ using Cwipc;
 
 public class VRTInitializer : MonoBehaviour
 {
+
     
     // Start is called before the first frame update
     void Awake()

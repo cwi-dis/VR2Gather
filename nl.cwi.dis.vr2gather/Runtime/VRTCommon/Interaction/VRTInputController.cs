@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem.XInput;
@@ -27,6 +28,13 @@ namespace VRT.Pilots.Common
             Vive,
             VirtualHand
         };
+
+        [Tooltip("Left hand GameObject")]
+        [SerializeField] GameObject lhGameObject;
+        [Tooltip("Right hand GameObject")]
+        [SerializeField] GameObject rhGameObject;
+        [Tooltip("Handsfree GameObject")]
+        [SerializeField] GameObject nhGameObject;
 
         [Tooltip("Currently active real physical controller type")]
         [DisableEditing][SerializeField] ControllerType m_currentRealController;
@@ -152,6 +160,9 @@ namespace VRT.Pilots.Common
             {
                 m_currentVisibleController = ControllerType.VirtualHand;
             }
+            rhGameObject.SetActive(newController != ControllerType.None); 
+            lhGameObject.SetActive(newController != ControllerType.None); 
+            nhGameObject.SetActive(newController == ControllerType.None); 
             // xxxjack should enable/disable correct control scheme
             //
             // And tell the various interested parties (probably left and right hand) that they may need to change their

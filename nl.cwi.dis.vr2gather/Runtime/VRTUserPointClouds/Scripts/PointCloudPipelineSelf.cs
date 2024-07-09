@@ -39,7 +39,7 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false, GameObject playerGO = null)
         {
             if (!isLocalPlayer)
             {
@@ -62,19 +62,20 @@ namespace VRT.UserRepresentation.PointCloud
             }
 
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
-            if (synchronizer == null)
+            if (synchronizer != null)
             {
-                synchronizer = FindObjectOfType<VRTSynchronizer>();
+                Debug.LogWarning($"{Name()}: self-user synchronizer != null");
             }
             // xxxjack this links tileSelector for all instances, including self. Is that correct?
             // xxxjack also: it my also reuse tileSelector for all instances. That is definitely not correct.
-            if (tileSelector == null)
+            if (tileSelector != null)
             {
-                tileSelector = FindObjectOfType<LiveTileSelector>();
+                Debug.LogWarning($"{Name()}: self-user tileSelector != null");
             }
            
 #if VRT_WITH_STATS
-            Statistics.Output(Name(), $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
+            int selfness = preview ? -1 : 1;
+            Statistics.Output(Name(), $"self={selfness}, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
 #endif
             _InitForSelfUser(cfg.PCSelfConfig, preview);
             

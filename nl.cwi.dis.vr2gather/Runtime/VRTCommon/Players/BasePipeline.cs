@@ -69,7 +69,7 @@ namespace VRT.Pilots.Common
         /// <param name="cfg">The configration data for this pipeline</param>
         /// <param name="preview">Set to true if the pipeline should not transmit, only render locally.</param>
         /// <returns></returns>
-        abstract public BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false);
+        abstract public BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false, GameObject playerGO = null);
 
         virtual public string Name()
         {

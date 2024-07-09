@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Management;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -10,7 +11,15 @@ namespace VRT.Core
     public class VRTConfig : MonoBehaviour
     {
         
-      
+        public static bool ISXRActive() {
+                if (XRGeneralSettings.Instance == null) {
+                    return false;
+                }
+                if (XRGeneralSettings.Instance.Manager == null) {
+                    return false;
+                }
+                return XRGeneralSettings.Instance.Manager.activeLoader != null;
+            }      
 
         [Tooltip("Orchestrator SocketIO endpoint URL")]
         public string orchestratorURL = "";
@@ -105,14 +114,26 @@ namespace VRT.Core
         }
         public _TransportWebRTC TransportWebRTC;
 
-        public Cwipc.CwipcConfig PCs;
+        [Serializable]
+        public class _PC : Cwipc.CwipcConfig {
+            [Tooltip("If non-zero, sets the limit on the number of point clouds buffered for output (otherwise a sensible default is used)")]
+            public int preparerQueueSize = 0;
+
+        }
+        public _PC PCs;
 
         [Serializable]
         public class _Voice
         {
+            [Tooltip("Approximate voice input frame rate (will be rounded down to intgral number of DSP buffers)")]
             public int audioFps = 50;
+            [Tooltip("If > 0, voice output is further behind its natural playout time than this, and data is available, we will drop packets to catch up")]
             public float maxPlayoutLatency = 0.3f;
+            [Tooltip("If voice output is further ahead of its natural playout time than this we will insert silence to allow the other streams to catch up")]
             public float maxPlayoutAhead = 0.066f;
+            [Tooltip("If non-zero, sets the limit on the number of audio packets buffered for voice output (otherwise a sensible default is used)")]
+            public int preparerQueueSize = 0;
+            [Tooltip("If true voice output will run at its own speed, unsynchronized with other streams, its natural playout clock determined by the local system clock")]
             public bool ignoreSynchronizer = false;
         }
         [Tooltip("Conversational audio settings")]

@@ -164,7 +164,7 @@ namespace VRT.Orchestrator.Wrapping
 
         private void OnDestroy() {
             Debug.Log($"{gameObject.name}: OrchestratorController.OnDestroy() called. Will close orchestrator connection. ");
-            orchestratorWrapper.Disconnect();
+            orchestratorWrapper?.Disconnect();
 
             if (mySession != null) {
 #if VRT_WITH_STATS

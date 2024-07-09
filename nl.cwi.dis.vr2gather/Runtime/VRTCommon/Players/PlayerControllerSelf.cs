@@ -34,6 +34,12 @@ namespace VRT.Pilots.Common
             {
                 Debug.LogError($"{Name()}: No cameraOffset");
             }
+            if (!VRTConfig.ISXRActive()) {
+                Debug.Log($"{Name()}: XR not active, set default camera transform");
+                cameraOffset.localPosition = new Vector3(0, 1.8f, 0);
+                cameraOffset.localRotation = Quaternion.identity;
+                return;
+            }
             Vector3 pos = new Vector3(PlayerPrefs.GetFloat("cam_pos_x", 0), PlayerPrefs.GetFloat("cam_pos_y", 0), PlayerPrefs.GetFloat("cam_pos_z", 0));
             Vector3 rot = new Vector3(PlayerPrefs.GetFloat("cam_rot_x", 0), PlayerPrefs.GetFloat("cam_rot_y", 0), PlayerPrefs.GetFloat("cam_rot_z", 0));
             if (debugTransform) Debug.Log($"{Name()}: loaded self-camera pos={pos}, rot={rot}");
@@ -46,6 +52,10 @@ namespace VRT.Pilots.Common
            if (cameraOffset == null)
             {
                 Debug.LogError($"{Name()}: No cameraOffset");
+            }
+            if (!VRTConfig.ISXRActive()) {
+                Debug.Log($"{Name()}: XR not active, not saving camera transform");
+                return;
             }
             Vector3 pos = cameraOffset.localPosition;
             Vector3 rot = cameraOffset.localRotation.eulerAngles;

@@ -7,6 +7,7 @@ using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Orchestrator.Elements;
 using Cwipc;
+using VRT.Core;
 using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.PointCloud
@@ -67,6 +68,10 @@ namespace VRT.UserRepresentation.PointCloud
         {
             CwipcConfig PCs = CwipcConfig.Instance;
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
+            if (VRTConfig.Instance.PCs.preparerQueueSize > 0) {
+                pcPreparerQueueSize = VRTConfig.Instance.PCs.preparerQueueSize;
+                Statistics.Output(Name(), $"preparer_queue_size={pcPreparerQueueSize}");
+            }            
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
             AsyncPointCloudPreparer preparer = new AsyncPointCloudPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);

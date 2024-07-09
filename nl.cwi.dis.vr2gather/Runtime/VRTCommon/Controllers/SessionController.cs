@@ -68,7 +68,7 @@ namespace VRT.Pilots.Common
             }
 #endif
             Debug.Log($"{Name()}: left session, loading LoginManager scene");
-            PilotController.LoadScene("LoginManager");
+            PilotController.Instance.LoadNewScene();
         }
 
         private void OnUserJoinedSessionHandler(string userID)
@@ -88,13 +88,7 @@ namespace VRT.Pilots.Common
             {
                 // We should handle this more gracefully, by letting the user continue is disconnected mode or something...
                 Debug.LogError($"{Name()}: Orchestrator disconnect. Quit application, sorry...");
-#if UNITY_EDITOR
-                // Application.Quit() does not work in the editor so
-                // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
-                UnityEditor.EditorApplication.isPlaying = false;
-#else
-                Application.Quit();
-#endif
+                PilotController.Instance.StopApplication();
 
             }
         }

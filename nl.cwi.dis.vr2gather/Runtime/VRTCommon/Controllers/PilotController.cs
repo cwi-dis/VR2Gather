@@ -29,6 +29,9 @@ namespace VRT.Pilots.Common
         [Tooltip("Set for scenes that are not networked")]
         public bool sceneIsSingleUser = false;
 
+        [Tooltip("Next scene when session ends. Empty to stop playback.")]
+        public string NextSceneOnSessionEnd = "VRTLoginManager";
+
         [Tooltip("Direct interaction disabled now because of UI visible (introspection/debug)")]
         [DisableEditing] [SerializeField] protected bool m_directInteractionDisabled;
         /// <summary>
@@ -64,22 +67,6 @@ namespace VRT.Pilots.Common
         }
 
         /// <summary>
-        /// Call this method to load a new scene (optionally after fading out the current scene).
-        /// </summary>
-        /// <param name="newScene"></param>
-        public static void LoadScene(string newScene)
-        {
-            if (Instance != null)
-            {
-                Instance.LoadNewScene(newScene);
-            }
-            else
-            {
-                SceneManager.LoadScene(newScene);
-            }
-        }
-
-        /// <summary>
         /// Call this method when showing a UI or other object that requires ray interaction.
         /// </summary>
         public void DisableDirectInteraction()
@@ -105,8 +92,15 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void LoadNewScene(string newScene)
+        public void LoadNewScene(string newScene=null)
         {
+            if (newScene == null) {
+                newScene = NextSceneOnSessionEnd;
+            }
+            if (string.IsNullOrEmpty(newScene)) {
+                Debug.Log($"{Name()}: No next scene, quit application");
+                StopApplication();
+            }
             if (CameraFader.Instance != null)
             {
                 if (fadeOutText != null && fadeOutText != "") CameraFader.Instance.SetText(fadeOutText);
@@ -155,22 +149,26 @@ namespace VRT.Pilots.Common
                 }
                 else
                 {
-                    LoadNewScene("VRTLoginManager");
+                    LoadNewScene();
                 }
                 return true;
             }
             if (command == "exit")
             {
-#if UNITY_EDITOR
-                // Application.Quit() does not work in the editor so
-                // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
-                UnityEditor.EditorApplication.isPlaying = false;
-#else
-                Application.Quit();
-#endif
+                StopApplication();
                 return true;
             }
             return false;
+        }
+
+        public void StopApplication() {
+#if UNITY_EDITOR
+            // Application.Quit() does not work in the editor so
+            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 }

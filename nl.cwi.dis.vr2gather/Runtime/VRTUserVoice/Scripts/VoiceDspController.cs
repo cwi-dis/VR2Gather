@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cwipc;
 
 namespace VRT.UserRepresentation.Voice
 {
@@ -12,6 +13,8 @@ namespace VRT.UserRepresentation.Voice
             var ac = AudioSettings.GetConfiguration();
             if (_sampleRate == 0) _sampleRate = ac.sampleRate;
             if (_bufferSize == 0) _bufferSize = ac.dspBufferSize;
+            float bufferDuration = (1.0f / _sampleRate) * _bufferSize;
+            float dspFps = (1.0f / bufferDuration);
 
             if (_sampleRate == ac.sampleRate && _bufferSize == ac.dspBufferSize)
             {
@@ -35,6 +38,9 @@ namespace VRT.UserRepresentation.Voice
                     return false;
                 }
             }
+#if VRT_WITH_STATS
+            Statistics.Output("VoiceDspController", $"voice_dsp_fps={dspFps:F2}, voice_dsp_buffer_ms={(bufferDuration*1000):F2}");
+#endif
             return true;
         }
         

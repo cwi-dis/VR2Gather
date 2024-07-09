@@ -118,7 +118,7 @@ namespace VRT.UserRepresentation.Voice
                 Timestamp bestTimestamp = 0;
                 if (synchronizer != null)
                 {
-                    bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
+                    bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame(isAudio: true);
                     if (bestTimestamp != 0 && bestTimestamp < currentTimestamp)
                     {
                         if (debugBuffering || synchronizer.debugSynchronizer) Debug.Log($"{Name()}: LatchFrame: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp - bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
@@ -148,7 +148,7 @@ namespace VRT.UserRepresentation.Voice
                 if (InQueue.IsClosed()) return false; // We are shutting down
                 return _FillAudioFrame(bestTimestamp);
             }
-         }
+        }
 
         bool _FillAudioFrame(Timestamp minTimestamp)
         {

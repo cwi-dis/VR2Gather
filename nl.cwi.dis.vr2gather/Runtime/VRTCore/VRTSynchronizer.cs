@@ -13,6 +13,10 @@ namespace VRT.Core
 
     public class VRTSynchronizer : MonoBehaviour, ISynchronizer
     {
+        [Tooltip("Audio playout timestamp modification (ms). Positive is audio behind (played out later than natural).")]
+        public Timedelta requestAudioBehindMs = 0;
+        [Tooltip("Non-audio playout timestamp modification (ms). Positive is non-audio behind (played out later than natural).")]
+        public Timedelta requestNonAudioBehindMs = 0;
         public bool isEnabled() { return enabled; }
         [Tooltip("Enable to get lots of log messages on Synchronizer use")]
         public bool _debugSynchronizer = false;
@@ -184,7 +188,7 @@ namespace VRT.Core
             _AdjustParameters();
 
 #if VRT_WITH_STATS
-            stats.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
+            stats?.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
 #endif
         }
 
@@ -309,11 +313,15 @@ namespace VRT.Core
             }
         }
 
-        public Timestamp GetBestTimestampForCurrentFrame()
+        public Timestamp GetBestTimestampForCurrentFrame(bool isAudio=false)
         {
             _Reset();
             if (bestTimestampForCurrentFrame == 0) _ComputeTimestampForCurrentFrame();
-            return bestTimestampForCurrentFrame;
+            Timedelta requestBehind = isAudio ? requestAudioBehindMs : requestNonAudioBehindMs;
+            if (bestTimestampForCurrentFrame <= 0) {
+                return 0;
+            }
+            return bestTimestampForCurrentFrame - requestBehind;
         }
 
         // Start is called before the first frame update
