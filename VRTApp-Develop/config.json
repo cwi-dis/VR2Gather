@@ -16,7 +16,7 @@
         "autoDelay": 1.5
     },
     "TransportWebRTC": {
-        "peerExecutablePath": "../webRTC-helpers/webRTC-peer-%PLATFORM%.exe",
+        "peerExecutablePath": "../webRTC-helpers/%PLATFORM%/bin/WebRTCSFU-peer",
         "peerInWindow": true,
         "peerWindowDontClose": true,
         "peerUDPPort": 8000,
