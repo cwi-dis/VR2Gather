@@ -26,3 +26,4 @@ Darwin)
 	xattr -d com.apple.quarantine macos/bin/*
 	;;
 esac
+rm -rf tmp
