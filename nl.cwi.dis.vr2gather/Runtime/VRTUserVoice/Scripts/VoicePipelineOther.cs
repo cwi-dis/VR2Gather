@@ -105,7 +105,9 @@ namespace VRT.UserRepresentation.Voice
 
             if (VRTConfig.Instance.Voice.preparerQueueSize > 0) {
                 preparerQueueSize = VRTConfig.Instance.Voice.preparerQueueSize;
+#if VRT_WITH_STATS
                 Statistics.Output(Name(), $"preparer_queue_size={preparerQueueSize}");
+#endif
             }
             preparerQueue = new QueueThreadSafe("VoicePreparer", preparerQueueSize, true);
             QueueThreadSafe _readerOutputQueue = preparerQueue;
