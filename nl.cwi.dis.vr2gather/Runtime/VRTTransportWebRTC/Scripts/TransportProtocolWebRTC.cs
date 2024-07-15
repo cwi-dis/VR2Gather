@@ -318,7 +318,7 @@ namespace VRT.Transport.WebRTC
                 {
                     fixed(byte* bufferPointer = messageBuffer)
                     {
-                        actualLength = WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)dataLength, (uint)tile_number);
+                        actualLength = WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)dataLength, (uint)tile_number, 0);
                     }
                 }
                 if (actualLength < dataLength) {

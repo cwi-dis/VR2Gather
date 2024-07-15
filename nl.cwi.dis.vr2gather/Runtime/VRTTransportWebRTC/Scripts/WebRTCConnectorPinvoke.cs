@@ -69,7 +69,7 @@ namespace VRT.Transport.WebRTC
 
         // Video data
         [DllImport("WebRTCConnector")]
-        public static extern int send_tile(byte* data, UInt32 size, UInt32 tile_number);
+        public static extern int send_tile(byte* data, UInt32 size, UInt32 tile_number, UInt32 quality);
         [DllImport("WebRTCConnector")]
         public static extern int get_tile_size(UInt32 client_id, UInt32 tile_number);
         [DllImport("WebRTCConnector")]
