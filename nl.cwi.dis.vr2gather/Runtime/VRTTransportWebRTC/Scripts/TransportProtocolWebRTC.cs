@@ -10,6 +10,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Security.Policy;
 using Cwipc;
 using UnityEngine.Animations;
+using UnityEditor.PackageManager;
 
 namespace VRT.Transport.WebRTC
 {
@@ -143,7 +144,7 @@ namespace VRT.Transport.WebRTC
 
                 peerProcess = new Process();
                 peerProcess.StartInfo.FileName = peerExecutablePath;
-                peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId} -t {nTransmitterTracks}";
+                peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId} -t {nTransmitterTracks} -l {debugLevel}";
                 peerProcess.StartInfo.CreateNoWindow = !peerInWindow;
     #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 if (peerInWindow && peerWindowDontClose)
