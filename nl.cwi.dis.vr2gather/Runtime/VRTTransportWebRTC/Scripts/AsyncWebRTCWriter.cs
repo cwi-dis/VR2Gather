@@ -40,6 +40,8 @@ namespace VRT.Transport.WebRTC
         protected struct WebRTCStreamDescription
         {
             public int index;
+            public int tileNumber;
+            public int quality;
             public XxxjackTrackOrStream trackOrStream;
             public uint fourcc;
             public QueueThreadSafe inQueue;
@@ -64,14 +66,16 @@ namespace VRT.Transport.WebRTC
             WebRTCStreamDescription description;
             System.Threading.Thread myThread;
             int tile_number;
+            int quality;
           
-            public WebRTCPushThread(AsyncWebRTCWriter _parent, WebRTCStreamDescription _description, int _tile_number)
+            public WebRTCPushThread(AsyncWebRTCWriter _parent, WebRTCStreamDescription _description, int _tile_number, int _quality)
             {
                 parent = _parent;
                 description = _description;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
                 tile_number = _tile_number;
+                quality = _quality;
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
@@ -125,7 +129,7 @@ namespace VRT.Transport.WebRTC
                         }
                         else
                         {
-                            parent.connection.SendTile(mc, tile_number, description.fourcc);
+                            parent.connection.SendTile(mc, tile_number, quality, description.fourcc);
                         }
 
                     }
@@ -225,10 +229,11 @@ namespace VRT.Transport.WebRTC
                 ourDescriptions[i] = new WebRTCStreamDescription
                 {
                     index = (int)_descriptions[i].tileNumber + (portsPerQuality * _descriptions[i].qualityIndex),
+                    tileNumber = (int)_descriptions[i].tileNumber,
+                    quality = _descriptions[i].qualityIndex,
                     trackOrStream = new XxxjackTrackOrStream(),
                     fourcc = fourccInt,
                     inQueue = _descriptions[i].inQueue
-
                 };
             }
             descriptions = ourDescriptions;
@@ -244,18 +249,29 @@ namespace VRT.Transport.WebRTC
             base.Start();
             int nTracks = descriptions.Length;
 
-            // [jvdhooft]
+            int nTiles = 0;
+            int nQualities = 0;
+            foreach (WebRTCStreamDescription d in descriptions)
+            {
+                if (d.tileNumber + 1 > nTiles)
+                {
+                    nTiles = d.tileNumber + 1;
+                }
+                if (d.quality + 1 > nQualities)
+                {
+                    nQualities = d.quality + 1;
+                }
+            }
+            Debug.Log($"{Name()}: nTracks={(uint)nTracks}, nTiles={(uint)nTiles}, nQualities={(uint)nQualities}");
 
-            Debug.Log($"{Name()}: Number of tracks: {(uint)nTracks}");
-
-            connection.RegisterTransmitter(nTracks);
+            connection.RegisterTransmitter(nTracks, nTiles, nQualities);
 
             pusherThreads = new WebRTCPushThread[nTracks];
             for (int i = 0; i < nTracks; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new WebRTCPushThread(this, descriptions[i], i);
+                pusherThreads[i] = new WebRTCPushThread(this, descriptions[i], descriptions[i].tileNumber, descriptions[i].quality);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"pusher={pusherThreads[i].Name()}, stream={i}");
 #endif

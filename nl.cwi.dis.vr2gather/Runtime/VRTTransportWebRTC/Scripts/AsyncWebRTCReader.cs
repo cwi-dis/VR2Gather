@@ -225,7 +225,6 @@ namespace VRT.Transport.WebRTC
             NoUpdateCallsNeeded();
             lock (this)
             {
-                
                 connection = TransportProtocolWebRTC.Connect(_url);
                 isAudio = (streamName == "audio");
                 clientId = GetClientIdFromUserId(userId);

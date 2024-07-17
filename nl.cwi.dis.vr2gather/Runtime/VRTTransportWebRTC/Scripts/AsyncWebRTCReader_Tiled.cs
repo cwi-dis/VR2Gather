@@ -45,11 +45,17 @@ namespace VRT.Transport.WebRTC
             return this;
         }
 
-        public void setTileQualityIndex(int tileIndex, int qualityIndex)
+        /* public void setTileQualityIndex(int tileIndex, int qualityIndex)
         {
-            Debug.Log($"{Name()}: setTileQualityIndex({tileIndex},{qualityIndex})");
+            Debug.Log($"{Name()}: setTileQualityIndex({tileIndex}, {qualityIndex})");
             int portOffset = qualityIndex * receivers.Length;
             Debug.LogWarning($"{Name()}: setTileQuanlityIndex not yet implemented");
+        } */
+
+        public void setTileQualities(int[] tileQualities)
+        {
+            Debug.Log($"{Name()}: setTileQualities({tileQualities})");
+            connection.SetTileQualities(tileQualities);
         }
     }
 }

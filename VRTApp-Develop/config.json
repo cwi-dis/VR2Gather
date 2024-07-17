@@ -22,7 +22,7 @@
         "peerUDPPort": 8000,
         "peerIPAddress": "127.0.0.1",
         "logFileDirectory": null,
-        "debugLevel": 0
+        "debugLevel": 1
     },
     "LocalUser": {
         "PCSelfConfig": {
@@ -36,6 +36,9 @@
             "Encoders": [
                 {
                     "octreeBits": 9
+                },
+                {
+                    "octreeBits": 8
                 }
             ]
         }

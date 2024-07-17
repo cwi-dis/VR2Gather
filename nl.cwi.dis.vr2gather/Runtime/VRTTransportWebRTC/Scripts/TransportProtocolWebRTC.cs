@@ -11,6 +11,8 @@ using System.Security.Policy;
 using Cwipc;
 using UnityEngine.Animations;
 using UnityEditor.PackageManager;
+using System.Text;
+using System.Drawing;
 
 namespace VRT.Transport.WebRTC
 {
@@ -49,6 +51,8 @@ namespace VRT.Transport.WebRTC
         private int nTransmitterTracks = 0;
         private int nReceiverTracks = 0; // xxxjack needs to be set dynamically
         private int maxReceiverTracks = 9;
+        private int nTiles = 1;
+        private int nQualities = 1;
      
         public static string Name() {
             return "TransportProtocolWebRTC";
@@ -58,7 +62,6 @@ namespace VRT.Transport.WebRTC
         {
             if (_Instance == null)
             {
-                
                 _Instance = new TransportProtocolWebRTC(url);
                 _InstanceURL = url;
                 return _Instance;
@@ -81,8 +84,6 @@ namespace VRT.Transport.WebRTC
             debugLevel = VRTConfig.Instance.TransportWebRTC.debugLevel;
             WebRTCConnectorPinvoke.ConfigureDebug(logFileDirectory, debugLevel);
         }
-
-     
 
         public void SetClientID(int _clientId)
         {
@@ -111,7 +112,7 @@ namespace VRT.Transport.WebRTC
                     nTracks = maxReceiverTracks;
                 }
 
-                Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}");
+                Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}, nTracks={nTracks}, nTiles={nTiles}, nQualities={nQualities}");
                 //Thread.Sleep(2000);
                 int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)myClientId, api_version);
                 // Get settings from the config file
@@ -144,7 +145,7 @@ namespace VRT.Transport.WebRTC
 
                 peerProcess = new Process();
                 peerProcess.StartInfo.FileName = peerExecutablePath;
-                peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId} -t {nTransmitterTracks} -l {debugLevel}";
+                peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId} -t {nTiles} -q {nQualities} -l {debugLevel}";
                 peerProcess.StartInfo.CreateNoWindow = !peerInWindow;
     #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 if (peerInWindow && peerWindowDontClose)
@@ -201,13 +202,22 @@ namespace VRT.Transport.WebRTC
         }
 
 
-        public void RegisterTransmitter(int _nTracks)
+        public void RegisterTransmitter(int _nTracks, int _nTiles, int _nQualities)
         {
             if (peerConnected) {
                 throw new Exception($"{Name()}: RegisterTransmitter() called after peer started");
             }
+
             nTransmitterTracks += _nTracks;
             nTransmitters++;
+
+            if (_nTiles > nTiles)
+            {
+                nTiles = _nTiles;
+            }
+            if (_nQualities > nQualities) {
+                nQualities = _nQualities;
+            }
         }
 
         public void RegisterReceiver(int _nTracks)
@@ -241,6 +251,28 @@ namespace VRT.Transport.WebRTC
             if (nTransmitters <= 0 && nReceivers <= 0)
             {
                 Stop();
+            }
+        }
+
+        public bool SetTileQualities(int[] tileQualities)
+        {
+            {
+                if (!peerConnected)
+                {
+                    Debug.LogWarning($"{Name()}: SetTileQualities() called before peer connection");
+                    return false;
+                }
+                Debug.Log($"{Name()}: Send a control message to the SFU to adjust the delivered tile qualities to {tileQualities}");
+                // TODO: Insert the correct peer ID here instead of 0
+                string message = "0," + string.Join(",", tileQualities);
+                byte[] byteArray = Encoding.UTF8.GetBytes(message);
+                unsafe
+                {
+                    fixed (byte* bytePointer = byteArray)
+                    {
+                        return WebRTCConnectorPinvoke.send_control_packet(bytePointer, (uint)byteArray.Length) > -1;
+                    }
+                }
             }
         }
 
@@ -284,7 +316,7 @@ namespace VRT.Transport.WebRTC
                 return mc;            }
         }
 
-        public bool SendTile(NativeMemoryChunk mc, int tile_number, uint fourcc)
+        public bool SendTile(NativeMemoryChunk mc, int tile_number, int quality, uint fourcc)
         {
             // xxxjack causes a deadlock: lock(this)
             {
@@ -319,7 +351,7 @@ namespace VRT.Transport.WebRTC
                 {
                     fixed(byte* bufferPointer = messageBuffer)
                     {
-                        actualLength = WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)dataLength, (uint)tile_number, 0);
+                        actualLength = WebRTCConnectorPinvoke.send_tile(bufferPointer, (uint)dataLength, (uint)tile_number, (uint)quality);
                     }
                 }
                 if (actualLength < dataLength) {
