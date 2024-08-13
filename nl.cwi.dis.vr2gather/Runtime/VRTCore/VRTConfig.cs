@@ -339,6 +339,7 @@ namespace VRT.Core
                 if (clConfigFile != null)
                 {
                     clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
+                    Debug.Log("Config filename: " + clConfigFile);
                     return clConfigFile;
                 }
             }

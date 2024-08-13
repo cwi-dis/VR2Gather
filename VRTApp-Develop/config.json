@@ -1,5 +1,10 @@
 {
-    "orchestratorURL": "http://193.190.127.236:8090",
+    "targetFrameRate": -1,
+    "ntpSyncThreshold": 0.100,
+    "statsInterval": 0.1,
+    "statsOutputFile": "VRTstatistics-example.txt",
+    "statsOutputFileAppend": false,
+    "orchestratorURL": "http://193.190.127.196:8090",
     "AutoStart": {
         "autoLogin": true,
         "autoCreate": false,
@@ -7,12 +12,12 @@
         "autoCreateForUser": "",
         "sessionName": "test-session",
         "sessionScenario": "Technical Playground",
-        "sessionTransportProtocol": "socketio",
+        "sessionTransportProtocol": "webrtc",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
         "autoStartWith": 2,
-        "autoLeaveAfter": 0.0,
-        "autoStopAfterLeave": false,
+        "autoLeaveAfter": 60.0,
+        "autoStopAfterLeave": true,
         "autoDelay": 1.5
     },
     "TransportWebRTC": {
@@ -26,19 +31,19 @@
     },
     "LocalUser": {
         "PCSelfConfig": {
-            "capturerTypeName": "developer",
+            "capturerTypeName": "synthetic",
             "SynthReaderConfig": {
-                "nPoints": 16000
+                "nPoints": 1600
+            },
+            "PrerecordedReaderConfig": {
+                "folder": "C:/Users/jvdrhoof/GitHub/cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
-            "frameRate": 15.0,
-            "tiled": true,
+            "frameRate": 30.0,
+            "tiled": false,
             "Encoders": [
                 {
-                    "octreeBits": 9
-                },
-                {
-                    "octreeBits": 8
+                    "octreeBits": 7
                 }
             ]
         }

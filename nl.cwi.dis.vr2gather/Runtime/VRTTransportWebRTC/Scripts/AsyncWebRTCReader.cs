@@ -10,7 +10,7 @@ using VRT.Orchestrator.Elements;
 using Cwipc;
 using System.Runtime.InteropServices;
 using AOT;
-using UnityEditor.MemoryProfiler;
+// using UnityEditor.MemoryProfiler;
 
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;

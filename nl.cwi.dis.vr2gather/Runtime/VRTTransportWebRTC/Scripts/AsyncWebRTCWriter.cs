@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Threading;
 using VRT.Core;
-using UnityEditor.MemoryProfiler;
+// using UnityEditor.MemoryProfiler;
 
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;

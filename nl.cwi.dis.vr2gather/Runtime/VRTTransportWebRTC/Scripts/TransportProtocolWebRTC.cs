@@ -10,7 +10,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Security.Policy;
 using Cwipc;
 using UnityEngine.Animations;
-using UnityEditor.PackageManager;
+// using UnityEditor.PackageManager;
 using System.Text;
 using System.Drawing;
 
@@ -112,23 +112,25 @@ namespace VRT.Transport.WebRTC
                     nTracks = maxReceiverTracks;
                 }
 
-                Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}, nTracks={nTracks}, nTiles={nTiles}, nQualities={nQualities}");
-                //Thread.Sleep(2000);
-                int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)myClientId, api_version);
                 // Get settings from the config file
                 peerExecutablePath = VRTConfig.Instance.TransportWebRTC.peerExecutablePath;
                 peerInWindow = VRTConfig.Instance.TransportWebRTC.peerInWindow;
                 peerWindowDontClose = VRTConfig.Instance.TransportWebRTC.peerWindowDontClose;
                 peerUDPPort = VRTConfig.Instance.TransportWebRTC.peerUDPPort;
                 peerIPAddress = VRTConfig.Instance.TransportWebRTC.peerIPAddress;
-                
+
+                Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}, nTracks={nTracks}, nTiles={nTiles}, nQualities={nQualities}");
+                //Thread.Sleep(2000);
+                int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)myClientId, api_version);
+
                 // xxxjack this is not correct for built Unity players.
                 string appPath = System.IO.Path.GetDirectoryName(Application.dataPath);
                 peerExecutablePath = System.IO.Path.Combine(appPath, peerExecutablePath);
-                
+
                 // Replace %PLATFORM% in peerExecutablePath
                 string platform = "unknown";
-                switch(Application.platform) {
+                switch (Application.platform)
+                {
                     case RuntimePlatform.OSXEditor:
                     case RuntimePlatform.OSXPlayer:
                         platform = "macos";
@@ -136,8 +138,8 @@ namespace VRT.Transport.WebRTC
                     case RuntimePlatform.Android:
                         platform = "android";
                         break;
-                        case RuntimePlatform.WindowsEditor:
-                        case RuntimePlatform.WindowsPlayer:
+                    case RuntimePlatform.WindowsEditor:
+                    case RuntimePlatform.WindowsPlayer:
                         platform = "win";
                         break;
                 }
@@ -147,14 +149,14 @@ namespace VRT.Transport.WebRTC
                 peerProcess.StartInfo.FileName = peerExecutablePath;
                 peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId} -t {nTiles} -q {nQualities} -l {debugLevel}";
                 peerProcess.StartInfo.CreateNoWindow = !peerInWindow;
-    #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 if (peerInWindow && peerWindowDontClose)
                 {
                     // xxxjack this will fail if there are spaces in the pathname. But escaping them is impossible on Windows.
                     peerProcess.StartInfo.Arguments = $"/K {peerProcess.StartInfo.FileName} {peerProcess.StartInfo.Arguments}";
                     peerProcess.StartInfo.FileName = "CMD.EXE";
                 }
-    #endif
+#endif
                 Debug.Log($"{Name()}: Start peer: {peerProcess.StartInfo.FileName} {peerProcess.StartInfo.Arguments}");
                 try
                 {
@@ -169,12 +171,10 @@ namespace VRT.Transport.WebRTC
                     Debug.LogError($"{Name()}: Cannot start peer: {e.Message}");
                     peerProcess = null;
                 }
-
-                
                
                 //Thread.Sleep(1000);
                 peerConnected = true;
-                Debug.Log($"{Name()}: WebRTCConnector initialized, status={status}");                
+                Debug.Log($"{Name()}: WebRTCConnector initialized, status={status}");
             }
         }
 
