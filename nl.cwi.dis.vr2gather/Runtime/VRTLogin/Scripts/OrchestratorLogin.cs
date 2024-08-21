@@ -552,6 +552,17 @@ namespace VRT.Login
 
         private void SaveLoginPlayerPrefs()
         {
+            if (string.IsNullOrEmpty(LoginPanelUserName.text) && PlayerPrefs.HasKey("userNameLoginIF"))
+            {
+                // We may have logged out. If there was a username in the preferences we use that.
+                string userName = PlayerPrefs.GetString("userNameLoginIF");
+                if (!string.IsNullOrEmpty(userName)) {
+                    Debug.Log($"OrchestratorLogin: setting remembered username {userName}");
+                    LoginPanelRememberMeToggle.isOn = true;
+                    LoginPanelUserName.text = userName;
+                    return;
+                }
+            }
             if (string.IsNullOrEmpty(LoginPanelUserName.text))
             {
                 // Don't save an empty username

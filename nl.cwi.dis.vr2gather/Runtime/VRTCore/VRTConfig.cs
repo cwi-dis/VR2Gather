@@ -231,8 +231,16 @@ namespace VRT.Core
                 public _Encoder[] Encoders;
             }
             public _PCSelfConfig PCSelfConfig;
-
         };
+        [Serializable]
+        public class _VQEGLatency
+        {
+            public int pcLatency;
+            public int voiceLatency;
+        }
+        public _VQEGLatency[] VQEGLatencies;
+        public int temp;
+
         [Tooltip("Point cloud avatar capturer, encoder and transmission parameters")]
         public _User LocalUser;
 
