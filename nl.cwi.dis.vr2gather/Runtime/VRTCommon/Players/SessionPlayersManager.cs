@@ -153,6 +153,13 @@ namespace VRT.Pilots.Common
                     if (isLocalPlayer)
                     {
                         me.webRTCClientId = user.webRTCClientId;
+						string webrtc_url = user.sfuData.url_gen;
+						Debug.Log($"SessionPlayersManager: pre-creating WebRTC connection to {webrtc_url}");
+						var dummy = TransportProtocolWebRTC.Connect(webrtc_url);
+						if (dummy ==  null)
+						{
+							Debug.LogError($"SessionPlayersManager: pre-creating WebRTC connection to {webrtc_url} failed");
+						}
                     }
                     indexWithinCurrentSession++;
                 }
