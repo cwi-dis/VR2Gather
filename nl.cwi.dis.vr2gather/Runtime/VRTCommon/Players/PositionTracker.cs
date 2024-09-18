@@ -25,7 +25,6 @@ namespace VRT.Pilots.Common
         }
         PositionData positionData;
 
-        public int positionIndex;
         [Tooltip("The body of this player")]
         public Transform BodyTransform;
         [Tooltip("The camera of this player")]
@@ -43,6 +42,7 @@ namespace VRT.Pilots.Common
         public bool isPlayingBack = false;
         [Tooltip("Introspection: true if we are recording")]
         public bool isRecording = false;
+        PositionItem mostRecentPosition;
 
         void Awake() 
         {
@@ -127,13 +127,46 @@ namespace VRT.Pilots.Common
             positionData.positions.Add(data);
         }
 
-        void PlaybackSample(PositionItem pos)
+        void PlaybackSample()
         {
-            Debug.Log($"{Name()}: set position for ts={pos.ts}");
-            BodyTransform.position = pos.p_pos;
-            BodyTransform.rotation = pos.p_rot;
-            CameraTransform.position = pos.c_pos;
-            CameraTransform.rotation = pos.c_rot;
+            PositionItem nextPosition = null;
+            int now = currentTime();
+        
+            if (positionData.positions.Count == 0) {
+                isPlayingBack = false;
+                Debug.Log($"{Name()}: End of data, stop playback");
+            }
+            else
+            {
+                nextPosition = positionData.positions[0];
+            }
+            if (mostRecentPosition == null) {
+                mostRecentPosition = nextPosition;
+            }
+            if (nextPosition == null) {
+                nextPosition = mostRecentPosition;
+            }
+            if (nextPosition == null) {
+                return;
+            }
+            if (now >= nextPosition.ts || nextPosition.ts <= mostRecentPosition.ts) {
+                // The next position time has already passed. hard-set it.
+                Debug.Log($"{Name()}: set position for ts={nextPosition.ts}");
+                BodyTransform.position = nextPosition.p_pos;
+                BodyTransform.rotation = nextPosition.p_rot;
+                CameraTransform.position = nextPosition.c_pos;
+                CameraTransform.rotation = nextPosition.c_rot;
+                mostRecentPosition = nextPosition;
+                positionData.positions.RemoveAt(0);
+                return;
+            }
+            // Otherwise we lerp.
+            float fraction = (now - mostRecentPosition.ts) / (nextPosition.ts - mostRecentPosition.ts);
+            Debug.Log($"{Name()}: set position for now={now}, ts={nextPosition.ts}, frac={fraction}");
+            BodyTransform.position = Vector3.Lerp(mostRecentPosition.p_pos, nextPosition.p_pos, fraction);
+            BodyTransform.rotation = Quaternion.Lerp(mostRecentPosition.p_rot, nextPosition.p_rot, fraction);
+            CameraTransform.position = Vector3.Lerp(mostRecentPosition.c_pos, nextPosition.c_pos, fraction);
+            CameraTransform.rotation = Quaternion.Lerp(mostRecentPosition.c_rot, nextPosition.c_rot, fraction);
         }
         
         // Update is called once per frame
@@ -147,18 +180,7 @@ namespace VRT.Pilots.Common
                 }
             }
             if (isPlayingBack) {
-                if (positionData.positions.Count == 0) {
-                    isPlayingBack = false;
-                    Debug.Log($"{Name()}: End of data, stop playback");
-                }
-                else
-                {
-                    PositionItem nextPosition = positionData.positions[0];
-                    if (now >= nextPosition.ts) {
-                        positionData.positions.RemoveAt(0);
-                        PlaybackSample(nextPosition);
-                    }
-                }
+                PlaybackSample();
             }
         }
 
