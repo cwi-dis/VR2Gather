@@ -219,6 +219,16 @@ namespace VRT.Core
                 public _Encoder[] Encoders;
             }
             public _PCSelfConfig PCSelfConfig;
+
+            [Serializable]
+            public class _PositionTracker {
+                [Tooltip("If non-empty, file where user location and gaze orientation are recorded")]
+                public string outputFile;
+                [Tooltip("If non-empty, file where user location and gaze orientation are played back from")]
+                public string inputFile;
+            }
+
+            public _PositionTracker PositionTracker;
         };
         [Serializable]
         public class _VQEGLatency

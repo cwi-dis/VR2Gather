@@ -90,6 +90,10 @@
                 "segmentSize": 1000,
                 "segmentLife": 16000
             }
+        },
+        "PositionTracker" : {
+        	"outputFile" : "position-output.json",
+        	"inputFile" : "position-input.json"
         }
     }
 }
