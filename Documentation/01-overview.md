@@ -12,3 +12,7 @@ This documentation is intended to get you started with developing a VR2Gather ex
 Here is a walkthrough on how to port an existing pre-April-2024 VR2Gather experience to the new VR2Gather package: [Port a VRTApp to the package](31-port-to-package.md).
 
 Here is a old overview (outdated) of how to create a VRTApp in the old structure: [outdated](30-new_submodule.md)
+
+## Additional how-tos
+
+There is documentation on how to record and playback a user during a session, which can be very useful for things like performance measurements under varying conditions: [record and playback](41-record-playback.md).
