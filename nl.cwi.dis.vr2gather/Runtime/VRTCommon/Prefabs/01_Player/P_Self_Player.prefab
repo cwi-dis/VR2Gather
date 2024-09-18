@@ -477,8 +477,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7818ebf5acaa84f5e8fd48553923f7fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputFile: 
-  outputFile: 
+  positionIndex: 0
+  timeInterval: 500
+  nextSampleTime: 0
+  isPlayingBack: 0
+  isRecording: 0
 --- !u!1 &2088947311060252771
 GameObject:
   m_ObjectHideFlags: 0
