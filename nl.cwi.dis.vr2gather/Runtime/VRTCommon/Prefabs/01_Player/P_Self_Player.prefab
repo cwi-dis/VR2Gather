@@ -478,6 +478,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   positionIndex: 0
+  BodyTransform: {fileID: 1935332283100515012}
+  CameraTransform: {fileID: 7845086807825369409}
   timeInterval: 500
   nextSampleTime: 0
   isPlayingBack: 0

@@ -16,9 +16,9 @@ namespace VRT.Pilots.Common
         public class PositionItem {
             public int ts;
             public Vector3 p_pos;
-            public Vector3 p_angle;
+            public Quaternion p_rot;
             public Vector3 c_pos;
-            public Vector3 c_angle;
+            public Quaternion c_rot;
         };
         public class PositionData {
             public List<PositionItem> positions;
@@ -26,8 +26,10 @@ namespace VRT.Pilots.Common
         PositionData positionData;
 
         public int positionIndex;
-        GameObject playerGO;
-        GameObject playerCameraGO;
+        [Tooltip("The body of this player")]
+        public Transform BodyTransform;
+        [Tooltip("The camera of this player")]
+        public Transform CameraTransform;
         string inputFile;
         string outputFile;
 
@@ -41,6 +43,7 @@ namespace VRT.Pilots.Common
         public bool isPlayingBack = false;
         [Tooltip("Introspection: true if we are recording")]
         public bool isRecording = false;
+        
         void Awake() 
         {
             inputFile = VRTConfig.Instance.LocalUser.PositionTracker.inputFile;
@@ -73,7 +76,7 @@ namespace VRT.Pilots.Common
             Debug.Log($"{Name()}: Saving positions to {outputFile}");
             string filename = VRTConfig.ConfigFilename(outputFile);
             
-            string json = JsonUtility.ToJson(positionData);
+            string json = JsonUtility.ToJson(positionData, true);
             System.IO.File.WriteAllText(filename, json);
         }
 
@@ -102,9 +105,24 @@ namespace VRT.Pilots.Common
         }
 
         void RecordSample() {
+            Vector3 p_pos = BodyTransform.position;
+            Quaternion p_rot = BodyTransform.rotation;
+#if bad
+            // Compute camera position/rotation relative to BodyTransform
+            Vector3 c_pos = BodyTransform.InverseTransformPoint(CameraTransform.position);
+            Quaternion c_rot = BodyTransform.InverseTransform
+#else
+            // We simply store everything in world coordinates.
+            Vector3 c_pos = CameraTransform.position;
+            Quaternion c_rot = CameraTransform.rotation;
+#endif
             PositionItem data = new()
             {
-                ts = currentTime()
+                ts = currentTime(),
+                p_pos = p_pos,
+                p_rot = p_rot,
+                c_pos = c_pos,
+                c_rot = c_rot
             };
             positionData.positions.Add(data);
         }
