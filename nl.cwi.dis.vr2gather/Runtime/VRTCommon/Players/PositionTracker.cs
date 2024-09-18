@@ -43,7 +43,7 @@ namespace VRT.Pilots.Common
         public bool isPlayingBack = false;
         [Tooltip("Introspection: true if we are recording")]
         public bool isRecording = false;
-        
+
         void Awake() 
         {
             inputFile = VRTConfig.Instance.LocalUser.PositionTracker.inputFile;
@@ -104,7 +104,7 @@ namespace VRT.Pilots.Common
             return (int)tsFloat;
         }
 
-        void RecordSample() {
+        void RecordSample(int now) {
             Vector3 p_pos = BodyTransform.position;
             Quaternion p_rot = BodyTransform.rotation;
 #if bad
@@ -118,7 +118,7 @@ namespace VRT.Pilots.Common
 #endif
             PositionItem data = new()
             {
-                ts = currentTime(),
+                ts = now,
                 p_pos = p_pos,
                 p_rot = p_rot,
                 c_pos = c_pos,
@@ -126,19 +126,39 @@ namespace VRT.Pilots.Common
             };
             positionData.positions.Add(data);
         }
+
+        void PlaybackSample(PositionItem pos)
+        {
+            Debug.Log($"{Name()}: set position for ts={pos.ts}");
+            BodyTransform.position = pos.p_pos;
+            BodyTransform.rotation = pos.p_rot;
+            CameraTransform.position = pos.c_pos;
+            CameraTransform.rotation = pos.c_rot;
+        }
         
         // Update is called once per frame
         void Update()
         {
+            int now = currentTime();
             if (isRecording) {
-                int now = currentTime();
                 if (now >= nextSampleTime) {
-                    RecordSample();
+                    RecordSample(now);
                     nextSampleTime = now + timeInterval;
                 }
             }
             if (isPlayingBack) {
-
+                if (positionData.positions.Count == 0) {
+                    isPlayingBack = false;
+                    Debug.Log($"{Name()}: End of data, stop playback");
+                }
+                else
+                {
+                    PositionItem nextPosition = positionData.positions[0];
+                    if (now >= nextPosition.ts) {
+                        positionData.positions.RemoveAt(0);
+                        PlaybackSample(nextPosition);
+                    }
+                }
             }
         }
 
