@@ -58,7 +58,7 @@
         "PCSelfConfig": {
             "capturerTypeName": "developer",
             "CameraReaderConfig": {
-                "configFilename": ""
+                "configFilename": "jack-test-record/cameraconfig.json"
             },
             "RemoteCameraReaderConfig": {
                 "url": "",
@@ -92,8 +92,8 @@
             }
         },
         "PositionTracker" : {
-        	"outputFile" : "position-output.json",
-        	"inputFile" : "position-input.json"
+        	"outputFile" : "",
+        	"inputFile" : ""
         }
     }
 }

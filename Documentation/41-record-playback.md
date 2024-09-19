@@ -8,7 +8,7 @@ At the moment this only works for experiences that consist of a single scene (as
 
 ## Recording
 
-- To capture the RGBD camera streams during the session: edit `cameraconfig.json` and add a toplevel entry `system.record_to_directory=rgbddirectory` where `rgbddirectory` is an absolute or relative path to a directory where the RGBD streams will be recorded (one file per camera). Create that directory.
+- To capture the RGBD camera streams during the session: edit `cameraconfig.json` and add a toplevel entry `system.record_to_directory=rgbddirectory` where `rgbddirectory` is an absolute or relative path to a directory where the RGBD streams will be recorded (one file per camera). Create that directory. Ensure `sync_master_serial` is set.
 - To capture user position and orientation during the session: edit `config.json` and add a field `LocalUser.PositionTracker.outputFile=positionfilename`, where `positionfilename` is the relative or absolute pathname where the timestamped JSON position data will be saved.
 - Run the session.
 - Save the `rgbddirectory` and `positionfilename` files.
