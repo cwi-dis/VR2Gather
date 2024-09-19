@@ -93,6 +93,11 @@ PrefabInstance:
       propertyPath: previewPlayer
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1835823216688549832, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1935332283100515003, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_Name
@@ -117,6 +122,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4293812562
+      objectReference: {fileID: 0}
+    - target: {fileID: 2646188345798742305, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2948669065811948557, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}

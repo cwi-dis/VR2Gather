@@ -70,7 +70,7 @@ namespace VRT.UserRepresentation.Voice
 #endif
             if (synchronizer == null)
             {
-                synchronizer = gameObject?.GetComponentInChildren<VRTSynchronizer>();
+                synchronizer = playerGO?.GetComponentInChildren<VRTSynchronizer>();
             }
             if (synchronizer == null)
             {
