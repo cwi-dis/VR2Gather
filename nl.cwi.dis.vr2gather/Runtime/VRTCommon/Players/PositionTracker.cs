@@ -42,7 +42,8 @@ namespace VRT.Pilots.Common
         public bool isPlayingBack = false;
         [Tooltip("Introspection: true if we are recording")]
         public bool isRecording = false;
-        PositionItem mostRecentPosition;
+        PositionItem previousPosition;
+        PositionItem nextPosition;
 
         void Awake() 
         {
@@ -127,46 +128,55 @@ namespace VRT.Pilots.Common
             positionData.positions.Add(data);
         }
 
-        void PlaybackSample()
-        {
-            PositionItem nextPosition = null;
-            int now = currentTime();
-        
+        bool PopSample() {
             if (positionData.positions.Count == 0) {
                 isPlayingBack = false;
                 Debug.Log($"{Name()}: End of data, stop playback");
+                return false;
             }
             else
             {
+                previousPosition = nextPosition;
                 nextPosition = positionData.positions[0];
+                positionData.positions.RemoveAt(0);
             }
-            if (mostRecentPosition == null) {
-                mostRecentPosition = nextPosition;
+            if (previousPosition == null) {
+                previousPosition = nextPosition;
             }
-            if (nextPosition == null) {
-                nextPosition = mostRecentPosition;
+            return true;
+        }
+
+        void PlaybackSample()
+        {
+            int now = currentTime();
+            if (nextPosition == null || nextPosition.ts < now) {
+                if (!PopSample()) {
+                    return;
+                }
             }
-            if (nextPosition == null) {
-                return;
-            }
-            if (now >= nextPosition.ts || nextPosition.ts <= mostRecentPosition.ts) {
+        
+            if (now >= nextPosition.ts) {
                 // The next position time has already passed. hard-set it.
                 Debug.Log($"{Name()}: set position for ts={nextPosition.ts}");
                 BodyTransform.position = nextPosition.p_pos;
                 BodyTransform.rotation = nextPosition.p_rot;
                 CameraTransform.position = nextPosition.c_pos;
                 CameraTransform.rotation = nextPosition.c_rot;
-                mostRecentPosition = nextPosition;
+                previousPosition = nextPosition;
                 positionData.positions.RemoveAt(0);
                 return;
             }
             // Otherwise we lerp.
-            float fraction = (now - mostRecentPosition.ts) / (nextPosition.ts - mostRecentPosition.ts);
+            float interval = nextPosition.ts - previousPosition.ts;
+            if (interval == 0) {
+                interval = 1f;
+            }
+            float fraction = (now - previousPosition.ts) / interval;
             Debug.Log($"{Name()}: set position for now={now}, ts={nextPosition.ts}, frac={fraction}");
-            BodyTransform.position = Vector3.Lerp(mostRecentPosition.p_pos, nextPosition.p_pos, fraction);
-            BodyTransform.rotation = Quaternion.Lerp(mostRecentPosition.p_rot, nextPosition.p_rot, fraction);
-            CameraTransform.position = Vector3.Lerp(mostRecentPosition.c_pos, nextPosition.c_pos, fraction);
-            CameraTransform.rotation = Quaternion.Lerp(mostRecentPosition.c_rot, nextPosition.c_rot, fraction);
+            BodyTransform.position = Vector3.Lerp(previousPosition.p_pos, nextPosition.p_pos, fraction);
+            BodyTransform.rotation = Quaternion.Lerp(previousPosition.p_rot, nextPosition.p_rot, fraction);
+            CameraTransform.position = Vector3.Lerp(previousPosition.c_pos, nextPosition.c_pos, fraction);
+            CameraTransform.rotation = Quaternion.Lerp(previousPosition.c_rot, nextPosition.c_rot, fraction);
         }
         
         // Update is called once per frame
