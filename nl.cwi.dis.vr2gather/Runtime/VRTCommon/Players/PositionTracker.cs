@@ -44,6 +44,8 @@ namespace VRT.Pilots.Common
         public bool isRecording = false;
         PositionItem previousPosition;
         PositionItem nextPosition;
+        [Tooltip("Enable debug logging")]
+        public bool debug;
 
         void Awake() 
         {
@@ -108,15 +110,11 @@ namespace VRT.Pilots.Common
         void RecordSample(int now) {
             Vector3 p_pos = BodyTransform.position;
             Quaternion p_rot = BodyTransform.rotation;
-#if bad
-            // Compute camera position/rotation relative to BodyTransform
-            Vector3 c_pos = BodyTransform.InverseTransformPoint(CameraTransform.position);
-            Quaternion c_rot = BodyTransform.InverseTransform
-#else
+
             // We simply store everything in world coordinates.
             Vector3 c_pos = CameraTransform.position;
             Quaternion c_rot = CameraTransform.rotation;
-#endif
+
             PositionItem data = new()
             {
                 ts = now,
@@ -157,7 +155,7 @@ namespace VRT.Pilots.Common
         
             if (now >= nextPosition.ts) {
                 // The next position time has already passed. hard-set it.
-                Debug.Log($"{Name()}: set position for ts={nextPosition.ts}");
+                if (debug) Debug.Log($"{Name()}: set position for ts={nextPosition.ts}");
                 BodyTransform.position = nextPosition.p_pos;
                 BodyTransform.rotation = nextPosition.p_rot;
                 CameraTransform.position = nextPosition.c_pos;
@@ -172,7 +170,7 @@ namespace VRT.Pilots.Common
                 interval = 1f;
             }
             float fraction = (now - previousPosition.ts) / interval;
-            Debug.Log($"{Name()}: set position for now={now}, ts={nextPosition.ts}, frac={fraction}");
+            if (debug) Debug.Log($"{Name()}: set position for now={now}, ts={nextPosition.ts}, frac={fraction}");
             BodyTransform.position = Vector3.Lerp(previousPosition.p_pos, nextPosition.p_pos, fraction);
             BodyTransform.rotation = Quaternion.Lerp(previousPosition.p_rot, nextPosition.p_rot, fraction);
             CameraTransform.position = Vector3.Lerp(previousPosition.c_pos, nextPosition.c_pos, fraction);
