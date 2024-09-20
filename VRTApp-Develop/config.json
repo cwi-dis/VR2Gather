@@ -4,7 +4,7 @@
     "statsInterval": 0.1,
     "statsOutputFile": "VRTstatistics-example.txt",
     "statsOutputFileAppend": false,
-    "orchestratorURL": "http://193.190.127.196:8090",
+    "orchestratorURL": "http://192.16.197.145:8090/",
     "AutoStart": {
         "autoLogin": true,
         "autoCreate": false,
@@ -31,7 +31,7 @@
     },
     "LocalUser": {
         "PCSelfConfig": {
-            "capturerTypeName": "synthetic",
+            "capturerTypeName": "developer",
             "SynthReaderConfig": {
                 "nPoints": 1600
             },
