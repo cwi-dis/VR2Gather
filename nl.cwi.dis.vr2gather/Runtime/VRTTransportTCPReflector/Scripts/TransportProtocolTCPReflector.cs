@@ -12,6 +12,9 @@ namespace VRT.Transport.TCPReflector
 {
     public class TransportProtocolTCPReflector : TransportProtocol
     {
+        public interface IncomingStreamHandler {
+            void HandlePacket(BaseMemoryChunk packet);
+        }
         /// <summary>
         /// Transport protocol that uses a TCP reflector, which simply sends any incoming packets
         /// back out on all connections (except the connection it came in on).
@@ -78,7 +81,7 @@ namespace VRT.Transport.TCPReflector
         private BlockingCollection<byte[]> OutgoingQueue = new();
         private Thread OutgoingThread;
 
-        private Dictionary<string, QueueThreadSafe> IncomingQueues = new();
+        private Dictionary<string, IncomingStreamHandler> IncomingHandlers = new();
         private Thread IncomingThread;
 
         public static void Register()
@@ -131,7 +134,7 @@ namespace VRT.Transport.TCPReflector
             OutgoingThread.Abort();
             IncomingThread.Abort();
             OutgoingQueue = null;
-            IncomingQueues = null;
+            IncomingHandlers = null;
         }
 
         public void RegisterOutgoingStream(string streamName)
@@ -142,21 +145,21 @@ namespace VRT.Transport.TCPReflector
         public void UnregisterOutgoingStream(string streamName)
         {
             OutgoingStreams.Remove(streamName);
-            if (OutgoingStreams.Count == 0 && IncomingQueues.Count == 0)
+            if (OutgoingStreams.Count == 0 && IncomingHandlers.Count == 0)
             {
                 Stop();
             }
         }
 
-        public void RegisterIncomingStream(string streamName, QueueThreadSafe outQueue)
+        public void RegisterIncomingStream(string streamName, IncomingStreamHandler handler)
         {
-            IncomingQueues[streamName] = outQueue;
+            IncomingHandlers[streamName] = handler;
         }
 
         public void UnregisterIncomingStream(string streamName)
         {
-            IncomingQueues.Remove(streamName);
-            if (OutgoingStreams.Count == 0 && IncomingQueues.Count == 0)
+            IncomingHandlers.Remove(streamName);
+            if (OutgoingStreams.Count == 0 && IncomingHandlers.Count == 0)
             {
                 Stop();
             }
@@ -276,14 +279,12 @@ namespace VRT.Transport.TCPReflector
                         Debug.LogError($"{Name()}: Received {dataLengthGotten} bytes in stead of {dataLength}");
                         break;
                     }
-                    if (IncomingQueues.ContainsKey(streamName))
+                    if (IncomingHandlers.ContainsKey(streamName))
                     {
-                        QueueThreadSafe queue = IncomingQueues[streamName];
                         BaseMemoryChunk chunk = new NativeMemoryChunk(dataLength);
                         chunk.metadata.timestamp = timeStamp;
                         System.Runtime.InteropServices.Marshal.Copy(data, 0, chunk.pointer, chunk.length);
-                        bool didDrop = queue.Enqueue(chunk);
-                        // xxxjack should add Stats
+                        IncomingHandlers[streamName].HandlePacket(chunk);
                     }
                 }
             }
