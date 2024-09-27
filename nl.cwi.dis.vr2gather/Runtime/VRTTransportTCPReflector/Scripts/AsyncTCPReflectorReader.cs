@@ -32,7 +32,7 @@ namespace VRT.Transport.TCPReflector
             }
 
             public void HandlePacket(BaseMemoryChunk packet) {
-                bool didDrop = queue.Enqueue(packet);
+                bool didDrop = !queue.Enqueue(packet);
 #if VRT_WITH_STATS
                 parent.stats.statsUpdate(packet.length, didDrop, packet.metadata.timestamp, handler_index);
 #endif
