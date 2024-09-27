@@ -16,6 +16,28 @@ namespace VRT.Transport.TCPReflector
 
     public class AsyncTCPReflectorReader : AsyncReader, ITransportProtocolReader, ITransportProtocolReader_Tiled
     {
+        class IncomingStreamHandler : TransportProtocolTCPReflector.IncomingStreamHandler {
+            AsyncTCPReflectorReader parent;
+            QueueThreadSafe queue;
+            int handler_index;
+
+            public string Name()
+            {
+                return $"{parent.Name()}.{handler_index}";
+            }
+            public IncomingStreamHandler(AsyncTCPReflectorReader _parent, int _index, QueueThreadSafe _queue) {
+                parent = _parent;
+                handler_index = _index;
+                queue = _queue;
+            }
+
+            public void HandlePacket(BaseMemoryChunk packet) {
+                bool didDrop = queue.Enqueue(packet);
+#if VRT_WITH_STATS
+                parent.stats.statsUpdate(packet.length, didDrop, packet.metadata.timestamp, handler_index);
+#endif
+            }
+        }
         static public ITransportProtocolReader Factory()
         {
             return new AsyncTCPReflectorReader();
@@ -30,6 +52,14 @@ namespace VRT.Transport.TCPReflector
         bool initialized = false;
         private TransportProtocolTCPReflector connection;
         
+        static int instanceCounter = 0;
+        readonly int instanceNumber = instanceCounter++;
+
+        public override string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
+
         public ITransportProtocolReader_Tiled Init(string remoteUrl, string userId, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
             NoUpdateCallsNeeded();
@@ -43,7 +73,8 @@ namespace VRT.Transport.TCPReflector
             {
                 this.descriptors[i].name = $"{userId}/{streamName}/{this.descriptors[i].tileNumber}";
                 Debug.Log($"{Name()}:  xxxjack RegisterForDataStream {i}: {this.descriptors[i].name}");
-                connection.RegisterIncomingStream(this.descriptors[i].name, this.descriptors[i].outQueue);
+                IncomingStreamHandler handler = new(this, i, this.descriptors[i].outQueue);
+                connection.RegisterIncomingStream(this.descriptors[i].name, handler);
             }
 #if VRT_WITH_STATS
             stats = new Stats(Name());
@@ -80,7 +111,7 @@ namespace VRT.Transport.TCPReflector
             for (int i = 0; i < descriptors.Length; ++i)
             {
                 descriptors[i].outQueue?.Close();
-                connection.UnregisterIncomingStream(descriptors[i].name);
+                connection.UnregisterIncomingStream(descriptors[i].name); // This should also delete the handler by removing the last ref to it.
             }
         }
 
