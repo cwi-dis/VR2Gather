@@ -56,9 +56,9 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerTypeName": "developer",
+            "capturerTypeName": "auto",
             "CameraReaderConfig": {
-                "configFilename": "jack-test-record/cameraconfig.json"
+                "configFilename": ""
             },
             "RemoteCameraReaderConfig": {
                 "url": "",
