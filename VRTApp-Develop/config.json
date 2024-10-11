@@ -42,7 +42,7 @@
         "audioFps": 50,
         "maxPlayoutLatency": 0.300,
         "maxPlayoutAhead": 0.066,
-        "ignoreSynchronizer": false
+        "ignoreSynchronizer": true
     },
     "Synchronizer": {
         "debugSynchronizer": false,
@@ -74,9 +74,9 @@
             "PrerecordedReaderConfig": {
                 "folder": "../cwipc_test/Samples/loot-150K-4tiles"
             },
-            "voxelSize": 0.0,
+            "voxelSize": 0.005,
             "frameRate": 15.0,
-            "tiled": false,
+            "tiled": true,
             "Encoders": [
                 {
                     "octreeBits": 9
