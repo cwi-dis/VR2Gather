@@ -28,7 +28,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2107846204465463838}
   m_Father: {fileID: 5131421326051842284}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &836216858472498182
@@ -584,7 +585,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2107846204465463838
 Transform:
   m_ObjectHideFlags: 0
@@ -598,7 +599,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5131421326051842284}
+  m_Father: {fileID: 3132224710745871621}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7118474587514814776
 MonoBehaviour:
@@ -1006,7 +1007,6 @@ Transform:
   - {fileID: 3382176271600897024}
   - {fileID: 5765205262124836020}
   - {fileID: 4326305017399503632}
-  - {fileID: 2107846204465463838}
   - {fileID: 6941960621944965175}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1347,6 +1347,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee302642fd02ab43846844518a16bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  requestAudioBehindMs: 0
+  requestNonAudioBehindMs: 0
   _debugSynchronizer: 0
   debugJitterBuffer: 0
   currentLatency: 0
