@@ -9,14 +9,14 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "",
+        "autoCreateForUser": "vrtiny",
         "sessionName": "test-session",
         "sessionScenario": "Technical Playground",
-        "sessionTransportProtocol": "webrtc",
+        "sessionTransportProtocol": "tcp",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
         "autoStartWith": 2,
-        "autoLeaveAfter": 60.0,
+        "autoLeaveAfter": 0,
         "autoStopAfterLeave": true,
         "autoDelay": 1.5
     },
@@ -33,19 +33,22 @@
         "PCSelfConfig": {
             "capturerTypeName": "developer",
             "SynthReaderConfig": {
-                "nPoints": 1600
+                "nPoints": 16000
             },
             "PrerecordedReaderConfig": {
                 "folder": "C:/Users/jvdrhoof/GitHub/cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
             "frameRate": 30.0,
-            "tiled": false,
+            "tiled": true,
             "Encoders": [
                 {
-                    "octreeBits": 7
-                }
-            ]
+                    "octreeBits": 9
+                },
+				{
+                    "octreeBits": 6
+                }            
+			]
         }
     }
 }
