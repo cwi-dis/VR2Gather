@@ -16,7 +16,9 @@ At the moment this only works for experiences that consist of a single scene (as
 
 ## Playback
 
-- Create a new `cameraconfig.json` that is based on the existing one, but uses the recorded files (so using type `kinect_offline` in stead of `kinect`, or similar for realsense). Ensure you reference the correct input file for each camera.
+- Create a new `cameraconfig.json` that is based on the existing one, but uses the recorded files (so using type `kinect_offline` in stead of `kinect`, or similar for realsense).
+  - Ensure you reference the correct input file for each camera.
+  - Ensure you have removed the `record_to_directory` setting.
   - You can test this by running `cwipc_view` in the directory where the new cameraconfig is. It should playback the captured content.
 - Edit `config.json` and
   - change `LocalUser.PCSelfConfig.CameraReaderConfig.configFilename` to refer to the new cameraconfig file created in the previous step
