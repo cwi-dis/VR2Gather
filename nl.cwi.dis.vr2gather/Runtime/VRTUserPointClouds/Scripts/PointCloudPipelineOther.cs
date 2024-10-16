@@ -97,10 +97,12 @@ namespace VRT.UserRepresentation.PointCloud
             for (int tileNum = 0; tileNum < networkTileDescription.tiles.Length; tileNum++)
             {
                 var tile = networkTileDescription.tiles[tileNum];
-                Debug.Log($"{Name()}: xxxjack tile {tileNum}: #qualities: {tile.qualities.Length}");
+                Debug.Log($"{Name()}: xxxjack tile#{tileNum}: #qualities: {tile.qualities.Length}");
+                int qualnum = 0;
                 foreach (var quality in tile.qualities)
                 {
-                    Debug.Log($"{Name()}: xxxjack tile {tileNum} quality: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
+                    Debug.Log($"{Name()}: xxxjack tile#{tileNum} quality#{qualnum}: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
+                    qualnum++;
                 }
             }
 
