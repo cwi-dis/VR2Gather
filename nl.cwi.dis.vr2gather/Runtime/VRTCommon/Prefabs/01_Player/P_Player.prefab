@@ -613,7 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d00b427fbfe72ed4780aa4fb40363cda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  algorithm: 2
+  algorithm: 0
   debugDecisions: 1
   delayDecisions: 0
   bitRatebudget: 1000000
