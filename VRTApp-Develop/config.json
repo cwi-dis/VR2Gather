@@ -1,8 +1,8 @@
 {
     "targetFrameRate": -1,
     "ntpSyncThreshold": 0.100,
-    "statsInterval": 0.1,
-    "statsOutputFile": "VRTstatistics-example.txt",
+    "statsInterval": 10,
+    "statsOutputFile": "",
     "statsOutputFileAppend": false,
     "orchestratorURL": "http://192.16.197.145:8090/",
     "AutoStart": {
@@ -31,9 +31,9 @@
     },
     "LocalUser": {
         "PCSelfConfig": {
-            "capturerTypeName": "developer",
+            "capturerTypeName": "synthetic",
             "SynthReaderConfig": {
-                "nPoints": 16000
+                "nPoints": 100000
             },
             "PrerecordedReaderConfig": {
                 "folder": "C:/Users/jvdrhoof/GitHub/cwipc_test/Samples/loot-150K-4tiles"
