@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -210,54 +211,54 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTileQualities_Interactive(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             int[] selectedQualities = new int[nTiles];
-            if (Input.GetKeyDown(KeyCode.Alpha0))
+            if (Keyboard.current[Key.Digit0].IsPressed())
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 Debug.Log($"{Name()}: lowest quality for all tiles");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha9))
+            if (Keyboard.current[Key.Digit9].IsPressed())
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
                 Debug.Log($"{Name()}: highest quality for all tiles");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha1) && nTiles > 0)
+            if (Keyboard.current[Key.Digit1].IsPressed() && nTiles > 0)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[0] = nQualities - 1;
                 Debug.Log($"{Name()}: high quality for tile 0");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha2) && nTiles > 1)
+            if (Keyboard.current[Key.Digit2].IsPressed() && nTiles > 1)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[1] = nQualities - 1;
                 Debug.Log($"{Name()}: high quality for tile 1");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha3) && nTiles > 2)
+            if (Keyboard.current[Key.Digit3].IsPressed() && nTiles > 2)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[2] = nQualities - 1;
                 Debug.Log($"{Name()}: high quality for tile 2");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha4) && nTiles > 3)
+            if (Keyboard.current[Key.Digit4].IsPressed() && nTiles > 3)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[3] = nQualities - 1;
                 Debug.Log($"{Name()}: high quality for tile 3");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha5) && nTiles > 4)
+            if (Keyboard.current[Key.Digit5].IsPressed() && nTiles > 4)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[4] = nQualities - 1;
                 Debug.Log($"{Name()}: high quality for tile 4");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha6) && nTiles > 5)
+            if (Keyboard.current[Key.Digit6].IsPressed() && nTiles > 5)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[5] = nQualities - 1;
