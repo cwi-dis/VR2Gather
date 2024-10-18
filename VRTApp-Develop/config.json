@@ -39,7 +39,7 @@
                 "folder": "C:/Users/jvdrhoof/GitHub/cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
-            "frameRate": 30.0,
+            "frameRate": 15.0,
             "tiled": true,
             "Encoders": [
                 {
