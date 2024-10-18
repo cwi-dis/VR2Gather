@@ -33,20 +33,20 @@
         "PCSelfConfig": {
             "capturerTypeName": "synthetic",
             "SynthReaderConfig": {
-                "nPoints": 100000
+                "nPoints": 60000
             },
             "PrerecordedReaderConfig": {
                 "folder": "C:/Users/jvdrhoof/GitHub/cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
-            "frameRate": 15.0,
+            "frameRate": 5.0,
             "tiled": true,
             "Encoders": [
                 {
                     "octreeBits": 9
                 },
 				{
-                    "octreeBits": 6
+                    "octreeBits": 5
                 }            
 			]
         }
