@@ -43,10 +43,10 @@
             "tiled": true,
             "Encoders": [
                 {
-                    "octreeBits": 9
+                    "octreeBits": 5
                 },
 				{
-                    "octreeBits": 5
+                    "octreeBits": 9
                 }            
 			]
         }
