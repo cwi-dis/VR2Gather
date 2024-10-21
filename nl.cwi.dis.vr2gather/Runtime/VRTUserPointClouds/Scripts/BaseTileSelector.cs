@@ -27,12 +27,12 @@ namespace VRT.UserRepresentation.PointCloud
         // Most-recently selected tile qualities (if non-null)
         protected int[] previousSelectedTileQualities;
 
-        public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid, weightedHybrid };
+        public enum SelectionAlgorithm { none, interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid, weightedHybrid };
         //
         // Set by overall controller (in production): which algorithm to use for this scene run.
         //
         [Tooltip("The algorithm to use to do tile selection")]
-        public SelectionAlgorithm algorithm = SelectionAlgorithm.interactive;
+        public SelectionAlgorithm algorithm = SelectionAlgorithm.none;
         //
         // Can be set (in scene editor) to print all decision made by the algorithms.
         //
@@ -88,6 +88,15 @@ namespace VRT.UserRepresentation.PointCloud
         // To be implemented by subclass.
         //
         protected abstract Vector3 getPointCloudPosition(long currentFrameNumber);
+
+        private void Start()
+        {
+            // xxxjack initialize from config.json, if there are overrides
+            if (algorithm == SelectionAlgorithm.none) {
+                Debug.Log($"{Name()}: algorithm==none, disabling");
+                base.enabled = false;
+            }
+        }
 
         private void Update()
         {
@@ -188,6 +197,9 @@ namespace VRT.UserRepresentation.PointCloud
         {
             switch (algorithm)
             {
+                case SelectionAlgorithm.none:
+                    Debug.LogError($"{Name()}: algorithm==none, should not happen");
+                    return null;
                 case SelectionAlgorithm.interactive:
                     return getTileQualities_Interactive(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 case SelectionAlgorithm.alwaysBest:
