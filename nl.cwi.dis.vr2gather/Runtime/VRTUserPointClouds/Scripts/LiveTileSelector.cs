@@ -1,5 +1,5 @@
 using UnityEngine;
-using VRT.Pilots.Common;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -11,6 +11,7 @@ namespace VRT.UserRepresentation.PointCloud
         //
         // Temporary variable (should be measured from internet connection): total available bitrate for this run.
         //
+        [Tooltip("If non-zero: don't measure the bitrate budget but use this number")]
         public double bitRatebudget = 1000000;
         //
         // For live: we precompute the bandwidth usage matrix based on the reported
@@ -40,6 +41,16 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
         }
+
+        new public void Start()
+        {
+            base.Start();
+            var settings = VRTConfig.Instance.TileSelector;
+            if (settings.bitrateBudget != 0) {
+                bitRatebudget = settings.bitrateBudget;
+            }
+        }
+        
 
         protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
         {

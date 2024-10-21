@@ -164,6 +164,21 @@ namespace VRT.Core
         public _Synchronizer Synchronizer;
 
         [Serializable]
+        public class _TileSelector {
+            [Tooltip("Algorithm for selection. Default: none")]
+            public string algorithm;
+            [Tooltip("Print log messages to allow debugging the decisions of the tile selector")]
+            public bool debugDecisions = false;
+            [Tooltip("Override bitrate budget with a static value if non-zero (in stead of measuring it)")]
+            public int bitrateBudget;
+
+
+        }
+
+        [Tooltip("Tile selection algorithm parameters")]
+        public _TileSelector TileSelector;
+
+        [Serializable]
         public class _User
         {
             [Tooltip("local filename where orchestrator config is stored")]
