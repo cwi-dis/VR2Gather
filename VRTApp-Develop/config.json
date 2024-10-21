@@ -4,6 +4,8 @@
     "statsInterval": 0.1,
     "statsOutputFile": "VRTstatistics-example.txt",
     "statsOutputFileAppend": false,
+    "orchestratorURL_gent": "http://193.190.127.250:8090/",
+    "orchestratorURL_cwi": "http://192.16.197.145:8090/",
     "orchestratorURL": "http://192.16.197.145:8090/",
     "AutoStart": {
         "autoLogin": true,
