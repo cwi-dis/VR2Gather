@@ -125,7 +125,8 @@ namespace VRT.UserRepresentation.PointCloud
             currentParameters.budget = getBitrateBudget();
             currentParameters.cameraForward = getCameraForward();
             currentParameters.pointcloudPosition = getPointCloudPosition(currentFrameIndex);
-            bool rv = currentParameters.Equals(previousParameters);
+            bool rv = !currentParameters.Equals(previousParameters);
+            previousParameters = currentParameters;
             return rv;
         }
 
@@ -140,7 +141,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
 #if VRT_WITH_STATS
             if (!didOutputStatsIdentity) {
-                Statistics.Output(Name(), $"enabled=1, pipeline={pipeline.Name()}");
+                Statistics.Output(Name(), $"enabled=1, pipeline={pipeline.Name()}, algorithm={algorithm.ToString()}");
                 didOutputStatsIdentity = true;
             }
 #endif            
@@ -224,6 +225,9 @@ namespace VRT.UserRepresentation.PointCloud
             for (int i = 0; i < nTiles; i++)
             {
                 tileUtilities[i] = Vector3.Dot(cameraForward, TileOrientation[i]);
+                if (debugDecisions) {
+                    Debug.Log($"{Name()}: tile={i}, utility={tileUtilities[i]}");
+                }
             }
             //Sort tile utilities and apply the same sort to tileOrder
             Array.Sort(tileUtilities, tileOrder);
