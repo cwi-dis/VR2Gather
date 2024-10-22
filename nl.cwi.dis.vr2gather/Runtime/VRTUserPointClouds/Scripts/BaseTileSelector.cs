@@ -147,7 +147,11 @@ namespace VRT.UserRepresentation.PointCloud
             if (changed && selectedTileQualities != null)
             {
                 // xxxjack: we could do this in stats: format too, may help analysis.
-                if (debugDecisions) Debug.Log($"{Name()}: tileQualities: {String.Join(", ", selectedTileQualities)}");
+                if (debugDecisions) {
+                    string concatenated = string.Join(", ",
+                          selectedTileQualities.Select(x => x.ToString()).ToArray());
+                Debug.Log($"{Name()}: tileQualities: {concatenated}");
+                }
                 StartCoroutine(_doSelectTileQualities(selectedTileQualities));
                 previousSelectedTileQualities = selectedTileQualities;
                 string statMsg = $"tile0={selectedTileQualities[0]}";
@@ -294,13 +298,15 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTileQualities_AlwaysBest(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: AlwaysBest: select quality {nQualities} for all tiles");
+                Debug.Log($"{Name()}: AlwaysBest: select quality {nQualities-1} for all tiles");
             }
             int[] selectedQualities = new int[nTiles];
 
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
             if (debugDecisions) {
-                Debug.Log($"{Name()}: AlwaysBest: selected qualities: {selectedQualities}");
+                string concatenated = string.Join(", ",
+                          selectedQualities.Select(x => x.ToString()).ToArray());
+                Debug.Log($"{Name()}: AlwaysBest: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
@@ -314,7 +320,9 @@ namespace VRT.UserRepresentation.PointCloud
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
             selectedQualities[tileOrder[0]] = nQualities - 1;
             if (debugDecisions) {
-                Debug.Log($"{Name()}: FrontTileBest: selected qualities: {selectedQualities}");
+                string concatenated = string.Join(", ",
+                          selectedQualities.Select(x => x.ToString()).ToArray());
+                Debug.Log($"{Name()}: FrontTileBest: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
@@ -358,7 +366,9 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Greedy: selected qualities: {selectedQualities}");
+                string concatenated = string.Join(", ",
+                          selectedQualities.Select(x => x.ToString()).ToArray());
+                Debug.Log($"{Name()}: Greedy: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
@@ -399,7 +409,9 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Uniform: selected qualities: {selectedQualities}");
+                string concatenated = string.Join(", ",
+                          selectedQualities.Select(x => x.ToString()).ToArray());
+                Debug.Log($"{Name()}: Uniform: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
@@ -459,7 +471,9 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Hybrid: selected qualities: {selectedQualities}");
+                string concatenated = string.Join(", ",
+                          selectedQualities.Select(x => x.ToString()).ToArray());
+                Debug.Log($"{Name()}: Hybrid: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
@@ -535,7 +549,9 @@ namespace VRT.UserRepresentation.PointCloud
                     representationSet = true;
             }
             if (debugDecisions) {
-                Debug.Log($"{Name()}: WeightedHybrid: selected qualities: {selectedQualities}");
+                string concatenated = string.Join(", ",
+                          selectedQualities.Select(x => x.ToString()).ToArray());
+                Debug.Log($"{Name()}: WeightedHybrid: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
@@ -560,7 +576,9 @@ namespace VRT.UserRepresentation.PointCloud
                 tileVisibility[Array.IndexOf(tileDirection, tileDirection.Min())] = false;
 
             if (debugDecisions) {
-                Debug.Log($"{Name()}: getTileVisibility: per-tile visibility: {tileVisibility}");
+                string concatenated = string.Join(", ",
+                          tileVisibility.Select(x => x.ToString()).ToArray());
+                Debug.Log($"{Name()}: getTileVisibility: per-tile visibility: {concatenated}");
             }
             return tileVisibility;
         }
