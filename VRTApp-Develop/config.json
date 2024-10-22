@@ -50,5 +50,10 @@
                 }            
 			]
         }
+    },
+    "TileSelector" : {
+    	"algorithm" : "frontTileBest",
+    	"debugDecisions" : true,
+    	"bitrateBudget" : 100000
     }
 }
