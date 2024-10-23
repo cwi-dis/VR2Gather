@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bug fixes (#178, #189
 - Audio latency issues fixed (#144)
-- PositionTracker added (#184)
+- PositionTracker added (#184, #191)
 - Recording of point cloud raw video during session added
 
 ## [1.0.3] - 2024-06-02
