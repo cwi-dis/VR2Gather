@@ -251,6 +251,8 @@ namespace VRT.Core
             public class _PositionTracker {
                 [Tooltip("If non-empty, file where user location and gaze orientation are recorded")]
                 public string outputFile;
+                [Tooltip("Output recording interval override if non-zero, in milliseconds")]
+                public int outputIntervalOverride;
                 [Tooltip("If non-empty, file where user location and gaze orientation are played back from")]
                 public string inputFile;
             }

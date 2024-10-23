@@ -1,7 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using Cwipc;
+using JetBrains.Annotations;
+using Unity.Profiling;
+using UnityEditor.EditorTools;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VRT.Core;
 
 namespace VRT.Pilots.Common
@@ -47,12 +53,27 @@ namespace VRT.Pilots.Common
         {
             inputFile = VRTConfig.Instance.LocalUser.PositionTracker.inputFile;
             outputFile = VRTConfig.Instance.LocalUser.PositionTracker.outputFile;
+            string sceneName = SceneManager.GetActiveScene().name;
+            string dateTime = DateTime.Now.ToString("yyyyMMdd-HHmm");
+            outputFile = outputFile.Replace("{scene}", sceneName);
+            outputFile = outputFile.Replace("{time}", dateTime);
+            if (VRTConfig.Instance.LocalUser.PositionTracker.outputIntervalOverride > 0) {
+                timeInterval = VRTConfig.Instance.LocalUser.PositionTracker.outputIntervalOverride;
+            }
             isPlayingBack = !string.IsNullOrEmpty(inputFile);
             isRecording = !string.IsNullOrEmpty(outputFile);
             if ( !isPlayingBack && !isRecording ) {
                 gameObject.SetActive(false);
                 Debug.Log($"{Name()}: Disabled");
             }
+#if VRT_WITH_STATS
+            if (isRecording) {
+                Statistics.Output(Name(), $"outputFile={outputFile}, interval_ms={timeInterval}");
+            }
+            if (isPlayingBack) {
+                Statistics.Output(Name(), $"inputFile={inputFile}");
+            }
+#endif
         }
 
         string Name() {
