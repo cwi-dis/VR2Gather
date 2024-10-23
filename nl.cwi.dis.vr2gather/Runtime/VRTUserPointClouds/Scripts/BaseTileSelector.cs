@@ -224,9 +224,11 @@ namespace VRT.UserRepresentation.PointCloud
             float[] tileUtilities = new float[nTiles];
             for (int i = 0; i < nTiles; i++)
             {
-                tileUtilities[i] = 1.0f - ((1.0f + Vector3.Dot(cameraForward, TileOrientation[i]))/2);
+                Vector3 thisTileOrientation = TileOrientation[i];
+                thisTileOrientation = transform.TransformDirection(thisTileOrientation);
+                tileUtilities[i] =  Vector3.Dot(cameraForward, thisTileOrientation);
                 if (debugDecisions) {
-                    Debug.Log($"{Name()}: tile={i}, orientation={TileOrientation[i]}, utility={tileUtilities[i]}");
+                    Debug.Log($"{Name()}: tile={i}, orientation={thisTileOrientation}, utility={tileUtilities[i]}");
                 }
             }
             //Sort tile utilities and apply the same sort to tileOrder
