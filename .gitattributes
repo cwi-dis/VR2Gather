@@ -140,4 +140,6 @@ Assets/Plugins/**       linguist-vendored
 *.rns                   lfs
 # Spine export file for Unity
 *.skel.bytes            lfs
-# xxxjack old
+# Files in bin/ directories are expected to be binaries
+bin/*					lfs
+

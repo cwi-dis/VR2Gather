@@ -8,6 +8,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Transport.TCP;
 using VRT.Transport.TCPReflector;
+using VRT.Transport.WebRTC;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -25,6 +26,7 @@ public class VRTInitializer : MonoBehaviour
         TransportProtocolDash.Register();
         TransportProtocolTCPDirect.Register();
         TransportProtocolTCPReflector.Register();
+        TransportProtocolWebRTC.Register();
         Debug.Log("VRTInitializer: Registering pipelines");
         PointCloudPipelineSelf.Register();
         PointCloudPipelineOther.Register();

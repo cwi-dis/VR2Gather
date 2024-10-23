@@ -37,6 +37,7 @@ namespace VRT.Orchestrator.Elements
         public string userPassword = "";
         public UserData userData;
         public SfuData sfuData;
+        public int webRTCClientId = -1;
 
         public User()
         {
