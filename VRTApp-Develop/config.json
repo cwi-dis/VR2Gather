@@ -44,7 +44,16 @@
         "maxPlayoutAhead": 0.066,
         "ignoreSynchronizer": true
     },
-    "Synchronizer": {
+    "TransportWebRTC": {
+        "peerExecutablePath": "../webRTC-helpers/%PLATFORM%/bin/WebRTCSFU-peer",
+        "peerInWindow": true,
+        "peerWindowDontClose": true,
+        "peerUDPPort": 8000,
+        "peerIPAddress": "127.0.0.1",
+        "logFileDirectory": null,
+        "debugLevel": 1
+    },
+	"Synchronizer": {
         "debugSynchronizer": false,
         "debugJitterBuffer": false,
         "minLatency": 100,
