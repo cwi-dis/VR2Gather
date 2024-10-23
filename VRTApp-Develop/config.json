@@ -9,7 +9,7 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "vrtiny",
+        "autoCreateForUser": "sap",
         "sessionName": "test-session",
         "sessionScenario": "Technical Playground",
         "sessionTransportProtocol": "tcp",
