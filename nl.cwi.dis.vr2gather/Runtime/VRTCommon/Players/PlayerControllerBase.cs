@@ -164,7 +164,7 @@ namespace VRT.Pilots.Common
                         avatar.SetActive(true);
                         this.pointcloud.SetActive(false);
                         Destroy(pcPipeline);
-                        throw;
+                        // xxxjack this breaks login: throw;
                     }
                     break;
                 case UserRepresentationType.AppDefinedRepresentationOne:
