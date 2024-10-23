@@ -31,12 +31,12 @@
     },
     "LocalUser": {
         "PCSelfConfig": {
-            "capturerTypeName": "synthetic",
+            "capturerTypeName": "prerecorded",
             "SynthReaderConfig": {
                 "nPoints": 60000
             },
             "PrerecordedReaderConfig": {
-                "folder": "C:/Users/jvdrhoof/GitHub/cwipc_test/Samples/loot-150K-4tiles"
+                "folder": "../../cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
             "frameRate": 5.0,
