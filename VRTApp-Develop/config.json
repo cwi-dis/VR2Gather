@@ -56,7 +56,7 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerTypeName": "auto",
+            "capturerTypeName": "developer",
             "CameraReaderConfig": {
                 "configFilename": ""
             },
@@ -76,7 +76,7 @@
             },
             "voxelSize": 0.005,
             "frameRate": 15.0,
-            "tiled": true,
+            "tiled": false,
             "Encoders": [
                 {
                     "octreeBits": 9
