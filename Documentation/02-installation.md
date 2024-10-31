@@ -2,6 +2,10 @@
 
 This section explains what you need to install to get started with developing a VR2Gather experience.
 
+The TL;DR is: you do not want to clone this repository, you want to install VR2Gather through the Unity package manager into your project.
+
+There is a sample repository <https://github.com/cwi-dis/VR2Gather_sample> that does just that.
+
 ## Hardware and operating system
 
 Currently the best platform for development is Windows 10/11 64 bit, with a decent GPU. An OpenXR-compatible HMD (Oculus Quest, Vive) is good to have but not a strict requirement, a lot of interaction can be done (or at least tested) with keyboard and mouse.
@@ -44,10 +48,7 @@ Instructions are in the [Port a VRTApp to the package](31-port-to-package.md) do
 
 ### Starting from scratch
 
-If you are starting from scratch it is easiest to make a copy of our empty `VRTApp-Sample` project:
-
-- You can find it at the top level of the <https://github.com/cwi-dis/VR2Gather> repository.
-- You may be able to download it as a ZIP file, instructions to be provided later.
+If you are starting from scratch it is easiest to make a copy of our <https://github.com/cwi-dis/VR2Gather_sample> repository.
 
 This project is pre-configured so it already includes the VR2Gather package and all if its dependencies.
 
