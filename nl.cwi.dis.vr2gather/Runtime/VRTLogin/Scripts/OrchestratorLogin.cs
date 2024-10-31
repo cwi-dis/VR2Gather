@@ -398,6 +398,7 @@ namespace VRT.Login
             }
             var configData = OrchestratorController.Instance.SelfUser.userData.AsJsonString();
             var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            Debug.Log("Full config filename: " + fullName);
             System.IO.File.WriteAllText(fullName, configData);
             Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
         }

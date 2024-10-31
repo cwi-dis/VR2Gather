@@ -1,0 +1,18 @@
+{
+    "name": "VRT.Transport.WebRTC",
+    "rootNamespace": "",
+    "references": [
+        "GUID:af6a1da4aa3e8478baf73e0bb3eddfee",
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:483ef9d2ea25bb34cb9cdc48962c5283"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -477,13 +477,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7818ebf5acaa84f5e8fd48553923f7fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionIndex: 0
   BodyTransform: {fileID: 1935332283100515012}
   CameraTransform: {fileID: 7845086807825369409}
   timeInterval: 500
   nextSampleTime: 0
   isPlayingBack: 0
   isRecording: 0
+  debug: 0
 --- !u!1 &2088947311060252771
 GameObject:
   m_ObjectHideFlags: 0
@@ -2635,6 +2635,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3771994549369435325, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4037853332143369839, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_IsActive
@@ -2749,6 +2754,11 @@ PrefabInstance:
         type: 3}
       propertyPath: localPlayerOnlyObjects.Array.data[1]
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7118474587514814776, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9024012130725533088, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}

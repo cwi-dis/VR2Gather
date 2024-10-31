@@ -910,6 +910,12 @@ MonoBehaviour:
   TransportDash:
     segmentSize: 1000
     segmentLife: 16000
+  TransportWebRTC:
+    peerExecutablePath: 
+    peerInWindow: 0
+    peerWindowDontClose: 0
+    peerUDPPort: 8000
+    peerIPAddress: 127.0.0.1
   PCs:
     Codec: cwi1
     defaultCellSize: 0.002
@@ -934,7 +940,7 @@ MonoBehaviour:
     latencyMaxIncrease: 33
     acceptDesyncOnDataUnavailable: 0
   LocalUser:
-    orchestratorConfigFilename: 
+    orchestratorConfigFilename: config-user.json
     PCSelfConfig:
       capturerType: 4
       capturerTypeName: 

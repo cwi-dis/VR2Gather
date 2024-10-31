@@ -7,6 +7,7 @@ using Statistics = Cwipc.Statistics;
 using VRT.UserRepresentation.Voice;
 using VRT.Transport.Dash;
 using VRT.Transport.TCP;
+using VRT.Transport.WebRTC;
 using VRT.Orchestrator.Elements;
 using Cwipc;
 using VRT.Pilots.Common;
@@ -96,10 +97,12 @@ namespace VRT.UserRepresentation.PointCloud
             for (int tileNum = 0; tileNum < networkTileDescription.tiles.Length; tileNum++)
             {
                 var tile = networkTileDescription.tiles[tileNum];
-                Debug.Log($"{Name()}: xxxjack tile {tileNum}: #qualities: {tile.qualities.Length}");
+                Debug.Log($"{Name()}: xxxjack tile#{tileNum}: #qualities: {tile.qualities.Length}");
+                int qualnum = 0;
                 foreach (var quality in tile.qualities)
                 {
-                    Debug.Log($"{Name()}: xxxjack tile {tileNum} quality: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
+                    Debug.Log($"{Name()}: xxxjack tile#{tileNum} quality#{qualnum}: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
+                    qualnum++;
                 }
             }
 
@@ -273,6 +276,13 @@ namespace VRT.UserRepresentation.PointCloud
                     Debug.Log($"{Name()}: xxxjack +tcpreader.setTileQualityIndex({tileIndex}, {qualIndex})");
                     _tcpreader.setTileQualityIndex(tileIndex, qualIndex);
                 }
+                return;
+            }
+            AsyncWebRTCReader_Tiled _webrtcreader = reader as AsyncWebRTCReader_Tiled;
+            if (_webrtcreader != null)
+            {
+                Debug.Log($"{Name()}: xxxjack +webrtcreader.setTileQualities({tileQualities})");
+                _webrtcreader.setTileQualities(tileQualities);
                 return;
             }
             Debug.LogError($"{Name()}: SelectTileQualities not implemented for reader {reader.Name()}");

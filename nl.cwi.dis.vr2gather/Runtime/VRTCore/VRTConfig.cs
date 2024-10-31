@@ -101,6 +101,18 @@ namespace VRT.Core
         }
         [Tooltip("Settable parameters for DASH protocol")]
         public _TransportDash TransportDash;
+        [Serializable]
+        public class _TransportWebRTC
+        {
+            public string peerExecutablePath;
+            public bool peerInWindow = false;
+            public bool peerWindowDontClose = false;
+            public int peerUDPPort = 8000;
+            public string peerIPAddress = "127.0.0.1";
+            public string logFileDirectory = null;
+            public int debugLevel = 0;
+        }
+        public _TransportWebRTC TransportWebRTC;
 
         [Serializable]
         public class _PC : Cwipc.CwipcConfig {
@@ -150,6 +162,21 @@ namespace VRT.Core
         }
         [Tooltip("Avatar media stream synchronizer parameters")]
         public _Synchronizer Synchronizer;
+
+        [Serializable]
+        public class _TileSelector {
+            [Tooltip("Algorithm for selection. Default: none")]
+            public string algorithm;
+            [Tooltip("Print log messages to allow debugging the decisions of the tile selector")]
+            public bool debugDecisions = false;
+            [Tooltip("Override bitrate budget with a static value if non-zero (in stead of measuring it)")]
+            public int bitrateBudget;
+
+
+        }
+
+        [Tooltip("Tile selection algorithm parameters")]
+        public _TileSelector TileSelector;
 
         [Serializable]
         public class _User
@@ -320,10 +347,6 @@ namespace VRT.Core
                     LocalUser.PCSelfConfig.capturerType = _User._PCSelfConfig.PCCapturerType.none;
                 }
             }
-            if (string.IsNullOrEmpty(LocalUser.orchestratorConfigFilename))
-            {
-                LocalUser.orchestratorConfigFilename = "config-user.json";
-            }
             // Initialize some other modules that have their own configuration.
 #if VRT_WITH_STATS
             Statistics.Initialize(this.statsInterval, this.statsOutputFile, this.statsOutputFileAppend);
@@ -351,6 +374,7 @@ namespace VRT.Core
                 if (clConfigFile != null)
                 {
                     clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
+                    Debug.Log("Config filename: " + clConfigFile);
                     return clConfigFile;
                 }
             }

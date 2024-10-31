@@ -35,6 +35,17 @@ At the toplevel folder you will find the source of the Unity package, `nl.cwi.di
 You will also find 2 Unity projects:
 
 - `VRTApp-Develop` is a pretty empty project that imports `nl.cwi.dis.vr2gather` by relative pathname. This has the advantage that as you make changes to any of the files from the package these changes will be made in-place, so you can then commit and push them later. There is also a trick with a symlink used to include the Samples into this project.
+
+  **Note:** to use `VRTApp-Develop` on Windows you **must** first enable symlinks with the following steps. You may have to do a fresh clone of the repository (after following these steps):
+
+  - First enable them for Windows itself, in _Settings, Privacy & Security_, _Developer Mode_
+  - Then run the following two commands (the second only if you have checked out already):
+    
+    ```
+    git config --global core.symlinks true
+    git config --local core.symlinks true
+
+    ```
 - `VRTApp-Sample` imports the package normally, i.e. using the github URL. So after you have made changes using VRTApp-Develop and pushed those changes you can open VRTApp-Sample, update the package, re-install the samples, and check that your changes actually work and have been pushed.
 
 After making changes, and before pushing or testing with VRTApp-Sample you should _always_ change the package version number in `nl.cwi.dis.vr2gather/package.json`. Otherwise the Unity package manager will think that package has not changed and it will not re-import it.

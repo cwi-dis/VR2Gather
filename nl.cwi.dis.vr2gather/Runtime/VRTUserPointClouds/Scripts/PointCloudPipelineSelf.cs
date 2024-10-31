@@ -148,7 +148,10 @@ namespace VRT.UserRepresentation.PointCloud
                         tilesToTransmit = tilesToTransmit[1..];
                         for (int i = 0; i < tilesToTransmit.Length; i++)
                         {
-                            Debug.Log($"{Name()}: tiling sender: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
+                            // The "normal" entries are actually more like "camera position".
+                            // convert to unit vectors
+                            tilesToTransmit[i].normal = Vector3.Normalize(tilesToTransmit[i].normal);
+                            Debug.Log($"{Name()}: tiling sender: tile {i}: orientation=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
                         }
                     }
                 }

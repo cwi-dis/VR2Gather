@@ -28,6 +28,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         throw new System.Exception($"PointCloudCapturerFactory: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
                     }
+                    Debug.Log($"prConfig.folder: {prConfig.folder}");
                     return new AsyncPrerecordedReader(prConfig.folder, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.proxy:
                     var ProxyReaderConfig = config.ProxyReaderConfig;
