@@ -133,6 +133,7 @@ MonoBehaviour:
   fadeOutText: 
   allowDirectInteractionInScene: 1
   sceneIsSingleUser: 0
+  NextSceneOnSessionEnd: VRTLoginManager
   m_directInteractionDisabled: 0
 --- !u!1 &2108755284350789988
 GameObject:
@@ -225,7 +226,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4459796575924025039}
   m_Layer: 0
-  m_Name: Player Initial Locations
+  m_Name: SpawnLocations
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
