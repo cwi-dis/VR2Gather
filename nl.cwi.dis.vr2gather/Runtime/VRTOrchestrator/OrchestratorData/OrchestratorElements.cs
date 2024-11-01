@@ -155,6 +155,25 @@ namespace VRT.Orchestrator.Elements
             return null;
         }
 
+        public User GetUserByIndex(int idx)
+        {
+            return sessionUserDefinitions[idx];
+        }
+
+        public int GetUserIndex(string userID)
+        {
+            int idx = 0;
+            foreach(var userDefinition in sessionUserDefinitions)
+            {
+                if (userDefinition.userId == userID)
+                {
+                    return idx;
+                }
+                idx++;
+            }
+            return -1;            
+        }
+
         public int GetUserCount()
         {
             return sessionUserDefinitions.Count;

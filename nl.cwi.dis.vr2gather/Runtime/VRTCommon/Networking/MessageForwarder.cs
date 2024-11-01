@@ -25,6 +25,8 @@ namespace VRT.Pilots.Common
 		TID_SyncConfigMessage = 115,
 		TID_NetworkInstantiatorData = 116,
 		TID_PersistenceManagerData = 117,
+		TID_FishnetStartupData = 118,
+		TID_FishnetMessage = 119
 	};
 
 	/// <summary>
