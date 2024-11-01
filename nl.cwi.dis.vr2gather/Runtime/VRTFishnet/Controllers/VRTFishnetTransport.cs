@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-
+namespace VRT.Fishnet {
     public class VRTFishnetTransport : Transport
     {
         const int _mtu = 1000;
@@ -23,8 +23,9 @@ using System;
             Shutdown();
         }
       
-        public string Name() {
-            return "VRTFishnetTransport";
+        public string Name()
+        {
+            return GetType().Name;
         }
 
         /// <summary>
@@ -417,4 +418,5 @@ using System;
         
         }
    
+    }
 }
