@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.Events;
 using FishNet.Object;
+using System.Collections.Generic;
 
 namespace VRT.Fishnet {
     public class VRTFishnetTrigger : NetworkBehaviour
     {
-        [Tooltip("Audio source to play")]
-        [SerializeField] private AudioSource m_AudioSource;
+        [Tooltip("The events this component will forward")]
+        public List<UnityEvent> Events;
+
         [Tooltip("Introspection: enable for debug output")]
         [SerializeField] private bool debug = false;
         static int instanceCounter = 0;
@@ -30,29 +33,30 @@ namespace VRT.Fishnet {
             if (debug) Debug.Log($"{Name()}: OnDisable");
         }
 
-        public void LocalEventFire()
+        public void LocalEventTrigger(int index)
         {
-            if (debug) Debug.Log($"{Name()}: Firing Event");
-
-            ServerRPCPlaySound();
+            if (debug) Debug.Log($"{Name()}: LocalEventTrigger({index}) called");
+            if (Events == null || index >= Events.Count) {
+                Debug.LogWarning($"{Name()}: LocalEventTrigger: index={index} but no such Event");
+            }
+            ServerEventTrigger(index);
         }
 
 
         [ServerRpc(RequireOwnership = false)]
-        public void ServerRPCPlaySound()
+        public void ServerEventTrigger(int index)
         {
-            if (debug) Debug.Log($"{Name()}: ServerRPCPlaySound: called");
+            if (debug) Debug.Log($"{Name()}: ServerEventTrigger({index}) called");
 
-            ObserversRPCPlaySound();
+            ObserverEventTrigger(index);
             
         }
 
         [ObserversRpc]
-        public void ObserversRPCPlaySound()
+        public void ObserverEventTrigger(int index)
         {
-            if (debug) Debug.Log($"{Name()}: ObserversRPCPlaySound: called");
-            m_AudioSource.Play();
-
+            if (debug) Debug.Log($"{Name()}: ObserverEventTrigger({index}) called");
+            Events[index].Invoke();
         }
     }
 }
