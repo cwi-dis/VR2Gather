@@ -71,7 +71,7 @@ namespace VRT.Transport.TCPReflector
             connection = TransportProtocolTCPReflector.Connect(remoteUrl);
             for (int i = 0; i < this.descriptors.Length; ++i)
             {
-                this.descriptors[i].name = $"{userId}/{streamName}/{this.descriptors[i].tileNumber}";
+                this.descriptors[i].name = $"{userId}/{streamName}/{i}";
                 Debug.Log($"{Name()}:  xxxjack RegisterForDataStream {i}: {this.descriptors[i].name}");
                 IncomingStreamHandler handler = new(this, i, this.descriptors[i].outQueue);
                 connection.RegisterIncomingStream(this.descriptors[i].name, handler);
