@@ -1,26 +1,48 @@
 {
     "targetFrameRate": -1,
     "ntpSyncThreshold": 0.100,
-    "statsInterval": 10,
+    "statsInterval": 10.0,
     "statsOutputFile": "",
     "statsOutputFileAppend": false,
-    "orchestratorURL_gent": "http://193.190.127.250:8090/",
-    "orchestratorURL_cwi": "http://192.16.197.145:8090/",
-    "orchestratorURL": "http://192.16.197.145:8090/",
+    "ffmpegDLLDir": "../ffmpeg/x64",
+    "ScreenshotTool": {
+        "takeScreenshot": false,
+        "screenshotTargetDirectory": ""
+    },
     "AutoStart": {
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "sap",
+        "autoCreateForUser": "",
         "sessionName": "test-session",
         "sessionScenario": "Technical Playground",
-        "sessionTransportProtocol": "tcp",
+        "sessionTransportProtocol": "socketio",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
         "autoStartWith": 2,
-        "autoLeaveAfter": 0,
-        "autoStopAfterLeave": true,
+        "autoLeaveAfter": 0.0,
+        "autoStopAfterLeave": false,
         "autoDelay": 1.5
+    },
+    "Macintosh": {
+        "SIGNALS_SMD_PATH": "Assets/ExternalAssets/VR2G-nativeLibraries/VRTNativeLibraries/Plugins/mac/"
+    },
+    "PCs": {
+        "Codec": "cwi1",
+        "defaultCellSize": 0.002,
+        "cellSizeFactor": 1.0,
+        "debugColorize": false,
+        "timeoutBeforeGhosting": 5.0,
+        "decoderQueueSizeOverride": 0,
+        "preparerQueueSizeOverride": 0,
+        "encoderParallelism": 0,
+        "decoderParallelism": 0
+    },
+    "Voice": {
+        "audioFps": 50,
+        "maxPlayoutLatency": 0.300,
+        "maxPlayoutAhead": 0.066,
+        "ignoreSynchronizer": true
     },
     "TransportWebRTC": {
         "peerExecutablePath": "../webRTC-helpers/%PLATFORM%/bin/WebRTCSFU-peer",
@@ -31,31 +53,56 @@
         "logFileDirectory": null,
         "debugLevel": 1
     },
+	"Synchronizer": {
+        "debugSynchronizer": false,
+        "debugJitterBuffer": false,
+        "minLatency": 100,
+        "maxLatency": 5000,
+        "latencyMaxDecrease": 1,
+        "latencyMaxIncrease": 33,
+        "acceptDesyncOnDataUnavailable": false
+    },
     "LocalUser": {
+        "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerTypeName": "prerecorded",
+            "capturerTypeName": "developer",
+            "CameraReaderConfig": {
+                "configFilename": ""
+            },
+            "RemoteCameraReaderConfig": {
+                "url": "",
+                "isCompressed": false
+            },
+            "ProxyReaderConfig": {
+                "localIP": "",
+                "port": 9335
+            },
             "SynthReaderConfig": {
-                "nPoints": 60000
+                "nPoints": 16000
             },
             "PrerecordedReaderConfig": {
-                "folder": "../../cwipc_test/Samples/loot-150K-4tiles"
+                "folder": "../cwipc_test/Samples/loot-150K-4tiles"
             },
-            "voxelSize": 0.0,
-            "frameRate": 5.0,
-            "tiled": true,
+            "voxelSize": 0.005,
+            "frameRate": 15.0,
+            "tiled": false,
             "Encoders": [
                 {
-                    "octreeBits": 5
-                },
-				{
                     "octreeBits": 9
-                }            
-			]
+                }
+            ],
+            "Bin2Dash": {
+                "segmentSize": 1000,
+                "segmentLife": 16000
+            },
+            "AudioBin2Dash": {
+                "segmentSize": 1000,
+                "segmentLife": 16000
+            }
+        },
+        "PositionTracker" : {
+        	"outputFile" : "",
+        	"inputFile" : ""
         }
-    },
-    "TileSelector" : {
-    	"algorithm" : "frontTileBest",
-    	"debugDecisions" : true,
-    	"bitrateBudget" : 100000
     }
 }
