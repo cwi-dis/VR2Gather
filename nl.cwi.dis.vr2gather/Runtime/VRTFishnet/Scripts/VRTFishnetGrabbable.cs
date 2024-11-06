@@ -23,9 +23,11 @@ namespace VRT.Fishnet
 
 		[Tooltip("The grabbable object itself")]
 		public Rigidbody Rigidbody;
+		[Tooltip("The NetworkObject of the grabbable object itself")]
+		public NetworkObject NetworkObject;
 		
 		[Tooltip("Introspection/debug: is the object grabbed and transmitting its position?")]
-		[SerializeField] private bool isGrabbed;
+		[SerializeField] private bool isGrabbedByMe;
         [Tooltip("Print logging messages on important changes")]
         [SerializeField] bool debug = false;
 
@@ -70,20 +72,59 @@ namespace VRT.Fishnet
 
 		public void OnGrab()
 		{
-			if (debug) Debug.Log($"Grabbable({name}): grabbed");
-			isGrabbed = true;
+			if (debug) Debug.Log($"FishnetGrabbable({name}): grabbed by me");
+			isGrabbedByMe = true;
 			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = false;
-			SendRigidbodySyncMessage();
+			OnGrabServer(NetworkObject);
 		}
 
 		public void OnRelease()
 		{
-			if (debug) Debug.Log($"Grabbable({name}): released");
-			isGrabbed = false;
+			if (debug) Debug.Log($"FishnetGrabbable({name}): released by me");
+			isGrabbedByMe = false;
 			Rigidbody.isKinematic = false;
 			Rigidbody.useGravity = true;
-			SendRigidbodySyncMessage();
+			OnReleaseServer(NetworkObject);
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void OnGrabServer(NetworkObject nob)
+		{
+			if (debug) Debug.Log($"FishnetGrabbable({name}): server: grabbed by someone");
+			nob.GiveOwnership(base.Owner);
+			OnGrabObserver(nob);
+		}
+
+		[ObserversRpc]
+		public void OnGrabObserver(NetworkObject nob)
+		{
+			if (nob.IsOwner) {
+				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: grabbed by me");
+			}
+			else
+			{
+				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: grabbed by someone else");
+			}		
+		}
+
+		[ServerRpc(RequireOwnership = false)]
+		public void OnReleaseServer(NetworkObject nob)
+		{
+			if (debug) Debug.Log($"FishnetGrabbable({name}): server: released by someone");
+			OnReleaseObserver(nob);
+		}
+
+		[ObserversRpc]
+		public void OnReleaseObserver(NetworkObject nob)
+		{
+			if (nob.IsOwner) {
+				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by me");
+			}
+			else
+			{
+				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by someone else");
+			}
 		}
 
 #if xxxjackdeleted
