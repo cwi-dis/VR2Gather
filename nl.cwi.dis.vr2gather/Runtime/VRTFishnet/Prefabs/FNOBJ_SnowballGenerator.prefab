@@ -349,18 +349,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2841939553583149237}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Trigger
+      value: OnSpawnTrigger
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: VRT.Pilots.Common.NetworkInstantiator, Pilots
+      value: VRT.Fishnet.VRTFishnetSpawn, VRTFishnet
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
