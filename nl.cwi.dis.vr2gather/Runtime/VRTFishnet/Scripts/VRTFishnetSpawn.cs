@@ -4,7 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FishNetSpawn : NetworkBehaviour
+namespace VRT.Fishnet {
+public class VRTFishnetSpawn : NetworkBehaviour
 {
     [SerializeField]
     private GameObject _prefab;
@@ -24,8 +25,10 @@ public class FishNetSpawn : NetworkBehaviour
     }
 
     [ObserversRpc]
-    public void SetSpawnedObject(GameObject spawnedObject, FishNetSpawn script)
+    public void SetSpawnedObject(GameObject spawnedObject, VRTFishnetSpawn script)
     {
         script.spawnedObject = spawnedObject;
     }
+}
+
 }

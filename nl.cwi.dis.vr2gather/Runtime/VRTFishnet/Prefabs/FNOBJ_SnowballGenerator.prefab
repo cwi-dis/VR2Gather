@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 607547520380288696}
   - component: {fileID: 804744029634388579}
   m_Layer: 0
-  m_Name: OBJ_MudBallGeneratorFN
+  m_Name: FNOBJ_SnowballGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
