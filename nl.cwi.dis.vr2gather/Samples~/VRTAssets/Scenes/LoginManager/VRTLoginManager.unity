@@ -523,6 +523,7 @@ MonoBehaviour:
   fadeOutText: 
   allowDirectInteractionInScene: 0
   sceneIsSingleUser: 1
+  NextSceneOnSessionEnd: VRTLoginManager
   m_directInteractionDisabled: 0
   selfPlayer: {fileID: 1151372263}
 --- !u!4 &772475570
@@ -916,6 +917,8 @@ MonoBehaviour:
     peerWindowDontClose: 0
     peerUDPPort: 8000
     peerIPAddress: 127.0.0.1
+    logFileDirectory: 
+    debugLevel: 0
   PCs:
     Codec: cwi1
     defaultCellSize: 0.002
@@ -926,10 +929,12 @@ MonoBehaviour:
     preparerQueueSizeOverride: 0
     encoderParallelism: 0
     decoderParallelism: 0
+    preparerQueueSize: 0
   Voice:
     audioFps: 50
     maxPlayoutLatency: 0.066
     maxPlayoutAhead: 0.066
+    preparerQueueSize: 0
     ignoreSynchronizer: 1
   Synchronizer:
     debugSynchronizer: 0
@@ -939,6 +944,12 @@ MonoBehaviour:
     latencyMaxDecrease: 1
     latencyMaxIncrease: 33
     acceptDesyncOnDataUnavailable: 0
+  TileSelector:
+    algorithm: 
+    debugDecisions: 0
+    bitrateBudget: 0
+  VQEGLatencies: []
+  temp: 0
   LocalUser:
     orchestratorConfigFilename: config-user.json
     PCSelfConfig:
@@ -961,6 +972,10 @@ MonoBehaviour:
       tiled: 0
       Encoders:
       - octreeBits: 9
+    PositionTracker:
+      outputFile: 
+      outputIntervalOverride: 0
+      inputFile: 
   configOverrideFilename: 
 --- !u!114 &1542001137
 MonoBehaviour:

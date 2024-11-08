@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8141314486536374814}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8141314486536374815
 MonoBehaviour:
@@ -46,10 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scenarios:
   - scenarioName: Pilot 0
-    scenarioId: 8aef4fbe-e8a9-4e70-b009-0633e50cf356
+    scenarioId: 0120C503-AF72-4462-A305-100CE210016D
     scenarioDescription: Fairly empty test scenario
     scenarioSceneName: Pilot0
   - scenarioName: Technical Playground
-    scenarioId: fd170a0c-b52d-4541-af3d-5c18317e8f07
+    scenarioId: 2921ECDF-ECB2-4761-9BF8-19AA0A32AD92
     scenarioDescription: Scenario for developers to test new things
     scenarioSceneName: TechnicalPlayground

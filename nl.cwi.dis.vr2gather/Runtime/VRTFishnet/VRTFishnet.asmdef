@@ -1,0 +1,19 @@
+{
+    "name": "VRTFishnet",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:483ef9d2ea25bb34cb9cdc48962c5283",
+        "GUID:8830b9e06f5eb184f963f1aec82206c7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
