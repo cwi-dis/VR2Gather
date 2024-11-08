@@ -26,6 +26,10 @@ We mean it: please read the [Installation guide](Documentation/02-installation.m
 
 There is more documentation in [Documentation/01-overview.md](Documentation/01-overview.md) explaining how to develop your own VR experiences using VR2Gather.
 
+### Installing VR2Gather with Fishnet support
+
+For now: read the instructions in [Using Fish-net within VR2Gather](Documentation/05-fishnet.md) preliminary documentation on using Fish-net to create networked objects.
+
 ## Developing on VR2Gather itself
 
 If you want to make changes to VR2Gather you should check out this repository, <https://github.com/cwi-dis/VR2Gather>. But really only then: otherwise just install the Unity package through the package manager (following the instructions above).
