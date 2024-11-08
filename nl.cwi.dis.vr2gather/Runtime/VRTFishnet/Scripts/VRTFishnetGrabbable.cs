@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 using FishNet.Object;
+using FishNet.Connection;
 
 namespace VRT.Fishnet
 {
@@ -91,10 +92,10 @@ namespace VRT.Fishnet
 		}
 
 		[ServerRpc(RequireOwnership = false)]
-		public void OnGrabServer(NetworkObject nob)
+		public void OnGrabServer(NetworkObject nob, NetworkConnection conn = null)
 		{
-			if (debug) Debug.Log($"FishnetGrabbable({name}): server: grabbed by someone");
-			nob.GiveOwnership(base.Owner);
+			if (debug) Debug.Log($"FishnetGrabbable({name}): server: grabbed by {conn.ClientId}");
+			nob.GiveOwnership(conn);
 			OnGrabObserver(nob);
 		}
 
