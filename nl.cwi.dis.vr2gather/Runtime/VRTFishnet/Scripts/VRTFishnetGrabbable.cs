@@ -23,11 +23,13 @@ namespace VRT.Fishnet
 
 		[Tooltip("The grabbable object itself")]
 		public Rigidbody Rigidbody;
-		[Tooltip("The NetworkObject of the grabbable object itself")]
-		public NetworkObject NetworkObject;
-		
-		[Tooltip("Introspection/debug: is the object grabbed and transmitting its position?")]
-		[SerializeField] private bool isGrabbedByMe;
+			
+		[Tooltip("Introspection/debug: does this instance want to grab this object?")]
+		[SerializeField] private bool wantToGrab;
+		[Tooltip("debug/introspection: have I grabbed the object?")]
+		[SerializeField] private bool haveGrabbed;
+		[Tooltip("debug/introspection: has someone grabbed this object?")]
+		[SerializeField] private bool someoneHasGrabbed;
         [Tooltip("Print logging messages on important changes")]
         [SerializeField] bool debug = false;
 
@@ -72,9 +74,9 @@ namespace VRT.Fishnet
 
 		public void OnGrab()
 		{
-			if (debug) Debug.Log($"FishnetGrabbable({name}): grabbed by me");
-			isGrabbedByMe = true;
-			Rigidbody.isKinematic = true;
+			if (debug) Debug.Log($"FishnetGrabbable({name}): I want to grab this object");
+			wantToGrab = true;
+			Rigidbody.isKinematic = false;
 			Rigidbody.useGravity = false;
 			OnGrabServer(NetworkObject);
 		}
@@ -82,8 +84,8 @@ namespace VRT.Fishnet
 		public void OnRelease()
 		{
 			if (debug) Debug.Log($"FishnetGrabbable({name}): released by me");
-			isGrabbedByMe = false;
-			Rigidbody.isKinematic = false;
+			wantToGrab = false;
+			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = true;
 			OnReleaseServer(NetworkObject);
 		}
@@ -101,11 +103,17 @@ namespace VRT.Fishnet
 		{
 			if (nob.IsOwner) {
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: grabbed by me");
+				haveGrabbed = true;
+				Rigidbody.isKinematic = false;
+				Rigidbody.useGravity = false;
 			}
 			else
 			{
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: grabbed by someone else");
-			}		
+				Rigidbody.isKinematic = false;
+				Rigidbody.useGravity = false;
+			}
+			someoneHasGrabbed = true;
 		}
 
 		[ServerRpc(RequireOwnership = false)]
@@ -120,11 +128,19 @@ namespace VRT.Fishnet
 		{
 			if (nob.IsOwner) {
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by me");
+				// I no longer hold the object, but I'm still the Fishnet owner.
+				// I have to take care of physics
+				Rigidbody.isKinematic = true;
+				Rigidbody.useGravity = true;
 			}
 			else
 			{
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by someone else");
+				Rigidbody.isKinematic = false;
+				Rigidbody.useGravity = false;
 			}
+			haveGrabbed = false;
+			someoneHasGrabbed = false;
 		}
 
 #if xxxjackdeleted
