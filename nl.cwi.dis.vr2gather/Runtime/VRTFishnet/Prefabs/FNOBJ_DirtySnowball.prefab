@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 6969796995701224486}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.091, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.099999994, y: 0.099999994, z: 0.099999994}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -99,7 +99,7 @@ PrefabInstance:
     - target: {fileID: 6886076587129330562, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
         type: 3}
       propertyPath: m_Name
-      value: FNOBJ_DirtySnowball Variant
+      value: FNOBJ_DirtySnowball
       objectReference: {fileID: 0}
     - target: {fileID: 6886076587129330563, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
         type: 3}
@@ -150,6 +150,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6886076587129330567, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6886076587129330567, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6886076587129330567, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: m_Size.z
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
