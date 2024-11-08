@@ -5825,11 +5825,6 @@ PrefabInstance:
       propertyPath: <SceneId>k__BackingField
       value: 3954776557
       objectReference: {fileID: 0}
-    - target: {fileID: 4663717657794984093, guid: 0b94e5c4329994276aec2959ceeca88e,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5201834997571227504, guid: 0b94e5c4329994276aec2959ceeca88e,
         type: 3}
       propertyPath: m_LocalPosition.x
