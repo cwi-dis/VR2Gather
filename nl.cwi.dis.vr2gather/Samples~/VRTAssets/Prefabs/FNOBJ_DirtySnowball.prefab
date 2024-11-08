@@ -96,6 +96,11 @@ PrefabInstance:
       propertyPath: <SceneId>k__BackingField
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: <AssetPathHash>k__BackingField
+      value: 8679263149696634321
+      objectReference: {fileID: 0}
     - target: {fileID: 6886076587129330562, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
         type: 3}
       propertyPath: m_Name
