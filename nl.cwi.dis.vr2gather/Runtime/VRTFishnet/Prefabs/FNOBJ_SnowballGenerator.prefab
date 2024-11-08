@@ -51,18 +51,17 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours:
-  - {fileID: 2841939553583149237}
-  <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
-  <NestedRootNetworkBehaviours>k__BackingField: []
-  SerializedTransformProperties:
-    Position: {x: 0, y: 1.086, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
+  <PredictedOwner>k__BackingField: {fileID: 0}
+  NetworkBehaviours: []
+  InitializedParentNetworkBehaviour: {fileID: 0}
+  InitializedNestedNetworkObjects: []
+  RuntimeParentNetworkBehaviour: {fileID: 0}
+  RuntimeChildNetworkBehaviours: []
   _isNetworked: 1
   _isSpawnable: 1
   _isGlobal: 0
   _initializeOrder: 0
+  _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
@@ -80,8 +79,12 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
-  <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11861288167797045940
+  <SceneId>k__BackingField: 0
+  SerializedTransformProperties:
+    Position: {x: 0, y: 1.086, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
 --- !u!1 &684847298172888335
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,7 +96,7 @@ GameObject:
   - component: {fileID: 5566137245459302431}
   - component: {fileID: 2841939553583149237}
   m_Layer: 0
-  m_Name: MudBallGenerator
+  m_Name: SnowballGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -129,8 +132,8 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 804744029634388579}
   _networkObjectCache: {fileID: 804744029634388579}
-  _perfab: {fileID: 0}
-  _spawnLocation: {fileID: 0}
+  _prefab: {fileID: 5201834997571227505, guid: 0b94e5c4329994276aec2959ceeca88e, type: 3}
+  _spawnLocation: {fileID: 6585751632883836033}
 --- !u!1 &4393325596395211223
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,7 +147,7 @@ GameObject:
   - component: {fileID: 2846609432346223998}
   - component: {fileID: 7263737895181983596}
   m_Layer: 0
-  m_Name: MudBallGeneratorBase
+  m_Name: SnowballGeneratorBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -246,7 +249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6585751632883836033}
   m_Layer: 0
-  m_Name: MudBallLocation
+  m_Name: SnowballLocation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -364,6 +367,11 @@ PrefabInstance:
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 6546110161108735391, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 30cc6f306c5d73145a684ac0f2f4e724, type: 2}
     - target: {fileID: 7893439252189855620, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
       propertyPath: m_Name
