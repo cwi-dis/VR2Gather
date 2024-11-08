@@ -93,6 +93,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
         type: 3}
+      propertyPath: _isSpawnable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
       propertyPath: <SceneId>k__BackingField
       value: 0
       objectReference: {fileID: 0}
