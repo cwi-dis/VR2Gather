@@ -5,7 +5,7 @@
 In stead of adding the "normal" VR2Gather to your project with the package manager you add the fishnet branch, by using URL:
 
 ```
-git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather
+git+https://github.com/cwi-dis/VR2Gather?path=/nl.cwi.dis.vr2gather#vrtfishnet
 ```
 
 Next import the samples.
