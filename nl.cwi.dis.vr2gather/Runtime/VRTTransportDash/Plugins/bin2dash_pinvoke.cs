@@ -28,7 +28,7 @@ namespace VRT.Transport.Dash
 
         private class _API
         {
-            public const string myDllName = "libbin2dash.dylib";
+            public const string myDllName = "bin2dash";
 
             // The BIN2DASH_API_VERSION must match with the DLL version. Copy from bin2dash.hpp
             // after matching the API used here with that in the C++ code.
