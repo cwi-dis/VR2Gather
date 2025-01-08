@@ -17,7 +17,7 @@
         "autoCreateForUser": "sap",
         "sessionName": "jack-lldash-test",
         "sessionScenario": "Pilot 0",
-        "sessionTransportProtocol": "",
+        "sessionTransportProtocol": "dash",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
         "autoStartWith": 2,
