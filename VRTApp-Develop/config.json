@@ -25,9 +25,6 @@
         "autoStopAfterLeave": false,
         "autoDelay": 1.0
     },
-    "Macintosh": {
-        "SIGNALS_SMD_PATH": "/Users/jack/src/VRTogether/lldash-installed/lldash-darwin-arm64-1.0/lib"
-    },
     "TransportDash": {
         "segmentSize": 1000,
         "segmentLife": 16000

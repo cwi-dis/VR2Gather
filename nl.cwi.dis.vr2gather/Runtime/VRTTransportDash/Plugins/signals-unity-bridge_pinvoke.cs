@@ -49,11 +49,7 @@ namespace VRT.Transport.Dash
         protected class _API
         {
 
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            const string myDllName = "signals-unity-bridge.dll";
-#else
-        const string myDllName = "signals-unity-bridge.so";
-#endif
+            const string myDllName = "signals-unity-bridge";
             // The SUB_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
             // after matching the API used here with that in the C++ code.
             const long SUB_API_VERSION = 0x20210729A;
