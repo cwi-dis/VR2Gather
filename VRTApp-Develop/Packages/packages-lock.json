@@ -230,11 +230,11 @@
       }
     },
     "nl.cwi.dis.vr2gather.nativelibraries": {
-      "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
+      "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries#exp-lldash",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "cd233771f01ae85fe54ee4ff31470e133b756b91"
+      "hash": "60d2b68671a1e4a79ad7202ff13343fc01ae4567"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
