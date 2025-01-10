@@ -99,6 +99,7 @@ namespace VRT.Transport.Dash
 
         public static connection create(string name, StreamDesc[] descriptors, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000)
         {
+            Loader.PreLoadModule(_API.myDllName);
             try
             {
                 delegate_vrt_create_ext tmpDelegate = _API.vrt_create_ext;
@@ -108,8 +109,8 @@ namespace VRT.Transport.Dash
             {
                 UnityEngine.Debug.LogError($"bin2dash: Cannot load {_API.myDllName} dynamic library");
             }
+            Loader.PostLoadModule(_API.myDllName);
         
-            sub.SetMSPaths(_API.myDllName);
             IntPtr obj = _API.vrt_create_ext(name, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
             if (obj == IntPtr.Zero)
                 return null;

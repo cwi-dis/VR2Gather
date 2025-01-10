@@ -216,6 +216,7 @@ namespace VRT.Transport.Dash
 
         public static connection create(string pipeline)
         {
+            Loader.PreLoadModule(_API.myDllName);
             try
             {
                 delegate_sub_create tmpDelegate = _API.sub_create;
@@ -225,7 +226,7 @@ namespace VRT.Transport.Dash
             {
                 UnityEngine.Debug.LogError($"bin2dash: Cannot load {_API.myDllName} dynamic library");
             }
-            SetMSPaths(_API.myDllName);
+            Loader.PostLoadModule(_API.myDllName);
             _API.MessageLogCallback errorCallback = (msg, level) =>
             {
                 string _pipeline = pipeline == null ? "unknown pipeline" : string.Copy(pipeline);
@@ -252,34 +253,6 @@ namespace VRT.Transport.Dash
             return rv;
         }
 
-        private static bool didSetMSPaths = false;
-
-        // This could be either here or in bin2dash_pinvoke. 
-        public static void SetMSPaths(string module_base)
-        {
-            if (didSetMSPaths) return;
-
-            IntPtr hMod = API_kernel.GetModuleHandle(module_base);
-            if (hMod == IntPtr.Zero)
-            {
-                UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get handle for {module_base}, GetModuleHandle returned NULL. PATH={Environment.GetEnvironmentVariable("PATH")}, SIGNALS_SMD_PATH={Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH")} ");
-                UnityEngine.Debug.LogError($"Cannot GetModuleHandle({module_base}). Try re-installing the application");
-                return;
-            }
-            StringBuilder modPath = new StringBuilder(255);
-            int rv = API_kernel.GetModuleFileName(hMod, modPath, 255);
-            if (rv < 0)
-            {
-                UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get filename for {module_base}, handle={hMod}, GetModuleFileName returned " + rv);
-                UnityEngine.Debug.LogError($"Cannot get filename for {module_base} from handle. Try re-installing the application");
-                return;
-            }
-            string dirName = Path.GetDirectoryName(modPath.ToString());
-            dirName = dirName.Replace("\\", "/");
-
-            UnityEngine.Debug.Log($"sub.SetMSPaths: SIGNALS_SMD_PATH={dirName}");
-            Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
-            didSetMSPaths = true;
-        }
+     
     }
 }
