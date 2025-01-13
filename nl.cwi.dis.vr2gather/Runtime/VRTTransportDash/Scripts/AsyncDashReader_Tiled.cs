@@ -22,6 +22,7 @@ namespace VRT.Transport.Dash
 
         public ITransportProtocolReader_Tiled Init(string _url, string userId, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         {
+            _url += "pcc/pointcloud.mpd";
             base._Init(_url, _streamName);
             lock (this)
             {
