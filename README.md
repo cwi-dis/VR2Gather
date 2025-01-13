@@ -28,13 +28,11 @@ There is more documentation in [Documentation/01-overview.md](Documentation/01-o
 
 ## Developing on VR2Gather itself
 
-If you want to make changes to VR2Gather you should check out this repository, <https://github.com/cwi-dis/VR2Gather>. But really only then: otherwise just install the Unity package through the package manager (following the instructions above).
+If you want to make changes to VR2Gather you should check out this repository, <https://github.com/cwi-dis/VR2Gather>. But really only then: otherwise just install the Unity package through the package manager (following the instructions above). The sample project that used to be available in this repository is no longer there, you really want to use <https://github.com/cwi-dis/VR2Gather_sample> as is explained in the installation guide.
 
 At the toplevel folder you will find the source of the Unity package, `nl.cwi.dis.vr2gather`.
 
-You will also find 2 Unity projects:
-
-- `VRTApp-Develop` is a pretty empty project that imports `nl.cwi.dis.vr2gather` by relative pathname. This has the advantage that as you make changes to any of the files from the package these changes will be made in-place, so you can then commit and push them later. There is also a trick with a symlink used to include the Samples into this project.
+You will also find a Unity project `VRTApp-Develop` which is a pretty empty project that imports `nl.cwi.dis.vr2gather` by relative pathname. This has the advantage that as you make changes to any of the files from the package these changes will be made in-place, so you can then commit and push them later. There is also a trick with a symlink used to include the Samples into this project.
 
   **Note:** to use `VRTApp-Develop` on Windows you **must** first enable symlinks with the following steps. You may have to do a fresh clone of the repository (after following these steps):
 
@@ -47,6 +45,4 @@ You will also find 2 Unity projects:
     git config --local core.symlinks true
 
     ```
-- `VRTApp-Sample` imports the package normally, i.e. using the github URL. So after you have made changes using VRTApp-Develop and pushed those changes you can open VRTApp-Sample, update the package, re-install the samples, and check that your changes actually work and have been pushed.
-
-After making changes, and before pushing or testing with VRTApp-Sample you should _always_ change the package version number in `nl.cwi.dis.vr2gather/package.json`. Otherwise the Unity package manager will think that package has not changed and it will not re-import it.
+After making changes, and before pushing or testing with `VR2Gather_sample` you should _always_ change the package version number in `nl.cwi.dis.vr2gather/package.json` and commit and push. Otherwise the Unity package manager will think that package has not changed and it will not re-import it.
