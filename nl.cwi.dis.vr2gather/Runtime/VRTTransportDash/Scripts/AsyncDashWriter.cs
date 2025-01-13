@@ -34,6 +34,8 @@ namespace VRT.Transport.Dash
 
         public ITransportProtocolWriter Init(string _url, string userId, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
+            _url = TransportProtocolDash.CombineUrl(_url, _streamName, false);
+
             int _segmentSize = VRTConfig.Instance.TransportDash.segmentSize;
             int _segmentLife = VRTConfig.Instance.TransportDash.segmentLife;
             if (_descriptions == null || _descriptions.Length == 0)

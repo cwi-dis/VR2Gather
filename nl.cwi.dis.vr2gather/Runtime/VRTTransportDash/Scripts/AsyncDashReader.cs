@@ -196,8 +196,8 @@ namespace VRT.Transport.Dash
         bool clockCorrespondenceReceived = false;
 
         protected void _Init(string _url, string _streamName)
-        { // Orchestrator Based SUB
-            // closing the SUB may take long. Cater for that.
+        {
+            _url = TransportProtocolDash.CombineUrl(_url, _streamName, false);
             lock (this)
             {
                 joinTimeout = 20000;
@@ -207,13 +207,7 @@ namespace VRT.Transport.Dash
                     Debug.LogError($"{Name()}: configuration error: url or streamName not set");
                     throw new System.Exception($"{Name()}: configuration error: url or streamName not set");
                 }
-                if (!_url.EndsWith("/")) {
-                    _url += "/";
-                }
-                _url += _streamName;
-                if (!_url.EndsWith("/")) {
-                    _url += "/";
-                }
+                
                 url = _url;
                
             }
