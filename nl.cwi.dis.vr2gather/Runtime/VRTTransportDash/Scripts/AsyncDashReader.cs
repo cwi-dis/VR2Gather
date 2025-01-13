@@ -197,7 +197,7 @@ namespace VRT.Transport.Dash
 
         protected void _Init(string _url, string _streamName)
         {
-            _url = TransportProtocolDash.CombineUrl(_url, _streamName, false);
+            _url = TransportProtocolDash.CombineUrl(_url, _streamName, true);
             lock (this)
             {
                 joinTimeout = 20000;
