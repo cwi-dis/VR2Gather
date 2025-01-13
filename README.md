@@ -39,6 +39,7 @@ You will also find 2 Unity projects:
   **Note:** to use `VRTApp-Develop` on Windows you **must** first enable symlinks with the following steps. You may have to do a fresh clone of the repository (after following these steps):
 
   - First enable them for Windows itself, in _Settings, Privacy & Security_, _Developer Mode_
+    - This setting seems to have moved for some version of Windows 11. Search for _Developer_ in the System Settings.
   - Then run the following two commands (the second only if you have checked out already):
     
     ```
