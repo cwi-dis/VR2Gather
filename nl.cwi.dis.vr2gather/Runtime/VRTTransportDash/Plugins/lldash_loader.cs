@@ -25,8 +25,9 @@ namespace VRT.Transport.Dash
 
         public static void PostLoadModule(string module_base)
         {
-            // xxxjack if (didSetMSPaths) return;
-            
+            if (didSetMSPaths) return;
+#if old
+            // This code only works on Windows. And we don't need it anymore anyway, because we alsways include the dynamic libraries.
             IntPtr hMod = API_kernel.GetModuleHandle(module_base);
             if (hMod == IntPtr.Zero)
             {
@@ -44,7 +45,9 @@ namespace VRT.Transport.Dash
             }
             string dirName = Path.GetDirectoryName(modPath.ToString());
             dirName = dirName.Replace("\\", "/");
-
+#else
+            string dirName = VRT.NativeLibraries.VRTNativeLoader.platformLibrariesPath;
+#endif
             UnityEngine.Debug.Log($"VRT.Transport.Dash.Loader: SIGNALS_SMD_PATH={dirName}");
             Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
             didSetMSPaths = true;
