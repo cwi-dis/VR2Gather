@@ -15,7 +15,7 @@ namespace VRT.Transport.Dash
 
         public static void PreLoadModule(string module_base)
         {
-#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+#if old // UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             string libPath = Path.Combine(VRT.NativeLibraries.VRTNativeLoader.platformLibrariesPath, module_base);
             UnityEngine.Debug.Log($"VRT.Transport.Dash.Loader: will call LoadLibrary({libPath})");
             IntPtr rv = API_kernel.LoadLibrary(libPath);
