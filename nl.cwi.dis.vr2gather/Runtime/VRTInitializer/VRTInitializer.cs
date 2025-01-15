@@ -21,8 +21,6 @@ public class VRTInitializer : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        Debug.Log("VRTInitializer: set DYLD_PRINT_LIBRARIES=YES");
-        System.Environment.SetEnvironmentVariable("DYLD_PRINT_LIBRARIES", "YES");
         Debug.Log("VRTInitializer: Registering transport protocols");
         TransportProtocolSocketIO.Register();
         TransportProtocolDash.Register();
