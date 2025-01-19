@@ -85,13 +85,6 @@ namespace VRT.Core
         public _AutoStart AutoStart;
 
         [Serializable]
-        public class _Macintosh
-        {
-            public string SIGNALS_SMD_PATH;
-        };
-        public _Macintosh Macintosh;
-
-        [Serializable]
         public class _TransportDash
         {
             [Tooltip("How many milliseconds one transmitted DASH segment should contain")]
