@@ -1,6 +1,7 @@
 {
+    "orchestratorURL": "http://192.16.197.145:8090/",
     "targetFrameRate": -1,
-    "ntpSyncThreshold": 0.100,
+    "ntpSyncThreshold": 0.10000000149011612,
     "statsInterval": 10.0,
     "statsOutputFile": "",
     "statsOutputFileAppend": false,
@@ -13,47 +14,50 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "",
-        "sessionName": "test-session",
-        "sessionScenario": "Technical Playground",
-        "sessionTransportProtocol": "socketio",
+        "autoCreateForUser": "beelzebub",
+        "sessionName": "jack-lldash-test",
+        "sessionScenario": "Pilot 0",
+        "sessionTransportProtocol": "dash",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
         "autoStartWith": 2,
         "autoLeaveAfter": 0.0,
         "autoStopAfterLeave": false,
-        "autoDelay": 1.5
+        "autoDelay": 1.0
     },
-    "Macintosh": {
-        "SIGNALS_SMD_PATH": "Assets/ExternalAssets/VR2G-nativeLibraries/VRTNativeLibraries/Plugins/mac/"
+    "TransportDash": {
+        "segmentSize": 1000,
+        "segmentLife": 16000
+    },
+    "TransportWebRTC": {
+        "peerExecutablePath": "",
+        "peerInWindow": false,
+        "peerWindowDontClose": false,
+        "peerUDPPort": 8000,
+        "peerIPAddress": "127.0.0.1",
+        "logFileDirectory": "",
+        "debugLevel": 0
     },
     "PCs": {
         "Codec": "cwi1",
-        "defaultCellSize": 0.002,
+        "defaultCellSize": 0.0020000000949949028,
         "cellSizeFactor": 1.0,
         "debugColorize": false,
         "timeoutBeforeGhosting": 5.0,
         "decoderQueueSizeOverride": 0,
         "preparerQueueSizeOverride": 0,
         "encoderParallelism": 0,
-        "decoderParallelism": 0
+        "decoderParallelism": 0,
+        "preparerQueueSize": 0
     },
     "Voice": {
         "audioFps": 50,
-        "maxPlayoutLatency": 0.300,
-        "maxPlayoutAhead": 0.066,
+        "maxPlayoutLatency": 0.06599999964237213,
+        "maxPlayoutAhead": 0.06599999964237213,
+        "preparerQueueSize": 0,
         "ignoreSynchronizer": true
     },
-    "TransportWebRTC": {
-        "peerExecutablePath": "../webRTC-helpers/%PLATFORM%/bin/WebRTCSFU-peer",
-        "peerInWindow": true,
-        "peerWindowDontClose": true,
-        "peerUDPPort": 8000,
-        "peerIPAddress": "127.0.0.1",
-        "logFileDirectory": null,
-        "debugLevel": 1
-    },
-	"Synchronizer": {
+    "Synchronizer": {
         "debugSynchronizer": false,
         "debugJitterBuffer": false,
         "minLatency": 100,
@@ -62,10 +66,18 @@
         "latencyMaxIncrease": 33,
         "acceptDesyncOnDataUnavailable": false
     },
+    "TileSelector": {
+        "algorithm": "",
+        "debugDecisions": false,
+        "bitrateBudget": 0
+    },
+    "VQEGLatencies": [],
+    "temp": 0,
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerTypeName": "developer",
+            "capturerType": 4,
+            "capturerTypeName": "",
             "CameraReaderConfig": {
                 "configFilename": ""
             },
@@ -83,26 +95,20 @@
             "PrerecordedReaderConfig": {
                 "folder": "../cwipc_test/Samples/loot-150K-4tiles"
             },
-            "voxelSize": 0.005,
+            "voxelSize": 0.0,
             "frameRate": 15.0,
             "tiled": false,
             "Encoders": [
                 {
                     "octreeBits": 9
                 }
-            ],
-            "Bin2Dash": {
-                "segmentSize": 1000,
-                "segmentLife": 16000
-            },
-            "AudioBin2Dash": {
-                "segmentSize": 1000,
-                "segmentLife": 16000
-            }
+            ]
         },
-        "PositionTracker" : {
-        	"outputFile" : "",
-        	"inputFile" : ""
+        "PositionTracker": {
+            "outputFile": "",
+            "outputIntervalOverride": 0,
+            "inputFile": ""
         }
-    }
+    },
+    "configOverrideFilename": ""
 }
