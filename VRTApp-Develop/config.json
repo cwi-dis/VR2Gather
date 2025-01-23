@@ -10,7 +10,7 @@
         "takeScreenshot": false,
         "screenshotTargetDirectory": ""
     },
-    "AutoStart": {
+    "_AutoStart": {
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
