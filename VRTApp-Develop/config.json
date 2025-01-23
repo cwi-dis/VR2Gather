@@ -14,7 +14,7 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "sap",
+        "autoCreateForUser": "beelzebub",
         "sessionName": "jack-lldash-test",
         "sessionScenario": "Pilot 0",
         "sessionTransportProtocol": "dash",
