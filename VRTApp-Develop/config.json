@@ -1,5 +1,5 @@
 {
-    "orchestratorURL": "http://sap.local:8090/",
+    "orchestratorURL": "http://192.16.197.145:8090/",
     "targetFrameRate": -1,
     "ntpSyncThreshold": 0.10000000149011612,
     "statsInterval": 10.0,
