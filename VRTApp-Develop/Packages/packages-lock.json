@@ -230,7 +230,7 @@
       }
     },
     "nl.cwi.dis.vr2gather.nativelibraries": {
-      "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=nl.cwi.dis.vr2gather.nativelibraries",
+      "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries",
       "depth": 0,
       "source": "git",
       "dependencies": {},
