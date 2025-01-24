@@ -238,10 +238,11 @@
       "hash": "e002c20d90ca445940cc256b43e9ee72e883f2a4"
     },
     "nl.cwi.dis.vr2gather.nativelibraries.webrtc": {
-      "version": "file:../../../VR2G-nativeLibraries-webrtc/nl.cwi.dis.vr2gather.nativelibraries.webrtc",
+      "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries-webrtc?path=/nl.cwi.dis.vr2gather.nativelibraries.webrtc",
       "depth": 0,
-      "source": "local",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "cd307bfcec3faffe1f70b6b920ad2e145f89e020"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
