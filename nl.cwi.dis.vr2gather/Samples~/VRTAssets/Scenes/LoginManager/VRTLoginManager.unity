@@ -834,9 +834,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1542001135}
   - component: {fileID: 1542001136}
+  - component: {fileID: 1542001134}
   - component: {fileID: 1542001137}
   - component: {fileID: 1542001138}
-  - component: {fileID: 1542001134}
   m_Layer: 0
   m_Name: VRTInitializer
   m_TagString: Untagged
