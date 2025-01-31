@@ -6,7 +6,8 @@
 	"documentationUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/README.md",
 	"changelogUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/nl.cwi.dis.vr2gather/CHANGELOG.md",
 	"dependencies": {
-		"nl.cwi.dis.vr2gather.nativelibraries": "0.9.1",
+		"nl.cwi.dis.vr2gather.nativelibraries": "0.9.5",
+		"nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.5",
 		"nl.cwi.dis.cwipc": "7.5.4",
 		"com.itisnajim.socketiounity": "1.1.4",
 		"com.unity.animation.rigging": "1.2.1",

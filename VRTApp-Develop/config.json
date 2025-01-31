@@ -31,12 +31,12 @@
     },
     "TransportWebRTC": {
         "peerExecutablePath": "",
-        "peerInWindow": false,
-        "peerWindowDontClose": false,
+        "peerInWindow": true,
+        "peerWindowDontClose": true,
         "peerUDPPort": 8000,
         "peerIPAddress": "127.0.0.1",
         "logFileDirectory": "",
-        "debugLevel": 0
+        "debugLevel": 1
     },
     "PCs": {
         "Codec": "cwi1",

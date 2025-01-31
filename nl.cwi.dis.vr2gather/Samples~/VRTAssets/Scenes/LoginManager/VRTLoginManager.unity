@@ -523,6 +523,7 @@ MonoBehaviour:
   fadeOutText: 
   allowDirectInteractionInScene: 0
   sceneIsSingleUser: 1
+  NextSceneOnSessionEnd: VRTLoginManager
   m_directInteractionDisabled: 0
   selfPlayer: {fileID: 1151372263}
 --- !u!4 &772475570
@@ -833,8 +834,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1542001135}
   - component: {fileID: 1542001136}
-  - component: {fileID: 1542001137}
   - component: {fileID: 1542001134}
+  - component: {fileID: 1542001137}
+  - component: {fileID: 1542001138}
   m_Layer: 0
   m_Name: VRTInitializer
   m_TagString: Untagged
@@ -905,8 +907,6 @@ MonoBehaviour:
     autoLeaveAfter: 0
     autoStopAfterLeave: 0
     autoDelay: 1
-  Macintosh:
-    SIGNALS_SMD_PATH: Assets/ExternalAssets/VR2G-nativeLibraries/VRTNativeLibraries/Plugins/mac/
   TransportDash:
     segmentSize: 1000
     segmentLife: 16000
@@ -916,6 +916,8 @@ MonoBehaviour:
     peerWindowDontClose: 0
     peerUDPPort: 8000
     peerIPAddress: 127.0.0.1
+    logFileDirectory: 
+    debugLevel: 0
   PCs:
     Codec: cwi1
     defaultCellSize: 0.002
@@ -926,10 +928,12 @@ MonoBehaviour:
     preparerQueueSizeOverride: 0
     encoderParallelism: 0
     decoderParallelism: 0
+    preparerQueueSize: 0
   Voice:
     audioFps: 50
     maxPlayoutLatency: 0.066
     maxPlayoutAhead: 0.066
+    preparerQueueSize: 0
     ignoreSynchronizer: 1
   Synchronizer:
     debugSynchronizer: 0
@@ -939,6 +943,12 @@ MonoBehaviour:
     latencyMaxDecrease: 1
     latencyMaxIncrease: 33
     acceptDesyncOnDataUnavailable: 0
+  TileSelector:
+    algorithm: 
+    debugDecisions: 0
+    bitrateBudget: 0
+  VQEGLatencies: []
+  temp: 0
   LocalUser:
     orchestratorConfigFilename: config-user.json
     PCSelfConfig:
@@ -961,6 +971,10 @@ MonoBehaviour:
       tiled: 0
       Encoders:
       - octreeBits: 9
+    PositionTracker:
+      outputFile: 
+      outputIntervalOverride: 0
+      inputFile: 
   configOverrideFilename: 
 --- !u!114 &1542001137
 MonoBehaviour:
@@ -975,6 +989,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nativeLibraries: {fileID: 11400000, guid: 0135e1be77466cc4daac21b2c7274297, type: 2}
+--- !u!114 &1542001138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542001133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f1ab292852224f3ba64e921fcd98f9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nativeLibraries: {fileID: 11400000, guid: 3e3761b38ce26486fab5bf7e13d230ae, type: 2}
 --- !u!850595691 &1673771068
 LightingSettings:
   m_ObjectHideFlags: 0
