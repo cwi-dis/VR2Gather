@@ -70,7 +70,9 @@ namespace VRT.UserRepresentation.PointCloud
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
             if (VRTConfig.Instance.PCs.preparerQueueSize > 0) {
                 pcPreparerQueueSize = VRTConfig.Instance.PCs.preparerQueueSize;
+#if VRT_WITH_STATS                
                 Statistics.Output(Name(), $"preparer_queue_size={pcPreparerQueueSize}");
+#endif
             }            
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
