@@ -6,7 +6,7 @@ using VRT.Core;
 using Debug = UnityEngine.Debug;
 using Cwipc;
 using System.Text;
-
+using VRT.NativeLibraries.Webrtc;
 namespace VRT.Transport.WebRTC
 {
     using Timestamp = System.Int64;
@@ -111,33 +111,22 @@ namespace VRT.Transport.WebRTC
                 peerWindowDontClose = VRTConfig.Instance.TransportWebRTC.peerWindowDontClose;
                 peerUDPPort = VRTConfig.Instance.TransportWebRTC.peerUDPPort;
                 peerIPAddress = VRTConfig.Instance.TransportWebRTC.peerIPAddress;
+                if (!string.IsNullOrEmpty(peerExecutablePath)) {
+                    // An override peer executable path is set in the config file.
+                    // Convert to absolute.
+                    string appPath = System.IO.Path.GetDirectoryName(Application.dataPath);
+                    peerExecutablePath = System.IO.Path.Combine(appPath, peerExecutablePath);
+                } else {
+                    string dir = VRT.NativeLibraries.Webrtc.VRTNativeLoader.platformLibrariesPath;
+                    peerExecutablePath = System.IO.Path.Combine(dir, "WebRTCSFU-peer.exe");
+                }
 
                 Debug.Log($"{Name()}: nReceiver={nReceivers}, nReceiverTracks={nReceiverTracks}, maxReceiverTracks={maxReceiverTracks}, nTransmitters={nTransmitters}, nTransmitterTracks={nTransmitterTracks}, nTracks={nTracks}, nTiles={nTiles}, nQualities={nQualities}");
                 //Thread.Sleep(2000);
                 int status = WebRTCConnectorPinvoke.initialize(peerIPAddress, (uint)peerUDPPort, peerIPAddress, (uint)peerUDPPort, (uint)nTracks, (uint)myClientId, api_version);
 
                 // xxxjack this is not correct for built Unity players.
-                string appPath = System.IO.Path.GetDirectoryName(Application.dataPath);
-                peerExecutablePath = System.IO.Path.Combine(appPath, peerExecutablePath);
-
-                // Replace %PLATFORM% in peerExecutablePath
-                string platform = "unknown";
-                switch (Application.platform)
-                {
-                    case RuntimePlatform.OSXEditor:
-                    case RuntimePlatform.OSXPlayer:
-                        platform = "macos";
-                        break;
-                    case RuntimePlatform.Android:
-                        platform = "android";
-                        break;
-                    case RuntimePlatform.WindowsEditor:
-                    case RuntimePlatform.WindowsPlayer:
-                        platform = "win";
-                        break;
-                }
-                peerExecutablePath = peerExecutablePath.Replace("%PLATFORM%", platform);
-
+                
                 peerProcess = new Process();
                 peerProcess.StartInfo.FileName = peerExecutablePath;
                 peerProcess.StartInfo.Arguments = $"-p :{peerUDPPort} -i -o -sfu {peerSFUAddress} -c {myClientId} -t {nTiles} -q {nQualities} -l {debugLevel}";

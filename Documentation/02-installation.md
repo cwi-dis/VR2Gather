@@ -73,8 +73,14 @@ If you already have a Unity project and want to add VR2Gather to it:
   ```
   git+https://github.com/cwi-dis/VR2G-nativeLibraries?path=/nl.cwi.dis.vr2gather.nativelibraries
   ```
+- Add the `nl.cwi.dis.vr2gather.nativelibraries.webrtc` package, by github url:
+ 
+  ```
+  git+https://github.com/cwi-dis/VR2G-nativeLibraries-webrtc?path=/nl.cwi.dis.vr2gather.nativelibraries.webrtc
+  ```
   
-  > This step needs to be done before the next step, it seems. We are not quite sure why...
+> NOTE: Those two step needs to be done before the next step, it seems. We are not quite sure why...
+  
 - Add the `nl.cwi.dis.vr2gather` package, by github url:
 
   ```

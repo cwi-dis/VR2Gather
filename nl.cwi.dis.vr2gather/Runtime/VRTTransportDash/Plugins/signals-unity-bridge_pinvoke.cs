@@ -49,11 +49,7 @@ namespace VRT.Transport.Dash
         protected class _API
         {
 
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            const string myDllName = "signals-unity-bridge.dll";
-#else
-        const string myDllName = "signals-unity-bridge.so";
-#endif
+            public const string myDllName = "signals-unity-bridge.so";
             // The SUB_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
             // after matching the API used here with that in the C++ code.
             const long SUB_API_VERSION = 0x20210729A;
@@ -220,6 +216,7 @@ namespace VRT.Transport.Dash
 
         public static connection create(string pipeline)
         {
+            Loader.PreLoadModule(_API.myDllName);
             try
             {
                 delegate_sub_create tmpDelegate = _API.sub_create;
@@ -227,9 +224,9 @@ namespace VRT.Transport.Dash
             }
             catch (System.DllNotFoundException)
             {
-                UnityEngine.Debug.LogError("bin2dash: Cannot load bin2dash.so dynamic library");
+                UnityEngine.Debug.LogError($"bin2dash: Cannot load {_API.myDllName} dynamic library");
             }
-            SetMSPaths();
+            Loader.PostLoadModule(_API.myDllName);
             _API.MessageLogCallback errorCallback = (msg, level) =>
             {
                 string _pipeline = pipeline == null ? "unknown pipeline" : string.Copy(pipeline);
@@ -256,82 +253,6 @@ namespace VRT.Transport.Dash
             return rv;
         }
 
-        private static string lastMSpathInstalled = "";
-
-        // This could be either here or in bin2dash_pinvoke. 
-        public static void SetMSPaths(string module_base = "signals-unity-bridge")
-        {
-
-            if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsEditor && UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsPlayer)
-            {
-
-                // xxxjack should we use another way to find the path?
-                string path = Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH");
-                if (path == "" || path == null)
-                {
-                    path = VRTConfig.Instance.Macintosh.SIGNALS_SMD_PATH;
-                }
-                if (path == "" || path == null)
-                {
-                    UnityEngine.Debug.LogWarning($"Environment variable SIGNALS_SMD_PATH not set, Dash modules may fail to load");
-                }
-                else if(!System.IO.Path.IsPathRooted(path))
-                {
-                    //
-                    // If this is a relative path we add our project directory to the front
-                    //
-                    path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), path);
-                }
-                Debug.Log($"sub.SetMSPaths: SIGNALS_SMD_PATH={path}");
-                Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path);
-#if DOES_NOT_WORK
-                // Sigh: since MacOS 12 ~/lib is no longer on the default search path. So we have to add
-                // symlinks in our toplevel project directory.
-                // That is because setting DYLD_LIBRARY_PATH here doesn't work (only read by dyld upon process start)
-                // And setting it globally also doesn't work (SIP clears it when a child process is executed)
-                // But unfortunately creating symlinks doesn't work either...
-
-                string top_dir_path = Path.GetDirectoryName(Application.dataPath);
-                string orig_dll_path = Path.Combine(path, "pcl2dash.so");
-                string wanted_dll_path = Path.Combine(top_dir_path, "pcl2dash.so");
-                if (File.Exists(wanted_dll_path)) File.Delete(wanted_dll_path);
-                File.CreateSymbolicLink(orig_dll_path, wanted_dll_path);
-
-                orig_dll_path = Path.Combine(path, "signals-unity-bridge.so");
-                wanted_dll_path = Path.Combine(top_dir_path, "signals-unity-bridge.so");
-                if (File.Exists(wanted_dll_path)) File.Delete(wanted_dll_path);
-                File.CreateSymbolicLink(orig_dll_path, wanted_dll_path);
-#endif
-                return;
-            }
-            if (lastMSpathInstalled == module_base) return;
-
-            IntPtr hMod = API_kernel.GetModuleHandle(module_base);
-            if (hMod == IntPtr.Zero)
-            {
-                UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get handle for {module_base}, GetModuleHandle returned NULL. PATH={Environment.GetEnvironmentVariable("PATH")}, SIGNALS_SMD_PATH={Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH")} ");
-                UnityEngine.Debug.LogError($"Cannot GetModuleHandle({module_base}). Try re-installing the application");
-                return;
-            }
-            StringBuilder modPath = new StringBuilder(255);
-            int rv = API_kernel.GetModuleFileName(hMod, modPath, 255);
-            if (rv < 0)
-            {
-                UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get filename for {module_base}, handle={hMod}, GetModuleFileName returned " + rv);
-                UnityEngine.Debug.LogError($"Cannot get filename for {module_base} from handle. Try re-installing the application");
-                //return false;
-            }
-            string dirName = Path.GetDirectoryName(modPath.ToString());
-            dirName = dirName.Replace("\\", "/");
-#if false
-            if (!dirName.EndsWith('/'))
-            {
-                dirName += "/";
-            }
-#endif
-            UnityEngine.Debug.Log($"sub.SetMSPaths: xxxjack: SIGNALS_SMD_PATH={dirName}");
-            Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
-            lastMSpathInstalled = module_base;
-        }
+     
     }
 }

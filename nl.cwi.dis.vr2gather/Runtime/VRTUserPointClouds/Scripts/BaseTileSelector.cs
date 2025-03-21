@@ -67,7 +67,9 @@ namespace VRT.UserRepresentation.PointCloud
          static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         
+#if VRT_WITH_STATS
         bool didOutputStatsIdentity = false;
+#endif
         public string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
