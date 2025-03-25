@@ -48,6 +48,14 @@ public class CopyConfigOnBuild : IPostprocessBuildWithReport
             Debug.Log($"CopyConfigOnBuild.OnPostProcessBuild copied cameraconfig.json");
         }
 
+        string[] guids = AssetDatabase.FindAssets("VRTrunserver");
+        if (guids.Length != 1)
+        {
+            Debug.LogWarning("VRTrunserver script not found"); 
+            return;
+        }
+        string scriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+        File.Copy(scriptPath, dstDir + "VRTrunserver.ps1", true);
 
     }
 }
