@@ -13,7 +13,7 @@ if (-not (Test-Path $runServer)) {
 	"Activating venv..."
 	&$scriptDir\Activate.ps1
 	"Installing VRTrunserver..."
-	pip install "git+https://github.com/cwi-dis/VRTStatistics@10-restructure#subdirectory=VRTrunserver"
+	pip install "git+https://github.com/cwi-dis/VRTStatistics#subdirectory=VRTrunserver"
 }
 "Running $runServer..."
 &$runServer
