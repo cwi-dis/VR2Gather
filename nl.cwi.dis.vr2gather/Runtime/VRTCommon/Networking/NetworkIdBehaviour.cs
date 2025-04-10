@@ -25,7 +25,7 @@ namespace VRT.Pilots.Common
 
 		protected virtual void Awake()
 		{
-			Debug.LogError("VR2Gather shared objects should not be used in VR2Gather-Fishnet");
+			Debug.LogError($"{gameObject.name}: VR2Gather shared objects should not be used in VR2Gather-Fishnet");
 			CreateNetworkId(false);
 		}
 
