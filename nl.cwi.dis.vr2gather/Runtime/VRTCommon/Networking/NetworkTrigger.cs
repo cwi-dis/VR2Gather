@@ -33,6 +33,7 @@ namespace VRT.Pilots.Common
 
 		protected override void Awake()
 		{
+			Debug.LogError($"{gameObject.name}: VR2Gather NetworkTrigger objects should not be used in VR2Gather-Fishnet");
 			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTriggerData));
 

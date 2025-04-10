@@ -34,6 +34,7 @@ namespace VRT.Pilots.Common
         protected override void Awake()
         {
             base.Awake();
+			Debug.LogError($"{gameObject.name}: VR2Gather PersistenceManager objects should not be used in VR2Gather-Fishnet");
             OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PersistenceManagerData, typeof(PersistenceManagerData));
         }
 

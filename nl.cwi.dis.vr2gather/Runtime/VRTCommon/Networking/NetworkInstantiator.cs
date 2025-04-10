@@ -29,6 +29,7 @@ namespace VRT.Pilots.Common
 	
 		protected override void Awake()
 		{
+			Debug.LogError($"{gameObject.name}: VR2Gather NetworkInstantiator objects should not be used in VR2Gather-Fishnet");
 			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkInstantiatorData, typeof(NetworkInstantiatorData));
 			if (location == null) location = transform;
