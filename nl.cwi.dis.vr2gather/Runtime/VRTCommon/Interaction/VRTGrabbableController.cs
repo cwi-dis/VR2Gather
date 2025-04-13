@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using VRT.Orchestrator.Wrapping;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace VRT.Pilots.Common
 {
@@ -91,7 +92,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public void OnGrab()
+		public void OnGrab(SelectEnterEventArgs args)
 		{
 			if (debug) Debug.Log($"Grabbable({name}): grabbed");
 			isGrabbed = true;
@@ -100,7 +101,7 @@ namespace VRT.Pilots.Common
 			SendRigidbodySyncMessage();
 		}
 
-		public void OnRelease()
+		public void OnRelease(SelectEnterEventArgs args)
 		{
 			if (debug) Debug.Log($"Grabbable({name}): released");
 			isGrabbed = false;
