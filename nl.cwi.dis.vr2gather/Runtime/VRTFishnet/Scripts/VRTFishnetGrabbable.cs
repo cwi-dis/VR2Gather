@@ -88,7 +88,7 @@ namespace VRT.Fishnet
 
 		public void OnSelectExit()
 		{
-			if (debug) Debug.Log($"FishnetGrabbable({name}): released by me");
+			if (debug) Debug.Log($"VRTFishnetGrabbable({name}): released by me");
 			wantToGrab = false;
 			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = true;
