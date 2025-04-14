@@ -45,12 +45,16 @@ namespace VRT.Pilots.Common
             {
                 Debug.LogWarning($"{name}: dropping already-held object {heldGrabbable}");
                 GameObject heldGO = heldGrabbable.gameObject;
+#if xxxjack_disabled
                 heldGO.transform.SetParent(null, true);
+#endif
             }
 
             handNetworkController.HeldGrabbable = grabbable;
             GameObject grabbableGO = grabbable.gameObject;
+#if xxxjack_disabled
             grabbableGO.transform.SetParent(gameObject.transform, true);
+#endif
         }
 
         public void OnSelectExit(SelectExitEventArgs args)
@@ -59,10 +63,12 @@ namespace VRT.Pilots.Common
             // xxxjack may also be needed if we can hold multiple objects....
             var heldGrabbable = handNetworkController?.HeldGrabbable;
             if (debug) Debug.Log($"{name}: released {heldGrabbable}");
+#if xxxjack_disabled
             if (heldGrabbable != null)
             {
                 heldGrabbable.gameObject.transform.SetParent(null, true);
             }
+#endif
             handNetworkController.HeldGrabbable = null;
         }  // Start is called before the first frame update
        
