@@ -1206,7 +1206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 471a24327d5a647208b9847f71d3de97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handAppearance: {fileID: 0}
+  handAppearance: {fileID: 3524832135667406572}
   handState: 0
   handHandedness: 0
   m_HeldGrabbable: {fileID: 0}
@@ -1299,7 +1299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 471a24327d5a647208b9847f71d3de97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handAppearance: {fileID: 0}
+  handAppearance: {fileID: 8890403257435995659}
   handState: 0
   handHandedness: 0
   m_HeldGrabbable: {fileID: 0}
