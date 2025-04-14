@@ -36,14 +36,33 @@ namespace VRT.Pilots.Common
                 Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
             }
             if (debug) Debug.Log($"{name}: grabbed {grabbable}");
+            var heldGrabbable = handNetworkController?.HeldGrabbable;
+            if (heldGrabbable == grabbedObject) {
+                Debug.LogWarning($"{name}: already holding {grabbable}");
+                return;
+            }
+            if (heldGrabbable != null)
+            {
+                Debug.LogWarning($"{name}: dropping already-held object {heldGrabbable}");
+                GameObject heldGO = heldGrabbable.gameObject;
+                heldGO.transform.SetParent(null, true);
+            }
+
             handNetworkController.HeldGrabbable = grabbable;
+            GameObject grabbableGO = grabbable.gameObject;
+            grabbableGO.transform.SetParent(gameObject.transform, true);
         }
 
         public void OnSelectExit(SelectExitEventArgs args)
         {
             // xxxjack we could check that the object released is actually held...
             // xxxjack may also be needed if we can hold multiple objects....
-            if (debug) Debug.Log($"{name}: released {handNetworkController.HeldGrabbable}");
+            var heldGrabbable = handNetworkController?.HeldGrabbable;
+            if (debug) Debug.Log($"{name}: released {heldGrabbable}");
+            if (heldGrabbable != null)
+            {
+                heldGrabbable.gameObject.transform.SetParent(null, true);
+            }
             handNetworkController.HeldGrabbable = null;
         }  // Start is called before the first frame update
        
