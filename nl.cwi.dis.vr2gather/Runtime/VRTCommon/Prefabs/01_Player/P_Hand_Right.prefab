@@ -858,9 +858,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6617721036135197020}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHandController, Pilots
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHandController, VRT.Pilots.Common
         m_MethodName: OnSelectExit
-        m_Mode: 0
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1246,7 +1246,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6652609405479520317}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ead30106d63304520add422292707140, type: 3}
   m_Name: 

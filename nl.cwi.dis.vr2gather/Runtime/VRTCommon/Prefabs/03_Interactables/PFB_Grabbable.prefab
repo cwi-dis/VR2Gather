@@ -138,9 +138,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6886076587129330565}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.Grabbable, Pilots
-        m_MethodName: OnGrab
-        m_Mode: 1
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTGrabbableController, VRT.Pilots.Common
+        m_MethodName: OnSelectEnter
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -153,8 +153,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6886076587129330565}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.Grabbable, Pilots
-        m_MethodName: OnRelease
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTGrabbableController, VRT.Pilots.Common
+        m_MethodName: OnSelectExit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -280,6 +280,7 @@ MonoBehaviour:
   UpdateFrequency: 10
   isGrabbed: 0
   debug: 1
+  shouldRestoreGravity: 0
 --- !u!114 &6886076587129330564
 MonoBehaviour:
   m_ObjectHideFlags: 0
