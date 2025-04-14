@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
@@ -13,12 +14,14 @@ namespace VRT.Pilots.Common
         protected ActionBasedController controller;
         HandState oldState = HandState.Idle;
 
-        public override VRTGrabbableController HeldGrabbable
+        public override IVRTGrabbable HeldGrabbable
         {
             set {
                 if (value == m_HeldGrabbable) return;
                 if (m_HeldGrabbable != null)
                 {
+#if !FISHNET
+                    // Attempt by Jack: can we disable this code for Fishnet-VR2Gather?
                     // Release any held object
                     HandGrabEvent handGrabEvent = new HandGrabEvent()
                     {
@@ -28,11 +31,14 @@ namespace VRT.Pilots.Common
                         EventType = HandInteractionEventType.Release
                     };
                     ExecuteHandGrabEvent(handGrabEvent);
+#endif
                 }
                 m_HeldGrabbable = value;
                 if (m_HeldGrabbable != null)
                 {
-                    // Grab new object
+ #if !FISHNET
+                    // Attempt by Jack: can we disable this code for Fishnet-VR2Gather?
+                   // Grab new object
                     HandGrabEvent handGrabEvent = new HandGrabEvent()
                     {
                         GrabbableObjectId = m_HeldGrabbable.NetworkId,
@@ -41,6 +47,7 @@ namespace VRT.Pilots.Common
                         EventType = HandInteractionEventType.Grab
                     };
                     ExecuteHandGrabEvent(handGrabEvent);
+#endif
                 }
             }
             get => m_HeldGrabbable;

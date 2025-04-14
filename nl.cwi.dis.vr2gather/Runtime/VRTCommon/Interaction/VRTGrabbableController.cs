@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -17,7 +18,7 @@ namespace VRT.Pilots.Common
 	/// While the object is held it will be kinematic, reverting to gravity when released.
 	/// 
 	/// </summary>
-	public class VRTGrabbableController : NetworkIdBehaviour
+	public class VRTGrabbableController : NetworkIdBehaviour, IVRTGrabbable
 	{
 		public class RigidbodySyncMessage : BaseMessage
 		{

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cwipc;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace VRT.Core
 {
@@ -15,7 +16,7 @@ namespace VRT.Core
     /// </summary>
     public interface IPreparer : Cwipc.IPreparer
     {
- 
+
     }
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace VRT.Core
     /// </summary>
     public interface IPointCloudPreparer : Cwipc.IPointCloudPreparer
     {
-     
+
     }
 
     public interface IAudioPreparer : IPreparer
@@ -53,4 +54,15 @@ namespace VRT.Core
 
     }
 
+    /// <summary>
+    /// Interface to a grabbable object. Implemented by VRTGrabbableController and
+    /// VRTFishnetGrabbable.
+    /// </summary>
+    public interface IVRTGrabbable
+    {
+        public GameObject gameObject { get; }
+        public void OnSelectEnter(SelectEnterEventArgs args);
+        public void OnSelectExit();
+
+    }
 }
