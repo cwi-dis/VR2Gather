@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using VRT.Core;
 using VRT.Orchestrator.Wrapping;
+using UnityEngine.XR.Interaction.Toolkit;
 using FishNet.Object;
 using FishNet.Connection;
 
@@ -18,7 +20,7 @@ namespace VRT.Fishnet
 	/// While the object is held it will be kinematic, reverting to gravity when released.
 	/// 
 	/// </summary>
-	public class VRTFishnetGrabbable : NetworkBehaviour
+	public class VRTFishnetGrabbable : NetworkBehaviour, IVRTGrabbable
 	{
 
 
@@ -73,16 +75,18 @@ namespace VRT.Fishnet
 #endif
 		}
 
-		public void OnGrab()
-		{
-			if (debug) Debug.Log($"FishnetGrabbable({name}): I want to grab this object");
+
+ 
+        public void OnSelectEnter(SelectEnterEventArgs args)
+        {
+            if (debug) Debug.Log($"VRTFishnetGrabbable({name}): want to grab, by {args.interactorObject}");
 			wantToGrab = true;
-			Rigidbody.isKinematic = false;
+			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = false;
 			OnGrabServer(NetworkObject);
 		}
 
-		public void OnRelease()
+		public void OnSelectExit()
 		{
 			if (debug) Debug.Log($"FishnetGrabbable({name}): released by me");
 			wantToGrab = false;
