@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
@@ -42,8 +43,8 @@ namespace VRT.Pilots.Common
 		}
 
 		[Tooltip("The object the hand is currently holding")]
-		[SerializeField] protected VRTGrabbableController m_HeldGrabbable;
-		public virtual VRTGrabbableController HeldGrabbable
+		[SerializeField] protected IVRTGrabbable m_HeldGrabbable;
+		public virtual IVRTGrabbable HeldGrabbable
 		{
 			get => m_HeldGrabbable;
 			set => throw new System.NotImplementedException();
@@ -89,7 +90,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		internal void OnNetworkRelease(VRTGrabbableController grabbable)
+		internal void OnNetworkRelease(IVRTGrabbable grabbable)
 		{
 			if (m_HeldGrabbable != grabbable && m_HeldGrabbable != null)
             {
@@ -99,7 +100,7 @@ namespace VRT.Pilots.Common
             m_HeldGrabbable = null;
 		}
 
-		internal void OnNetworkGrab(VRTGrabbableController grabbable)
+		internal void OnNetworkGrab(IVRTGrabbable grabbable)
 		{
 			if (m_HeldGrabbable == grabbable)
 			{

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using VRT.Core;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -30,14 +31,15 @@ namespace VRT.Pilots.Common
         public void OnSelectEnter(SelectEnterEventArgs args)
         {
             GameObject grabbedObject = args.interactableObject.transform.gameObject;
-            VRTGrabbableController grabbable = grabbedObject?.GetComponent<VRTGrabbableController>();
+            IVRTGrabbable grabbable = grabbedObject?.GetComponent<IVRTGrabbable>();
             if (grabbable == null)
             {
                 Debug.LogError($"VRTHandcontroller({name}): grabbed {grabbedObject} which has no Grabbable");
+                return;
             }
             if (debug) Debug.Log($"VRTHandcontroller({name}): grabbed {grabbable}");
-            VRTGrabbableController heldGrabbable = handNetworkController?.HeldGrabbable;
-            if (heldGrabbable == grabbedObject) {
+            IVRTGrabbable heldGrabbable = handNetworkController?.HeldGrabbable;
+            if (heldGrabbable == grabbable) {
                 Debug.LogWarning($"VRTHandcontroller({name}): already holding {grabbable}");
                 return;
             }
@@ -63,7 +65,7 @@ namespace VRT.Pilots.Common
         {
             // xxxjack we could check that the object released is actually held...
             // xxxjack may also be needed if we can hold multiple objects....
-            VRTGrabbableController heldGrabbable = handNetworkController?.HeldGrabbable;
+            IVRTGrabbable heldGrabbable = handNetworkController?.HeldGrabbable;
             handNetworkController.HeldGrabbable = null;
             if (debug) Debug.Log($"VRTHandcontroller({name}): released {heldGrabbable}");
             if (heldGrabbable != null)
