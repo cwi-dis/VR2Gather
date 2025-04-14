@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using VRT.Orchestrator.Wrapping;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace VRT.Pilots.Common
 {
 	/// <summary>
 	/// Component to implement VR2Gather grabbable object.
 	/// Works with ray interaction and direct interaction.
-	/// The interactors should be set up to call the OnGrab() and OnRelease() methods of this object,
+	/// The interactors should be set up to call the OnSelectEnter() and OnSelectExit() methods of this object,
 	/// when the object has entered/exited select mode.
 	/// 
 	/// The object requires a Rigidbody, and that seems to be enough both for direct and ray-based interaction.
@@ -36,7 +37,7 @@ namespace VRT.Pilots.Common
 		[DisableEditing] [SerializeField] private bool isGrabbed;
         [Tooltip("Print logging messages on important changes")]
         [SerializeField] bool debug = false;
-
+		
         // xxxjack private HandController _CurrentGrabber;
 
         protected override void Awake()
@@ -73,7 +74,7 @@ namespace VRT.Pilots.Common
 
 		public void SendRigidbodySyncMessage()
 		{
-			if (debug) Debug.Log($"Grabbable: SendSyncMessage id={NetworkId} isGrabbed={isGrabbed}");
+			if (debug) Debug.Log($"VRTGrabbableController: SendSyncMessage id={NetworkId} isGrabbed={isGrabbed}");
 
 			RigidbodySyncMessage message = new RigidbodySyncMessage
 			{
@@ -92,21 +93,31 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public void OnGrab()
+		public void OnSelectEnter(SelectEnterEventArgs args)
 		{
-			if (debug) Debug.Log($"Grabbable({name}): grabbed");
-			isGrabbed = true;
+			if (isGrabbed)
+			{
+				Debug.LogWarning($"VRTGrabbableController({name}): grabbed, but it was already grabbed");
+				return;
+			}
+            if (debug) Debug.Log($"VRTGrabbableController({name}): grabbed by {args.interactorObject}");
+            isGrabbed = true;
 			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = false;
 			SendRigidbodySyncMessage();
 		}
 
-		public void OnRelease()
+		public void OnSelectExit()
 		{
-			if (debug) Debug.Log($"Grabbable({name}): released");
-			isGrabbed = false;
+			if ( !isGrabbed) 
+            {
+				Debug.LogWarning($"VRTGrabbableController({name}): released, but it was not grabbed");
+				return;
+            }
+            if (debug) Debug.Log($"VRTGrabbableController({name}): released");
+            isGrabbed = false;
 			Rigidbody.isKinematic = false;
-			Rigidbody.useGravity = true;
+            Rigidbody.useGravity = true;
 			SendRigidbodySyncMessage();
 		}
 
@@ -119,7 +130,7 @@ namespace VRT.Pilots.Common
 			}
 			if (isGrabbed)
 			{
-				Debug.Log("Grabbable: ignore OnRigidBodySync for locally grabbed object");
+				Debug.Log("VRTGrabbableController: ignore OnRigidBodySync for locally grabbed object");
 				return;
 			}
 			// If we are master we also forward the message

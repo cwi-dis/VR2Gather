@@ -74,7 +74,7 @@ namespace VRT.Pilots.Common
 			// We are not enabled if we are running without the orchestrator
 			if (!enabled)
 			{
-				Debug.Log($"{name}: not forwarding HandGrabEvent");
+				Debug.Log($"HandNetworkControllerBase({name}): not forwarding HandGrabEvent");
 				return;
 			}
 			//If we're not master, inform the master
@@ -93,19 +93,24 @@ namespace VRT.Pilots.Common
 		{
 			if (m_HeldGrabbable != grabbable && m_HeldGrabbable != null)
             {
-				Debug.LogWarning($"{name}: OnNetworkRelease {grabbable} but  holding {m_HeldGrabbable}");
+				Debug.LogWarning($"HandNetworkControllerBase({name}): OnNetworkRelease {grabbable} but  holding {m_HeldGrabbable}");
 			}
-            Debug.Log($"{name}: OnNetworkRelease({grabbable})");
+            Debug.Log($"HandNetworkControllerBase({name}): OnNetworkRelease({grabbable})");
             m_HeldGrabbable = null;
 		}
 
 		internal void OnNetworkGrab(VRTGrabbableController grabbable)
 		{
+			if (m_HeldGrabbable == grabbable)
+			{
+				Debug.Log($"HandNetworkControllerBase({name}): ignoring OnNetworkGrab for {grabbable} which is already held");
+				return;
+			}
 			if (m_HeldGrabbable != null)
             {
-				Debug.LogWarning($"{name}: OnNetworkGrab {grabbable} but already holding {m_HeldGrabbable}");
+				Debug.LogWarning($"HandNetworkControllerBase({name}): OnNetworkGrab {grabbable} but already holding {m_HeldGrabbable}");
             }
-			Debug.Log($"{name}: OnNetworkGrab({grabbable})");
+			Debug.Log($"HandNetworkControllerBase({name}): OnNetworkGrab({grabbable})");
 			m_HeldGrabbable = grabbable;
 		}
 

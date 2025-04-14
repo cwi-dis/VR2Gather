@@ -33,18 +33,48 @@ namespace VRT.Pilots.Common
             VRTGrabbableController grabbable = grabbedObject?.GetComponent<VRTGrabbableController>();
             if (grabbable == null)
             {
-                Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
+                Debug.LogError($"VRTHandcontroller({name}): grabbed {grabbedObject} which has no Grabbable");
             }
-            if (debug) Debug.Log($"{name}: grabbed {grabbable}");
+            if (debug) Debug.Log($"VRTHandcontroller({name}): grabbed {grabbable}");
+            VRTGrabbableController heldGrabbable = handNetworkController?.HeldGrabbable;
+            if (heldGrabbable == grabbedObject) {
+                Debug.LogWarning($"VRTHandcontroller({name}): already holding {grabbable}");
+                return;
+            }
+            if (heldGrabbable != null)
+            {
+                Debug.LogWarning($"VRTHandcontroller({name}): dropping already-held object {heldGrabbable}");
+                GameObject heldGO = heldGrabbable.gameObject;
+                heldGO.transform.SetParent(null, true);
+                heldGrabbable.OnSelectExit();
+            }
+
             handNetworkController.HeldGrabbable = grabbable;
+            GameObject grabbableGO = grabbable.gameObject;
+            grabbableGO.transform.SetParent(gameObject.transform, true);
+            if (debug)
+            {
+                Debug.Log($"VRTHandcontroller({name}): calling grabbable.OnSelectEnter()");
+            }
+            grabbable.OnSelectEnter(args);
         }
 
-        public void OnSelectExit(SelectExitEventArgs args)
+        public void OnSelectExit()
         {
             // xxxjack we could check that the object released is actually held...
             // xxxjack may also be needed if we can hold multiple objects....
-            if (debug) Debug.Log($"{name}: released {handNetworkController.HeldGrabbable}");
+            VRTGrabbableController heldGrabbable = handNetworkController?.HeldGrabbable;
             handNetworkController.HeldGrabbable = null;
+            if (debug) Debug.Log($"VRTHandcontroller({name}): released {heldGrabbable}");
+            if (heldGrabbable != null)
+            {
+                heldGrabbable.gameObject.transform.SetParent(null, true);
+                if (debug)
+                {
+                    Debug.Log($"VRTHandcontroller({name}): calling grabbable.OnSelectExit()");
+                }
+                heldGrabbable.OnSelectExit();
+            }            
         }  // Start is called before the first frame update
        
     }
