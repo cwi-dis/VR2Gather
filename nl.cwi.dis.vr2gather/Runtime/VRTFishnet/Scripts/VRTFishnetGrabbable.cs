@@ -36,53 +36,15 @@ namespace VRT.Fishnet
         [Tooltip("Print logging messages on important changes")]
         [SerializeField] bool debug = false;
 
-        // xxxjack private HandController _CurrentGrabber;
 
-
-
-		public void Update()
-		{
-#if xxxjackdeleted
-			// If the local user is not grabbing this grabble we have nothing to do.
-			if (!isGrabbed) return;
-			// xxxjack bail out if sending too many updates
-			if (Time.realtimeSinceStartup < _lastUpdateTime + (1 / UpdateFrequency)) return;
-			_lastUpdateTime = Time.realtimeSinceStartup;
-			SendRigidbodySyncMessage();
-#endif
-		}
-
-		public void SendRigidbodySyncMessage()
-		{
-#if xxxjackdeleted
-			if (debug) Debug.Log($"Grabbable: SendSyncMessage id={NetworkId} isGrabbed={isGrabbed}");
-
-			RigidbodySyncMessage message = new RigidbodySyncMessage
-			{
-				NetworkId = NetworkId,
-				isGrabbed = isGrabbed,
-				Position = Rigidbody.transform.position,
-				Rotation = Rigidbody.transform.rotation
-			};
-			if (!OrchestratorController.Instance.UserIsMaster)
-			{
-				OrchestratorController.Instance.SendTypeEventToMaster(message);
-			}
-			else
-			{
-				OrchestratorController.Instance.SendTypeEventToAll(message);
-			}
-#endif
-		}
-
-
- 
         public void OnSelectEnter(SelectEnterEventArgs args)
         {
             if (debug) Debug.Log($"VRTFishnetGrabbable({name}): want to grab, by {args.interactorObject}");
 			wantToGrab = true;
+#if xxxjackdeleted
 			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = false;
+#endif
 			OnGrabServer(NetworkObject);
 		}
 
@@ -90,8 +52,10 @@ namespace VRT.Fishnet
 		{
 			if (debug) Debug.Log($"VRTFishnetGrabbable({name}): released by me");
 			wantToGrab = false;
+#if xxxjackdeleted
 			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = true;
+#endif
 			OnReleaseServer(NetworkObject);
 		}
 
@@ -109,8 +73,10 @@ namespace VRT.Fishnet
 			if (nob.IsOwner) {
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: grabbed by me");
 				haveGrabbed = true;
+#if xxxjackdeleted
 				Rigidbody.isKinematic = false;
 				Rigidbody.useGravity = false;
+#endif
 			}
 			else
 			{
@@ -134,44 +100,22 @@ namespace VRT.Fishnet
 			if (nob.IsOwner) {
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by me");
 				// I no longer hold the object, but I'm still the Fishnet owner.
+#if xxxjackdeleted
 				// I have to take care of physics
 				Rigidbody.isKinematic = true;
 				Rigidbody.useGravity = true;
+#endif
 			}
 			else
 			{
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by someone else");
+#if xxxjackdeleted
 				Rigidbody.isKinematic = false;
 				Rigidbody.useGravity = false;
+#endif
 			}
 			haveGrabbed = false;
 			someoneHasGrabbed = false;
 		}
-
-#if xxxjackdeleted
-
-		private void OnNetworkRigidbodySync(RigidbodySyncMessage rigidBodySyncMessage)
-		{
-			if (rigidBodySyncMessage.NetworkId != NetworkId)
-			{
-				return;
-			}
-			if (isGrabbed)
-			{
-				Debug.Log("Grabbable: ignore OnRigidBodySync for locally grabbed object");
-				return;
-			}
-			// If we are master we also forward the message
-			if (OrchestratorController.Instance.UserIsMaster)
-			{
-				OrchestratorController.Instance.SendTypeEventToAll(rigidBodySyncMessage, true);
-			}
-			Rigidbody.Sleep();
-			Rigidbody.transform.position = rigidBodySyncMessage.Position;
-			Rigidbody.transform.rotation = rigidBodySyncMessage.Rotation;
-			Rigidbody.isKinematic = rigidBodySyncMessage.isGrabbed;
-			Rigidbody.useGravity = !rigidBodySyncMessage.isGrabbed;
-		}
-#endif
 	}
 }
