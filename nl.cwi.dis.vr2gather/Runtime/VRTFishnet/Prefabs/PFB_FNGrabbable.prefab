@@ -140,8 +140,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 919225142772594258}
         m_TargetAssemblyTypeName: VRT.Fishnet.VRTFishnetGrabbable, VRTFishnet
-        m_MethodName: OnGrab
-        m_Mode: 1
+        m_MethodName: OnSelectEnter
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -155,7 +155,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 919225142772594258}
         m_TargetAssemblyTypeName: VRT.Fishnet.VRTFishnetGrabbable, VRTFishnet
-        m_MethodName: OnRelease
+        m_MethodName: OnSelectExit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -279,7 +279,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 1954768422725111540}
   _networkObjectCache: {fileID: 0}
   Rigidbody: {fileID: 6886076587129330584}
-  isGrabbed: 0
+  wantToGrab: 0
+  haveGrabbed: 0
+  someoneHasGrabbed: 0
   debug: 1
 --- !u!114 &1954768422725111540
 MonoBehaviour:
@@ -324,7 +326,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 65535
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 13747644418934503961
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
