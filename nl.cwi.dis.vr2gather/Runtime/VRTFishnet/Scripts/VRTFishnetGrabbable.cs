@@ -95,14 +95,14 @@ namespace VRT.Fishnet
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by me");
 				// I no longer hold the object, but I'm still the Fishnet owner.
 				// I have to take care of physics
-				Rigidbody.isKinematic = true;
+				Rigidbody.isKinematic = false;
 				Rigidbody.useGravity = true;
 			}
 			else
 			{
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by someone else");
 				Rigidbody.isKinematic = true;
-				Rigidbody.useGravity = true;
+				Rigidbody.useGravity = false;
 			}
 			haveGrabbed = false;
 			someoneHasGrabbed = false;
