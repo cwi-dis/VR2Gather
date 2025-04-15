@@ -41,10 +41,6 @@ namespace VRT.Fishnet
         {
             if (debug) Debug.Log($"VRTFishnetGrabbable({name}): want to grab, by {args.interactorObject}");
 			wantToGrab = true;
-#if xxxjackdeleted
-			Rigidbody.isKinematic = true;
-			Rigidbody.useGravity = false;
-#endif
 			OnGrabServer(NetworkObject);
 		}
 
@@ -52,10 +48,6 @@ namespace VRT.Fishnet
 		{
 			if (debug) Debug.Log($"VRTFishnetGrabbable({name}): released by me");
 			wantToGrab = false;
-#if xxxjackdeleted
-			Rigidbody.isKinematic = true;
-			Rigidbody.useGravity = true;
-#endif
 			OnReleaseServer(NetworkObject);
 		}
 
@@ -74,6 +66,7 @@ namespace VRT.Fishnet
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: grabbed by me");
 				haveGrabbed = true;
 #if xxxjackdeleted
+                // This appears to be handled by the Fishnet NetworkTransform.
 				Rigidbody.isKinematic = false;
 				Rigidbody.useGravity = false;
 #endif
@@ -81,8 +74,10 @@ namespace VRT.Fishnet
 			else
 			{
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: grabbed by someone else");
+#if xxxjackdeleted
 				Rigidbody.isKinematic = false;
 				Rigidbody.useGravity = false;
+#endif
 			}
 			someoneHasGrabbed = true;
 		}
@@ -91,6 +86,7 @@ namespace VRT.Fishnet
 		public void OnReleaseServer(NetworkObject nob)
 		{
 			if (debug) Debug.Log($"FishnetGrabbable({name}): server: released by someone");
+			// Ownership stays with the last owner.
 			OnReleaseObserver(nob);
 		}
 
@@ -100,19 +96,15 @@ namespace VRT.Fishnet
 			if (nob.IsOwner) {
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by me");
 				// I no longer hold the object, but I'm still the Fishnet owner.
-#if xxxjackdeleted
 				// I have to take care of physics
 				Rigidbody.isKinematic = true;
 				Rigidbody.useGravity = true;
-#endif
 			}
 			else
 			{
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by someone else");
-#if xxxjackdeleted
 				Rigidbody.isKinematic = false;
 				Rigidbody.useGravity = false;
-#endif
 			}
 			haveGrabbed = false;
 			someoneHasGrabbed = false;
