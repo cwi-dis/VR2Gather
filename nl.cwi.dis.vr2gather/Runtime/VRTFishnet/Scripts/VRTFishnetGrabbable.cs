@@ -67,17 +67,15 @@ namespace VRT.Fishnet
 				haveGrabbed = true;
 #if xxxjackdeleted
                 // This appears to be handled by the Fishnet NetworkTransform.
-				Rigidbody.isKinematic = false;
+				Rigidbody.isKinematic = true;
 				Rigidbody.useGravity = false;
 #endif
 			}
 			else
 			{
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: grabbed by someone else");
-#if xxxjackdeleted
-				Rigidbody.isKinematic = false;
+				Rigidbody.isKinematic = true;
 				Rigidbody.useGravity = false;
-#endif
 			}
 			someoneHasGrabbed = true;
 		}
@@ -103,8 +101,8 @@ namespace VRT.Fishnet
 			else
 			{
 				if (debug) Debug.Log($"FishnetGrabbable({name}): observer: released by someone else");
-				Rigidbody.isKinematic = false;
-				Rigidbody.useGravity = false;
+				Rigidbody.isKinematic = true;
+				Rigidbody.useGravity = true;
 			}
 			haveGrabbed = false;
 			someoneHasGrabbed = false;
