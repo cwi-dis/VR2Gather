@@ -100,6 +100,15 @@ You should now be able to run the two "example experiences": _Pilot 0_ and _Tech
 
 You will not yet be able to use your own scenes with VR2Gather support: see [Creating an experience](10-createnew.md) for instructions on how to modify your scene and how to include it as a scenario for VR2Gather.
 
+## Preparing for later updates of VR2Gather
+
+You will probably want to update your version of VR2Gather and its samples at some later point in time, to get access to bug fixes and new features and such.
+
+For this reason it is a **very good idea** (bold used intentionally) not to modify the samples, and not to copy scripts or prefabs from the VR2Gather package.
+
+In stead, create your own prefab variant (or C# subclass) where you implement your changes to the original.
+
+This way, when the underlying prefab or script is modified in a future version of VR2Gather you will have both any new features provided by the VR2Gather base object and your modifications.
 
 ## Next steps
 
