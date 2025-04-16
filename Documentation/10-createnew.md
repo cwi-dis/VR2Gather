@@ -16,7 +16,9 @@ There are a lot of terms going to be used in this document. So let us start by e
 	- Create a new scene by copying the `Pilot0` scene. Subclass any component that needs different functionality (for example `PilotController`) and fix the scene to refer to the new component. Add your GameObjects, and remove GameObjects you don't need.
 	- You already have a scene that works in "normal" Unity. This scene will have to be adapted for using VR2Gather. The most important step is that your VRRig and interaction GameObjects will have to be changed. The [Comparison to standard Unity practices](11-differences.md) document will explain.
 	
-- Now you need to create a _Scenario_. In the `LoginManager` there is a GameObject `Tool_ScenarioRegistry` with a `ScenarioRegistry` object. Here you add your scenario. The `ScenarioID` must be globally unique (use a uuid-generator once). The `ScenarioSceneName` is the first Scene used (the one you created in the previous step). The `Name` and `Description` are for humans only: when the first participant creates a session they select this scenario. Other participants then see the name and description when they select the session to join it. 
+- Now you need to create a _Scenario_. In the `LoginManager` there is a GameObject `Tool_ScenarioRegistry` with a `ScenarioRegistry` object. Here you add your scenario. **But**: it is best to create a new prefab variant `Tool_ScenarioRegistry_mine` and make your changes in there. See the _"preparing for updates"_ section in [Installing VR2Gather for Developers](02-installation.md).
+
+  The `ScenarioID` must be globally unique (use a uuid-generator once). The `ScenarioSceneName` is the first Scene used (the one you created in the previous step). The `Name` and `Description` are for humans only: when the first participant creates a session they select this scenario. Other participants then see the name and description when they select the session to join it. 
 - Next you need to ensure your scene is available for loading at runtime. In the _Build Settings..._ dialog you can add your scene to the list.
 - You can now try your new scenario:
   - Open the `LoginManager` scene and _Play_ it.
@@ -28,6 +30,8 @@ There are a lot of terms going to be used in this document. So let us start by e
 - To try your scenario with two uses: The first user follows the steps above, the second user uses _Join_ to join the session that the first user created. And the first user waits until the second user has joined before selecting _Start_.
 
 You probably need new interactable objects. Create these using one of the prefabs from the [Prefabs](04-prefabs.md) section as an example, make sure you copy materials and subclass any components that need changing).
+
+Again, it is a good idea to create your new objects as prefab variants of `PFB_Grabbable` or `PFB_Trigger` or one of those: that way any future updates to the underlying logic by a new version of VR2Gather is automatically picked up by your application.
 
 > You can now test these new interactables in `SoloPlayground` and `TechnicalPlayground`, as explained in the [Walkthrough](03-walkthrough.md) section. Then you add them to your scene.
 
