@@ -25,7 +25,7 @@ namespace VRT.Pilots.Common
                     // Release any held object
                     HandGrabEvent handGrabEvent = new HandGrabEvent()
                     {
-                        GrabbableObjectId = m_HeldGrabbable.NetworkId,
+                        GrabbableObjectId = (m_HeldGrabbable as VRTGrabbableController).NetworkId,
                         UserId = _Player?.UserId,
                         Handedness = handHandedness,
                         EventType = HandInteractionEventType.Release
@@ -41,7 +41,7 @@ namespace VRT.Pilots.Common
                    // Grab new object
                     HandGrabEvent handGrabEvent = new HandGrabEvent()
                     {
-                        GrabbableObjectId = m_HeldGrabbable.NetworkId,
+                        GrabbableObjectId = (m_HeldGrabbable as VRTGrabbableController).NetworkId,
                         UserId = _Player?.UserId,
                         Handedness = handHandedness,
                         EventType = HandInteractionEventType.Grab
