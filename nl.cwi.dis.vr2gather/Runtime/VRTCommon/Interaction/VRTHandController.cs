@@ -15,6 +15,8 @@ namespace VRT.Pilots.Common
         public HandNetworkControllerSelf handNetworkController;
         [Tooltip("Print logging messages on important changes")]
         [SerializeField] bool debug = false;
+        [Tooltip("If true print an error if the object is not grabbable")]
+        [SerializeField] bool errorIfNotGrabbable = true;
 
         private void Awake()
         {
@@ -34,7 +36,10 @@ namespace VRT.Pilots.Common
             IVRTGrabbable grabbable = grabbedObject?.GetComponent<IVRTGrabbable>();
             if (grabbable == null)
             {
-                Debug.LogError($"VRTHandcontroller({name}): grabbed {grabbedObject} which has no Grabbable");
+                if (errorIfNotGrabbable)
+                {
+                    Debug.LogWarning($"VRTHandcontroller({name}): grabbed {grabbedObject} which has no Grabbable");
+                }
                 return;
             }
             if (debug) Debug.Log($"VRTHandcontroller({name}): grabbed {grabbable}");
