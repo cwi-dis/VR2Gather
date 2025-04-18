@@ -159,5 +159,24 @@ PrefabInstance:
     - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1526195919971273045, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7976671383916093310}
   m_SourcePrefab: {fileID: 100100000, guid: fceec8934b5ae4fdaa36454e0b30346f, type: 3}
+--- !u!1 &5606145453566781957 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1526195919971273045, guid: fceec8934b5ae4fdaa36454e0b30346f,
+    type: 3}
+  m_PrefabInstance: {fileID: 6405003279780881232}
+  m_PrefabAsset: {fileID: 0}
+--- !u!45 &7976671383916093310
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5606145453566781957}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
