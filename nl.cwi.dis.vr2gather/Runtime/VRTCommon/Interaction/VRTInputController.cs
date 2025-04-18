@@ -112,7 +112,7 @@ namespace VRT.Pilots.Common
                 {
                     Debug.Log($"VRTInputController: is a controller");
                 }
-                if (inDev.name.Contains("Oculus Touch Controller"))
+                if (inDev.name.Contains("Oculus") || inDev.manufacturer == "Oculus")
                 {
                     foundOculusController = true;
                     if (debug)

@@ -2963,13 +2963,33 @@
                     "isOR": false
                 },
                 {
-                    "devicePath": "<OculusTouchController>{LeftHand}",
-                    "isOptional": false,
+                    "devicePath": "<OculusTouchController>{RightHand}/{Device}",
+                    "isOptional": true,
                     "isOR": false
                 },
                 {
-                    "devicePath": "<OculusTouchController>{RightHand}",
-                    "isOptional": false,
+                    "devicePath": "<OculusTouchController>{LeftHand}/{Device}",
+                    "isOptional": true,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<QuestProTouchController>{RightHand}/{Device}",
+                    "isOptional": true,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<QuestProTouchController>{LeftHand}/{Device}",
+                    "isOptional": true,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<QuestTouchPlusController>{RightHand}/{Device}",
+                    "isOptional": true,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<QuestTouchPlusController>{LeftHand}/{Device}",
+                    "isOptional": true,
                     "isOR": false
                 }
             ]
