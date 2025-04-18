@@ -163,6 +163,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8732315944019548031, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_EnableTurnLeftRight
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8953149671725601771, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_ActionEvents.Array.size
