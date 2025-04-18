@@ -667,7 +667,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1181093240}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 38f6bf3d943ac7945842268c9ef1dca6, type: 3}
   m_Name: 
@@ -1256,6 +1256,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 516808166536762299, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1329914578780927931, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: m_Text
@@ -1290,6 +1295,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -85.00006
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457971032309705190, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6457971032522044961, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
@@ -1400,6 +1410,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tool_OrchestratorLogin
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457971032522044966, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6457971033183718167, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
