@@ -1,6 +1,6 @@
 {
 	"name" : "nl.cwi.dis.vr2gather",
-	"version" : "1.2.3",
+	"version" : "1.2.4",
 	"displayName" : "VR2Gather",
 	"description" : "Create networked shared social VR experiences in Unity.\nPlease check the documentation before installing this package into your project.",
 	"documentationUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/README.md",
