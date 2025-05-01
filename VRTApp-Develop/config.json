@@ -11,18 +11,19 @@
         "screenshotTargetDirectory": ""
     },
     "_AutoStart": {
+    	"ignoreAutoStartForDeveloper": true,
         "autoLogin": true,
-        "autoCreate": false,
+        "autoCreate": true,
         "autoJoin": false,
-        "autoCreateForUser": "beelzebub",
-        "sessionName": "jack-lldash-test",
+        "autoCreateForUser": "",
+        "sessionName": "jack-test",
         "sessionScenario": "Pilot 0",
-        "sessionTransportProtocol": "dash",
+        "sessionTransportProtocol": "socketio",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": 2,
+        "autoStartWith": 1,
         "autoLeaveAfter": 0.0,
-        "autoStopAfterLeave": false,
+        "autoStopAfterLeave": true,
         "autoDelay": 1.0
     },
     "TransportDash": {

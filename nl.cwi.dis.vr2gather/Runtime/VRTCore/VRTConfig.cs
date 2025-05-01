@@ -38,6 +38,8 @@ namespace VRT.Core
         [Tooltip("If not empty: directory path where ffmpeg native DLLs are stored")]
         public string ffmpegDLLDir = "";
 
+        [Tooltip("Automatically invent a username if not set")]
+        public bool autoInventUsername = true;
         [Serializable]
         public class _ScreenshotTool
         {
@@ -54,6 +56,8 @@ namespace VRT.Core
             // - automatically create a session with a given name and parameters
             // - automatically join a session of a given name
             // - automatically start a session when enough people have joined
+            [Tooltip("Ignore autoStart settings when in developer mode")]
+            public bool ignoreAutoStartForDeveloper = false;
             [Tooltip("Automatically login with predefined credentials")]
             public bool autoLogin = false;
             [Tooltip("Automatically create a session")]
@@ -347,6 +351,17 @@ namespace VRT.Core
             Cwipc.CwipcConfig.SetInstance(this.PCs);
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
+            if (autoInventUsername) {
+                if (!PlayerPrefs.HasKey("userNameLoginIF")) {
+                    string userName = System.Environment.MachineName;
+                    if (userName.Length > 20) {
+                        userName = userName.Substring(0, 20);
+                    }
+                    Debug.Log($"VRTConfig: Invented username {userName}");
+                    PlayerPrefs.SetString("userNameLoginIF", userName);
+                    PlayerPrefs.Save();
+                }
+            }
         }
 
         static string _ConfigFilenameFromCommandLineArgs()

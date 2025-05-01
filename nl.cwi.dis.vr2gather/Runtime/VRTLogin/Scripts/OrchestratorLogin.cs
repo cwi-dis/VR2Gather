@@ -38,6 +38,9 @@ namespace VRT.Login
         [SerializeField] private Text statusText = null;
         [SerializeField] private SelfRepresentationPreview SelfRepresentationPreview = null;
 
+        [SerializeField]
+        [Tooltip("Debug autostart")]
+        private bool debugAutoStart = false;
         [Header("Status and DeveloperStatus")]
         [SerializeField] private GameObject developerPanel = null;
         [SerializeField] private Text StatusPanelUserId = null;
@@ -137,6 +140,10 @@ namespace VRT.Login
             // Developer mode settings
             developerMode = PlayerPrefs.GetInt("developerMode", 0) != 0;
             developerModeButton.isOn = developerMode;
+            if (developerMode)
+            {
+                debugAutoStart = true;
+            }
             // Update Application version
             StatusPanelOrchestratorURL.text = VRTConfig.Instance.orchestratorURL;
 #if UNITY_EDITOR
@@ -273,11 +280,18 @@ namespace VRT.Login
             // We do a quick exit if we don't have an autostart config, or if shift is pressed.
             VRTConfig._AutoStart config = VRTConfig.Instance.AutoStart;
             if (config == null) return;
-            if (Keyboard.current.shiftKey.isPressed) return;
-
+            if (Keyboard.current.shiftKey.isPressed) {
+                Debug.Log($"OrchestratorLogin: AutoStart: shift pressed, disabling autostart");
+                autoState = AutoState.Done;
+            }
+            if (developerMode)
+            {
+                Debug.Log($"OrchestratorLogin: AutoStart: developer mode, disabling autostart");
+                autoState = AutoState.Done;
+            }
             if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart.autoLogin)
             {
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
+                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
                 if (Login())
                 {
                     autoState = AutoState.DidLogIn;
@@ -290,7 +304,7 @@ namespace VRT.Login
             }
             if (autoState == AutoState.DidLogIn && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin))
             {
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
+                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
                 autoState = AutoState.DidPlay;
                 ChangeState(State.Play);
                 Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
@@ -300,27 +314,27 @@ namespace VRT.Login
             {
                 if (config.autoCreate)
                 {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting");
+                    if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting");
                     autoState = AutoState.DidCreate;
                     ChangeState(State.Create);
 
                 }
                 if (config.autoJoin)
                 {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoJoin: starting");
+                    if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoJoin: starting");
                     autoState = AutoState.DidJoin;
                     ChangeState(State.Join);
                 }
             }
             if (state == State.Create && autoState == AutoState.DidCreate)
             {
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionName={config.sessionName}");
+                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionName={config.sessionName}");
                 CreatePanelSessionNameField.text = config.sessionName;
                 CreatePanelUncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
                 CreatePanelUncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
                 if (config.sessionTransportProtocol != null && config.sessionTransportProtocol != "")
                 {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
+                    if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
                     // xxxjack I don't understand the intended logic behind the toggles. But turning everything
                     // on and then simulating a button callback works.
                     
@@ -336,7 +350,7 @@ namespace VRT.Login
             {
                 if (config.sessionScenario != null && config.sessionScenario != "")
                 {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionScenario={config.sessionScenario}");
+                    if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionScenario={config.sessionScenario}");
                     bool found = false;
                     int idx = 0;
                     foreach (var entry in CreatePanelScenarioDropdown.options)
@@ -356,7 +370,7 @@ namespace VRT.Login
                 }
                 if (config.autoCreate)
                 {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: creating");
+                    if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: creating");
                     Invoke(nameof(AddSession), config.autoDelay);
                 }
                 autoState = AutoState.DidCompleteCreation;
@@ -366,7 +380,7 @@ namespace VRT.Login
             {
                 if (LobbyPanelSessionNumUsers.text == config.autoStartWith.ToString())
                 {
-                    if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting with {config.autoStartWith} users");
+                    if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting with {config.autoStartWith} users");
                     Invoke(nameof(LobbyPanel_StartButtonPressed), config.autoDelay);
                     autoState = AutoState.Done;
                 }
@@ -374,17 +388,21 @@ namespace VRT.Login
             if (state == State.Join && autoState == AutoState.DidJoin)
             {
                 var options = JoinPanelSessionDropdown.options;
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: look for {config.sessionName}");
+                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: look for {config.sessionName}");
                 for (int i = 0; i < options.Count; i++)
                 {
                     if (options[i].text.StartsWith(config.sessionName + " "))
                     {
-                        if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: entry {i} is {config.sessionName}, joining");
+                        if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: entry {i} is {config.sessionName}, joining");
                         JoinPanelSessionDropdown.value = i;
                         autoState = AutoState.Done;
                         Invoke(nameof(JoinSession), config.autoDelay);
                     }
                 }
+            }
+            if (autoState == AutoState.Done)
+            {
+                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: done");
             }
         }
 
