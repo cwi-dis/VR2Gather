@@ -1159,6 +1159,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1685828838444248956, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: developerMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1685828838444248956, guid: 50281900da061ff41b77e212fa1ab6f1,
+        type: 3}
+      propertyPath: debugAutoStart
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3485524114794234763, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: m_Color.b
