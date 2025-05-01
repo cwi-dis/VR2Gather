@@ -284,6 +284,11 @@ namespace VRT.Login
                 Debug.Log($"OrchestratorLogin: AutoStart: shift pressed, disabling autostart");
                 autoState = AutoState.Done;
             }
+            if (developerMode)
+            {
+                Debug.Log($"OrchestratorLogin: AutoStart: developer mode, disabling autostart");
+                autoState = AutoState.Done;
+            }
             if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart.autoLogin)
             {
                 if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");

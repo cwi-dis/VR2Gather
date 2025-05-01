@@ -796,6 +796,7 @@ MonoBehaviour:
     takeScreenshot: 0
     screenshotTargetDirectory: 
   AutoStart:
+    ignoreAutoStartForDeveloper: 1
     autoLogin: 1
     autoCreate: 0
     autoJoin: 0
@@ -1167,7 +1168,7 @@ PrefabInstance:
     - target: {fileID: 1685828838444248956, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: debugAutoStart
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3485524114794234763, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}

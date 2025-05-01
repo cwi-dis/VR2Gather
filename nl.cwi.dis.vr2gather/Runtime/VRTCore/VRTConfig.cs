@@ -54,6 +54,8 @@ namespace VRT.Core
             // - automatically create a session with a given name and parameters
             // - automatically join a session of a given name
             // - automatically start a session when enough people have joined
+            [Tooltip("Ignore autoStart settings when in developer mode")]
+            public bool ignoreAutoStartForDeveloper = false;
             [Tooltip("Automatically login with predefined credentials")]
             public bool autoLogin = false;
             [Tooltip("Automatically create a session")]
