@@ -374,6 +374,8 @@ namespace VRT.Core
             return null;
         }
 
+        static private string configFileFolder;
+
         public static string ConfigFilename(string filename="config.json")
         {
             if (filename == "config.json")
@@ -382,12 +384,28 @@ namespace VRT.Core
                 if (clConfigFile != null)
                 {
                     clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
-                    Debug.Log("Config filename: " + clConfigFile);
+                    Debug.Log($"Config file {filename}: {clConfigFile}");
+                    configFileFolder = System.IO.Path.GetDirectoryName(clConfigFile);
                     return clConfigFile;
                 }
             }
+            if (configFileFolder != null)
+            {
+                // If we got a config file from the command line, we try that directory first
+                string candidate = System.IO.Path.Combine(configFileFolder, filename);
+                if (System.IO.File.Exists(candidate))
+                {
+                    Debug.Log($"Config file {filename}: {candidate}");
+                    return candidate;
+                }
+            }
             string dataPath;
-            if (Application.isEditor)
+            if (Application.isEditor && Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                // In the editor the config file is in the same directory as the executable
+                dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
+            }
+            else if (Application.isEditor)
             {
                 // In the editor the config file is at the toplevel, above the Assets folder
                 dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
@@ -407,7 +425,9 @@ namespace VRT.Core
                 // something based on persistentDataPath)
                 dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
             }
-            return System.IO.Path.Combine(dataPath, filename);
+            string rv = System.IO.Path.Combine(dataPath, filename);
+            Debug.Log($"Config file {filename}: {rv}");
+            return rv;
         }
     }
 }
