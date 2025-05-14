@@ -12,24 +12,34 @@ namespace VRT.UserRepresentation.PointCloud
     public class  PointCloudCapturerFactory
     {
         public static AsyncPointCloudReader Create(VRTConfig._User._PCSelfConfig config, QueueThreadSafe selfPreparerQueue, QueueThreadSafe encoderQueue) { 
+            string configFilename = config.CameraReaderConfig.configFilename;
+            if (!string.IsNullOrEmpty(configFilename))
+            {
+                configFilename = VRTConfig.ConfigFilename(configFilename);
+            }
             switch(config.capturerType)
             {
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.auto:
-                    return new AsyncAutoReader(config.CameraReaderConfig.configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                    return new AsyncAutoReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.synthetic:
                    return new AsyncSyntheticReader(config.frameRate, config.SynthReaderConfig.nPoints, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.kinect:
-                    return new AsyncKinectReader(config.CameraReaderConfig.configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                    return new AsyncKinectReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.realsense:
-                    return new AsyncRealsenseReader(config.CameraReaderConfig.configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                    return new AsyncRealsenseReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.prerecorded:
                     var prConfig = config.PrerecordedReaderConfig;
                     if (prConfig.folder == null || prConfig.folder == "")
                     {
                         throw new System.Exception($"PointCloudCapturerFactory: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
                     }
-                    Debug.Log($"prConfig.folder: {prConfig.folder}");
-                    return new AsyncPrerecordedReader(prConfig.folder, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                    string prerecordedFolder = VRTConfig.ConfigFilename(prConfig.folder);
+                    Debug.Log($"prConfig.folder: {prerecordedFolder}");
+                    if (!System.IO.Directory.Exists(prerecordedFolder))
+                    {
+                        throw new System.Exception($"PointCloudCapturerFactory: folder {prerecordedFolder} does not exist");
+                    }
+                    return new AsyncPrerecordedReader(prerecordedFolder, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.proxy:
                     var ProxyReaderConfig = config.ProxyReaderConfig;
                     return new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
@@ -39,7 +49,7 @@ namespace VRT.UserRepresentation.PointCloud
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.developer:
                     try
                     {
-                        return new AsyncAutoReader(config.CameraReaderConfig.configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                        return new AsyncAutoReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                     }
                     #pragma warning disable CS0168
                     catch (Exception e)

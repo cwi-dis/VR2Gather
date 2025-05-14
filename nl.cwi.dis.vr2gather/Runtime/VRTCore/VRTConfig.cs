@@ -376,7 +376,7 @@ namespace VRT.Core
 
         static private string configFileFolder;
 
-        public static string ConfigFilename(string filename="config.json")
+        public static string ConfigFilename(string filename="config.json", bool force=false)
         {
             if (filename == "config.json")
             {
@@ -392,8 +392,10 @@ namespace VRT.Core
             if (configFileFolder != null)
             {
                 // If we got a config file from the command line, we try that directory first
+                // If the force flag is set we use that without considering whether the file exists. Use this for output
+                // files or directories.
                 string candidate = System.IO.Path.Combine(configFileFolder, filename);
-                if (System.IO.File.Exists(candidate))
+                if (force || System.IO.File.Exists(candidate))
                 {
                     Debug.Log($"Config file {filename}: {candidate}");
                     return candidate;

@@ -57,6 +57,12 @@ namespace VRT.Pilots.Common
             string dateTime = DateTime.Now.ToString("yyyyMMdd-HHmm");
             outputFile = outputFile.Replace("{scene}", sceneName);
             outputFile = outputFile.Replace("{time}", dateTime);
+            if (!string.IsNullOrEmpty(inputFile)) {
+                inputFile = VRTConfig.ConfigFilename(inputFile, force: true);
+            }
+            if (!string.IsNullOrEmpty(outputFile)) {
+                outputFile = VRTConfig.ConfigFilename(outputFile);
+            }
             if (VRTConfig.Instance.LocalUser.PositionTracker.outputIntervalOverride > 0) {
                 timeInterval = VRTConfig.Instance.LocalUser.PositionTracker.outputIntervalOverride;
             }

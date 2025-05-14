@@ -26,6 +26,10 @@ namespace VRT.Pilots.Common
         {
             takeScreenshot = VRTConfig.Instance.ScreenshotTool.takeScreenshot;
             screenshotTargetDirectory = VRTConfig.Instance.ScreenshotTool.screenshotTargetDirectory;
+            if (!string.IsNullOrEmpty(screenshotTargetDirectory))
+            {
+                screenshotTargetDirectory = VRTConfig.ConfigFilename(screenshotTargetDirectory);
+            }
             gameObject.SetActive(takeScreenshot);
             if (!takeScreenshot)
             {
