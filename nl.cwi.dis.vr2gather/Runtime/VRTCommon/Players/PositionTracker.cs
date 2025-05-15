@@ -57,12 +57,7 @@ namespace VRT.Pilots.Common
             string dateTime = DateTime.Now.ToString("yyyyMMdd-HHmm");
             outputFile = outputFile.Replace("{scene}", sceneName);
             outputFile = outputFile.Replace("{time}", dateTime);
-            if (!string.IsNullOrEmpty(inputFile)) {
-                inputFile = VRTConfig.ConfigFilename(inputFile, force: true);
-            }
-            if (!string.IsNullOrEmpty(outputFile)) {
-                outputFile = VRTConfig.ConfigFilename(outputFile);
-            }
+            
             if (VRTConfig.Instance.LocalUser.PositionTracker.outputIntervalOverride > 0) {
                 timeInterval = VRTConfig.Instance.LocalUser.PositionTracker.outputIntervalOverride;
             }
@@ -87,9 +82,10 @@ namespace VRT.Pilots.Common
         }
 
         private void LoadPositions() {
-            Debug.Log($"{Name()}: Loading positions from {inputFile}");
-            string filename = VRTConfig.ConfigFilename(inputFile);
-            try {
+            string filename = VRTConfig.ConfigFilename(inputFile, force:true);
+            Debug.Log($"{Name()}: Loading positions from {filename}");
+            try
+            {
                 string json = System.IO.File.ReadAllText(filename);
                 positionData = JsonUtility.FromJson<PositionData>(json);
             } catch(FileNotFoundException) {
@@ -99,9 +95,9 @@ namespace VRT.Pilots.Common
         }
 
         private void SavePositions() {
-            Debug.Log($"{Name()}: Saving positions to {outputFile}");
-            string filename = VRTConfig.ConfigFilename(outputFile);
-            
+            string filename = VRTConfig.ConfigFilename(outputFile, force:true);
+            Debug.Log($"{Name()}: Saving positions to {filename}");
+
             string json = JsonUtility.ToJson(positionData, true);
             System.IO.File.WriteAllText(filename, json);
         }
