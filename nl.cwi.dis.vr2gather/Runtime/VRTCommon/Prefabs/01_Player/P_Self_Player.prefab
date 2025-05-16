@@ -1651,6 +1651,7 @@ MonoBehaviour:
   lhGameObject: {fileID: 7472550006305624622}
   rhGameObject: {fileID: 3793484601070771558}
   nhGameObject: {fileID: 4343249579661523858}
+  stickyHands: 1
   m_currentRealController: 0
   m_currentVisibleController: 0
   debug: 0

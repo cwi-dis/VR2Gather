@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using UnityEngine;
 using UnityEngine.Events;
@@ -35,6 +36,10 @@ namespace VRT.Pilots.Common
         [SerializeField] GameObject rhGameObject;
         [Tooltip("Handsfree GameObject")]
         [SerializeField] GameObject nhGameObject;
+
+        [Tooltip("If hands have ever been activated they remain so, even if controllers disappear")]
+        public bool stickyHands = true;
+        bool handsHaveBeenEnabled = false;
 
         [Tooltip("Currently active real physical controller type")]
         [DisableEditing][SerializeField] ControllerType m_currentRealController;
@@ -95,13 +100,13 @@ namespace VRT.Pilots.Common
             bool foundController = false;
             if (debug)
             {
-                Debug.Log($"VRTInputController: examine {deviceList.Count} devices");
+                UnityEngine.Debug.Log($"VRTInputController: examine {deviceList.Count} devices");
             }
             foreach (var inDev in deviceList)
             {
                 if (debug)
                 {
-                    Debug.Log($"VRTInputController: examine device \"{inDev.name}\", valid={inDev.isValid}");
+                    UnityEngine.Debug.Log($"VRTInputController: examine device \"{inDev.name}\", valid={inDev.isValid}");
                 }
                 if (!inDev.isValid) continue;
                 
@@ -110,14 +115,14 @@ namespace VRT.Pilots.Common
                 foundController = true;
                 if (debug)
                 {
-                    Debug.Log($"VRTInputController: is a controller");
+                    UnityEngine.Debug.Log($"VRTInputController: is a controller");
                 }
                 if (inDev.name.Contains("Oculus") || inDev.manufacturer == "Oculus")
                 {
                     foundOculusController = true;
                     if (debug)
                     {
-                        Debug.Log($"VRTInputController: is Oculus Controller");
+                        UnityEngine.Debug.Log($"VRTInputController: is Oculus Controller");
                     }
                 } else
                 if (inDev.name.Contains("HTC Vive Controller"))
@@ -125,11 +130,11 @@ namespace VRT.Pilots.Common
                     foundViveController = true;
                     if (debug)
                     {
-                        Debug.Log($"VRTInputController: is Vive controller");
+                        UnityEngine.Debug.Log($"VRTInputController: is Vive controller");
                     }
                 } else
                 {
-                    Debug.LogWarning($"VRTInputController: treat \"{inDev.name}\" as generic controller");
+                    UnityEngine.Debug.LogWarning($"VRTInputController: treat \"{inDev.name}\" as generic controller");
                 }
             }
             if (foundOculusController) return ControllerType.Oculus;
@@ -140,7 +145,7 @@ namespace VRT.Pilots.Common
 
         void OnDeviceChanged(InputDevice value)
         {
-            Debug.Log($"VRTInputController: OnDeviceChanged: {value.name}, manufacturer={value.manufacturer}, characteristics={value.characteristics}, valid={value.isValid}");
+            UnityEngine.Debug.Log($"VRTInputController: OnDeviceChanged: {value.name}, manufacturer={value.manufacturer}, characteristics={value.characteristics}, valid={value.isValid}");
             ControllerType bestController = FindAttachedController();
             if (bestController != m_currentRealController)
             {
@@ -152,7 +157,7 @@ namespace VRT.Pilots.Common
         {
             if (debug)
             {
-                Debug.Log($"VRTInputController: controllerType={newController}, directInteraction={directInteractionIsEnabled}");
+                UnityEngine.Debug.Log($"VRTInputController: controllerType={newController}, directInteraction={directInteractionIsEnabled}");
             }
             m_currentRealController = newController;
             m_currentVisibleController = m_currentRealController;
@@ -160,9 +165,31 @@ namespace VRT.Pilots.Common
             {
                 m_currentVisibleController = ControllerType.VirtualHand;
             }
-            rhGameObject.SetActive(newController != ControllerType.None); 
-            lhGameObject.SetActive(newController != ControllerType.None); 
-            nhGameObject.SetActive(newController == ControllerType.None); 
+            //
+            // A bit convoluted logic here. Usually we don't want to disable
+            // the hands if they have ever been enabled (so any logic on the hands continues
+            // working) but this is not alwasy what we want. So it can be
+            // controlled with a setting.
+            bool handsShouldBeEnabled = newController != ControllerType.None;
+            if (handsShouldBeEnabled)
+            {
+                handsHaveBeenEnabled = true;
+            }
+            if (stickyHands && handsHaveBeenEnabled)
+            {
+                handsShouldBeEnabled = true;
+            }
+            if (handsShouldBeEnabled)
+            {
+                UnityEngine.Debug.Log($"VRTInputController: Enabling hands");
+            }
+            else
+            {
+                UnityEngine.Debug.Log($"VRTInputController: Disabling hands, enabling handsfree");
+            }
+                rhGameObject.SetActive(handsShouldBeEnabled); 
+            lhGameObject.SetActive(handsShouldBeEnabled); 
+            nhGameObject.SetActive(!handsShouldBeEnabled); 
             // xxxjack should enable/disable correct control scheme
             //
             // And tell the various interested parties (probably left and right hand) that they may need to change their

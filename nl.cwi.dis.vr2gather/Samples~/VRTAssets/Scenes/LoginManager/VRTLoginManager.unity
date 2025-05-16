@@ -792,6 +792,7 @@ MonoBehaviour:
   statsOutputFile: 
   statsOutputFileAppend: 0
   ffmpegDLLDir: ../ffmpeg/x64
+  autoInventUsername: 1
   ScreenshotTool:
     takeScreenshot: 0
     screenshotTargetDirectory: 
