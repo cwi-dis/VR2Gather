@@ -216,7 +216,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nl.cwi.dis.vr2gather.nativelibraries": "0.9.5",
+        "nl.cwi.dis.vr2gather.nativelibraries": "0.9.8",
         "nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.5",
         "nl.cwi.dis.cwipc": "7.6.3",
         "com.itisnajim.socketiounity": "1.1.4",
