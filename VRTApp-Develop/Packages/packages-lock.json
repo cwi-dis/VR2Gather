@@ -235,7 +235,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "f6443f8769d304fe87abd18bd497d5088fe3f675"
+      "hash": "114ba680cd22143870a20704a79beecd1d9800ce"
     },
     "nl.cwi.dis.vr2gather.nativelibraries.webrtc": {
       "version": "git+https://github.com/cwi-dis/VR2G-nativeLibraries-webrtc?path=/nl.cwi.dis.vr2gather.nativelibraries.webrtc",
