@@ -812,8 +812,10 @@ MonoBehaviour:
     autoStopAfterLeave: 0
     autoDelay: 1
   TransportDash:
-    segmentSize: 1000
-    segmentLife: 16000
+    segmentSize: 4000
+    segmentLife: 15000
+    openTimeout: 15000
+    receiveInterval: 10
   TransportWebRTC:
     peerExecutablePath: 
     peerInWindow: 0

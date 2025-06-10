@@ -189,14 +189,16 @@ namespace VRT.Transport.Dash
 
         TileOrMediaHandler[] perTileHandler;
         System.Threading.Thread myThread;
-        System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(15);
-        System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(100); // This parameter needs work. 2ms causes jitter with tiled pcs, but 33ms may be too high for audio 
+        System.TimeSpan openTimeout;
+        System.TimeSpan receiveInterval; // This parameter needs work. 2ms causes jitter with tiled pcs, but 33ms may be too high for audio 
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
         bool clockCorrespondenceReceived = false;
 
         protected void _Init(string _url, string _streamName)
         {
+            openTimeout = System.TimeSpan.FromMilliseconds(VRTConfig.Instance.TransportDash.openTimeout);
+            receiveInterval = System.TimeSpan.FromMilliseconds(VRTConfig.Instance.TransportDash.receiveInterval);
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, true);
             lock (this)
             {
@@ -456,7 +458,7 @@ namespace VRT.Transport.Dash
 
                         if(receiverHandler.getDataForTile(subHandle))
                         {
-                            Debug.Log($"{Name()}: xxxjack tile {i} received {receiverHandler.mostRecentDashTimestamp}");
+                            // Debug.Log($"{Name()}: xxxjack tile {i} received {receiverHandler.mostRecentDashTimestamp}");
                             received_anything = true;
                             lastSuccessfulReceive = System.DateTime.Now;
                         }
@@ -467,14 +469,14 @@ namespace VRT.Transport.Dash
                     if (!received_anything)
                     {
                         System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
-                        if (noReceives > maxNoReceives)
+                        if (noReceives > openTimeout)
                         {
                             Debug.LogWarning($"{Name()}: No data received for {noReceives.TotalSeconds} seconds, closing subHandle");
                             playFailed();
                             return;
                         }
                         System.Threading.Thread.Sleep(receiveInterval);
-                        Debug.Log($"{Name()}: xxxjack no data sleep({receiveInterval}");
+                        // Debug.Log($"{Name()}: xxxjack no data sleep({receiveInterval}");
                         continue;
                     }
                 }

@@ -92,9 +92,13 @@ namespace VRT.Core
         public class _TransportDash
         {
             [Tooltip("How many milliseconds one transmitted DASH segment should contain")]
-            public int segmentSize;
+            public int segmentSize = 4000;
             [Tooltip("After how many milliseconds DASH segments can be deleted by the SFU")]
-            public int segmentLife;
+            public int segmentLife = 15000;
+            [Tooltip("After how many milliseconds we give up on opening a connection")]
+            public int openTimeout = 15000;
+            [Tooltip("If no data is available on any stream we sleep for this many milliseconds")]
+            public int receiveInterval = 10;
         }
         [Tooltip("Settable parameters for DASH protocol")]
         public _TransportDash TransportDash;
