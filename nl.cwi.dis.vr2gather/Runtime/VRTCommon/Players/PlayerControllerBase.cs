@@ -207,7 +207,7 @@ namespace VRT.Pilots.Common
         public void LoadVoicePipeline(VRT.Orchestrator.Elements.User user)
         {
             if (isPreviewPlayer) return;
-            if (user.userData.microphoneName == "None")
+            if (user.userData.microphoneName == "None" || user.userData.microphoneName == "")
             {
                 if (isLocalPlayer)
                 {
