@@ -43,8 +43,16 @@ namespace VRT.Core
         [Serializable]
         public class _ScreenshotTool
         {
+            [Tooltip("Set this to true to enable the screenshot tool")]
             public bool takeScreenshot = false;
+            [Tooltip("FPS for recording. Default is game FPS")]
+            public int fps = 0;
+            [Tooltip("Directory where screenshots will be deposited")]
             public string screenshotTargetDirectory = "";
+            [Tooltip("Set to true to delete directory before starting recording")]
+            public bool preDeleteTargetDirectory = true;
+            [Tooltip("filename format. Can include {ts}, {num} and {framenum} constructs")]
+            public string filenameTemplate = "Frame{framenum}.png";
         }
         public _ScreenshotTool ScreenshotTool;
 

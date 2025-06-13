@@ -1,49 +1,51 @@
 {
-    "orchestratorURL": "http://192.16.197.145:8090/",
-    "targetFrameRate": -1,
-    "ntpSyncThreshold": 0.10000000149011612,
+    "_orchestratorURL": "http://192.16.197.145:8090/",
+    "ntpSyncThreshold": 0.1,
     "statsInterval": 10.0,
     "statsOutputFile": "",
     "statsOutputFileAppend": false,
-    "ffmpegDLLDir": "../ffmpeg/x64",
+    "autoInventUsername": true,
     "ScreenshotTool": {
         "takeScreenshot": false,
-        "screenshotTargetDirectory": ""
+        "fps": 0,
+        "screenshotTargetDirectory": "",
+        "preDeleteTargetDirectory": true,
+        "filenameTemplate": "Frame{framenum}.png"
     },
     "_AutoStart": {
-    	"ignoreAutoStartForDeveloper": true,
+        "ignoreAutoStartForDeveloper": true,
         "autoLogin": true,
-        "autoCreate": true,
+        "autoCreate": false,
         "autoJoin": false,
         "autoCreateForUser": "",
-        "sessionName": "jack-test",
-        "sessionScenario": "Pilot 0",
-        "sessionTransportProtocol": "socketio",
+        "sessionName": "",
+        "sessionScenario": "",
+        "sessionTransportProtocol": "",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": 1,
+        "autoStartWith": -1,
         "autoLeaveAfter": 0.0,
-        "autoStopAfterLeave": true,
+        "autoStopAfterLeave": false,
         "autoDelay": 1.0
     },
     "TransportDash": {
-        "segmentSize": 1000,
+        "segmentSize": 4000,
         "segmentLife": 15000,
-		"openTimeout": 15000,
-		"receiveInterval": 10
+        "openTimeout": 15000,
+        "receiveInterval": 10
     },
     "TransportWebRTC": {
         "peerExecutablePath": "",
-        "peerInWindow": true,
-        "peerWindowDontClose": true,
+        "peerInWindow": false,
+        "peerWindowDontClose": false,
         "peerUDPPort": 8000,
         "peerIPAddress": "127.0.0.1",
         "logFileDirectory": "",
-        "debugLevel": 1
+        "debugLevel": 0
     },
     "PCs": {
         "Codec": "cwi1",
-        "defaultCellSize": 0.0020000000949949028,
+        "defaultCellSize": 0.002,
         "cellSizeFactor": 1.0,
         "debugColorize": false,
         "timeoutBeforeGhosting": 5.0,
@@ -55,8 +57,8 @@
     },
     "Voice": {
         "audioFps": 50,
-        "maxPlayoutLatency": 0.06599999964237213,
-        "maxPlayoutAhead": 0.06599999964237213,
+        "maxPlayoutLatency": 0.066,
+        "maxPlayoutAhead": 0.066,
         "preparerQueueSize": 0,
         "ignoreSynchronizer": true
     },
@@ -79,7 +81,8 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerTypeName": "developer",
+            "capturerType": 4,
+            "capturerTypeName": "",
             "CameraReaderConfig": {
                 "configFilename": ""
             },
@@ -95,7 +98,7 @@
                 "nPoints": 16000
             },
             "PrerecordedReaderConfig": {
-                "folder": "../cwipc_test/Samples/loot-150K-4tiles"
+                "folder": "../../cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
             "frameRate": 15.0,
@@ -111,6 +114,5 @@
             "outputIntervalOverride": 0,
             "inputFile": ""
         }
-    },
-    "configOverrideFilename": ""
+    }
 }
