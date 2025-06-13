@@ -25,17 +25,18 @@ namespace VRT.Pilots.Common
         void Start()
         {
             takeScreenshot = VRTConfig.Instance.ScreenshotTool.takeScreenshot;
+            if (!takeScreenshot)
+            {
+                gameObject.SetActive(takeScreenshot);
+                Debug.Log($"{Name()}: disabling, config.ScreenshotTool.takeScreenshot = false");
+                return;
+            }
             screenshotTargetDirectory = VRTConfig.Instance.ScreenshotTool.screenshotTargetDirectory;
             if (!string.IsNullOrEmpty(screenshotTargetDirectory))
             {
                 screenshotTargetDirectory = VRTConfig.ConfigFilename(screenshotTargetDirectory);
             }
-            gameObject.SetActive(takeScreenshot);
-            if (!takeScreenshot)
-            {
-                Debug.Log($"{Name()}: disabling, config.ScreenshotTool.takeScreenshot = false");
-                return;
-            }
+            
 #if VRT_WITH_STATS
             Statistics.Output(Name(), $"output_dir={screenshotTargetDirectory}");
 #endif
@@ -61,8 +62,12 @@ namespace VRT.Pilots.Common
             screenshot.Apply();
             byte[] screenshotBytes = screenshot.EncodeToPNG();
             Destroy(screenshot);
-
-            File.WriteAllBytes(screenshotTargetDirectory + "/Frame" + Time.frameCount + ".png",screenshotBytes);
+            var fnum = Time.frameCount;
+            string filename = screenshotTargetDirectory + "/Frame" + fnum + ".png";
+            File.WriteAllBytes(filename,screenshotBytes);
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"frame={fnum}, file={filename}");
+#endif
 
             yield return null;
         }
