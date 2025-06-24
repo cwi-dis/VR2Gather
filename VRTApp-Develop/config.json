@@ -1,38 +1,31 @@
 {
-    "_orchestratorURL": "http://192.16.197.145:8090/",
-    "ntpSyncThreshold": 0.1,
-    "statsInterval": 10.0,
-    "statsOutputFile": "",
-    "statsOutputFileAppend": false,
-    "autoInventUsername": true,
+    "_orchestratorURL": "http://10.5.25.217:8090/",
+    "targetFrameRate": -1,
+    "ntpSyncThreshold": 0.10000000149011612,
+    "ffmpegDLLDir": "../ffmpeg/x64",
     "ScreenshotTool": {
         "takeScreenshot": false,
-        "fps": 0,
-        "screenshotTargetDirectory": "",
-        "preDeleteTargetDirectory": true,
-        "filenameTemplate": "Frame{framenum}.png"
+        "screenshotTargetDirectory": ""
     },
-    "_AutoStart": {
-        "ignoreAutoStartForDeveloper": true,
+    "AutoStart": {
+        "ignoreAutoStartForDeveloper": false,
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "",
-        "sessionName": "",
-        "sessionScenario": "",
-        "sessionTransportProtocol": "",
+        "autoCreateForUser": "BEELZEBUB",
+        "sessionName": "jack-dash-startup",
+        "sessionScenario": "Technical Playground",
+        "sessionTransportProtocol": "dash",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": -1,
-        "autoLeaveAfter": 0.0,
-        "autoStopAfterLeave": false,
-        "autoDelay": 1.0
+        "autoStartWith": 2,
+        "autoLeaveAfter": 60.0,
+        "autoStopAfterLeave": true,
+        "autoDelay": 0.0
     },
     "TransportDash": {
-        "segmentSize": 4000,
-        "segmentLife": 15000,
-        "openTimeout": 15000,
-        "receiveInterval": 10
+        "segmentSize": 10000,
+        "segmentLife": 60000
     },
     "TransportWebRTC": {
         "peerExecutablePath": "",
@@ -45,7 +38,7 @@
     },
     "PCs": {
         "Codec": "cwi1",
-        "defaultCellSize": 0.002,
+        "defaultCellSize": 0.0020000000949949028,
         "cellSizeFactor": 1.0,
         "debugColorize": false,
         "timeoutBeforeGhosting": 5.0,
@@ -57,8 +50,8 @@
     },
     "Voice": {
         "audioFps": 50,
-        "maxPlayoutLatency": 0.066,
-        "maxPlayoutAhead": 0.066,
+        "maxPlayoutLatency": 0.06599999964237213,
+        "maxPlayoutAhead": 0.06599999964237213,
         "preparerQueueSize": 0,
         "ignoreSynchronizer": true
     },
@@ -67,9 +60,9 @@
         "debugJitterBuffer": false,
         "minLatency": 100,
         "maxLatency": 5000,
-        "latencyMaxDecrease": 1,
-        "latencyMaxIncrease": 33,
-        "acceptDesyncOnDataUnavailable": false
+        "latencyMaxDecrease": 1000,
+        "latencyMaxIncrease": 1000,
+        "acceptDesyncOnDataUnavailable": true
     },
     "TileSelector": {
         "algorithm": "",
@@ -81,7 +74,7 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerType": 4,
+            "capturerType": 7,
             "capturerTypeName": "",
             "CameraReaderConfig": {
                 "configFilename": ""
@@ -98,14 +91,14 @@
                 "nPoints": 16000
             },
             "PrerecordedReaderConfig": {
-                "folder": "../../cwipc_test/Samples/loot-150K-4tiles"
+                "folder": "../../cwipc_test/Samples/loot-150K-4tiles/"
             },
             "voxelSize": 0.0,
-            "frameRate": 15.0,
+            "frameRate": 5.0,
             "tiled": false,
             "Encoders": [
                 {
-                    "octreeBits": 9
+                    "octreeBits": 7
                 }
             ]
         },
@@ -114,5 +107,6 @@
             "outputIntervalOverride": 0,
             "inputFile": ""
         }
-    }
+    },
+    "configOverrideFilename": ""
 }
