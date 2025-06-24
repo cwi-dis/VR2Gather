@@ -132,7 +132,17 @@ namespace VRT.Transport.Dash
 
             protected override void onfree()
             {
-                _API.sub_destroy(pointer);
+                IntPtr tmp = _pointer;
+                _pointer = IntPtr.Zero;
+                if (tmp != IntPtr.Zero)
+                {
+                    UnityEngine.Debug.Log("xxxjack calling sub_destroy()");
+                    _API.sub_destroy(tmp);
+                    UnityEngine.Debug.Log("xxxjack sub_destroy() returned");
+                } else
+                {
+                    UnityEngine.Debug.LogWarning("sub.onfree: double free");
+                }
             }
 
             public int get_stream_count()
