@@ -30,10 +30,7 @@ namespace VRT.Transport.Dash
         protected uint[] stream4CCs;
         protected sub.connection subHandle;
         protected bool isPlaying;
-        int numberOfUnsuccessfulReceives;
-        System.DateTime subRetryNotBefore = System.DateTime.Now;
-        System.TimeSpan subRetryInterval = System.TimeSpan.FromSeconds(5);
-
+      
         public class TileOrMediaInfo
         {
             public QueueThreadSafe outQueue;
@@ -77,8 +74,9 @@ namespace VRT.Transport.Dash
             {
             }
 
-            protected void getDataFromStream(sub.connection subHandle, int stream_index, int bytesNeeded)
+            protected void getDataFromStream(int stream_index, int bytesNeeded)
             {
+                sub.connection subHandle = parent.subHandle;
                 sub.FrameInfo frameInfo = new sub.FrameInfo();
 
                 // Allocate and read.
@@ -126,8 +124,9 @@ namespace VRT.Transport.Dash
 #endif
             }
 
-            public bool getDataForTile(sub.connection subHandle)
+            public bool getDataForTile()
             {
+                sub.connection subHandle = parent.subHandle;
                 if (receiverInfo.streamIndexes == null)
                 {
                     Debug.LogWarning($"{Name()}: no streamIndexes");
@@ -149,7 +148,7 @@ namespace VRT.Transport.Dash
                         continue;
                     }
                     received_anything = true;
-                    getDataFromStream(subHandle, stream_index, bytesNeeded);
+                    getDataFromStream(stream_index, bytesNeeded);
                 }
                 return received_anything;
             }
@@ -189,7 +188,6 @@ namespace VRT.Transport.Dash
         }
 
         TileOrMediaHandler[] perTileHandler;
-        System.Threading.Thread myThread;
         System.TimeSpan openTimeout;
         System.TimeSpan receiveInterval; // This parameter needs work. 2ms causes jitter with tiled pcs, but 33ms may be too high for audio 
 
@@ -257,14 +255,7 @@ namespace VRT.Transport.Dash
         }
 
 
-        protected void playFailed()
-        {
-            lock (this)
-            {
-                isPlaying = false;
-            }
-        }
-
+        
         protected virtual void _streamInfoAvailable()
         {
             lock (this)
@@ -285,11 +276,7 @@ namespace VRT.Transport.Dash
         {
             lock (this)
             {
-                if (System.DateTime.Now < subRetryNotBefore)
-                {
-                    return false;
-                }
-                subRetryNotBefore = System.DateTime.Now + subRetryInterval;
+             
                 //
                 // Create SUB instance
                 //
@@ -297,21 +284,18 @@ namespace VRT.Transport.Dash
                 {
                     Debug.LogError($"{Name()}: Programmer error: InitDash() called but subHandle != null");
                 }
-                sub.connection newSubHandle = sub.create(Name());
-                if (newSubHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
-                Debug.Log($"{Name()}: retry sub.create() successful.");
+                subHandle = sub.create(Name());
+                if (subHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
+                Debug.Log($"{Name()}: sub.create() successful.");
                 //
                 // Start playing
                 //
-                isPlaying = newSubHandle.play(url);
+                isPlaying = subHandle.play(url);
                 if (!isPlaying)
                 {
-                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                    Debug.Log($"{Name()}: sub.play({url}) failed, will try again later");
-                    newSubHandle.free();
+                    
                     return false;
                 }
-                subHandle = newSubHandle;
                 //
                 // Stream information is available. Allow subclasses to act on it to reconfigure.
                 //
@@ -339,9 +323,6 @@ namespace VRT.Transport.Dash
                     Statistics.Output(Name(), msg);
 #endif
                 }
-                myThread = new System.Threading.Thread(ingestThreadRunner);
-                myThread.Name = Name();
-                myThread.Start();
                 foreach (var t in perTileHandler)
                 {
                     t.Start();
@@ -351,10 +332,7 @@ namespace VRT.Transport.Dash
 
         private void _DeinitDash(bool closeQueues)
         {
-            isPlaying = false;
             if (closeQueues) _closeQueues();
-            myThread?.Join();
-            myThread = null;
             lock (this)
             {
                 subHandle?.free();
@@ -379,28 +357,20 @@ namespace VRT.Transport.Dash
 
         protected override void AsyncUpdate()
         {
-            bool shouldStop = false;
-            lock (this)
-            {
-                // If we should stop playing we stop
-
-                shouldStop = !isPlaying;
-            }
-            if (shouldStop) {
-                _DeinitDash(false);
-            }
+            
 
             lock (this)
             {
                 // If we are not playing we start
                 if (subHandle == null)
                 {
-                    if (InitDash())
+                    InitDash();
                     {
                         InitThread();
                     }
                 }
             }
+            handleReceives();
         }
 
         public override void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
@@ -423,67 +393,28 @@ namespace VRT.Transport.Dash
 #endif
         }
 
-        protected void ingestThreadRunner()
+        protected bool handleReceives()
         {
-            System.DateTime lastSuccessfulReceive = System.DateTime.Now;
-            try
+            bool received_anything = false;
+            for(int i= 0; i < perTileInfo.Length; i++)
             {
-                while (isPlaying)
+                var receiverInfo = perTileInfo[i];
+                var receiverHandler = perTileHandler[i];
+                if (receiverInfo.outQueue.IsClosed())
                 {
-                    bool received_anything = false;
-                    for(int i= 0; i < perTileInfo.Length; i++)
-                    {
-                        var receiverInfo = perTileInfo[i];
-                        var receiverHandler = perTileHandler[i];
-                        if (receiverInfo.outQueue.IsClosed())
-                        {
-                            continue;
-                        }
-                        if (subHandle == null)
-                        {
-                            Debug.Log($"{Name()}: subHandle was closed, exiting run thread");
-                            return;
-                        }
-                        //
-                        // Check whether we have incoming data for this set of streams. 
-                        //
-
-                        if(receiverHandler.getDataForTile(subHandle))
-                        {
-                            Debug.Log($"{Name()}: xxxjack tile {i} received {receiverHandler.mostRecentDashTimestamp}");
-                            received_anything = true;
-                            lastSuccessfulReceive = System.DateTime.Now;
-                        }
-
-                    }
-
-                    // If no data was available on any stream we may want to close the subHandle, or sleep a bit
-                    if (!received_anything)
-                    {
-                        System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
-                        if (noReceives > openTimeout)
-                        {
-                            Debug.LogWarning($"{Name()}: No data received for {noReceives.TotalSeconds} seconds, closing subHandle");
-                            playFailed();
-                            return;
-                        }
-                        System.Threading.Thread.Sleep(receiveInterval);
-                        // Debug.Log($"{Name()}: xxxjack no data sleep({receiveInterval}");
-                        continue;
-                    }
+                    continue;
                 }
-                Debug.Log($"{Name()}: ingestThreadRunner finished");
+                    
+                //
+                // Check whether we have incoming data for this set of streams. 
+                //
+
+                if(receiverHandler.getDataForTile())
+                {
+                    received_anything = true;
+                }
             }
-#pragma warning disable CS0168
-            catch (System.Exception e)
-            {
-#if UNITY_EDITOR
-                throw;
-#else
-                    Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
-                    Debug.LogError("Error while receiving visual representation or audio from another participant");
-#endif
-            }
+            return received_anything;
         }
     }
 }
