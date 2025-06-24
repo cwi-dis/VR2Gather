@@ -130,6 +130,7 @@ namespace VRT.Transport.Dash
             {
                 if (receiverInfo.streamIndexes == null)
                 {
+                    Debug.LogWarning($"{Name()}: no streamIndexes");
                     return false;
                 }
                 bool received_anything = false;
@@ -140,11 +141,11 @@ namespace VRT.Transport.Dash
 
                     // See whether data is available on this stream, and how many bytes we need to allocate
                     bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
-
-
+                    
                     // If no data is available on this stream we try the next
                     if (bytesNeeded == 0)
                     {
+                        Debug.Log($"{Name()}: no data for stream_index {stream_index}");
                         continue;
                     }
                     received_anything = true;
@@ -255,15 +256,6 @@ namespace VRT.Transport.Dash
             if (debugThreading) Debug.Log($"{Name()}: Stopped");
         }
 
-        protected sub.connection getSubHandle()
-        {
-            lock (this)
-            {
-                if (!isPlaying) return null;
-                return (sub.connection)subHandle.AddRef();
-            }
-        }
-
 
         protected void playFailed()
         {
@@ -359,15 +351,15 @@ namespace VRT.Transport.Dash
 
         private void _DeinitDash(bool closeQueues)
         {
+            isPlaying = false;
+            if (closeQueues) _closeQueues();
+            myThread?.Join();
+            myThread = null;
             lock (this)
             {
                 subHandle?.free();
                 subHandle = null;
-                isPlaying = false;
             }
-            if (closeQueues) _closeQueues();
-            myThread?.Join();
-            myThread = null;
             if (perTileHandler == null) return;
             foreach (var t in perTileHandler)
             {
@@ -436,7 +428,7 @@ namespace VRT.Transport.Dash
             System.DateTime lastSuccessfulReceive = System.DateTime.Now;
             try
             {
-                while (true)
+                while (isPlaying)
                 {
                     bool received_anything = false;
                     for(int i= 0; i < perTileInfo.Length; i++)
@@ -458,7 +450,7 @@ namespace VRT.Transport.Dash
 
                         if(receiverHandler.getDataForTile(subHandle))
                         {
-                            // Debug.Log($"{Name()}: xxxjack tile {i} received {receiverHandler.mostRecentDashTimestamp}");
+                            Debug.Log($"{Name()}: xxxjack tile {i} received {receiverHandler.mostRecentDashTimestamp}");
                             received_anything = true;
                             lastSuccessfulReceive = System.DateTime.Now;
                         }
@@ -480,6 +472,7 @@ namespace VRT.Transport.Dash
                         continue;
                     }
                 }
+                Debug.Log($"{Name()}: ingestThreadRunner finished");
             }
 #pragma warning disable CS0168
             catch (System.Exception e)
