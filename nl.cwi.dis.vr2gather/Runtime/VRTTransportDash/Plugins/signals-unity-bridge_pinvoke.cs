@@ -44,7 +44,7 @@ namespace VRT.Transport.Dash
             public int dsi_size;
         }
 
-        private delegate IntPtr delegate_sub_create(string pipeline, _API.MessageLogCallback callback, int maxLevel, long api_version);
+        private delegate IntPtr delegate_sub_get_version();
 
         protected class _API
         {
@@ -52,17 +52,17 @@ namespace VRT.Transport.Dash
             public const string myDllName = "signals-unity-bridge.so";
             // The SUB_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
             // after matching the API used here with that in the C++ code.
-            const long SUB_API_VERSION = 0x20210729A;
+            const long SUB_API_VERSION = 0x20250620A;
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-            public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)]string pipeline, int level);
+            public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)] string pipeline, int level);
 
             // Creates a new pipeline.
             // name: a display name for log messages. Can be NULL.
             // The returned pipeline must be freed using 'sub_destroy'.
             // SUB_EXPORT sub_handle* sub_create(const char* name, void (* onError) (const char* msg), uint64_t api_version = SUB_API_VERSION);
             [DllImport(myDllName)]
-            extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline, MessageLogCallback callback, int maxLevel, long api_version = SUB_API_VERSION);
+            extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)] string pipeline, MessageLogCallback callback, int maxLevel, long api_version = SUB_API_VERSION);
 
             // Destroys a pipeline. This frees all the resources.
             // SUB_EXPORT void sub_destroy(sub_handle* h);
@@ -94,7 +94,7 @@ namespace VRT.Transport.Dash
             // Plays a given URL.
             // SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
             [DllImport(myDllName)]
-            extern static public bool sub_play(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)]string name);
+            extern static public bool sub_play(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string name);
 
             // Copy the next received compressed frame to a buffer.
             // Returns: the size of compressed data actually copied,
@@ -104,6 +104,8 @@ namespace VRT.Transport.Dash
             [DllImport(myDllName)]
             extern static public int sub_grab_frame(IntPtr handle, int streamIndex, IntPtr dst, int dstLen, ref FrameInfo info);
 
+            [DllImport(myDllName)]
+            extern static public IntPtr sub_get_version();
 
         }
 
@@ -229,7 +231,7 @@ namespace VRT.Transport.Dash
             Loader.PreLoadModule(_API.myDllName);
             try
             {
-                delegate_sub_create tmpDelegate = _API.sub_create;
+                delegate_sub_get_version tmpDelegate = _API.sub_get_version;
                 IntPtr tmpPtr = Marshal.GetFunctionPointerForDelegate(tmpDelegate);
             }
             catch (System.DllNotFoundException)
@@ -263,6 +265,25 @@ namespace VRT.Transport.Dash
             return rv;
         }
 
-     
+        public static string get_version()
+        {
+            Loader.PreLoadModule(_API.myDllName);
+            try
+            {
+                IntPtr tmpPtr = _API.sub_get_version();
+                if (tmpPtr == IntPtr.Zero)
+                    return "unknown";
+                return Marshal.PtrToStringAnsi(tmpPtr);
+            }
+            catch (System.DllNotFoundException)
+            {
+                UnityEngine.Debug.LogError($"sub: Cannot load {_API.myDllName} dynamic library");
+                return "unknown";
+            }
+            finally
+            {
+                Loader.PostLoadModule(_API.myDllName);
+            }
+        }
     }
 }

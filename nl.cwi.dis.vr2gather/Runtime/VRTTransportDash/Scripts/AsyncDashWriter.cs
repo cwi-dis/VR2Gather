@@ -157,7 +157,7 @@ namespace VRT.Transport.Dash
             return new SyncConfig.ClockCorrespondence
             {
                 wallClockTime = (Timestamp)sinceEpoch.TotalMilliseconds,
-                streamClockTime = uploader.get_media_time(1000)
+                streamClockTime = uploader.get_media_time(0, 1000)
             };
         }
 

@@ -24,7 +24,7 @@ namespace VRT.Transport.Dash
 
         // Delegate types to allow loading bin2dash before actually calling it (so we can get its pathname,
         // so we can tell it where its plugins are).
-        private delegate IntPtr delegate_vrt_create_ext(string name, int num_streams, StreamDesc[] streams, string publish_url, int seg_dur_in_ms, int timeshift_buffer_depth_in_ms, long api_version);
+        private delegate IntPtr delegate_vrt_get_version();
 
         private class _API
         {
@@ -32,18 +32,18 @@ namespace VRT.Transport.Dash
 
             // The BIN2DASH_API_VERSION must match with the DLL version. Copy from bin2dash.hpp
             // after matching the API used here with that in the C++ code.
-            const long BIN2DASH_API_VERSION = 0x20200327A;
+            const long BIN2DASH_API_VERSION = 0x20250620B;
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)] string pipeline, int level);
 
 
             // Creates a new packager/streamer and starts the streaming session.
             // @MP4_4CC: codec identifier. Build with VRT_4CC(). For example VRT_4CC('c','w','i','1') for "cwi1".
             // The returned pipeline must be freed using vrt_destroy().
             [DllImport(myDllName)]
-            extern static public IntPtr vrt_create_ext([MarshalAs(UnmanagedType.LPStr)]string name, int num_streams, StreamDesc[] streams, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, long api_version = BIN2DASH_API_VERSION);
+            extern static public IntPtr vrt_create_ext2([MarshalAs(UnmanagedType.LPStr)] string name, MessageLogCallback callback, int num_streams, StreamDesc[] streams, [MarshalAs(UnmanagedType.LPStr)] string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, long api_version = BIN2DASH_API_VERSION);
 
-            // Legacy API
-            [DllImport(myDllName)]
-            extern static public IntPtr vrt_create([MarshalAs(UnmanagedType.LPStr)]string name, uint MP4_4CC, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, long api_version = BIN2DASH_API_VERSION);
 
             // Destroys a pipeline. This frees all the resources.
             [DllImport(myDllName)]
@@ -52,13 +52,13 @@ namespace VRT.Transport.Dash
             // Pushes a buffer. The caller owns it ; the buffer  as it will be copied internally.
             [DllImport(myDllName)]
             extern static public bool vrt_push_buffer_ext(IntPtr h, int stream_index, IntPtr buffer, uint bufferSize);
-            // Legacy API
-            [DllImport(myDllName)]
-            extern static public bool vrt_push_buffer(IntPtr h, IntPtr buffer, uint bufferSize);
 
             // Gets the current media time in @timescale unit.
             [DllImport(myDllName)]
-            extern static public Timestamp vrt_get_media_time(IntPtr h, int timescale);
+            extern static public Timestamp vrt_get_media_time_ext(IntPtr h, int stream_index, int timescale);
+
+            [DllImport(myDllName)]
+            extern static public IntPtr vrt_get_version();
         }
 
         public class connection : BaseMemoryChunk
@@ -90,10 +90,10 @@ namespace VRT.Transport.Dash
                 return _API.vrt_push_buffer_ext(pointer, stream_index, buffer, bufferSize);
             }
 
-            public Timestamp get_media_time(int timescale)
+            public Timestamp get_media_time(int stream_index, int timescale)
             {
                 if (pointer == IntPtr.Zero) throw new Exception($"bin2dash.get_media_time: called with pointer==null");
-                return _API.vrt_get_media_time(pointer, timescale);
+                return _API.vrt_get_media_time_ext(pointer, stream_index, timescale);
             }
         }
 
@@ -102,7 +102,7 @@ namespace VRT.Transport.Dash
             Loader.PreLoadModule(_API.myDllName);
             try
             {
-                delegate_vrt_create_ext tmpDelegate = _API.vrt_create_ext;
+                delegate_vrt_get_version tmpDelegate = _API.vrt_get_version;
                 IntPtr tmpPtr = Marshal.GetFunctionPointerForDelegate(tmpDelegate);
             }
             catch (System.DllNotFoundException)
@@ -110,11 +110,49 @@ namespace VRT.Transport.Dash
                 UnityEngine.Debug.LogError($"bin2dash: Cannot load {_API.myDllName} dynamic library");
             }
             Loader.PostLoadModule(_API.myDllName);
-        
-            IntPtr obj = _API.vrt_create_ext(name, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+
+            _API.MessageLogCallback errorCallback = (msg, level) =>
+            {
+                string _msg = string.Copy(msg);
+                if (level == 0)
+                {
+                    UnityEngine.Debug.LogError($"bin2dash: asynchronous error: {_msg}. Attempting to continue.");
+                }
+                else
+                if (level == 1)
+                {
+                    UnityEngine.Debug.LogWarning($"bin2dash: asynchronous warning: {_msg}.");
+                }
+                else
+                {
+                    UnityEngine.Debug.Log($"bin2dash: asynchronous message: {_msg}.");
+                }
+            };
+            IntPtr obj = _API.vrt_create_ext2(name, errorCallback, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
             if (obj == IntPtr.Zero)
                 return null;
             return new connection(obj);
+        }
+
+        public static string get_version()
+        {
+            Loader.PreLoadModule(_API.myDllName);
+            try
+            {
+                IntPtr tmpPtr = _API.vrt_get_version();
+                if (tmpPtr == IntPtr.Zero)
+                    return "unknown";
+                return Marshal.PtrToStringAnsi(tmpPtr);
+            }
+            catch (System.DllNotFoundException)
+            {
+                UnityEngine.Debug.LogError($"sub: Cannot load {_API.myDllName} dynamic library");
+                return "unknown";
+            }
+            finally
+            {
+                Loader.PostLoadModule(_API.myDllName);
+            }
         }
     }
 }
