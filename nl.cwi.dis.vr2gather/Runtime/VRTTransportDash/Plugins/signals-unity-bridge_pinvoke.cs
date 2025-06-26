@@ -111,6 +111,7 @@ namespace VRT.Transport.Dash
 
         public class connection : BaseMemoryChunk
         {
+            const bool debugApi = true;
             protected IntPtr obj;
             public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
 
@@ -138,9 +139,9 @@ namespace VRT.Transport.Dash
                 _pointer = IntPtr.Zero;
                 if (tmp != IntPtr.Zero)
                 {
-                    UnityEngine.Debug.Log("xxxjack calling sub_destroy()");
+                    if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_destroy()");
                     _API.sub_destroy(tmp);
-                    UnityEngine.Debug.Log("xxxjack sub_destroy() returned");
+                    if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_destroy()");
                 } else
                 {
                     UnityEngine.Debug.LogWarning("sub.onfree: double free");
@@ -153,7 +154,10 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("sub.get_stream_count: called with pointer==null");
                 }
-                return _API.sub_get_stream_count(pointer);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_get_stream_count()");
+                var rv = _API.sub_get_stream_count(pointer);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_get_stream_count()");
+                return rv;
             }
 
             public uint get_stream_4cc(int stream)
@@ -163,7 +167,9 @@ namespace VRT.Transport.Dash
                     UnityEngine.Debug.LogAssertion("sub.get_stream_4cc: called with pointer==null");
                 }
                 DashStreamDescriptor streamDesc = new DashStreamDescriptor();
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_get_stream_info()");
                 _API.sub_get_stream_info(pointer, stream, ref streamDesc);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_get_stream_info()");
                 return streamDesc.MP4_4CC;
             }
 
@@ -173,12 +179,16 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("sub.get_streams: called with pointer==null");
                 }
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_get_stream_count()");
                 int nStreams = _API.sub_get_stream_count(pointer);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_get_stream_count()");
                 IncomingStreamDescription[] rv = new IncomingStreamDescription[nStreams];
                 for (int streamIndex = 0; streamIndex < nStreams; streamIndex++)
                 {
                     DashStreamDescriptor streamDesc = new DashStreamDescriptor();
+                    if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_get_stream_info()");
                     _API.sub_get_stream_info(pointer, streamIndex, ref streamDesc);
+                    if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_get_stream_info()");
                     rv[streamIndex].streamIndex = streamIndex;
                     rv[streamIndex].tileNumber = (int)streamDesc.tileNumber;
                     float nx = ((float)streamDesc.nx) / 1000.0f;
@@ -195,7 +205,10 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("sub.enable_stream: called with pointer==null");
                 }
-                return _API.sub_enable_stream(pointer, tileNumber, quality);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_enable_stream()");
+                var rv = _API.sub_enable_stream(pointer, tileNumber, quality);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_enable_stream()");
+                return rv;
             }
 
             public bool disable_stream(int tileNumber)
@@ -204,7 +217,10 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("sub.disable_stream: called with pointer==null");
                 }
-                return _API.sub_disable_stream(pointer, tileNumber);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_disable_stream()");
+                var rv = _API.sub_disable_stream(pointer, tileNumber);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_disable_stream()");
+                return rv;
             }
 
             public bool play(string name)
@@ -213,7 +229,10 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("sub.play: called with pointer==null");
                 }
-                return _API.sub_play(pointer, name);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_play()");
+                var rv = _API.sub_play(pointer, name);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_play()");
+                return rv;
             }
 
             public int grab_frame(int streamIndex, IntPtr dst, int dstLen, ref FrameInfo info)
@@ -222,7 +241,10 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("sub.grab_frame: called with pointer==null");
                 }
-                return _API.sub_grab_frame(pointer, streamIndex, dst, dstLen, ref info);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling sub_grab_frame()");
+                var rv = _API.sub_grab_frame(pointer, streamIndex, dst, dstLen, ref info);
+                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from sub_grab_frame()");
+                return rv;
             }
         }
 
