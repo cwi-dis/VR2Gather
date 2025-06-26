@@ -785,7 +785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f5d4564cc5748f44a078ede34cbd4e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  orchestratorURL: http://192.16.197.145:8090/
+  orchestratorURL: http://virtnuc-dis.spin-off.cwi.nl:8090/
   targetFrameRate: -1
   ntpSyncThreshold: 0.1
   statsInterval: 10
@@ -795,7 +795,10 @@ MonoBehaviour:
   autoInventUsername: 1
   ScreenshotTool:
     takeScreenshot: 0
+    fps: 0
     screenshotTargetDirectory: 
+    preDeleteTargetDirectory: 1
+    filenameTemplate: Frame{framenum}.png
   AutoStart:
     ignoreAutoStartForDeveloper: 1
     autoLogin: 1
