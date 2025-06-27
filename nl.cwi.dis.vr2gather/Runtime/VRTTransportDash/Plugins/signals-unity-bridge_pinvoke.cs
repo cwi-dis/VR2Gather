@@ -111,7 +111,7 @@ namespace VRT.Transport.Dash
 
         public class connection : BaseMemoryChunk
         {
-            const bool debugApi = true;
+            const bool debugApi = false;
             protected IntPtr obj;
             public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
 
