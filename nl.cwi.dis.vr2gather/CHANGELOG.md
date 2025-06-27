@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 
 - Fix dash slow startup and dash shutdown (#236)
+- Updated lldash (#236)
+- Updated cwipc to fix playback timestamps (#237)
 
 ## [1.2.12] - 2025-06-13
 
