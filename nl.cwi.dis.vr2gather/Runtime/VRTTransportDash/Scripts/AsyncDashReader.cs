@@ -141,7 +141,7 @@ namespace VRT.Transport.Dash
 
                     // See whether data is available on this stream, and how many bytes we need to allocate
                     bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
-                    Debug.Log($"{Name()}: xxxjack stream {stream_index}: {bytesNeeded} bytes available");
+                    // Debug.Log($"{Name()}: xxxjack stream {stream_index}: {bytesNeeded} bytes available");
                     
                     // If no data is available on this stream we try the next
                     if (bytesNeeded == 0)

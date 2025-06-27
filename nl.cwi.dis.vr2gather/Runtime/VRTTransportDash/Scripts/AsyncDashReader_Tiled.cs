@@ -27,7 +27,6 @@ namespace VRT.Transport.Dash
             {
                 tileDescriptors = _tileDescriptors;
                 int nTiles = tileDescriptors.Length;
-                //Debug.Log($"xxxjack {Name()}: constructor: nTiles={nTiles}");
                 perTileInfo = new TileOrMediaInfo[nTiles];
                 for (int ti = 0; ti < nTiles; ti++)
                 {
@@ -129,7 +128,6 @@ namespace VRT.Transport.Dash
                 //
                 // We have both tile descriptions and stream descriptions. Match them up.
                 //
-                Debug.Log($"{Name()}: xxxjack _recomputeStreams: received tileDescriptors for {tileDescriptors.Length} tiles");
                 if (tileDescriptors.Length != perTileInfo.Length)
                 {
                     Debug.LogError($"{Name()}: _recomputeStreams: {tileDescriptors.Length} tile descriptors but {perTileInfo.Length} receivers");
@@ -145,7 +143,6 @@ namespace VRT.Transport.Dash
                     {
                         if (sd.tileNumber == td.tileNumber)
                         {
-                            Debug.Log($"{Name()}: xxxjack tile {i}: tileNumber={td.tileNumber}: found orientation={sd.orientation} streamIndex={sd.streamIndex}");
                             // If this stream is for this tile we remember the streamIndex.
                             streamDescriptorsPerTile.Add(sd);
                         }
@@ -174,7 +171,7 @@ namespace VRT.Transport.Dash
                     }
                     else
                     {
-                        int wantedIndex = 0; // td.streamDescriptors.Length - 1; // xxxjack debug attempt: select last quality, not first
+                        int wantedIndex = 0;
                         Debug.Log($"{Name()}:_recomputeStreams: tileNumber={td.tileNumber}: {td.streamDescriptors.Length} streams, selecting {wantedIndex}");
                         // And we can also tell the SUB which quality we want for this tile.
                         setTileQualityIndex(tileIndex, wantedIndex);
