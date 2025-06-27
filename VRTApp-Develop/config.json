@@ -1,5 +1,5 @@
 {
-    "_orchestratorURL": "http://192.16.197.145:8090/",
+    "_orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
     "ntpSyncThreshold": 0.1,
     "statsInterval": 10.0,
     "statsOutputFile": "",
