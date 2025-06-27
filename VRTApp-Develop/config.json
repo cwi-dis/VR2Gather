@@ -1,31 +1,38 @@
 {
-    "_orchestratorURL": "http://10.5.25.217:8090/",
-    "targetFrameRate": -1,
-    "ntpSyncThreshold": 0.10000000149011612,
-    "ffmpegDLLDir": "../ffmpeg/x64",
+    "_orchestratorURL": "http://192.16.197.145:8090/",
+    "ntpSyncThreshold": 0.1,
+    "statsInterval": 10.0,
+    "statsOutputFile": "",
+    "statsOutputFileAppend": false,
+    "autoInventUsername": true,
     "ScreenshotTool": {
         "takeScreenshot": false,
-        "screenshotTargetDirectory": ""
+        "fps": 0,
+        "screenshotTargetDirectory": "",
+        "preDeleteTargetDirectory": true,
+        "filenameTemplate": "Frame{framenum}.png"
     },
-    "AutoStart": {
-        "ignoreAutoStartForDeveloper": false,
+    "_AutoStart": {
+        "ignoreAutoStartForDeveloper": true,
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "VRTINY",
-        "sessionName": "jack-dash-startup",
-        "sessionScenario": "Technical Playground",
-        "sessionTransportProtocol": "dash",
+        "autoCreateForUser": "",
+        "sessionName": "",
+        "sessionScenario": "",
+        "sessionTransportProtocol": "",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": 2,
-        "autoLeaveAfter": 60.0,
-        "autoStopAfterLeave": true,
-        "autoDelay": 0.0
+        "autoStartWith": -1,
+        "autoLeaveAfter": 0.0,
+        "autoStopAfterLeave": false,
+        "autoDelay": 1.0
     },
     "TransportDash": {
-        "segmentSize": 10000,
-        "segmentLife": 60000
+        "segmentSize": 4000,
+        "segmentLife": 15000,
+        "openTimeout": 15000,
+        "receiveInterval": 10
     },
     "TransportWebRTC": {
         "peerExecutablePath": "",
