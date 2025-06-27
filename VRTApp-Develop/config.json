@@ -12,7 +12,7 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "BEELZEBUB",
+        "autoCreateForUser": "VRTINY",
         "sessionName": "jack-dash-startup",
         "sessionScenario": "Technical Playground",
         "sessionTransportProtocol": "dash",
