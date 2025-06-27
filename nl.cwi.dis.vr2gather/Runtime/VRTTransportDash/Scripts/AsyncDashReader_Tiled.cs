@@ -86,6 +86,15 @@ namespace VRT.Transport.Dash
                 var td = tileDescriptors[tileIndex];
                 int tileNumber = td.tileNumber;
                 
+                if (qualityIndex == perTileInfo[tileIndex].currentStreamIndex)
+                {
+                    // No change, so nothing to do.
+#if VRT_WITH_STATS
+                    Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}, unchanged=true");
+#endif
+                    return;
+                }
+                perTileInfo[tileIndex].currentStreamIndex = qualityIndex;
                 // Now for this tile (and therefore receiver) find correct stream descriptor for this quality.
                 if (qualityIndex >= 0)
                 {
@@ -97,7 +106,7 @@ namespace VRT.Transport.Dash
                     {
                         Debug.LogError($"{Name()}: Could not enable quality {qualityIndex} for tile {tileNumber}, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
                     }
-                    
+
                 }
                 else
                 {

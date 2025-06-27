@@ -30,13 +30,14 @@ namespace VRT.Transport.Dash
         protected uint[] stream4CCs;
         protected sub.connection subHandle;
         protected bool isPlaying;
-      
+
         public class TileOrMediaInfo
         {
             public QueueThreadSafe outQueue;
             public List<int> streamIndexes;
             public object tileDescriptor;
             public int tileNumber = -1;
+            public int currentStreamIndex = 0;
         }
         protected TileOrMediaInfo[] perTileInfo;
    
