@@ -111,14 +111,19 @@ namespace VRT.UserRepresentation.PointCloud
             var settings = VRTConfig.Instance.TileSelector;
             if (settings != null) {
                 if (!string.IsNullOrEmpty(settings.algorithm)) {
-                    if (!Enum.TryParse<SelectionAlgorithm>(settings.algorithm, out algorithm)) {
-                        Debug.LogError($"{Name()}: Unknown algorithm \"{settings.algorithm}\"");
+                    if (!Enum.TryParse<SelectionAlgorithm>(settings.algorithm, out algorithm))
+                    {
+                        Debug.LogError($"{Name()}: Unknown algorithm \"{settings.algorithm}\". See log for known algorithms.");
+                        foreach (var alg in Enum.GetNames(typeof(SelectionAlgorithm)))
+                        {
+                            Debug.Log($"{Name()}: Known algorithm: {alg}");
+                        }
                     }
                 }
             }
             debugDecisions = settings.debugDecisions;
             if (algorithm == SelectionAlgorithm.none) {
-                Debug.Log($"{Name()}: algorithm==none, disabling");
+                Debug.Log($"{Name()}: algorithm = none, disabling");
                 base.enabled = false;
             }
         }
