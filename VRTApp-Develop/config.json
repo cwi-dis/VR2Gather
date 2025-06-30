@@ -73,7 +73,7 @@
     },
     "TileSelector": {
         "algorithm": "frontTileBest",
-        "debugDecisions": false,
+        "debugDecisions": true,
         "bitrateBudget": 0
     },
     "VQEGLatencies": [],
