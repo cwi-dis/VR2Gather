@@ -240,9 +240,11 @@ namespace VRT.UserRepresentation.PointCloud
         public virtual int[] getTileOrder(Transform cameraTransform, Transform pointcloudTransform)
         {
             // Get the camera forward vector
-            Vector3 cameraForward = cameraTransform.forward;
+            Vector3 cameraPosition = cameraTransform.position;
             // Get the pointcloud position
             Vector3 pointcloudPosition = pointcloudTransform.position;
+
+            Vector3 pcToCameraVector = (cameraPosition - pointcloudPosition).normalized;
           
             int[] tileOrder = new int[nTiles];
             //Initialize index array
@@ -255,9 +257,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Vector3 thisTileOrientation = TileOrientation[i];
                 thisTileOrientation = transform.TransformDirection(thisTileOrientation);
-                tileUtilities[i] =  Vector3.Dot(cameraForward, thisTileOrientation);
+                tileUtilities[i] =  Vector3.Dot(pcToCameraVector, thisTileOrientation);
                 if (debugDecisions) {
-                    Debug.Log($"{Name()}: tile={i}, orientation={thisTileOrientation}, utility={tileUtilities[i]}");
+                    Debug.Log($"{Name()}: tile={i}, orientation={thisTileOrientation}, pcToCamVector={pcToCameraVector}, utility={tileUtilities[i]}");
                 }
             }
             //Sort tile utilities and apply the same sort to tileOrder
