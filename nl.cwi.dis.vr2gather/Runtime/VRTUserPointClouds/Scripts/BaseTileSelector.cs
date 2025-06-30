@@ -94,16 +94,33 @@ namespace VRT.UserRepresentation.PointCloud
         abstract protected double getBitrateBudget();
 
         //
-        // Get viewer forward-fsacing vector.
-        // To be implemented by subclass.
+        // Get viewer forward-facing vector.
         //
-        protected abstract Transform getCameraTransform();
+        protected Transform getCameraTransform()
+        {
+            // xxxjack currently returns camera viedw angle (as the name implies)
+            // but maybe camera position is better. Or both.
 
+            Transform cameraTransform = Camera.main.transform;
+            if (cameraTransform == null)
+            {
+                Debug.LogError($"{Name()}: Camera not found");
+                return gameObject.transform;
+            }
+            return cameraTransform;
+
+        }
         //
         // Get best known position for viewed pointcloud.
-        // To be implemented by subclass.
         //
-        protected abstract Transform getPointCloudTransform(long currentFrameNumber);
+
+
+        protected Transform getPointCloudTransform(long currentFrameNumber)
+        {
+            // NOTE: this only works if this MonoBehaviour is attached to the point cloud GameObject,
+            // with the exact same transform.
+            return gameObject.transform;
+        }
 
         protected void Start()
         {

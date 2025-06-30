@@ -72,26 +72,5 @@ namespace VRT.UserRepresentation.PointCloud
             return 0; // xxxjack
         }
 
-        protected override Transform getCameraTransform()
-        {
-            // xxxjack currently returns camera viedw angle (as the name implies)
-            // but maybe camera position is better. Or both.
-
-            Transform cameraTransform = Camera.main.transform;
-            if (cameraTransform == null)
-            {
-                Debug.LogError($"{Name()}: Camera not found");
-                return gameObject.transform;
-            }
-            return cameraTransform;
-
-        }
-
-        protected override Transform getPointCloudTransform(long currentFrameNumber)
-        {
-            // NOTE: this only works if this MonoBehaviour is attached to the point cloud GameObject,
-            // with the exact same transform.
-            return gameObject.transform;
-        }
     }
 }
