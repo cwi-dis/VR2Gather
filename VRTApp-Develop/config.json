@@ -12,18 +12,18 @@
         "preDeleteTargetDirectory": true,
         "filenameTemplate": "Frame{framenum}.png"
     },
-    "_AutoStart": {
+    "AutoStart": {
         "ignoreAutoStartForDeveloper": true,
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "",
-        "sessionName": "",
-        "sessionScenario": "",
-        "sessionTransportProtocol": "",
+        "autoCreateForUser": "VRTINY",
+        "sessionName": "jack-test-tileselector",
+        "sessionScenario": "Pilot 0",
+        "sessionTransportProtocol": "tcp",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": -1,
+        "autoStartWith": 2,
         "autoLeaveAfter": 0.0,
         "autoStopAfterLeave": false,
         "autoDelay": 1.0
@@ -110,7 +110,7 @@
             ]
         },
         "PositionTracker": {
-            "outputFile": "",
+            "outputFile": "viewerPosition.txt",
             "outputIntervalOverride": 0,
             "inputFile": ""
         }
