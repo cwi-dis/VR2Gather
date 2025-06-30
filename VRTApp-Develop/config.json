@@ -19,7 +19,7 @@
         "autoJoin": false,
         "autoCreateForUser": "VRTINY",
         "sessionName": "jack-test-tileselector",
-        "sessionScenario": "Pilot 0",
+        "sessionScenario": "Empty",
         "sessionTransportProtocol": "tcp",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
@@ -110,7 +110,7 @@
             ]
         },
         "PositionTracker": {
-            "outputFile": "viewerPosition.txt",
+            "outputFile": "",
             "outputIntervalOverride": 0,
             "inputFile": ""
         }
