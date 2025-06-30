@@ -36,8 +36,8 @@ namespace VRT.UserRepresentation.PointCloud
         //
         public struct AlgorithmParameters {
             public double budget;
-            public Vector3 cameraForward;
-            public Vector3 pointcloudPosition;
+            public Transform cameraTransform;
+            public Transform pointcloudTransform;
             
         };
 
@@ -97,13 +97,13 @@ namespace VRT.UserRepresentation.PointCloud
         // Get viewer forward-fsacing vector.
         // To be implemented by subclass.
         //
-        protected abstract Vector3 getCameraForward();
+        protected abstract Transform getCameraTransform();
 
         //
         // Get best known position for viewed pointcloud.
         // To be implemented by subclass.
         //
-        protected abstract Vector3 getPointCloudPosition(long currentFrameNumber);
+        protected abstract Transform getPointCloudTransform(long currentFrameNumber);
 
         protected void Start()
         {
@@ -130,8 +130,8 @@ namespace VRT.UserRepresentation.PointCloud
 
         bool getCurrentAlgorithmParameters(long currentFrameIndex) {
             currentParameters.budget = getBitrateBudget();
-            currentParameters.cameraForward = getCameraForward();
-            currentParameters.pointcloudPosition = getPointCloudPosition(currentFrameIndex);
+            currentParameters.cameraTransform = getCameraTransform();
+            currentParameters.pointcloudTransform = getPointCloudTransform(currentFrameIndex);
             bool rv = !currentParameters.Equals(previousParameters);
             previousParameters = currentParameters;
             return rv;
@@ -220,8 +220,13 @@ namespace VRT.UserRepresentation.PointCloud
             yield return null;
         }
 
-        public virtual int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
+        public virtual int[] getTileOrder(Transform cameraTransform, Transform pointcloudTransform)
         {
+            // Get the camera forward vector
+            Vector3 cameraForward = cameraTransform.forward;
+            // Get the pointcloud position
+            Vector3 pointcloudPosition = pointcloudTransform.position;
+          
             int[] tileOrder = new int[nTiles];
             //Initialize index array
             for (int i = 0; i < nTiles; i++)
@@ -351,9 +356,9 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTilesFrontTileBest(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: FrontTileBest: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: FrontTileBest: cameraPosition={parameters.cameraTransform.position}, cameraForward={parameters.cameraTransform.forward}, pointCloudPosition={parameters.pointcloudTransform.position}, pointCloudForward={parameters.pointcloudTransform.forward}");
             }
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters.cameraTransform, parameters.pointcloudTransform);
             int[] selectedQualities = new int[nTiles];
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
             selectedQualities[tileOrder[0]] = nQualities - 1;
@@ -369,10 +374,10 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTileQualities_Greedy(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Greedy: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: Greedy: cameraPosition={parameters.cameraTransform.position}, cameraForward={parameters.cameraTransform.forward}, pointCloudPosition={parameters.pointcloudTransform.position}, pointCloudForward={parameters.pointcloudTransform.forward}");
             }
             double spent = 0;
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters.cameraTransform, parameters.pointcloudTransform);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             // Assume we spend at least minimal quality badnwidth requirements for each tile
@@ -413,10 +418,10 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTileQualities_Uniform(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Uniform: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: Uniform: cameraPosition={parameters.cameraTransform.position}, cameraForward={parameters.cameraTransform.forward}, pointCloudPosition={parameters.pointcloudTransform.position}, pointCloudForward={parameters.pointcloudTransform.forward}");
             }
             double spent = 0;
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters.cameraTransform, parameters.pointcloudTransform);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             // Assume we spend at least minimal quality badnwidth requirements for each tile
@@ -456,11 +461,11 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTileQualities_Hybrid(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Hybrid: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: Hybrid: cameraPosition={parameters.cameraTransform.position}, cameraForward={parameters.cameraTransform.forward}, pointCloudPosition={parameters.pointcloudTransform.position}, pointCloudForward={parameters.pointcloudTransform.forward}");
             }
-            bool[] tileVisibility = getTileVisibility(parameters.cameraForward, parameters.pointcloudPosition);
+            bool[] tileVisibility = getTileVisibility(parameters.cameraTransform, parameters.pointcloudTransform);
             double spent = 0;
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters.cameraTransform, parameters.pointcloudTransform);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             // Assume we spend at least minimal quality badnwidth requirements for each tile
@@ -519,11 +524,11 @@ namespace VRT.UserRepresentation.PointCloud
         int [] getTileQualities_WeightedHybrid(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: WeightedHybrid: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: WeightedHybrid: cameraPosition={parameters.cameraTransform.position}, cameraForward={parameters.cameraTransform.forward}, pointCloudPosition={parameters.pointcloudTransform.position}, pointCloudForward={parameters.pointcloudTransform.forward}");
             }
             double spent = 0;
             double[] tileSpent = new double[nTiles];
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters.cameraTransform, parameters.pointcloudTransform);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             // Assume we spend at least minimal quality badnwidth requirements for each tile
@@ -593,8 +598,13 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return selectedQualities;
         }
-        bool[] getTileVisibility(Vector3 cameraForward, Vector3 pointcloudPosition)
+        bool[] getTileVisibility(Transform cameraTransform, Transform pointcloudTransform)
         {
+            // Get the camera forward vector
+            Vector3 cameraForward = cameraTransform.forward;
+            // Get the pointcloud position
+            Vector3 pointcloudPosition = pointcloudTransform.position;
+
             // xxxjack currently ignores pointcloud position, which is probably wrong...
             bool[] tileVisibility = new bool[nTiles];
             float[] tileDirection = new float[nTiles];

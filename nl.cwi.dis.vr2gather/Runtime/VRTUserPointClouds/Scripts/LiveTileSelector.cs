@@ -1,4 +1,5 @@
 using Cwipc;
+using UnityEditor.UI;
 using UnityEngine;
 using VRT.Core;
 
@@ -71,30 +72,26 @@ namespace VRT.UserRepresentation.PointCloud
             return 0; // xxxjack
         }
 
-        protected override Vector3 getCameraForward()
+        protected override Transform getCameraTransform()
         {
             // xxxjack currently returns camera viedw angle (as the name implies)
             // but maybe camera position is better. Or both.
-#if xxxjack_disabled
-            // This code was dependent on the TileSelector being part of the P_Player_Self.
-            // But now it is on the P_Player for the other players.
-            PlayerControllerSelf player = gameObject.GetComponentInParent<PlayerControllerSelf>();
-            Transform cameraTransform = player?.getCameraTransform();
-#else
+
             Transform cameraTransform = Camera.main.transform;
-#endif
             if (cameraTransform == null)
             {
                 Debug.LogError($"{Name()}: Camera not found");
-                return Vector3.forward;
+                return gameObject.transform;
             }
-            return cameraTransform.forward;
+            return cameraTransform;
 
         }
 
-        protected override Vector3 getPointCloudPosition(long currentFrameNumber)
+        protected override Transform getPointCloudTransform(long currentFrameNumber)
         {
-            return new Vector3(0, 0, 0);
+            // NOTE: this only works if this MonoBehaviour is attached to the point cloud GameObject,
+            // with the exact same transform.
+            return gameObject.transform;
         }
     }
 }

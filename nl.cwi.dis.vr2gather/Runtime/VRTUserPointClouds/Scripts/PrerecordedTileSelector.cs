@@ -259,7 +259,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             return curIndex;
         }
-        protected override Vector3 getCameraForward()
+        protected override Vector3 getCameraTransform()
         {
             PlayerControllerSelf player = gameObject.GetComponentInParent<PlayerControllerSelf>();
             Transform cameraTransform = player?.getCameraTransform();
@@ -284,7 +284,7 @@ namespace VRT.UserRepresentation.PointCloud
             return cameraTransform.position;
         }
 
-        protected override Vector3 getPointCloudPosition(long currentFrameNumber)
+        protected override Vector3 getPointCloudTransform(long currentFrameNumber)
         {
             return new Vector3(0, 0, 0);
         }
