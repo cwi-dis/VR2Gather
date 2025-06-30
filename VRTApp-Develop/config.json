@@ -112,7 +112,7 @@
         "PositionTracker": {
             "outputFile": "",
             "outputIntervalOverride": 0,
-            "inputFile": ""
+            "inputFile": "viewerPosition.json"
         }
     },
     "configOverrideFilename": ""
