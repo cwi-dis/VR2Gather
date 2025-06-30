@@ -72,7 +72,7 @@
         "acceptDesyncOnDataUnavailable": true
     },
     "TileSelector": {
-        "algorithm": "",
+        "algorithm": "frontTileBest",
         "debugDecisions": false,
         "bitrateBudget": 0
     },
