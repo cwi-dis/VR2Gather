@@ -149,9 +149,15 @@ namespace VRT.UserRepresentation.PointCloud
             currentParameters.budget = getBitrateBudget();
             currentParameters.cameraTransform = getCameraTransform();
             currentParameters.pointcloudTransform = getPointCloudTransform(currentFrameIndex);
-            bool rv = !currentParameters.Equals(previousParameters);
+            bool same = (
+                currentParameters.budget == previousParameters.budget &&
+                currentParameters.cameraTransform.position == previousParameters.cameraTransform.position &&
+                currentParameters.cameraTransform.forward == previousParameters.cameraTransform.forward &&
+                currentParameters.pointcloudTransform.position == previousParameters.pointcloudTransform.position &&
+                currentParameters.pointcloudTransform.forward == previousParameters.pointcloudTransform.forward
+            );
             previousParameters = currentParameters;
-            return rv;
+            return !same;
         }
 
         private void Update()
@@ -179,7 +185,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             bool changed = getCurrentAlgorithmParameters(currentFrameIndex);
             if (!changed) {
-                //Debug.Log($"{Name()}: xxxjack nothing changed");
+                Debug.Log($"{Name()}: xxxjack nothing changed");
                 return;
             }
             int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, currentParameters);
