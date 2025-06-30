@@ -180,6 +180,12 @@ namespace VRT.Pilots.Common
                 CameraTransform.position = nextPosition.c_pos;
                 CameraTransform.rotation = nextPosition.c_rot;
                 previousPosition = nextPosition;
+                if (positionData.positions.Count == 0)
+                {
+                    isPlayingBack = false;
+                    Debug.Log($"{Name()}: End of data, stop playback");
+                    return;
+                }
                 positionData.positions.RemoveAt(0);
                 return;
             }
