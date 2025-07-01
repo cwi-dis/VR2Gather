@@ -9,6 +9,14 @@
       },
       "hash": "b43e1fa081328eea08f8a7c05c54eba14c97ae22"
     },
+    "com.kybernetik.inspector-gadgets": {
+      "version": "file:com.kybernetik.inspector-gadgets",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.modules.imgui": "1.0.0"
+      }
+    },
     "com.unity.ai.navigation": {
       "version": "1.1.5",
       "depth": 0,
