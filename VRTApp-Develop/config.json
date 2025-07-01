@@ -81,10 +81,10 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerType": 7,
+            "capturerType": 0,
             "capturerTypeName": "",
             "CameraReaderConfig": {
-                "configFilename": ""
+                "configFilename": "../../cwipc_test/sandbox/registration-tests/cameraconfig.json"
             },
             "RemoteCameraReaderConfig": {
                 "url": "",
