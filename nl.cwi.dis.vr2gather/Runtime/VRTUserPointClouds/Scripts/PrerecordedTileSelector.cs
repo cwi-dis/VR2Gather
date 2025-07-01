@@ -263,10 +263,10 @@ namespace VRT.UserRepresentation.PointCloud
 
 
      
-        public override int[] getTileOrder(Transform cameraTransform, Transform pointCloudTransform)
+        public override int[] getTileOrder(AlgorithmParameters parameters)
         {
-            Vector3 cameraForward = cameraTransform.forward; 
-            Vector3 pointcloudPosition = pointCloudTransform.position;
+            Vector3 cameraForward = parameters.cameraForward; 
+            Vector3 pointcloudPosition = parameters.pointCloudPosition;
             int[] tileOrder = new int[nTiles];
             int[] tileOrderDistances = new int[nTiles];
             //Initialize index array

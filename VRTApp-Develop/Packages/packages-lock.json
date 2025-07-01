@@ -9,6 +9,14 @@
       },
       "hash": "b43e1fa081328eea08f8a7c05c54eba14c97ae22"
     },
+    "com.kybernetik.inspector-gadgets": {
+      "version": "file:com.kybernetik.inspector-gadgets",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.modules.imgui": "1.0.0"
+      }
+    },
     "com.unity.ai.navigation": {
       "version": "1.1.5",
       "depth": 0,
@@ -209,7 +217,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "e6a2b6b7dfc24624e9bf09131a48e01836e667c4"
+      "hash": "a48f3339cad9d52dae47c43949b81d117746af06"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",
