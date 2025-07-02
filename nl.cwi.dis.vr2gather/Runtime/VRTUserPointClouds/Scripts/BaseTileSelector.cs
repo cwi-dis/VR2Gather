@@ -186,7 +186,7 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             bool changed = getCurrentAlgorithmParameters(currentFrameIndex);
-            if (!changed) {
+            if (!changed && algorithm != SelectionAlgorithm.interactive) {
                 // Debug.Log($"{Name()}: xxxjack nothing changed");
                 return;
             }
