@@ -281,29 +281,47 @@ namespace VRT.UserRepresentation.PointCloud
         // and algorithm
         int[] getTileQualities(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
+            int[] rv = null;
             switch (algorithm)
             {
                 case SelectionAlgorithm.none:
                     Debug.LogError($"{Name()}: algorithm==none, should not happen");
                     return null;
                 case SelectionAlgorithm.interactive:
-                    return getTileQualities_Interactive(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_Interactive(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.alwaysBest:
-                    return getTileQualities_AlwaysBest(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_AlwaysBest(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.frontTileBest:
-                    return getTilesFrontTileBest(bandwidthUsageMatrix, parameters);
+                    rv = getTilesFrontTileBest(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.greedy:
-                    return getTileQualities_Greedy(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_Greedy(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.uniform:
-                    return getTileQualities_Uniform(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_Uniform(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.hybrid:
-                    return getTileQualities_Hybrid(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_Hybrid(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.weightedHybrid:
-                    return getTileQualities_WeightedHybrid(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_WeightedHybrid(bandwidthUsageMatrix, parameters);
+                    break;
                 default:
                     Debug.LogError($"{Name()}: Unknown algorithm");
                     return null;
             }
+            if (rv != null)
+            {
+                if (debugDecisions)
+                {
+                    string concatenated = string.Join(", ",
+                          rv.Select(x => x.ToString()).ToArray());
+                    Debug.Log($"{Name()}: {algorithm}: selected qualities: {concatenated}");
+                }
+            }
+            return rv;
         }
 
         int[] getTileQualities_Interactive(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
@@ -373,11 +391,6 @@ namespace VRT.UserRepresentation.PointCloud
             int[] selectedQualities = new int[nTiles];
 
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: AlwaysBest: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
         int[] getTilesFrontTileBest(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
@@ -389,11 +402,6 @@ namespace VRT.UserRepresentation.PointCloud
             int[] selectedQualities = new int[nTiles];
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
             selectedQualities[tileOrder[0]] = nQualities - 1;
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: FrontTileBest: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
 
@@ -435,11 +443,6 @@ namespace VRT.UserRepresentation.PointCloud
                     // UnityEngine.Debug.Log("<color=green> XXXDebug Budget" + budget + " spent " + spent + " savings " + savings + " </color> ");
                 }
             }
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: Greedy: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
         int[] getTileQualities_Uniform(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
@@ -477,11 +480,6 @@ namespace VRT.UserRepresentation.PointCloud
                     representationSet = true;
                     double savings = parameters.budget - spent;
                 }
-            }
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: Uniform: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
@@ -539,11 +537,6 @@ namespace VRT.UserRepresentation.PointCloud
                     representationSet = true;
                     double savings = parameters.budget - spent;
                 }
-            }
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: Hybrid: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
@@ -617,11 +610,6 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 if (!stepComplete)
                     representationSet = true;
-            }
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: WeightedHybrid: selected qualities: {concatenated}");
             }
             return selectedQualities;
         }
