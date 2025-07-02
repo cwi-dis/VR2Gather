@@ -1,7 +1,7 @@
 {
     "_orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
     "ntpSyncThreshold": 0.1,
-    "statsInterval": 10.0,
+    "statsInterval": 1.0,
     "statsOutputFile": "",
     "statsOutputFileAppend": false,
     "autoInventUsername": true,
@@ -17,7 +17,7 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "BEELZEBUB",
+        "autoCreateForUser": "VRTINY",
         "sessionName": "jack-test-tileselector",
         "sessionScenario": "Empty",
         "sessionTransportProtocol": "tcp",
@@ -81,7 +81,7 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerType": 0,
+            "capturerType": 7,
             "capturerTypeName": "",
             "CameraReaderConfig": {
                 "configFilename": "../../cwipc_test/sandbox/registration-tests/cameraconfig.json"
