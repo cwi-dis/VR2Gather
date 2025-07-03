@@ -20,8 +20,10 @@ public class MissingReferencesFinder : MonoBehaviour
 	[MenuItem(MENU_ROOT + "Search in scene", false, 50)]
 	public static void FindMissingReferencesInCurrentScene()
 	{
+		Debug.Log($"Find Missing References in scene {EditorSceneManager.GetActiveScene().name}");
 		var sceneObjects = GetSceneObjects();
 		FindMissingReferences(EditorSceneManager.GetActiveScene().path, sceneObjects);
+		Debug.Log($"Find Missing References in scene {EditorSceneManager.GetActiveScene().name}: done");
 	}
 
 	/// <summary>
