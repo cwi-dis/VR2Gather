@@ -1,7 +1,7 @@
 {
     "_orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
     "ntpSyncThreshold": 0.1,
-    "statsInterval": 1.0,
+    "statsInterval": 10.0,
     "statsOutputFile": "",
     "statsOutputFileAppend": false,
     "autoInventUsername": true,
@@ -115,7 +115,7 @@
         "PositionTracker": {
             "outputFile": "",
             "outputIntervalOverride": 0,
-            "inputFile": "viewerPosition.json"
+            "inputFile": ""
         }
     },
     "configOverrideFilename": ""
