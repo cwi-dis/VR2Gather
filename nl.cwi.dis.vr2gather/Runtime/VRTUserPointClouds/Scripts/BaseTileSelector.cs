@@ -250,7 +250,7 @@ namespace VRT.UserRepresentation.PointCloud
             // Get the camera forward vector
             Vector3 cameraPosition = parameters.cameraPosition;
             // Get the pointcloud position
-            Vector3 pointcloudPosition = parameters.cameraForward;
+            Vector3 pointcloudPosition = parameters.pointCloudPosition;
 
             Vector3 pcToCameraVector = (cameraPosition - pointcloudPosition).normalized;
           
