@@ -180,7 +180,27 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogWarning($"{Name()}: SetTilingConfig: ignoring second tilingConfig");
                 return;
             }
+            //
+            // The orientation vectors in the config are in the comon right-handed coordinate system.
+            // But Unity uses mirroring X or Z, so we need to convert.
+            // The renderers have flags for mirroring X or Z (and we assume all renderers will have the same setting, otherwise
+            // all hell would break out anyway).
+            //
             networkTileDescription = config;
+            const bool mirrorX = true;
+            const bool mirrorZ = false;
+            for(int i = 0; i < networkTileDescription.tiles.Length; i++)
+            {
+                var tile = networkTileDescription.tiles[i];
+                if (mirrorX)
+                {
+                    tile.orientation.x = -tile.orientation.x;
+                }
+                if (mirrorZ)
+                {
+                    tile.orientation.z = -tile.orientation.z;
+                }
+            }
             Debug.Log($"{Name()}: received tilingConfig with {networkTileDescription.tiles.Length} tiles");
 
             _InitForOtherUser();
