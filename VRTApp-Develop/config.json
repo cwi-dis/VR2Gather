@@ -12,18 +12,18 @@
         "preDeleteTargetDirectory": true,
         "filenameTemplate": "Frame{framenum}.png"
     },
-    "AutoStart": {
+    "_AutoStart": {
         "ignoreAutoStartForDeveloper": true,
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "BEELZEBUB",
-        "sessionName": "jack-test-tileselector",
-        "sessionScenario": "Empty",
-        "sessionTransportProtocol": "tcp",
+        "autoCreateForUser": "",
+        "sessionName": "",
+        "sessionScenario": "",
+        "sessionTransportProtocol": "",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": 2,
+        "autoStartWith": -1,
         "autoLeaveAfter": 0.0,
         "autoStopAfterLeave": false,
         "autoDelay": 1.0
@@ -72,7 +72,7 @@
         "acceptDesyncOnDataUnavailable": true
     },
     "TileSelector": {
-        "algorithm": "frontTileBest",
+        "algorithm": "",
         "debugDecisions": false,
         "bitrateBudget": 0
     },
@@ -84,7 +84,7 @@
             "capturerType": 7,
             "capturerTypeName": "",
             "CameraReaderConfig": {
-                "configFilename": "../../cwipc_test/sandbox/registration-tests/cameraconfig.json"
+                "configFilename": ""
             },
             "RemoteCameraReaderConfig": {
                 "url": "",
@@ -102,20 +102,17 @@
             },
             "voxelSize": 0.0,
             "frameRate": 5.0,
-            "tiled": true,
+            "tiled": false,
             "Encoders": [
                 {
-                    "octreeBits": 2
-                },
-				{
-					"octreeBits": 9
-				}
+                    "octreeBits": 7
+                }
             ]
         },
         "PositionTracker": {
             "outputFile": "",
             "outputIntervalOverride": 0,
-            "inputFile": "viewerPosition.json"
+            "inputFile": ""
         }
     },
     "configOverrideFilename": ""
