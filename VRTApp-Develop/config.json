@@ -17,7 +17,7 @@
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "VRTINY",
+        "autoCreateForUser": "BEELZEBUB",
         "sessionName": "jack-test-tileselector",
         "sessionScenario": "Empty",
         "sessionTransportProtocol": "tcp",
@@ -73,7 +73,7 @@
     },
     "TileSelector": {
         "algorithm": "frontTileBest",
-        "debugDecisions": true,
+        "debugDecisions": false,
         "bitrateBudget": 0
     },
     "VQEGLatencies": [],
@@ -115,7 +115,7 @@
         "PositionTracker": {
             "outputFile": "",
             "outputIntervalOverride": 0,
-            "inputFile": ""
+            "inputFile": "viewerPosition.json"
         }
     },
     "configOverrideFilename": ""
