@@ -213,19 +213,20 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "file:../../../cwipc_unity/nl.cwi.dis.cwipc",
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
       "depth": 0,
-      "source": "local",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "202e7cc70fc3fb2f45d24f350351ba021a8c46ec"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nl.cwi.dis.vr2gather.nativelibraries": "0.9.8",
-        "nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.5",
-        "nl.cwi.dis.cwipc": "7.6.3",
+        "nl.cwi.dis.vr2gather.nativelibraries": "0.9.11",
+        "nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.6",
+        "nl.cwi.dis.cwipc": "7.6.12",
         "com.itisnajim.socketiounity": "1.1.4",
         "com.unity.animation.rigging": "1.2.1",
         "com.unity.recorder": "4.0.2",
