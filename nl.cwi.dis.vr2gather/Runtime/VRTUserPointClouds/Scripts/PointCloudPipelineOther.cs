@@ -191,14 +191,13 @@ namespace VRT.UserRepresentation.PointCloud
             const bool mirrorZ = false;
             for(int i = 0; i < networkTileDescription.tiles.Length; i++)
             {
-                var tile = networkTileDescription.tiles[i];
                 if (mirrorX)
                 {
-                    tile.orientation.x = -tile.orientation.x;
+                    networkTileDescription.tiles[i].orientation.x = -networkTileDescription.tiles[i].orientation.x;
                 }
                 if (mirrorZ)
                 {
-                    tile.orientation.z = -tile.orientation.z;
+                    networkTileDescription.tiles[i].orientation.z = -networkTileDescription.tiles[i].orientation.z;
                 }
             }
             Debug.Log($"{Name()}: received tilingConfig with {networkTileDescription.tiles.Length} tiles");
