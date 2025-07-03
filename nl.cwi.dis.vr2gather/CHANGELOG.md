@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.14] - 2025-07-03
 
 - TileSelector fixed to prioritize the correct tiles (#207)
+- Some helper tools added (#239)
 
 ## [1.2.13] - 2025-06-27
 
