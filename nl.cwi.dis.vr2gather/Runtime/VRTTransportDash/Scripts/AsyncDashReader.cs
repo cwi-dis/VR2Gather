@@ -28,7 +28,7 @@ namespace VRT.Transport.Dash
         protected string url;
         protected int streamCount;
         protected uint[] stream4CCs;
-        protected sub.connection subHandle;
+        protected lldplay.connection subHandle;
         protected bool isPlaying;
 
         public class TileOrMediaInfo
@@ -77,8 +77,8 @@ namespace VRT.Transport.Dash
 
             protected void getDataFromStream(int stream_index, int bytesNeeded)
             {
-                sub.connection subHandle = parent.subHandle;
-                sub.FrameInfo frameInfo = new sub.FrameInfo();
+                lldplay.connection subHandle = parent.subHandle;
+                lldplay.FrameInfo frameInfo = new lldplay.FrameInfo();
 
                 // Allocate and read.
                 NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
@@ -127,7 +127,7 @@ namespace VRT.Transport.Dash
 
             public bool getDataForTile()
             {
-                sub.connection subHandle = parent.subHandle;
+                lldplay.connection subHandle = parent.subHandle;
                 if (receiverInfo.streamIndexes == null)
                 {
                     Debug.LogWarning($"{Name()}: no streamIndexes");
@@ -136,7 +136,7 @@ namespace VRT.Transport.Dash
                 bool received_anything = false;
                 foreach (int stream_index in receiverInfo.streamIndexes)
                 {
-                    sub.FrameInfo frameInfo = new sub.FrameInfo();
+                    lldplay.FrameInfo frameInfo = new lldplay.FrameInfo();
                     int bytesNeeded = 0;
 
                     // See whether data is available on this stream, and how many bytes we need to allocate
@@ -285,7 +285,7 @@ namespace VRT.Transport.Dash
                 {
                     Debug.LogError($"{Name()}: Programmer error: InitDash() called but subHandle != null");
                 }
-                subHandle = sub.create(Name());
+                subHandle = lldplay.create(Name());
                 if (subHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
                 Debug.Log($"{Name()}: sub.create() successful.");
                 //
