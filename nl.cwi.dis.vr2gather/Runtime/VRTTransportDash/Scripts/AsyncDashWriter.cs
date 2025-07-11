@@ -26,7 +26,7 @@ namespace VRT.Transport.Dash
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         bool initialized = false;
-        public bin2dash.connection uploader;
+        public lldpkg.connection uploader;
         public string url;
         OutgoingStreamDescription[] descriptions;
         B2DPusher[] streamPushers;
@@ -59,13 +59,13 @@ namespace VRT.Transport.Dash
                 }
                 // xxxjack Is this the correct way to initialize an array of structs?
                 Debug.Log($"xxxjack {Name()}: {descriptions.Length} output streams");
-                bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
+                lldpkg.StreamDesc[] b2dDescriptors = new lldpkg.StreamDesc[descriptions.Length];
                 for (int i = 0; i < descriptions.Length; i++)
                 {
                     int nx = (int)(descriptions[i].orientation.x * 1000);
                     int ny = (int)(descriptions[i].orientation.y * 1000);
                     int nz = (int)(descriptions[i].orientation.z * 1000);
-                    b2dDescriptors[i] = new bin2dash.StreamDesc
+                    b2dDescriptors[i] = new lldpkg.StreamDesc
                     {
                         MP4_4CC = fourccInt,
                         tileNumber = descriptions[i].tileNumber,
@@ -78,7 +78,7 @@ namespace VRT.Transport.Dash
                         throw new System.Exception($"{Name()}.{i}: inQueue");
                     }
                 }
-                uploader = bin2dash.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
+                uploader = lldpkg.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
                 if (uploader != null)
                 {
                     Debug.Log($"{Name()}: started {url + _streamName}.mpd");
