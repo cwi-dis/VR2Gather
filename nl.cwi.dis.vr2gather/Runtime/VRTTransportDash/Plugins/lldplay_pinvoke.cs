@@ -101,6 +101,10 @@ namespace VRT.Transport.Dash
 
         }
 
+        /// <summary>
+        /// lldplay.connection is a wrapper around a lldash_play pipeline.
+        /// It is used to play a DASH stream.
+        /// </summary>
         public class connection : BaseMemoryChunk
         {
             const bool debugApi = false;
@@ -134,12 +138,17 @@ namespace VRT.Transport.Dash
                     if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_destroy()");
                     _API.lldplay_destroy(tmp);
                     if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_destroy()");
-                } else
+                }
+                else
                 {
                     UnityEngine.Debug.LogWarning("lldplay.onfree: double free");
                 }
             }
 
+            /// <summary>
+            /// Returns the number of streams in the pipeline.
+            /// </summary>
+            /// <returns>Number of streams</returns>
             public int get_stream_count()
             {
                 if (pointer == IntPtr.Zero)
@@ -152,6 +161,12 @@ namespace VRT.Transport.Dash
                 return rv;
             }
 
+            /// <summary>
+            /// Returns the 4CC of a given stream.
+            /// This is the same as the MP4 4CC (4 bytes binary string)
+            /// </summary>
+            /// <param name="stream">Stream number</param>
+            /// <returns>4CC as a <c>uint</c></returns>
             public uint get_stream_4cc(int stream)
             {
                 if (pointer == IntPtr.Zero)
@@ -165,6 +180,10 @@ namespace VRT.Transport.Dash
                 return streamDesc.MP4_4CC;
             }
 
+            /// <summary>
+            /// Returns an array of <c>IncomingStreamDescription</c> objects, one for each stream.
+            /// </summary>
+            /// <returns>An array of <c>IncomingStreamDescription</c></returns>
             public IncomingStreamDescription[] get_streams()
             {
                 if (pointer == IntPtr.Zero)
@@ -191,6 +210,13 @@ namespace VRT.Transport.Dash
                 return rv;
             }
 
+            /// <summary>
+            /// Enable the stream for a specific quality level for a given tile.
+            /// Disables all other streams for that tile.
+            /// The actual switching may be delayed until the next DASH segment is started.
+            /// </summary>
+            /// <param name="tileNumber">Tile number for which to switch streams</param>
+            /// <param name="quality">Quality level to enable</param>
             public bool enable_stream(int tileNumber, int quality)
             {
                 if (pointer == IntPtr.Zero)
@@ -203,6 +229,11 @@ namespace VRT.Transport.Dash
                 return rv;
             }
 
+            /// <summary>
+            /// Disable all streams for a specific tile.
+            /// Note that disabling all streams for all tiles will stop the session.
+            /// </summary>
+            /// <param name="tileNumber">Tile number for which to disable streams</param>
             public bool disable_stream(int tileNumber)
             {
                 if (pointer == IntPtr.Zero)
@@ -215,18 +246,36 @@ namespace VRT.Transport.Dash
                 return rv;
             }
 
-            public bool play(string name)
+            /// <summary>
+            /// Play a DASH stream from a given URL.
+            /// This will start the DASH session and begin receiving data.
+            /// For each tile, the first available stream (quality level) will be started.
+            /// </summary>
+            /// <param name="url">URL of the DASH stream to play</param>
+            /// <returns>True if the stream was started successfully, false otherwise</returns>
+            public bool play(string url)
             {
                 if (pointer == IntPtr.Zero)
                 {
                     UnityEngine.Debug.LogAssertion("lldplay.play: called with pointer==null");
                 }
                 if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_play()");
-                var rv = _API.lldplay_play(pointer, name);
+                var rv = _API.lldplay_play(pointer, url);
                 if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_play()");
                 return rv;
             }
 
+            /// <summary>
+            /// Copy the next received compressed frame to a buffer, or return its size.
+            /// If 'dst' is null, the frame will not be dequeued, but its size will be returned, so the
+            /// caller can allocate a buffer of the right size.
+            /// </summary>
+            /// <param name="streamIndex">Stream index to grab the frame from</param>
+            /// <param name="dst">Destination buffer to copy the frame to, or null to just get the size</param>
+            /// <param name="dstLen">Length of the destination buffer</param>
+            /// <param name="info">(out)Frame information, including timestamp and metadata</param>
+            /// <returns>Size of the copied (or currently available) frame, or zero if no frame was available for this stream</returns>
+            /// 
             public int grab_frame(int streamIndex, IntPtr dst, int dstLen, ref FrameInfo info)
             {
                 if (pointer == IntPtr.Zero)
@@ -240,6 +289,13 @@ namespace VRT.Transport.Dash
             }
         }
 
+        /// <summary>
+        /// Creates a new lldplay connection.
+        /// This will load the lldash_play dynamic library and create a new connection. The connection will
+        /// not be opened until you call the <c>play</c> method.
+        /// </summary>
+        /// <param name="pipeline">Name of the pipeline, only for error messages and such</param>
+        /// <returns>The <c>lldplay.connection</c></returns>
         public static connection create(string pipeline)
         {
             Loader.PreLoadModule(_API.myDllName);
@@ -279,6 +335,10 @@ namespace VRT.Transport.Dash
             return rv;
         }
 
+        /// <summary>
+        /// Returns the version of the lldplay library.
+        /// </summary>
+        /// <returns>The version string</returns>
         public static string get_version()
         {
             Loader.PreLoadModule(_API.myDllName);
