@@ -15,19 +15,8 @@ namespace VRT.Transport.Dash
     {
         const int MAX_LLDPLAY_MESSAGE_LEVEL = 0; // 0-Error, 1-Warn, 2-Info, 3-Debug
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct DashStreamDescriptor
-        {
-            public uint MP4_4CC;
-            public uint tileNumber;    // objectX. In VRTogether, for pointclouds, we use this field for tileNumber
-            public int nx;    // objectY. In VRTogether, for pointclouds, we use this field for nx
-            public int ny;    // objectWidth. In VRTogether, for pointclouds, we use this field for ny
-            public int nz;    // objectHeight. In VRTogether, for pointclouds, we use this field for nz
-            public uint totalWidth;
-            public uint totalHeight;
-        }
 
-        public struct FrameInfo
+        public struct DashFrameMetaData
         {
             /// <summary>
             /// Presentation timestamp (milliseconds).
@@ -94,7 +83,7 @@ namespace VRT.Transport.Dash
             // or zero, if no frame was available for this stream.
             // If 'dst' is null, the frame will not be dequeued, but its size will be returned.
             [DllImport(myDllName)]
-            extern static public int lldplay_grab_frame(IntPtr handle, int streamIndex, IntPtr dst, int dstLen, ref FrameInfo info);
+            extern static public int lldplay_grab_frame(IntPtr handle, int streamIndex, IntPtr dst, int dstLen, ref DashFrameMetaData info);
 
             [DllImport(myDllName)]
             extern static public IntPtr lldplay_get_version();
@@ -107,7 +96,7 @@ namespace VRT.Transport.Dash
         /// </summary>
         public class connection : BaseMemoryChunk
         {
-            const bool debugApi = false;
+            static readonly bool debugApi = false; // Could be a const but that gives warnings.
             protected IntPtr obj;
             public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
 
@@ -276,7 +265,7 @@ namespace VRT.Transport.Dash
             /// <param name="info">(out)Frame information, including timestamp and metadata</param>
             /// <returns>Size of the copied (or currently available) frame, or zero if no frame was available for this stream</returns>
             /// 
-            public int grab_frame(int streamIndex, IntPtr dst, int dstLen, ref FrameInfo info)
+            public int grab_frame(int streamIndex, IntPtr dst, int dstLen, ref DashFrameMetaData info)
             {
                 if (pointer == IntPtr.Zero)
                 {

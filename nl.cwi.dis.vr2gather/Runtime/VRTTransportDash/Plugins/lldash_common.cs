@@ -9,6 +9,18 @@ using System.Diagnostics;
 namespace VRT.Transport.Dash
 {
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct DashStreamDescriptor
+        {
+            public uint MP4_4CC;
+            public uint tileNumber;    // objectX. In VRTogether, for pointclouds, we use this field for tileNumber
+            public int nx;    // objectY. In VRTogether, for pointclouds, we use this field for nx
+            public int ny;    // objectWidth. In VRTogether, for pointclouds, we use this field for ny
+            public int nz;    // objectHeight. In VRTogether, for pointclouds, we use this field for nz
+            public uint totalWidth;
+            public uint totalHeight;
+        }
+
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
     public class API_libdl
     {

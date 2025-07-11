@@ -10,17 +10,6 @@ namespace VRT.Transport.Dash
 
     public class lldpkg
     {
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct StreamDesc
-        {
-            public uint MP4_4CC;
-            public uint tileNumber;    // objectX. In VRTogether, for pointclouds, we use this field for tileNumber
-            public int nx;    // objectY. In VRTogether, for pointclouds, we use this field for nx
-            public int ny;    // objectWidth. In VRTogether, for pointclouds, we use this field for ny
-            public int nz;    // objectHeight. In VRTogether, for pointclouds, we use this field for nz
-            public uint totalWidth;
-            public uint totalHeight;
-        }
 
         // Delegate types to allow loading bin2dash before actually calling it (so we can get its pathname,
         // so we can tell it where its plugins are).
@@ -42,7 +31,7 @@ namespace VRT.Transport.Dash
             // @MP4_4CC: codec identifier. Build with VRT_4CC(). For example VRT_4CC('c','w','i','1') for "cwi1".
             // The returned pipeline must be freed using vrt_destroy().
             [DllImport(myDllName)]
-            extern static public IntPtr lldpkg_create([MarshalAs(UnmanagedType.LPStr)] string name, LLDashPackagerErrorCallbackType callback, int num_streams, StreamDesc[] streams, [MarshalAs(UnmanagedType.LPStr)] string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, long api_version = LLDASH_PACKAGER_API_VERSION);
+            extern static public IntPtr lldpkg_create([MarshalAs(UnmanagedType.LPStr)] string name, LLDashPackagerErrorCallbackType callback, int num_streams, DashStreamDescriptor[] streams, [MarshalAs(UnmanagedType.LPStr)] string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, long api_version = LLDASH_PACKAGER_API_VERSION);
 
 
             // Destroys a pipeline. This frees all the resources.
@@ -129,7 +118,7 @@ namespace VRT.Transport.Dash
         /// communicated to the relay server, and it determines how long the server will keep the 
         /// segments available for clients to play.</param>
         /// /// <returns>A new lldpkg.connection object</returns>
-        public static connection create(string name, StreamDesc[] descriptors, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000)
+        public static connection create(string name, DashStreamDescriptor[] descriptors, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000)
         {
             Loader.PreLoadModule(_API.myDllName);
             try

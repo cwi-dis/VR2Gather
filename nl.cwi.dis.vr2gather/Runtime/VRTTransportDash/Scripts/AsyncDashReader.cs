@@ -78,7 +78,7 @@ namespace VRT.Transport.Dash
             protected void getDataFromStream(int stream_index, int bytesNeeded)
             {
                 lldplay.connection subHandle = parent.subHandle;
-                lldplay.FrameInfo frameInfo = new lldplay.FrameInfo();
+                lldplay.DashFrameMetaData frameInfo = new lldplay.DashFrameMetaData();
 
                 // Allocate and read.
                 NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
@@ -136,7 +136,7 @@ namespace VRT.Transport.Dash
                 bool received_anything = false;
                 foreach (int stream_index in receiverInfo.streamIndexes)
                 {
-                    lldplay.FrameInfo frameInfo = new lldplay.FrameInfo();
+                    lldplay.DashFrameMetaData frameInfo = new lldplay.DashFrameMetaData();
                     int bytesNeeded = 0;
 
                     // See whether data is available on this stream, and how many bytes we need to allocate

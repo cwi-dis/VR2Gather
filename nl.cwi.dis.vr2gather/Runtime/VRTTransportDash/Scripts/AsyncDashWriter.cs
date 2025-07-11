@@ -59,13 +59,13 @@ namespace VRT.Transport.Dash
                 }
                 // xxxjack Is this the correct way to initialize an array of structs?
                 Debug.Log($"xxxjack {Name()}: {descriptions.Length} output streams");
-                lldpkg.StreamDesc[] b2dDescriptors = new lldpkg.StreamDesc[descriptions.Length];
+                DashStreamDescriptor[] b2dDescriptors = new DashStreamDescriptor[descriptions.Length];
                 for (int i = 0; i < descriptions.Length; i++)
                 {
                     int nx = (int)(descriptions[i].orientation.x * 1000);
                     int ny = (int)(descriptions[i].orientation.y * 1000);
                     int nz = (int)(descriptions[i].orientation.z * 1000);
-                    b2dDescriptors[i] = new lldpkg.StreamDesc
+                    b2dDescriptors[i] = new DashStreamDescriptor
                     {
                         MP4_4CC = fourccInt,
                         tileNumber = descriptions[i].tileNumber,
