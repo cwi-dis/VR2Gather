@@ -61,6 +61,10 @@ namespace VRT.Transport.Dash
             extern static public IntPtr lldpkg_get_version();
         }
 
+        /// <summary>
+        /// This class represents a connection to the lldash_packager library.
+        /// It is used to ingest streams into lldash relay server.
+        /// </summary> 
         public class connection : BaseMemoryChunk
         {
 
@@ -84,12 +88,27 @@ namespace VRT.Transport.Dash
                 _API.lldpkg_destroy(pointer);
             }
 
+            /// <summary>
+            /// Pushes a buffer to the packager.
+            /// The buffer must be allocated using Marshal.AllocHGlobal or similar, and will be copied internally.
+            /// The caller owns the buffer and must free it after this call.
+            /// </summary>
+            /// <param name="stream_index">Index of the stream to which the buffer should be pushed</param>
+            /// <param name="buffer">Pointer to the buffer to be pushed</param>
+            /// <param name="bufferSize">Size of the buffer in bytes</param>
+            /// <returns>True if the buffer was successfully pushed, false otherwise</returns>
             public bool push_buffer(int stream_index, IntPtr buffer, uint bufferSize)
             {
                 if (pointer == IntPtr.Zero) throw new Exception($"lldpkg.push_buffer: called with pointer==null");
                 return _API.lldpkg_push_buffer(pointer, stream_index, buffer, bufferSize);
             }
 
+            /// <summary>
+            /// Gets the current media time for a specific stream in the specified timescale.
+            /// </summary>
+            /// <param name="stream_index">Index of the stream for which to get the media time</param>
+            /// <param name="timescale">Timescale in which the media time should be returned</param>
+            /// <returns>The current media time in the specified timescale</returns>
             public Timestamp get_media_time(int stream_index, int timescale)
             {
                 if (pointer == IntPtr.Zero) throw new Exception($"lldpkg.get_media_time: called with pointer==null");
@@ -97,6 +116,19 @@ namespace VRT.Transport.Dash
             }
         }
 
+        /// <summary>
+        /// Creates a new lldpkg connection.
+        /// This will load the lldash_packager dynamic library and create a new connection.
+        /// The connection to the relay server is opened when you create it.
+        /// </summary>
+        /// <param name="name">Name of the connection, used for error messages and such</param>
+        /// <param name="descriptors">Array of stream descriptors, one for each stream</param>
+        /// <param name="publish_url">URL to which the streams should be published.</param>
+        /// <param name="seg_dur_in_ms">Duration of each segment in milliseconds</param>
+        /// <param name="timeshift_buffer_depth_in_ms">Duration of the timeshift buffer. This is
+        /// communicated to the relay server, and it determines how long the server will keep the 
+        /// segments available for clients to play.</param>
+        /// /// <returns>A new lldpkg.connection object</returns>
         public static connection create(string name, StreamDesc[] descriptors, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000)
         {
             Loader.PreLoadModule(_API.myDllName);
@@ -134,6 +166,9 @@ namespace VRT.Transport.Dash
             return new connection(obj);
         }
 
+        /// <summary>
+        /// Returns the version of the lldpkg library.
+        ///  </summary>
         public static string get_version()
         {
             Loader.PreLoadModule(_API.myDllName);
