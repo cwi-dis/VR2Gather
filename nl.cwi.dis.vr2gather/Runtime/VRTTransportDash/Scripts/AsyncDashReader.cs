@@ -102,6 +102,11 @@ namespace VRT.Transport.Dash
                     Statistics.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
 #endif
                 }
+                Timestamp deltaReceivedTimestamp = frameInfo.timestamp - mostRecentDashTimestamp;
+                if (deltaReceivedTimestamp < 0)
+                {
+                    Debug.LogWarning($"{Name()}: received frame with timestamp {frameInfo.timestamp}, previous frame with timestamp {mostRecentDashTimestamp}, delta= {deltaReceivedTimestamp}");
+                }
                 // Convert clock values to wallclock
                 mostRecentDashTimestamp = frameInfo.timestamp;
                 if (!parent.clockCorrespondenceReceived)
@@ -121,7 +126,7 @@ namespace VRT.Transport.Dash
 
                 bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
 #if VRT_WITH_STATS
-                stats.statsUpdate(bytesRead, didDrop, mostRecentDashTimestamp, network_latency_ms, stream_index);
+                stats.statsUpdate(bytesRead, didDrop, mostRecentDashTimestamp, deltaReceivedTimestamp, network_latency_ms, stream_index);
 #endif
             }
 
@@ -164,19 +169,23 @@ namespace VRT.Transport.Dash
                 int statsAggregatePackets;
                 double statsTotalDrops;
                 double statsTotalLatency;
+
+                double statsTotalDelta;
                 
-                public void statsUpdate(int nBytes, bool didDrop, Timestamp timeStamp, Timedelta latency, int stream_index)
+                public void statsUpdate(int nBytes, bool didDrop, Timestamp timeStamp, Timestamp timeDelta, Timedelta latency, int stream_index)
                 {
                     statsTotalBytes += nBytes;
+                    statsTotalDelta += timeDelta;
                     statsTotalPackets++;
                     statsAggregatePackets++;
                     statsTotalLatency += latency;
                     if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}, aggregate_packets={statsAggregatePackets}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, gap_ms={(int)(statsTotalDelta / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}, aggregate_packets={statsAggregatePackets}");
                         Clear();
                         statsTotalBytes = 0;
+                        statsTotalDelta = 0;
                         statsTotalPackets = 0;
                         statsTotalDrops = 0;
                         statsTotalLatency = 0;
@@ -197,6 +206,7 @@ namespace VRT.Transport.Dash
 
         protected void _Init(string _url, string _streamName)
         {
+            lldplay.LogLevel = VRTConfig.Instance.TransportDash.logLevel;
             openTimeout = System.TimeSpan.FromMilliseconds(VRTConfig.Instance.TransportDash.openTimeout);
             receiveInterval = System.TimeSpan.FromMilliseconds(VRTConfig.Instance.TransportDash.receiveInterval);
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, true);

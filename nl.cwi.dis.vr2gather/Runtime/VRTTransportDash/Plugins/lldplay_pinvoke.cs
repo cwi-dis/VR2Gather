@@ -13,7 +13,7 @@ namespace VRT.Transport.Dash
 
     public class lldplay
     {
-        const int MAX_LLDPLAY_MESSAGE_LEVEL = 0; // 0-Error, 1-Warn, 2-Info, 3-Debug
+        public static int LogLevel = 0; // 0-Error, 1-Warn, 2-Info, 3-Debug
 
 
         public struct DashFrameMetaData
@@ -316,7 +316,7 @@ namespace VRT.Transport.Dash
                     UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
                 }
             };
-            IntPtr obj = _API.lldplay_create(pipeline, errorCallback, MAX_LLDPLAY_MESSAGE_LEVEL);
+            IntPtr obj = _API.lldplay_create(pipeline, errorCallback, LogLevel);
             if (obj == IntPtr.Zero)
                 return null;
             connection rv = new connection(obj);

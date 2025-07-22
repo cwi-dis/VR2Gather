@@ -107,6 +107,8 @@ namespace VRT.Core
             public int openTimeout = 15000;
             [Tooltip("If no data is available on any stream we sleep for this many milliseconds")]
             public int receiveInterval = 10;
+            [Tooltip("lldash log level: 0-Error, 1-Warn, 2-Info, 3-Debug")]
+            public int logLevel = 0;
         }
         [Tooltip("Settable parameters for DASH protocol")]
         public _TransportDash TransportDash;
