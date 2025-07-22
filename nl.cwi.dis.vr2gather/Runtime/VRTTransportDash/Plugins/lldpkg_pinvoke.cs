@@ -11,6 +11,7 @@ namespace VRT.Transport.Dash
     public class lldpkg
     {
 
+        public static int LogLevel = 0; // 0-Error, 1-Warn, 2-Info, 3-Debug
         // Delegate types to allow loading bin2dash before actually calling it (so we can get its pathname,
         // so we can tell it where its plugins are).
         private delegate IntPtr delegate_lldpkg_get_version();
@@ -31,7 +32,7 @@ namespace VRT.Transport.Dash
             // @MP4_4CC: codec identifier. Build with VRT_4CC(). For example VRT_4CC('c','w','i','1') for "cwi1".
             // The returned pipeline must be freed using vrt_destroy().
             [DllImport(myDllName)]
-            extern static public IntPtr lldpkg_create([MarshalAs(UnmanagedType.LPStr)] string name, LLDashPackagerErrorCallbackType callback, int num_streams, DashStreamDescriptor[] streams, [MarshalAs(UnmanagedType.LPStr)] string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, long api_version = LLDASH_PACKAGER_API_VERSION);
+            extern static public IntPtr lldpkg_create([MarshalAs(UnmanagedType.LPStr)] string name, LLDashPackagerErrorCallbackType callback, int logLevel, int num_streams, DashStreamDescriptor[] streams, [MarshalAs(UnmanagedType.LPStr)] string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, long api_version = LLDASH_PACKAGER_API_VERSION);
 
 
             // Destroys a pipeline. This frees all the resources.
@@ -149,7 +150,7 @@ namespace VRT.Transport.Dash
                     UnityEngine.Debug.Log($"lldpkg: asynchronous message: {_msg}.");
                 }
             };
-            IntPtr obj = _API.lldpkg_create(name, errorCallback, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+            IntPtr obj = _API.lldpkg_create(name, errorCallback, LogLevel, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
             if (obj == IntPtr.Zero)
                 return null;
             return new connection(obj);

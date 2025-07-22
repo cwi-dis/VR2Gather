@@ -34,6 +34,7 @@ namespace VRT.Transport.Dash
 
         public ITransportProtocolWriter Init(string _url, string userId, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
+            lldpkg.LogLevel = VRTConfig.Instance.TransportDash.logLevel;
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, false);
 
             int _segmentSize = VRTConfig.Instance.TransportDash.segmentSize;
