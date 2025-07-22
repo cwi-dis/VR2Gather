@@ -79,7 +79,7 @@ namespace VRT.Transport.Dash
                         throw new System.Exception($"{Name()}.{i}: inQueue");
                     }
                 }
-                uploader = lldpkg.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
+                uploader = lldpkg.create(Name(), b2dDescriptors, url, _segmentSize, _segmentLife);
                 if (uploader != null)
                 {
                     Debug.Log($"{Name()}: started {url + _streamName}.mpd");

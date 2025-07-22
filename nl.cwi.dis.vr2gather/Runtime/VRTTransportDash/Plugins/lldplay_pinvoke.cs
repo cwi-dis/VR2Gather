@@ -300,7 +300,7 @@ namespace VRT.Transport.Dash
             Loader.PostLoadModule(_API.myDllName);
             _API.LLDashPlayoutErrorCallbackType errorCallback = (msg, level) =>
             {
-                string _pipeline = pipeline == null ? "unknown pipeline" : string.Copy(pipeline);
+                string _pipeline = pipeline == null ? "unknown lldplay pipeline" : string.Copy(pipeline);
                 string _msg = string.Copy(msg);
                 if (level == 0)
                 {

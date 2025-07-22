@@ -111,7 +111,7 @@ namespace VRT.Transport.Dash
         /// This will load the lldash_packager dynamic library and create a new connection.
         /// The connection to the relay server is opened when you create it.
         /// </summary>
-        /// <param name="name">Name of the connection, used for error messages and such</param>
+        /// <param name="pipeline">Name of the connection, used for error messages and such</param>
         /// <param name="descriptors">Array of stream descriptors, one for each stream</param>
         /// <param name="publish_url">URL to which the streams should be published.</param>
         /// <param name="seg_dur_in_ms">Duration of each segment in milliseconds</param>
@@ -119,7 +119,7 @@ namespace VRT.Transport.Dash
         /// communicated to the relay server, and it determines how long the server will keep the 
         /// segments available for clients to play.</param>
         /// /// <returns>A new lldpkg.connection object</returns>
-        public static connection create(string name, DashStreamDescriptor[] descriptors, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000)
+        public static connection create(string pipeline, DashStreamDescriptor[] descriptors, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000)
         {
             Loader.PreLoadModule(_API.myDllName);
             try
@@ -135,22 +135,23 @@ namespace VRT.Transport.Dash
 
             _API.LLDashPackagerErrorCallbackType errorCallback = (msg, level) =>
             {
+                string _pipeline = pipeline == null ? "unknown lldpkg pipeline" : string.Copy(pipeline);
                 string _msg = string.Copy(msg);
                 if (level == 0)
                 {
-                    UnityEngine.Debug.LogError($"lldpkg: asynchronous error: {_msg}. Attempting to continue.");
+                    UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {_msg}. Attempting to continue.");
                 }
                 else
                 if (level == 1)
                 {
-                    UnityEngine.Debug.LogWarning($"lldpkg: asynchronous warning: {_msg}.");
+                    UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous warning: {_msg}.");
                 }
                 else
                 {
-                    UnityEngine.Debug.Log($"lldpkg: asynchronous message: {_msg}.");
+                    UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
                 }
             };
-            IntPtr obj = _API.lldpkg_create(name, errorCallback, LogLevel, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+            IntPtr obj = _API.lldpkg_create(pipeline, errorCallback, LogLevel, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
             if (obj == IntPtr.Zero)
                 return null;
             return new connection(obj);
