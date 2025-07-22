@@ -39,9 +39,9 @@ namespace VRT.Transport.Dash
         {
 
             public const string myDllName = "lldash_play.so";
-            // The LLDASH_PLAYOUT_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
+            // The LLDASH_PLAYOUT_API_VERSION must match with the DLL version. Copy from lldash_play.h
             // after matching the API used here with that in the C++ code.
-            const long LLDASH_PLAYOUT_API_VERSION = 0x20250620A;
+            const long LLDASH_PLAYOUT_API_VERSION = 0x20250722;
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
             public delegate void LLDashPlayoutErrorCallbackType([MarshalAs(UnmanagedType.LPStr)] string pipeline, int level);

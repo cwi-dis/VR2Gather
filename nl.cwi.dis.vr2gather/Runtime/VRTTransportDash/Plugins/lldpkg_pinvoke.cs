@@ -20,9 +20,9 @@ namespace VRT.Transport.Dash
         {
             public const string myDllName = "lldash_packager.so";
 
-            // The BIN2DASH_API_VERSION must match with the DLL version. Copy from bin2dash.hpp
+            // The BIN2DASH_API_VERSION must match with the DLL version. Copy from lldash_packager.hpp
             // after matching the API used here with that in the C++ code.
-            const long LLDASH_PACKAGER_API_VERSION = 0x20250620B;
+            const long LLDASH_PACKAGER_API_VERSION = 0x20250722;
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
             public delegate void LLDashPackagerErrorCallbackType([MarshalAs(UnmanagedType.LPStr)] string pipeline, int level);
