@@ -819,6 +819,7 @@ MonoBehaviour:
     segmentLife: 15000
     openTimeout: 15000
     receiveInterval: 10
+    logLevel: 3
   TransportWebRTC:
     peerExecutablePath: 
     peerInWindow: 0
