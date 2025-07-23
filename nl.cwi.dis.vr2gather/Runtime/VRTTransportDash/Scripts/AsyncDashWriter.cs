@@ -18,14 +18,22 @@ namespace VRT.Transport.Dash
 
     public class AsyncDashWriter : AsyncWriter, ITransportProtocolWriter
     {
+        static bool initialized = false;
         static public ITransportProtocolWriter Factory()
         {
+            if (!initialized)
+            {
+                initialized = true;
+                var version = lldpkg.get_version();
+#if VRT_WITH_STATS
+                Statistics.Output("AsyncDashWriter", $"module=lldash-srd-packager, version={version}");
+#endif
+            }
             return new AsyncDashWriter();
         }
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        bool initialized = false;
         public lldpkg.connection uploader;
         public string url;
         OutgoingStreamDescription[] descriptions;
@@ -93,7 +101,6 @@ namespace VRT.Transport.Dash
                 Debug.Log($"{Name()}({url}) Exception:{e.Message}");
                 throw;
             }
-            initialized = true;
             return this;
         }
 

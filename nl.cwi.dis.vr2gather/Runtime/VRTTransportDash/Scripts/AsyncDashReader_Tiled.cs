@@ -14,6 +14,14 @@ namespace VRT.Transport.Dash
     {
         static new public ITransportProtocolReader_Tiled Factory()
         {
+            if (!initialized)
+            {
+                initialized = true;
+                var version = lldplay.get_version();
+#if VRT_WITH_STATS
+                Statistics.Output("AsyncDashReaderTiled", $"module=lldash-playout, version={version}");
+#endif
+            }
             return new AsyncDashReader_Tiled();
         }
 
@@ -46,7 +54,6 @@ namespace VRT.Transport.Dash
                 }
                 Start();
             }
-            initialized = true;
             return this;
         }
 

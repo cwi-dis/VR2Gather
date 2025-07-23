@@ -16,14 +16,22 @@ namespace VRT.Transport.Dash
 
     public class AsyncDashReader : AsyncReader, ITransportProtocolReader
     {
+        protected static bool initialized = false;
         static public ITransportProtocolReader Factory()
         {
+            if (!initialized)
+            {
+                initialized = true;
+                var version = lldplay.get_version();
+#if VRT_WITH_STATS
+                Statistics.Output("AsyncDashReader", $"module=lldash-playout, version={version}");
+#endif
+            }
             return new AsyncDashReader();
         }
 
         public delegate bool NeedsSomething();
 
-        protected bool initialized = false;
 
         protected string url;
         protected int streamCount;
@@ -241,7 +249,6 @@ namespace VRT.Transport.Dash
                 Start();
 
             }
-            initialized = true;
             return this;
         }
 
