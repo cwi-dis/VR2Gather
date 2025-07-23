@@ -39,8 +39,13 @@ namespace VRT.Transport.Dash
 
         public static void PreLoadModule(string module_base)
         {
-#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             string libPath = Path.Combine(VRT.NativeLibraries.VRTNativeLoader.platformLibrariesPath, module_base);
+            string overrideLibPath = VRTConfig.Instance.TransportDash.nativeLibraryPath;
+            if (!string.IsNullOrEmpty(overrideLibPath))
+            {
+                libPath = Path.Combine(overrideLibPath, module_base);
+            }
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             UnityEngine.Debug.Log($"VRT.Transport.Dash.Loader: will call LoadLibrary({libPath})");
             IntPtr rv = API_libdl.dlopen(libPath, 0x0002); // RTLD_LAZY
             if (rv == IntPtr.Zero)
@@ -49,6 +54,10 @@ namespace VRT.Transport.Dash
                 return;
             }
             UnityEngine.Debug.Log($"VRT.Transport.Dash.Loader: LoadLibrary({libPath}) returned {rv}");
+            string dirName = Path.GetDirectoryName(libPath);
+            UnityEngine.Debug.Log($"VRT.Transport.Dash.Loader: SIGNALS_SMD_PATH={dirName}");
+            Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
+            didSetMSPaths = true;
 #endif
         }
 
