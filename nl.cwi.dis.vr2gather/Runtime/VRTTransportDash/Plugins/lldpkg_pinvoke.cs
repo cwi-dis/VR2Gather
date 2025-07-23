@@ -109,6 +109,23 @@ namespace VRT.Transport.Dash
             }
         }
 
+        
+        static void MessageCallback(string msg, int level)
+        {
+            string _msg = string.Copy(msg);
+            if (level == 0)
+            {
+                UnityEngine.Debug.LogError($"lldpkg: asynchronous error: {_msg}. Attempting to continue.");
+            }
+            else if (level == 1)
+            {
+                UnityEngine.Debug.LogWarning($"lldpkg: asynchronous warning: {_msg}.");
+            }
+            else
+            {
+                UnityEngine.Debug.Log($"lldpkg: asynchronous message: {_msg}.");
+            }
+        }
         /// <summary>
         /// Creates a new lldpkg connection.
         /// This will load the lldash_packager dynamic library and create a new connection.
@@ -135,25 +152,8 @@ namespace VRT.Transport.Dash
                 UnityEngine.Debug.LogError($"lldpkg: Cannot load {_API.myDllName} dynamic library");
             }
             Loader.PostLoadModule(_API.myDllName);
-
-            _API.LLDashPackagerErrorCallbackType errorCallback = (msg, level) =>
-            {
-                string _pipeline = pipeline == null ? "unknown lldpkg pipeline" : string.Copy(pipeline);
-                string _msg = string.Copy(msg);
-                if (level == 0)
-                {
-                    UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {_msg}. Attempting to continue.");
-                }
-                else
-                if (level == 1)
-                {
-                    UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous warning: {_msg}.");
-                }
-                else
-                {
-                    UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
-                }
-            };
+            
+            _API.LLDashPackagerErrorCallbackType errorCallback = MessageCallback;
             IntPtr obj = _API.lldpkg_create(pipeline, errorCallback, LogLevel, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
             if (obj == IntPtr.Zero)
                 return null;
