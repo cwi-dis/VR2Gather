@@ -18,7 +18,7 @@
       }
     },
     "com.unity.ai.navigation": {
-      "version": "1.1.6",
+      "version": "1.1.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -54,16 +54,16 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.22",
+      "version": "2.0.25",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.test-framework": "1.1.9"
+        "com.unity.test-framework": "1.1.31"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.14.0",
+      "version": "1.14.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -154,7 +154,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.interaction.toolkit": {
-      "version": "2.6.4",
+      "version": "2.6.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -180,19 +180,20 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.management": {
-      "version": "4.5.0",
+      "version": "4.5.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.vr": "1.0.0",
         "com.unity.modules.xr": "1.0.0",
+        "com.unity.xr.core-utils": "2.2.1",
         "com.unity.modules.subsystems": "1.0.0",
-        "com.unity.xr.legacyinputhelpers": "2.1.7"
+        "com.unity.xr.legacyinputhelpers": "2.1.11"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.oculus": {
-      "version": "4.5.1",
+      "version": "4.5.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -250,7 +251,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "cd307bfcec3faffe1f70b6b920ad2e145f89e020"
+      "hash": "d374286fac2de783a11a671c46e026386a1fd0eb"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "VRTApp-Develop.sln"
+    "dotnet.defaultSolution": "VRTApp-Develop.slnx"
 }
