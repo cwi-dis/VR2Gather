@@ -28,6 +28,8 @@ namespace VRT.Orchestrator.Wrapping {
         public Action<UserDataStreamPacket> OnDataStreamReceived;
         private string myUserID = "";
 
+        public bool debug = false;
+
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
             if (instance is null)
@@ -56,18 +58,21 @@ namespace VRT.Orchestrator.Wrapping {
             };
             Socket.OnError += (sender, e) =>
             {
-                Debug.LogError($"ERROR: {e}");
+                Debug.LogError($"OrchestratorWrapper: {e}");
                 OnSocketError(null);
             };
 
-            Socket.OnPing += (sender, e) => {
-                Debug.Log("PING");
-            };
+            if (debug)
+            {
+                    Socket.OnPing += (sender, e) => {
+                    Debug.Log("OrchestratorWrapper: PING");
+                };
 
-            Socket.OnPong += (sender, e) => {
-                Debug.Log("PoNG");
-            };
+                Socket.OnPong += (sender, e) => {
+                    Debug.Log("OrchestratorWrapper: PONG");
+                };
 
+            }
             Socket.On("MessageSent", OnMessageSentFromOrchestrator);
             Socket.On("DataReceived", OnUserDataReceived);
             Socket.On("SceneEventToMaster", OnMasterEventReceived);
