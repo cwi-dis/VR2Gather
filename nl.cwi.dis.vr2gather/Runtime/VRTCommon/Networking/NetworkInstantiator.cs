@@ -61,17 +61,20 @@ namespace VRT.Pilots.Common
 				// We are not the master, so we ask the master to do the actual instantiation
 
 #if VRT_WITH_STATS
-				Statistics.Output("NetworkInstantiator", $"name={name}, local=1, master=0, instantiatorId={NetworkId}");
+				Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=1, frommaster=0, instantiatorId={NetworkId}");
 #endif
 				OrchestratorController.Instance.SendTypeEventToMaster(instantiatorRequest);
 				return;
 			}
-			var newId = InstantiateNetworkObject(null);
+#if VRT_WITH_STATS
+            Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=1, frommaster=1, instantiatorId={NetworkId}");
+#endif
+            var newId = InstantiateNetworkObject(null);
 			instantiatorRequest.InstantiatedObjectId = newId;
 			OrchestratorController.Instance.SendTypeEventToAll(instantiatorRequest);
 
 #if VRT_WITH_STATS
-            Statistics.Output("NetworkInstantiator", $"name={name}, local=1, master=1, instantiatorId={NetworkId}, newId={newId}");
+            Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=1, frommaster=1, instantiatorId={NetworkId}, newId={newId}");
 #endif
 		}
 
@@ -94,7 +97,7 @@ namespace VRT.Pilots.Common
 				OrchestratorController.Instance.SendTypeEventToAll(instantiatorRequest);
 
 #if VRT_WITH_STATS
-				Statistics.Output("NetworkInstantiator", $"name={name}, local=0, master=1, instantiatorId={NetworkId}, newId={newId}");
+				Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=0, frommaster=1, instantiatorId={NetworkId}, newId={newId}");
 #endif
 			}
 			else
@@ -104,15 +107,13 @@ namespace VRT.Pilots.Common
 					Debug.LogError($"NetworkInstantiator({name}): non-master received request with empty newId");
 				}
 				var newId = data.InstantiatedObjectId;
-				InstantiateNetworkObject(newId);
 #if VRT_WITH_STATS
-				Statistics.Output("NetworkInstantiator", $"name={name}, local=0, master=1, instantiatorId={NetworkId}, newId={newId}");
+                Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=0, frommaster=1, instantiatorId={NetworkId}, newId={newId}");
 #endif
+                InstantiateNetworkObject(newId);
 
 			}
-#if VRT_WITH_STATS
-			Statistics.Output("NetworkInstantiator", $"name={name}, sessionId={OrchestratorController.Instance.CurrentSession.sessionId}");
-#endif
+
 		}
 
 		/// <summary>
@@ -125,6 +126,11 @@ namespace VRT.Pilots.Common
 		/// <returns></returns>
 		protected virtual GameObject InstantiateTemplateObject()
 		{
+			if (templateObject.activeSelf)
+			{
+				Debug.LogWarning($"NetworkInstantiator: de-activating template {templateObject.name}");
+				templateObject.SetActive(false);
+			}
 			return Instantiate(templateObject, location.transform.position, location.transform.rotation);
         }
 
@@ -154,6 +160,7 @@ namespace VRT.Pilots.Common
 					NetworkIdManager.Add(nib);
                 }
 			}
+			newObject.SetActive(true);
 			return newNetworkId;
 		}
 	}
