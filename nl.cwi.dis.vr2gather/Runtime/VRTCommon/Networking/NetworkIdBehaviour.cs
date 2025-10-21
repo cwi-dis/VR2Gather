@@ -1,5 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using VRT.Orchestrator.Wrapping;
+
 
 #if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
@@ -59,10 +61,13 @@ namespace VRT.Pilots.Common
 				Undo.RecordObject(this, "Added GUID");
 #endif
 				NetworkId = System.Guid.NewGuid().ToString();
-				Debug.Log($"NetworkIdBehaviour({name}: invented {NetworkId}");
-
+				Debug.Log($"NetworkIdBehaviour({name}): invented {NetworkId}");
+				if (OrchestratorController.Instance != null && !OrchestratorController.Instance.UserIsMaster)
+				{
+					Debug.LogWarning($"NetworkIdBehaviour({name}): Invented NetworkID but not session master. Probably a software bug.");
+				}
 #if UNITY_EDITOR
-				if (PrefabUtility.IsPartOfNonAssetPrefabInstance(this))
+                if (PrefabUtility.IsPartOfNonAssetPrefabInstance(this))
 				{
 					PrefabUtility.RecordPrefabInstancePropertyModifications(this);
 				}
