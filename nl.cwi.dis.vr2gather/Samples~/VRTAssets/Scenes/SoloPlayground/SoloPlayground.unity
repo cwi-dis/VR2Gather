@@ -2102,6 +2102,74 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 917475326}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &175717950
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3991120480309365947, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_Name
+      value: Tool_OrchestratorController
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199990664456854849, guid: f235c89f17e78fe43928308c1e3ac4d1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f235c89f17e78fe43928308c1e3ac4d1, type: 3}
 --- !u!114 &222076845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2704,6 +2772,165 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1392301327}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &328854235
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 328854238}
+  - component: {fileID: 328854237}
+  - component: {fileID: 328854236}
+  m_Layer: 0
+  m_Name: VRTInitializer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &328854236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328854235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a9f2923802a8043892898c9dc3519d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &328854237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328854235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f5d4564cc5748f44a078ede34cbd4e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orchestratorURL: http://192.16.197.145:8080/socket.io/
+  targetFrameRate: -1
+  ntpSyncThreshold: 0.1
+  statsInterval: 10
+  statsOutputFile: 
+  statsOutputFileAppend: 0
+  ffmpegDLLDir: ../ffmpeg/x64
+  autoInventUsername: 1
+  ScreenshotTool:
+    takeScreenshot: 0
+    fps: 0
+    screenshotTargetDirectory: 
+    preDeleteTargetDirectory: 1
+    filenameTemplate: Frame{framenum}.png
+  AutoStart:
+    ignoreAutoStartForDeveloper: 0
+    autoLogin: 1
+    autoCreate: 0
+    autoJoin: 0
+    autoCreateForUser: 
+    sessionName: 
+    sessionScenario: 
+    sessionTransportProtocol: 
+    sessionUncompressed: 0
+    sessionUncompressedAudio: 0
+    autoStartWith: -1
+    autoLeaveAfter: 0
+    autoStopAfterLeave: 0
+    autoDelay: 1
+  TransportDash:
+    segmentSize: 4000
+    segmentLife: 15000
+    openTimeout: 15000
+    receiveInterval: 10
+    logLevel: 0
+    nativeLibraryPath: 
+  TransportWebRTC:
+    peerExecutablePath: 
+    peerInWindow: 0
+    peerWindowDontClose: 0
+    peerUDPPort: 8000
+    peerIPAddress: 127.0.0.1
+    logFileDirectory: 
+    debugLevel: 0
+  PCs:
+    Codec: cwi1
+    defaultCellSize: 0.002
+    cellSizeFactor: 1
+    debugColorize: 0
+    timeoutBeforeGhosting: 5
+    decoderQueueSizeOverride: 0
+    preparerQueueSizeOverride: 0
+    encoderParallelism: 0
+    decoderParallelism: 0
+    preparerQueueSize: 0
+  Voice:
+    audioFps: 50
+    maxPlayoutLatency: 0.3
+    maxPlayoutAhead: 0.066
+    preparerQueueSize: 0
+    ignoreSynchronizer: 0
+  Synchronizer:
+    debugSynchronizer: 0
+    debugJitterBuffer: 0
+    minLatency: 100
+    maxLatency: 5000
+    latencyMaxDecrease: 1
+    latencyMaxIncrease: 33
+    acceptDesyncOnDataUnavailable: 0
+  TileSelector:
+    algorithm: 
+    debugDecisions: 0
+    bitrateBudget: 0
+  VQEGLatencies: []
+  temp: 0
+  LocalUser:
+    orchestratorConfigFilename: 
+    PCSelfConfig:
+      capturerType: 4
+      capturerTypeName: 
+      CameraReaderConfig:
+        configFilename: 
+      RemoteCameraReaderConfig:
+        url: 
+        isCompressed: 0
+      ProxyReaderConfig:
+        localIP: 
+        port: 9335
+      SynthReaderConfig:
+        nPoints: 16000
+      PrerecordedReaderConfig:
+        folder: ../cwipc_test/Samples/loot-150K-4tiles
+      voxelSize: 0
+      frameRate: 15
+      tiled: 0
+      Encoders:
+      - octreeBits: 9
+    PositionTracker:
+      outputFile: 
+      outputIntervalOverride: 0
+      inputFile: 
+  configOverrideFilename: 
+--- !u!4 &328854238
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328854235}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &336119680 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2834308540802034252, guid: e4a2ad980cb30454eab747ddbac46ff6,
@@ -4797,6 +5024,8 @@ GameObject:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 328854238}
+  - {fileID: 175717950}
   - {fileID: 7957250787338241242}
   - {fileID: 125670614}
   - {fileID: 275766868}
