@@ -2556,7 +2556,6 @@ MonoBehaviour:
   handAppearance: {fileID: 3264531534731365354}
   handState: 0
   handHandedness: 0
-  m_HeldGrabbable: {fileID: 0}
 --- !u!114 &867362575422603076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2591,6 +2590,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handNetworkController: {fileID: 0}
   debug: 1
+  errorIfNotGrabbable: 1
 --- !u!1 &6544830567396037082
 GameObject:
   m_ObjectHideFlags: 0
