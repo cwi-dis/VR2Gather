@@ -496,7 +496,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void LeaveSession() {
-            orchestratorWrapper.LeaveSession();
+            orchestratorWrapper?.LeaveSession();
         }
 
         public void OnLeaveSessionResponse(ResponseStatus status) {
