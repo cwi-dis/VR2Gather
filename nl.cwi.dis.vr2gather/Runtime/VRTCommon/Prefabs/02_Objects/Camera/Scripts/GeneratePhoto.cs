@@ -39,6 +39,11 @@ public class GeneratePhoto : NetworkInstantiator
 
         //byte[] bytes = screenShot.EncodeToPNG();
         //generate new photos
+        if (templateObject.activeSelf)
+        {
+            Debug.LogWarning($"NetworkInstantiator: de-activating template {templateObject.name}");
+            templateObject.SetActive(false);
+        }
         GameObject newphoto = Instantiate(templateObject, location.transform.position + new Vector3(0, 0.01f, 0), location.transform.rotation);
         newphoto.GetComponent<Renderer>().material.mainTexture = screenShot;
         return newphoto;
