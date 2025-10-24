@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerManager: {fileID: 9162158745625746543}
-  userRepresentation: 2
+  userRepresentation: 6
 --- !u!114 &2454423965594524020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,6 +412,11 @@ PrefabInstance:
         type: 3}
       propertyPath: previewPlayer
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1246181775895122469, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: userRepresentation
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1352402328379271859, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}

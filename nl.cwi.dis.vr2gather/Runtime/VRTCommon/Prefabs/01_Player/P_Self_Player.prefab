@@ -2554,6 +2554,22 @@ PrefabInstance:
       propertyPath: SourceTop
       value: 
       objectReference: {fileID: 6571030630402920821}
+    - target: {fileID: 807501320281897656, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: setHeightOnHMDTracking
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 807501320281897656, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_hmdTrackingAction.m_Reference
+      value: 
+      objectReference: {fileID: -8685783515167706747, guid: 721820db5472c4cdb9e2c49de50d8533,
+        type: 3}
+    - target: {fileID: 807501320281897656, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_hmdTrackingAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 838640197280356751, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_IsActive
@@ -2659,6 +2675,17 @@ PrefabInstance:
       propertyPath: SourceTop
       value: 
       objectReference: {fileID: 6571030630402920821}
+    - target: {fileID: 4492213561764585108, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_hmdTrackingAction.m_Reference
+      value: 
+      objectReference: {fileID: -8685783515167706747, guid: 721820db5472c4cdb9e2c49de50d8533,
+        type: 3}
+    - target: {fileID: 4492213561764585108, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_hmdTrackingAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5087159113626831324, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_Enabled
