@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "VR2GatherInputActions",
     "maps": [
         {
@@ -18,7 +19,7 @@
                     "name": "Tracking State",
                     "type": "Button",
                     "id": "8ebda005-eac0-4718-9037-563a89b41381",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -28,6 +29,24 @@
                     "type": "Value",
                     "id": "aed87fe6-2b01-4dd2-a8fa-195578fd8158",
                     "expectedControlType": "Quaternion",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "IsTracked",
+                    "type": "Button",
+                    "id": "f927f27d-45f6-4d85-b3c5-b6b65c7ea0c3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "TrackingState",
+                    "type": "Value",
+                    "id": "9d18b498-ce1e-4387-8810-730b9a1f0613",
+                    "expectedControlType": "Integer",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -64,6 +83,28 @@
                     "processors": "",
                     "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Tracking State",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "322d539d-4f69-4816-8d33-6e2d34d5c904",
+                    "path": "<XRHMD>/isTracked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
+                    "action": "IsTracked",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f9110a7d-5204-42c0-bd96-6f56c143b46b",
+                    "path": "<XRHMD>/trackingState",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
+                    "action": "TrackingState",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -108,6 +149,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "IsTracked",
+                    "type": "Button",
+                    "id": "067be693-72dc-439d-b78a-8bb13d828063",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -218,6 +268,17 @@
                     "processors": "",
                     "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Tracking State",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4b4809b8-1b1e-4240-849f-a2bf47aad1c5",
+                    "path": "<XRController>{LeftHand}/isTracked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
+                    "action": "IsTracked",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -754,6 +815,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "IsTracked",
+                    "type": "Button",
+                    "id": "29eb6c50-55ae-4117-93fe-1333fd1de983",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -853,6 +923,17 @@
                     "processors": "",
                     "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Haptic Device",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "18040043-8e4d-413f-8d5f-dc00eab638bb",
+                    "path": "<XRController>{RightHand}/isTracked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
+                    "action": "IsTracked",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
