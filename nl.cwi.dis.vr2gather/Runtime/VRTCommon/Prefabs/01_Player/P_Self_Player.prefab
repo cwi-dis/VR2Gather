@@ -369,7 +369,8 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: -5163571692025034187, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
   m_PositionAction:
     m_Name: 
     m_Type: 0
