@@ -1945,6 +1945,11 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 5503449293659493534, guid: 38346b54d1d6bda4d9a7bb0d5fcd4b9f,
         type: 3}
+      propertyPath: m_hmdTrackingAction.m_Reference
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5503449293659493534, guid: 38346b54d1d6bda4d9a7bb0d5fcd4b9f,
+        type: 3}
       propertyPath: m_resetOriginAction.m_Reference
       value: 
       objectReference: {fileID: 4528479901811161959, guid: 721820db5472c4cdb9e2c49de50d8533,

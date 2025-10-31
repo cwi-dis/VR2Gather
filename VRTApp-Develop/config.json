@@ -81,7 +81,7 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerType": 7,
+            "capturerType": 8,
             "capturerTypeName": "",
             "CameraReaderConfig": {
                 "configFilename": ""

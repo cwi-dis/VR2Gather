@@ -2943,6 +2943,11 @@ PrefabInstance:
       propertyPath: m_trackingAction.m_Action.m_Name
       value: Tracking
       objectReference: {fileID: 0}
+    - target: {fileID: 1222537213239129258, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: userRepresentation
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2780661750525539482, guid: e4a2ad980cb30454eab747ddbac46ff6,
         type: 3}
       propertyPath: RootObject
