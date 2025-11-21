@@ -22,7 +22,7 @@ namespace VRT.Transport.Dash
 
             // The BIN2DASH_API_VERSION must match with the DLL version. Copy from lldash_packager.hpp
             // after matching the API used here with that in the C++ code.
-            const long LLDASH_PACKAGER_API_VERSION = 0x20250722;
+            const long LLDASH_PACKAGER_API_VERSION = 0x20250724;
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
             public delegate void LLDashPackagerErrorCallbackType([MarshalAs(UnmanagedType.LPStr)] string pipeline, int level);
@@ -37,7 +37,7 @@ namespace VRT.Transport.Dash
 
             // Destroys a pipeline. This frees all the resources.
             [DllImport(myDllName)]
-            extern static public void lldpkg_destroy(IntPtr h);
+            extern static public void lldpkg_destroy(IntPtr h, bool flush);
 
             // Pushes a buffer. The caller owns it ; the buffer  as it will be copied internally.
             [DllImport(myDllName)]
@@ -78,7 +78,7 @@ namespace VRT.Transport.Dash
 
             protected override void onfree()
             {
-                _API.lldpkg_destroy(pointer);
+                _API.lldpkg_destroy(pointer, true);
             }
 
             /// <summary>
