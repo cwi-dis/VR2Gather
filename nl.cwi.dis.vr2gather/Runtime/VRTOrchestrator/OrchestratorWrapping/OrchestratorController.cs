@@ -509,6 +509,7 @@ namespace VRT.Orchestrator.Wrapping
 
             // success
             myScenario = null;
+            if (_OptionalStopOnLeave()) return;
             OnLeaveSessionEvent?.Invoke();
 
             if (mySession != null && SelfUser != null) {
