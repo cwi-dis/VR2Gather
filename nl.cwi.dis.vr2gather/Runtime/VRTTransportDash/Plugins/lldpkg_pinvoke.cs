@@ -78,7 +78,9 @@ namespace VRT.Transport.Dash
 
             protected override void onfree()
             {
-                _API.lldpkg_destroy(pointer, true);
+                IntPtr ptr = _pointer;
+                _pointer = IntPtr.Zero;
+                _API.lldpkg_destroy(ptr, true);
             }
 
             /// <summary>
