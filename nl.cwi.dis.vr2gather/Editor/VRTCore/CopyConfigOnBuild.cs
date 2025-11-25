@@ -48,15 +48,29 @@ public class CopyConfigOnBuild : IPostprocessBuildWithReport
             Debug.Log($"CopyConfigOnBuild.OnPostProcessBuild copied cameraconfig.json");
         }
 
-        string[] guids = AssetDatabase.FindAssets("VRTrunserver");
-        if (guids.Length != 1)
+        if (report.summary.platform == BuildTarget.StandaloneWindows ||
+            report.summary.platform == BuildTarget.StandaloneWindows64)
         {
-            Debug.LogWarning("VRTrunserver script not found"); 
-            return;
+            string[] guids = AssetDatabase.FindAssets("VRTrunserver");
+            if (guids.Length == 1)
+            {
+                string scriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                File.Copy(scriptPath, dstDir + "VRTrunserver.ps1", true);
+                Debug.Log($"CopyConfigOnBuild.OnPostProcessBuild copied VRTrunserver.ps1");
+            }
         }
-        string scriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
-        File.Copy(scriptPath, dstDir + "VRTrunserver.ps1", true);
 
+        if (report.summary.platform == BuildTarget.StandaloneOSX)
+        {
+            // And copy the Mac runserver script too, if it exists
+            string[] guids = AssetDatabase.FindAssets("VRTrunservermac");
+            if (guids.Length == 1)
+            {
+                string macScriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                File.Copy(macScriptPath, dstDir + "/MacOS/VRTrunservermac.sh", true);
+                Debug.Log($"CopyConfigOnBuild.OnPostProcessBuild copied VRTrunservermac.sh");
+            }
+        }
     }
 }
 #endif
