@@ -52,7 +52,7 @@ public class CopyConfigOnBuild : IPostprocessBuildWithReport
             report.summary.platform == BuildTarget.StandaloneWindows64)
         {
             string[] guids = AssetDatabase.FindAssets("VRTrunserver");
-            if (guids.Length == 1)
+            if (guids.Length >= 1)
             {
                 string scriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
                 File.Copy(scriptPath, dstDir + "VRTrunserver.ps1", true);
