@@ -59,7 +59,7 @@ namespace VRT.Pilots.Common
             }
             earliestNext = System.DateTime.Now;
 
-            screenshotTargetDirectory = VRTConfig.ConfigFilename(config.screenshotTargetDirectory);
+            screenshotTargetDirectory = VRTConfig.ConfigFilename(config.screenshotTargetDirectory, label:"Screenshot target direcory");
 
             if (config.preDeleteTargetDirectory && Directory.Exists(screenshotTargetDirectory))
             {

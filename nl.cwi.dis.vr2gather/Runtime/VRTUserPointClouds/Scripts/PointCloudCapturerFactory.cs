@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.PointCloud
             string configFilename = config.CameraReaderConfig.configFilename;
             if (!string.IsNullOrEmpty(configFilename))
             {
-                configFilename = VRTConfig.ConfigFilename(configFilename);
+                configFilename = VRTConfig.ConfigFilename(configFilename, allowSearch:true, label:"Cameraconfig");
             }
             switch(config.capturerType)
             {
@@ -33,7 +33,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         throw new System.Exception($"PointCloudCapturerFactory: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
                     }
-                    string prerecordedFolder = VRTConfig.ConfigFilename(prConfig.folder);
+                    string prerecordedFolder = VRTConfig.ConfigFilename(prConfig.folder, allowSearch:true, label:"Precorded pointcloud folder");
                     Debug.Log($"prConfig.folder: {prerecordedFolder}");
                     if (!System.IO.Directory.Exists(prerecordedFolder))
                     {

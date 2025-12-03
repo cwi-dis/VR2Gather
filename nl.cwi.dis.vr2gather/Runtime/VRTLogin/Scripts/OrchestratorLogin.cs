@@ -415,7 +415,7 @@ namespace VRT.Login
                 return;
             }
             var configData = OrchestratorController.Instance.SelfUser.userData.AsJsonString();
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename, label:"User config");
             Debug.Log("Full config filename: " + fullName);
             System.IO.File.WriteAllText(fullName, configData);
             Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
@@ -430,7 +430,7 @@ namespace VRT.Login
                 OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename, label:"User config");
             if (!System.IO.File.Exists(fullName))
             {
                 Debug.LogWarning($"OrchestratorLogin.LoadUserData: Cannot open {fullName}");

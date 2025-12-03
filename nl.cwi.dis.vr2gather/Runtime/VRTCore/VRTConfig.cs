@@ -291,7 +291,7 @@ namespace VRT.Core
         [ContextMenu("Save as config.json")]
         private void SaveAsConfigJson()
         {
-            string file = ConfigFilename();
+            string file = ConfigFilename(force:true);
             System.IO.File.WriteAllText(file, JsonUtility.ToJson(this, true));
             Debug.Log($"VRTConfig: Saving configuration to {file}");
         }
@@ -299,7 +299,7 @@ namespace VRT.Core
         [ContextMenu("Load from config.json")]
         private void LoadFromConfigJson()
         {
-            string file = ConfigFilename();
+            string file = ConfigFilename(force:true);
             JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
             Debug.Log($"VRTConfig: Loaded configuration from {file}");
         }
@@ -331,7 +331,7 @@ namespace VRT.Core
 
         private void Initialize()
         {
-            string file = ConfigFilename();
+            string file = ConfigFilename(force:true);
             configOverrideFilename = file;
             if (System.IO.File.Exists(file))
             {
@@ -392,15 +392,27 @@ namespace VRT.Core
 
         static private string configFileFolder;
 
-        public static string ConfigFilename(string filename="config.json", bool force=false)
+        public static string ConfigFilename(string filename="config.json", bool force=false, bool allowSearch=false, string label="Config file")
         {
+            if (allowSearch)
+            {
+                // Special case: filename starting with .../ will be searched in parent folders
+                if (filename.StartsWith(".../"))
+                {
+                    filename = filename.Substring(4);
+                }
+                else
+                {
+                    allowSearch = false;
+                }
+            }
             if (filename == "config.json")
             {
                 string clConfigFile = _ConfigFilenameFromCommandLineArgs();
                 if (clConfigFile != null)
                 {
                     clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
-                    Debug.Log($"Config file {filename}: {clConfigFile}");
+                    Debug.Log($"VRTConfig: {label} {filename}: {clConfigFile}");
                     configFileFolder = System.IO.Path.GetDirectoryName(clConfigFile);
                     return clConfigFile;
                 }
@@ -413,7 +425,7 @@ namespace VRT.Core
                 string candidate = System.IO.Path.Combine(configFileFolder, filename);
                 if (force || System.IO.File.Exists(candidate))
                 {
-                    Debug.Log($"Config file {filename}: {candidate}");
+                    Debug.Log($"VRTConfig: {label} {filename}: {candidate}");
                     return candidate;
                 }
             }
@@ -443,9 +455,25 @@ namespace VRT.Core
                 // something based on persistentDataPath)
                 dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
             }
-            string rv = System.IO.Path.Combine(dataPath, filename);
-            Debug.Log($"Config file {filename}: {rv}");
-            return rv;
+
+            while (true)
+            {
+                string rv = System.IO.Path.Combine(dataPath, filename);
+                if (!allowSearch || System.IO.File.Exists(rv) || System.IO.Directory.Exists(rv))
+                {
+                    Debug.Log($"VRTConfig: {label} {filename}: {rv}");
+                    return rv;
+                }
+                string parentDataPath = System.IO.Path.GetDirectoryName(dataPath);
+                if (parentDataPath == null || parentDataPath == dataPath)
+                {
+                    break;
+                }
+
+                dataPath = parentDataPath;
+            }
+            Debug.LogWarning($"VRTConfig: {label} not found: {filename}");
+            return filename;
         }
     }
 }

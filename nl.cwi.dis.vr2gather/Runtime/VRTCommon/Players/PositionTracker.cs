@@ -88,7 +88,7 @@ namespace VRT.Pilots.Common
         }
 
         private void LoadPositions() {
-            string filename = VRTConfig.ConfigFilename(inputFile, force:true);
+            string filename = VRTConfig.ConfigFilename(inputFile, force:true, label:"Position tracker input");
             Debug.Log($"{Name()}: Loading positions from {filename}");
             try
             {
@@ -101,7 +101,7 @@ namespace VRT.Pilots.Common
         }
 
         private void SavePositions() {
-            string filename = VRTConfig.ConfigFilename(outputFile, force:true);
+            string filename = VRTConfig.ConfigFilename(outputFile, force:true, label:"Position tracker output");
             Debug.Log($"{Name()}: Saving positions to {filename}");
 
             string json = JsonUtility.ToJson(positionData, true);
