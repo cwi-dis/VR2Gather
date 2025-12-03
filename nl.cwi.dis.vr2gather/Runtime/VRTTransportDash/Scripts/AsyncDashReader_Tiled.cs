@@ -64,12 +64,12 @@ namespace VRT.Transport.Dash
                 //
                 // Get stream information
                 //
-                streamCount = subHandle.get_stream_count();
+                streamCount = lldplayHandle.get_stream_count();
                 Debug.Log($"{Name()}: streamInfoAvailable: {streamCount} streams.");
                 //
                 // Get more stream information
                 //
-                allStreamDescriptors = subHandle.get_streams();
+                allStreamDescriptors = lldplayHandle.get_streams();
 #if VRT_WITH_STATS
                 foreach (var sd in allStreamDescriptors)
                 {
@@ -84,7 +84,7 @@ namespace VRT.Transport.Dash
         {
             lock (this)
             {
-                if (subHandle == null)
+                if (lldplayHandle == null)
                 {
                     // Too early: not playing yet
                     return;
@@ -107,7 +107,7 @@ namespace VRT.Transport.Dash
 #if VRT_WITH_STATS
                     Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
 #endif
-                    bool ok = subHandle.enable_stream(tileIndex, qualityIndex);
+                    bool ok = lldplayHandle.enable_stream(tileIndex, qualityIndex);
                     if (!ok)
                     {
                         Debug.LogError($"{Name()}: Could not enable quality {qualityIndex} for tile {tileNumber}, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
@@ -119,7 +119,7 @@ namespace VRT.Transport.Dash
 #if VRT_WITH_STATS
                     Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=0, tileIndex={tileIndex}");
 #endif
-                    bool ok = subHandle.disable_stream(tileIndex);
+                    bool ok = lldplayHandle.disable_stream(tileIndex);
                     if (!ok)
                     {
                         Debug.LogError($"{Name()}: Could not disable tile {tileNumber}");

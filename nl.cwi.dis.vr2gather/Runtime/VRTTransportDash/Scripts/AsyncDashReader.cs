@@ -36,7 +36,7 @@ namespace VRT.Transport.Dash
         protected string url;
         protected int streamCount;
         protected uint[] stream4CCs;
-        protected lldplay.connection subHandle;
+        protected lldplay.connection lldplayHandle;
         protected bool isPlaying;
 
         public class TileOrMediaInfo
@@ -85,16 +85,16 @@ namespace VRT.Transport.Dash
 
             protected void getDataFromStream(int stream_index, int bytesNeeded)
             {
-                lldplay.connection subHandle = parent.subHandle;
+                lldplay.connection lldplayHandle = parent.lldplayHandle;
                 lldplay.DashFrameMetaData frameInfo = new lldplay.DashFrameMetaData();
 
                 // Allocate and read.
                 NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
+                int bytesRead = lldplayHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
 
                 if (bytesRead != bytesNeeded)
                 {
-                    Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                    Debug.LogError($"{Name()}: programmer error: lldplay.grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                     mc.free();
                     return;
                 }
@@ -140,7 +140,7 @@ namespace VRT.Transport.Dash
 
             public bool getDataForTile()
             {
-                lldplay.connection subHandle = parent.subHandle;
+                lldplay.connection subHandle = parent.lldplayHandle;
                 if (receiverInfo.streamIndexes == null)
                 {
                     Debug.LogWarning($"{Name()}: no streamIndexes");
@@ -220,7 +220,8 @@ namespace VRT.Transport.Dash
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, true);
             lock (this)
             {
-                joinTimeout = 20000;
+                joinTimeout = 999999; // xxxjack Dash can be very slow stopping currently (Dec 2025).
+
 
                 if (_url == "" || _url == null || _streamName == "")
                 {
@@ -267,7 +268,7 @@ namespace VRT.Transport.Dash
         public override void AsyncOnStop()
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
-            _DeinitDash(true);
+            _DeinitLLDPlay(true);
             base.AsyncOnStop();
             if (debugThreading) Debug.Log($"{Name()}: Stopped");
         }
@@ -281,34 +282,34 @@ namespace VRT.Transport.Dash
                 //
                 // Get stream information
                 //
-                streamCount = subHandle.get_stream_count();
+                streamCount = lldplayHandle.get_stream_count();
                 stream4CCs = new uint[streamCount];
                 for (int i = 0; i < streamCount; i++)
                 {
-                    stream4CCs[i] = subHandle.get_stream_4cc(i);
+                    stream4CCs[i] = lldplayHandle.get_stream_4cc(i);
                 }
             }
         }
 
-        protected bool InitDash()
+        protected bool InitLLDPlay()
         {
             lock (this)
             {
              
                 //
-                // Create SUB instance
+                // Create lldplay instance
                 //
-                if (subHandle != null)
+                if (lldplayHandle != null)
                 {
-                    Debug.LogError($"{Name()}: Programmer error: InitDash() called but subHandle != null");
+                    Debug.LogError($"{Name()}: Programmer error: InitLLDPlay() called but lldplayHandle != null");
                 }
-                subHandle = lldplay.create(Name());
-                if (subHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
-                Debug.Log($"{Name()}: sub.create() successful.");
+                lldplayHandle = lldplay.create(Name());
+                if (lldplayHandle == null) throw new System.Exception($"{Name()}: lldplay.create() failed");
+                Debug.Log($"{Name()}: lldplay.create() successful.");
                 //
                 // Start playing
                 //
-                isPlaying = subHandle.play(url);
+                isPlaying = lldplayHandle.play(url);
                 if (!isPlaying)
                 {
                     
@@ -348,13 +349,13 @@ namespace VRT.Transport.Dash
             }
         }
 
-        private void _DeinitDash(bool closeQueues)
+        private void _DeinitLLDPlay(bool closeQueues)
         {
             if (closeQueues) _closeQueues();
             lock (this)
             {
-                subHandle?.free();
-                subHandle = null;
+                lldplayHandle?.free();
+                lldplayHandle = null;
             }
             if (perTileHandler == null) return;
             foreach (var t in perTileHandler)
@@ -380,9 +381,9 @@ namespace VRT.Transport.Dash
             lock (this)
             {
                 // If we are not playing we start
-                if (subHandle == null)
+                if (lldplayHandle == null)
                 {
-                    InitDash();
+                    InitLLDPlay();
                     {
                         InitThread();
                     }
@@ -420,6 +421,7 @@ namespace VRT.Transport.Dash
                 var receiverHandler = perTileHandler[i];
                 if (receiverInfo.outQueue.IsClosed())
                 {
+                    Debug.Log($"{Name()}: skip tile {i} which is closed");
                     continue;
                 }
                     

@@ -34,10 +34,10 @@ namespace VRT.Transport.Dash
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        public lldpkg.connection uploader;
+        public lldpkg.connection lldpkgHandle;
         public string url;
         OutgoingStreamDescription[] descriptions;
-        B2DPusher[] streamPushers;
+        DashStreamPusher[] streamPushers;
 
 
         public ITransportProtocolWriter Init(string _url, string userId, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
@@ -87,8 +87,8 @@ namespace VRT.Transport.Dash
                         throw new System.Exception($"{Name()}.{i}: inQueue");
                     }
                 }
-                uploader = lldpkg.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
-                if (uploader != null)
+                lldpkgHandle = lldpkg.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
+                if (lldpkgHandle != null)
                 {
                     Debug.Log($"{Name()}: started {url + _streamName}.mpd");
                     Start();
@@ -112,13 +112,13 @@ namespace VRT.Transport.Dash
 
         protected override void Start()
         {
+            joinTimeout = 999999; // xxxjack Dash can be very slow stopping currently (Dec 2025).
+            
             int nStreams = descriptions.Length;
-            streamPushers = new B2DPusher[nStreams];
+            streamPushers = new DashStreamPusher[nStreams];
             for (int i = 0; i < nStreams; i++)
             {
-                // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
-                int stream_number = i;
-                streamPushers[i] = new B2DPusher(this, i, descriptions[i]);
+                streamPushers[i] = new DashStreamPusher(this, i, descriptions[i]);
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
 #endif
@@ -140,18 +140,21 @@ namespace VRT.Transport.Dash
             }
             // Stop our thread
             base.AsyncOnStop();
-            uploader?.free();
-            uploader = null;
+            lldpkgHandle?.free();
+            lldpkgHandle = null;
             Debug.Log($"{Name()} {url} Stopped");
         }
 
         protected override void AsyncUpdate()
         {
             int nStreams = streamPushers.Length;
+            bool anyWork = false;
             for (int i = 0; i < nStreams; i++)
             {
-                if (!streamPushers[i].LockBuffer()) Stop();
+                anyWork |= streamPushers[i].LockBuffer();
             }
+
+            if (!anyWork) return;
             for (int i = 0; i < nStreams; i++)
             {
                 streamPushers[i].PushBuffer();
@@ -165,18 +168,18 @@ namespace VRT.Transport.Dash
             return new SyncConfig.ClockCorrespondence
             {
                 wallClockTime = (Timestamp)sinceEpoch.TotalMilliseconds,
-                streamClockTime = uploader.get_media_time(0, 1000)
+                streamClockTime = lldpkgHandle.get_media_time(0, 1000)
             };
         }
 
-        protected class B2DPusher
+        protected class DashStreamPusher
         {
             AsyncDashWriter parent;
             int stream_index;
             OutgoingStreamDescription description;
             NativeMemoryChunk curBuffer = null;
 
-            public B2DPusher(AsyncDashWriter _parent, int _stream_index, OutgoingStreamDescription _description)
+            public DashStreamPusher(AsyncDashWriter _parent, int _stream_index, OutgoingStreamDescription _description)
             {
                 parent = _parent;
                 stream_index = _stream_index;
@@ -200,7 +203,7 @@ namespace VRT.Transport.Dash
                         curBuffer.free();
                         curBuffer = null;
                     }
-                    curBuffer = (NativeMemoryChunk)description.inQueue.Dequeue();
+                    curBuffer = (NativeMemoryChunk)description.inQueue.TryDequeue(0);
                     return curBuffer != null;
                 }
             }
@@ -213,7 +216,7 @@ namespace VRT.Transport.Dash
 #if VRT_WITH_STATS
                     stats.statsUpdate(curBuffer.length);
 #endif
-                    if (!parent.uploader.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length))
+                    if (!parent.lldpkgHandle.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length))
                         Debug.LogError($"{Name()}({parent.url}): ERROR sending data");
                 }
             }
