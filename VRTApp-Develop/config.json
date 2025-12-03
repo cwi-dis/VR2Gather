@@ -82,7 +82,7 @@
             "capturerType": 7,
             "capturerTypeName": "",
             "CameraReaderConfig": {
-                "configFilename": "../playback-20250515/cameraconfig.json"
+                "configFilename": ".../playback-20250515/cameraconfig.json"
             },
             "RemoteCameraReaderConfig": {
                 "url": "",
@@ -96,7 +96,7 @@
                 "nPoints": 16000
             },
             "PrerecordedReaderConfig": {
-                "folder": "../../cwipc_test/Samples/loot-200K-4tiles/"
+                "folder": ".../cwipc_test/Samples/loot-200K-4tiles/"
             },
             "voxelSize": 0.0,
             "frameRate": 15.0,
