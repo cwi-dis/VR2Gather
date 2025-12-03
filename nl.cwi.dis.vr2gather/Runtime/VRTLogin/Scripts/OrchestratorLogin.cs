@@ -1353,7 +1353,7 @@ namespace VRT.Login
             // If we want to autoCreate or autoStart depending on username set the right config flags.
             if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
             {
-                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser == LoginPanelUserName.text;
+                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser.ToLower() == LoginPanelUserName.text.ToLower();
                 if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={LoginPanelUserName.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
                 VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;

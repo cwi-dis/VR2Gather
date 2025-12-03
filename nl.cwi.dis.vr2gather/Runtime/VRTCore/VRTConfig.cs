@@ -370,6 +370,7 @@ namespace VRT.Core
             if (autoInventUsername) {
                 if (!PlayerPrefs.HasKey("userNameLoginIF")) {
                     string userName = System.Environment.MachineName;
+                    userName = userName.ToLower();
                     if (userName.Length > 20) {
                         userName = userName.Substring(0, 20);
                     }
