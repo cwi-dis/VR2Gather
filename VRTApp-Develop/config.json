@@ -1,36 +1,34 @@
 {
     "_orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
-    "ntpSyncThreshold": 0.1,
-    "statsInterval": 10.0,
+    "targetFrameRate": -1,
+    "ntpSyncThreshold": 0.10000000149011612,
+    "statsInterval": 1,
     "statsOutputFile": "",
     "statsOutputFileAppend": false,
-    "autoInventUsername": true,
+    "ffmpegDLLDir": "../ffmpeg/x64",
     "ScreenshotTool": {
         "takeScreenshot": false,
-        "fps": 0,
-        "screenshotTargetDirectory": "",
-        "preDeleteTargetDirectory": true,
-        "filenameTemplate": "Frame{framenum}.png"
+        "screenshotTargetDirectory": ""
     },
-    "_AutoStart": {
-        "ignoreAutoStartForDeveloper": true,
+    "AutoStart": {
+        "ignoreAutoStartForDeveloper": false,
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "",
-        "sessionName": "",
-        "sessionScenario": "",
-        "sessionTransportProtocol": "",
+        "autoCreateForUser": "beelzebub",
+        "sessionName": "issue240-dash-tileselect",
+        "sessionScenario": "Technical Playground",
+        "sessionTransportProtocol": "dash",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": -1,
-        "autoLeaveAfter": 0.0,
-        "autoStopAfterLeave": false,
-        "autoDelay": 1.0
+        "autoStartWith": 2,
+        "autoLeaveAfter": 60.0,
+        "autoStopAfterLeave": true,
+        "autoDelay": 0.0
     },
     "TransportDash": {
         "segmentSize": 4000,
-        "segmentLife": 15000,
+        "segmentLife": 60000,
         "openTimeout": 15000,
         "receiveInterval": 10
     },
@@ -72,7 +70,7 @@
         "acceptDesyncOnDataUnavailable": true
     },
     "TileSelector": {
-        "algorithm": "",
+        "algorithm": "frontTileBest",
         "debugDecisions": false,
         "bitrateBudget": 0
     },
@@ -81,10 +79,10 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerType": 8,
+            "capturerType": 7,
             "capturerTypeName": "",
             "CameraReaderConfig": {
-                "configFilename": ""
+                "configFilename": "../playback-20250515/cameraconfig.json"
             },
             "RemoteCameraReaderConfig": {
                 "url": "",
@@ -98,21 +96,24 @@
                 "nPoints": 16000
             },
             "PrerecordedReaderConfig": {
-                "folder": "../../cwipc_test/Samples/loot-600K-4tiles/"
+                "folder": "../../cwipc_test/Samples/loot-200K-4tiles/"
             },
             "voxelSize": 0.0,
-            "frameRate": 5.0,
-            "tiled": false,
+            "frameRate": 15.0,
+            "tiled": true,
             "Encoders": [
                 {
                     "octreeBits": 7
+                },
+                {
+                    "octreeBits": 9
                 }
             ]
         },
         "PositionTracker": {
             "outputFile": "",
             "outputIntervalOverride": 0,
-            "inputFile": ""
+            "inputFile": "userposition.json"
         }
     },
     "configOverrideFilename": ""
