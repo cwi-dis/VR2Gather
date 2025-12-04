@@ -96,8 +96,7 @@ namespace VRT.Transport.Dash
         /// </summary>
         public class connection : BaseMemoryChunk
         {
-            static readonly bool debugApi = false; // Could be a const but that gives warnings.
-            protected IntPtr obj;
+            static readonly bool debugApi = true; // Could be a const but that gives warnings.
             public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
 
             internal connection(IntPtr _pointer) : base(_pointer)
@@ -127,9 +126,9 @@ namespace VRT.Transport.Dash
                 _pointer = IntPtr.Zero;
                 if (tmp != IntPtr.Zero)
                 {
-                    if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_destroy()");
+                    if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_destroy()");
                     _API.lldplay_destroy(tmp);
-                    if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_destroy()");
+                    if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_destroy()");
                 }
                 else
                 {
@@ -147,9 +146,9 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("lldplay.get_stream_count: called with pointer==null");
                 }
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_get_stream_count()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_get_stream_count()");
                 var rv = _API.lldplay_get_stream_count(pointer);
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_get_stream_count()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_get_stream_count()");
                 return rv;
             }
 
@@ -166,9 +165,9 @@ namespace VRT.Transport.Dash
                     UnityEngine.Debug.LogAssertion("lldplay.get_stream_4cc: called with pointer==null");
                 }
                 DashStreamDescriptor streamDesc = new DashStreamDescriptor();
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_get_stream_info()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_get_stream_info()");
                 _API.lldplay_get_stream_info(pointer, stream, ref streamDesc);
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_get_stream_info()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_get_stream_info()");
                 return streamDesc.MP4_4CC;
             }
 
@@ -182,16 +181,16 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("lldplay.get_streams: called with pointer==null");
                 }
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_get_stream_count()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_get_stream_count()");
                 int nStreams = _API.lldplay_get_stream_count(pointer);
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_get_stream_count()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_get_stream_count()");
                 IncomingStreamDescription[] rv = new IncomingStreamDescription[nStreams];
                 for (int streamIndex = 0; streamIndex < nStreams; streamIndex++)
                 {
                     DashStreamDescriptor streamDesc = new DashStreamDescriptor();
-                    if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_get_stream_info()");
+                    if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_get_stream_info()");
                     _API.lldplay_get_stream_info(pointer, streamIndex, ref streamDesc);
-                    if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_get_stream_info()");
+                    if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_get_stream_info()");
                     rv[streamIndex].streamIndex = streamIndex;
                     rv[streamIndex].tileNumber = (int)streamDesc.tileNumber;
                     float nx = ((float)streamDesc.nx) / 1000.0f;
@@ -215,9 +214,9 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("lldplay.enable_stream: called with pointer==null");
                 }
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_enable_stream()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_enable_stream()");
                 var rv = _API.lldplay_enable_stream(pointer, tileNumber, quality);
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_enable_stream()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_enable_stream()");
                 return rv;
             }
 
@@ -232,9 +231,9 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("lldplay.disable_stream: called with pointer==null");
                 }
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_disable_stream()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_disable_stream()");
                 var rv = _API.lldplay_disable_stream(pointer, tileNumber);
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_disable_stream()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_disable_stream()");
                 return rv;
             }
 
@@ -251,9 +250,9 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("lldplay.play: called with pointer==null");
                 }
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_play()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_play()");
                 var rv = _API.lldplay_play(pointer, url);
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_play()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_play()");
                 return rv;
             }
 
@@ -274,9 +273,9 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogAssertion("lldplay.grab_frame: called with pointer==null");
                 }
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: calling lldplay_grab_frame()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_grab_frame()");
                 var rv = _API.lldplay_grab_frame(pointer, streamIndex, dst, dstLen, ref info);
-                if (debugApi) UnityEngine.Debug.Log("signals_unity_bridge_api: return_from lldplay_grab_frame()");
+                if (debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: return_from lldplay_grab_frame()");
                 return rv;
             }
         }
@@ -298,7 +297,7 @@ namespace VRT.Transport.Dash
             }
             catch (System.DllNotFoundException)
             {
-                UnityEngine.Debug.LogError($"bin2dash: Cannot load {_API.myDllName} dynamic library");
+                UnityEngine.Debug.LogError($"lldplay_pinvoke: Cannot load {_API.myDllName} dynamic library");
             }
             Loader.PostLoadModule(_API.myDllName);
             _API.LLDashPlayoutErrorCallbackType errorCallback = (msg, level) =>
@@ -307,16 +306,16 @@ namespace VRT.Transport.Dash
                 string _msg = string.Copy(msg);
                 if (level == 0)
                 {
-                    UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {_msg}. Attempting to continue.");
+                    UnityEngine.Debug.LogError($"lldplay_pinvoke: {_pipeline}: asynchronous error: {_msg}. Attempting to continue.");
                 }
                 else
                 if (level == 1)
                 {
-                    UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous warning: {_msg}.");
+                    UnityEngine.Debug.LogWarning($"lldplay_pinvoke: {_pipeline}: asynchronous warning: {_msg}.");
                 }
                 else
                 {
-                    UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
+                    UnityEngine.Debug.Log($"lldplay_pinvoke: {_pipeline}: asynchronous message: {_msg}.");
                 }
             };
             IntPtr obj = _API.lldplay_create(pipeline, errorCallback, LogLevel);

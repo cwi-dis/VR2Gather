@@ -58,6 +58,9 @@ namespace VRT.Transport.Dash
         public class connection : BaseMemoryChunk
         {
 
+            static public readonly bool debugApi = true; // Could be a const but that gives warnings.
+            public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
+            
             internal connection(IntPtr _pointer) : base(_pointer)
             {
                 if (_pointer == IntPtr.Zero) throw new Exception("lldpkg.connection: constructor called with null pointer");
@@ -80,7 +83,9 @@ namespace VRT.Transport.Dash
             {
                 IntPtr ptr = _pointer;
                 _pointer = IntPtr.Zero;
-                _API.lldpkg_destroy(ptr, true);
+                if (debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: calling lldpkg_destroy()");
+                _API.lldpkg_destroy(ptr, false);
+                if (debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: return from lldpkg_destroy()");
             }
 
             /// <summary>
@@ -95,7 +100,10 @@ namespace VRT.Transport.Dash
             public bool push_buffer(int stream_index, IntPtr buffer, uint bufferSize)
             {
                 if (pointer == IntPtr.Zero) throw new Exception($"lldpkg.push_buffer: called with pointer==null");
-                return _API.lldpkg_push_buffer(pointer, stream_index, buffer, bufferSize);
+                if (debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: calling lldpkg_push_buffer()");
+                bool rv = _API.lldpkg_push_buffer(pointer, stream_index, buffer, bufferSize);
+                if (debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: return from lldpkg_push_buffer()");
+                return rv;
             }
 
             /// <summary>
@@ -107,7 +115,10 @@ namespace VRT.Transport.Dash
             public Timestamp get_media_time(int stream_index, int timescale)
             {
                 if (pointer == IntPtr.Zero) throw new Exception($"lldpkg.get_media_time: called with pointer==null");
-                return _API.lldpkg_get_media_time(pointer, stream_index, timescale);
+                if (debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: calling lldpkg_get_media_time()");
+                Timestamp rv = _API.lldpkg_get_media_time(pointer, stream_index, timescale);
+                if (debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: return from lldpkg_get_media_time()");
+                return rv;
             }
         }
 
@@ -156,10 +167,14 @@ namespace VRT.Transport.Dash
             Loader.PostLoadModule(_API.myDllName);
             
             _API.LLDashPackagerErrorCallbackType errorCallback = MessageCallback;
+            if (connection.debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: calling lldpkg_create()");
             IntPtr obj = _API.lldpkg_create(pipeline, errorCallback, LogLevel, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+            if (connection.debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: return from lldpkg_create()");
             if (obj == IntPtr.Zero)
                 return null;
-            return new connection(obj);
+            connection rv = new connection(obj);
+            rv.errorCallback = errorCallback;
+            return rv;
         }
 
         /// <summary>
