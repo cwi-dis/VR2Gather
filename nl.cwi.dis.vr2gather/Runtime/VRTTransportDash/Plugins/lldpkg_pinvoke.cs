@@ -72,7 +72,7 @@ namespace VRT.Transport.Dash
             {
                 if (_pointer != IntPtr.Zero)
                 {
-                    free();
+                    onfree();
                 }
             }
 

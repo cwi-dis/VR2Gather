@@ -115,7 +115,10 @@ namespace VRT.Transport.Dash
 
             ~connection()
             {
-                free();
+                if (_pointer != IntPtr.Zero)
+                {
+                    onfree();
+                }
             }
 
             protected override void onfree()
