@@ -58,7 +58,7 @@ namespace VRT.Transport.Dash
         public class connection : BaseMemoryChunk
         {
 
-            static public readonly bool debugApi = true; // Could be a const but that gives warnings.
+            static public bool debugApi = false; // Could be a const but that gives warnings.
             public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
             
             internal connection(IntPtr _pointer) : base(_pointer)
@@ -165,7 +165,7 @@ namespace VRT.Transport.Dash
                 UnityEngine.Debug.LogError($"lldpkg: Cannot load {_API.myDllName} dynamic library");
             }
             Loader.PostLoadModule(_API.myDllName);
-            
+            connection.debugApi = (LogLevel > 3);
             _API.LLDashPackagerErrorCallbackType errorCallback = MessageCallback;
             if (connection.debugApi) UnityEngine.Debug.Log($"lldpkg_pinvoke: calling lldpkg_create()");
             IntPtr obj = _API.lldpkg_create(pipeline, errorCallback, LogLevel, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);

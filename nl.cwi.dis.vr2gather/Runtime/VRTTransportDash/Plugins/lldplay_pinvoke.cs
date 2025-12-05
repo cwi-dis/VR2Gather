@@ -96,7 +96,7 @@ namespace VRT.Transport.Dash
         /// </summary>
         public class connection : BaseMemoryChunk
         {
-            static readonly bool debugApi = true; // Could be a const but that gives warnings.
+            public static bool debugApi = false;
             public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
 
             internal connection(IntPtr _pointer) : base(_pointer)
@@ -280,6 +280,27 @@ namespace VRT.Transport.Dash
             }
         }
 
+        
+        static void MessageCallback(string msg, int level)
+        {
+            string _msg = string.Copy(msg);
+            string _pipeline = "unknown_pipeline";
+            if (level == 0)
+            {
+                UnityEngine.Debug.LogError($"lldplay_pinvoke: {_pipeline}: asynchronous error: {_msg}. Attempting to continue.");
+            }
+            else
+            if (level == 1)
+            {
+                UnityEngine.Debug.LogWarning($"lldplay_pinvoke: {_pipeline}: asynchronous warning: {_msg}.");
+            }
+            else
+            {
+                UnityEngine.Debug.Log($"lldplay_pinvoke: {_pipeline}: asynchronous message: {_msg}.");
+            }
+            
+        }
+
         /// <summary>
         /// Creates a new lldplay connection.
         /// This will load the lldash_play dynamic library and create a new connection. The connection will
@@ -300,25 +321,12 @@ namespace VRT.Transport.Dash
                 UnityEngine.Debug.LogError($"lldplay_pinvoke: Cannot load {_API.myDllName} dynamic library");
             }
             Loader.PostLoadModule(_API.myDllName);
-            _API.LLDashPlayoutErrorCallbackType errorCallback = (msg, level) =>
-            {
-                string _pipeline = pipeline == null ? "unknown lldplay pipeline" : string.Copy(pipeline);
-                string _msg = string.Copy(msg);
-                if (level == 0)
-                {
-                    UnityEngine.Debug.LogError($"lldplay_pinvoke: {_pipeline}: asynchronous error: {_msg}. Attempting to continue.");
-                }
-                else
-                if (level == 1)
-                {
-                    UnityEngine.Debug.LogWarning($"lldplay_pinvoke: {_pipeline}: asynchronous warning: {_msg}.");
-                }
-                else
-                {
-                    UnityEngine.Debug.Log($"lldplay_pinvoke: {_pipeline}: asynchronous message: {_msg}.");
-                }
-            };
+            
+            connection.debugApi = (LogLevel > 3);
+            _API.LLDashPlayoutErrorCallbackType errorCallback = MessageCallback;
+            if (connection.debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: calling lldplay_create()");
             IntPtr obj = _API.lldplay_create(pipeline, errorCallback, LogLevel);
+            if (connection.debugApi) UnityEngine.Debug.Log("lldplay_pinvoke: returned from lldplay_create()");
             if (obj == IntPtr.Zero)
                 return null;
             connection rv = new connection(obj);
