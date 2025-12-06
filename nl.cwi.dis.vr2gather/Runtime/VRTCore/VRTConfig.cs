@@ -103,11 +103,7 @@ namespace VRT.Core
             public int segmentSize = 4000;
             [Tooltip("After how many milliseconds DASH segments can be deleted by the SFU")]
             public int segmentLife = 15000;
-            [Tooltip("After how many milliseconds we give up on opening a connection")]
-            public int openTimeout = 15000;
-            [Tooltip("If no data is available on any stream we sleep for this many milliseconds")]
-            public int receiveInterval = 10;
-            [Tooltip("lldash log level: 0-Error, 1-Warn, 2-Info, 3-Debug")]
+            [Tooltip("lldash log level: 0-Error, 1-Warn, 2-Info, 3-Debug, 4-APIDebug")]
             public int logLevel = 0;
             [Tooltip("Override the lldash native library location.")]
             public string nativeLibraryPath = "";

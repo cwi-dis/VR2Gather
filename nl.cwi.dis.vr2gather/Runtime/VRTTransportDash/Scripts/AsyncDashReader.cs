@@ -206,17 +206,13 @@ namespace VRT.Transport.Dash
         }
 
         TileOrMediaHandler[] perTileHandler;
-        System.TimeSpan openTimeout;
-        System.TimeSpan receiveInterval; // This parameter needs work. 2ms causes jitter with tiled pcs, but 33ms may be too high for audio 
-
+        
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
         bool clockCorrespondenceReceived = false;
 
         protected void _Init(string _url, string _streamName)
         {
             lldplay.LogLevel = VRTConfig.Instance.TransportDash.logLevel;
-            openTimeout = System.TimeSpan.FromMilliseconds(VRTConfig.Instance.TransportDash.openTimeout);
-            receiveInterval = System.TimeSpan.FromMilliseconds(VRTConfig.Instance.TransportDash.receiveInterval);
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, true);
             lock (this)
             {
