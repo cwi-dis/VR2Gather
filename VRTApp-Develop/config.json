@@ -28,9 +28,7 @@
     },
     "TransportDash": {
         "segmentSize": 4000,
-        "segmentLife": 60000,
-        "openTimeout": 15000,
-        "receiveInterval": 10
+        "segmentLife": 60000
     },
     "TransportWebRTC": {
         "peerExecutablePath": "",
