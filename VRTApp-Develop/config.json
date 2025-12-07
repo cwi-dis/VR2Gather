@@ -27,7 +27,7 @@
         "autoDelay": 0.0
     },
     "TransportDash": {
-    	"logLevel": 4,
+    	"logLevel": 3,
         "segmentSize": 4000,
         "segmentLife": 60000
     },
