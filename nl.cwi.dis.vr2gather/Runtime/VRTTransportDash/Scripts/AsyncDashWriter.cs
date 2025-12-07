@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using UnityEngine;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
@@ -141,6 +142,9 @@ namespace VRT.Transport.Dash
             }
             lldpkgHandle?.free();
             lldpkgHandle = null;
+            // Workaround attempt for lldash#102
+            Debug.Log($"{Name()}: Sleep 4 seconds as workaround for lldash#102");
+            Thread.Sleep(4000);
             base.AsyncOnStop();
         }
 
