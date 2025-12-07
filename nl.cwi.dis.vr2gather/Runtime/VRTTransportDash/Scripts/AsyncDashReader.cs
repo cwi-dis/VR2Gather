@@ -266,7 +266,6 @@ namespace VRT.Transport.Dash
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
             _DeinitLLDPlay(true);
             base.AsyncOnStop();
-            if (debugThreading) Debug.Log($"{Name()}: Stopped");
         }
 
 

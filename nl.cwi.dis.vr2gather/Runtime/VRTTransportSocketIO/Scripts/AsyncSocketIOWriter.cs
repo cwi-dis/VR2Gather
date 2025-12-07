@@ -66,7 +66,7 @@ namespace VRT.Transport.SocketIO
 
         public override void AsyncOnStop()
         {
-            base.AsyncOnStop();
+            if (debugThreading) Debug.Log($"{Name()}: Stopping");
             for (int i = 0; i < streams.Length; ++i)
             {
                 if (!streams[i].inQueue.IsClosed())
@@ -75,8 +75,8 @@ namespace VRT.Transport.SocketIO
                     streams[i].inQueue.Close();
                 }
             }
-            Debug.Log($"[FPA] {Name()}: Stopped.");
             OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
+            base.AsyncOnStop();
         }
 
         protected override void AsyncUpdate()

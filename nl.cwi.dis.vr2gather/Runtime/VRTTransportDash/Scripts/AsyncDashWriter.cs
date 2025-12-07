@@ -128,6 +128,7 @@ namespace VRT.Transport.Dash
 
         public override void AsyncOnStop()
         {
+            if (debugThreading) Debug.Log($"{Name()}: Stopping");
             // Signal that no more data is forthcoming to every pusher
             for (int i = 0; i < descriptions.Length; i++)
             {
@@ -138,11 +139,9 @@ namespace VRT.Transport.Dash
                     d.inQueue.Close();
                 }
             }
-            // Stop our thread
-            base.AsyncOnStop();
             lldpkgHandle?.free();
             lldpkgHandle = null;
-            Debug.Log($"{Name()} {url} Stopped");
+            base.AsyncOnStop();
         }
 
         protected override void AsyncUpdate()
