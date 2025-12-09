@@ -121,7 +121,7 @@ namespace VRT.Transport.Dash
             {
                 streamPushers[i] = new DashStreamPusher(this, i, descriptions[i]);
 #if VRT_WITH_STATS
-                Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
+                Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, x={descriptions[i].orientation.x},  y={descriptions[i].orientation.y}, z={descriptions[i].orientation.z}");
 #endif
             }
             base.Start();
