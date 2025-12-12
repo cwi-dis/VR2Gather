@@ -138,7 +138,7 @@ namespace VRT.Core
             {
                 currentFrameDesync = true;
                 string problem = rangeTooNew ? "new" : "old";
-                Debug.Log($"{Name()}: {caller}: too {problem}: timestamp range [{earliestFrameTimestamp-utcMillisForCurrentFrame}..{latestFrameTimestamp - utcMillisForCurrentFrame}], allowed range [{availableIntervalBegin - utcMillisForCurrentFrame}..{availableIntervalEnd - utcMillisForCurrentFrame}]");
+                Debug.Log($"{Name()}: {caller}: too {problem}: timestamp range available for this caller is [{earliestFrameTimestamp-utcMillisForCurrentFrame}..{latestFrameTimestamp - utcMillisForCurrentFrame}], pre-existing allowed range [{availableIntervalBegin - utcMillisForCurrentFrame}..{availableIntervalEnd - utcMillisForCurrentFrame}]");
                 // xxxjack decide which one to keep: the earliest or the latest range....
                 // keeping the latest range should cause "best progress".
                 // keeping the earliest should cause "quickest sync".
