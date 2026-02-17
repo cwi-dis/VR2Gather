@@ -8,7 +8,7 @@
 	"dependencies": {
 		"nl.cwi.dis.vr2gather.nativelibraries": "0.99.8",
 		"nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.6",
-		"nl.cwi.dis.cwipc": "7.7.5",
+		"nl.cwi.dis.cwipc": "7.7.6",
 		"com.itisnajim.socketiounity": "1.1.4",
 		"com.unity.animation.rigging": "1.2.1",
 		"com.unity.recorder": "4.0.3",
