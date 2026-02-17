@@ -10,13 +10,13 @@
         "takeScreenshot": false,
         "screenshotTargetDirectory": ""
     },
-    "AutoStart": {
+    "_AutoStart": {
         "ignoreAutoStartForDeveloper": false,
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
-        "autoCreateForUser": "beelzebub",
-        "sessionName": "issue240-dash-tileselect",
+        "autoCreateForUser": "",
+        "sessionName": "",
         "sessionScenario": "Technical Playground",
         "sessionTransportProtocol": "dash",
         "sessionUncompressed": false,
@@ -78,10 +78,10 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerType": 7,
+            "capturerType": 0,
             "capturerTypeName": "",
             "CameraReaderConfig": {
-                "configFilename": ".../playback-20250515/cameraconfig.json"
+                "configFilename": ""
             },
             "RemoteCameraReaderConfig": {
                 "url": "",

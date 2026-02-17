@@ -42,12 +42,14 @@ public class KinectJointPoseProvider : BasePoseProvider
             gameObject.SetActive(false);
             return;
         }
+#if VRT_WITH_SKELETONS
         pc_reader = pc_pipeline.GetReader() as AsyncKinectReader;
         if (pc_reader == null || !pc_reader.supports_skeleton())
         {
             Debug.LogWarning($"{Name()}: no skeleton support in pc_reader, disabling GameObject {gameObject.name}");
             gameObject.SetActive(false);
         }
+#endif
     }
 
     // Update is called once per frame

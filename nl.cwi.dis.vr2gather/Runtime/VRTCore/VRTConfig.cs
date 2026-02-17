@@ -198,15 +198,13 @@ namespace VRT.Core
                 [Serializable]
                 public enum PCCapturerType
                 {
-                    auto,
-                    none,
-                    realsense,
-                    kinect,
+                    camera,
                     synthetic,
                     remote,
                     proxy,
                     prerecorded,
-                    developer
+                    developer,
+                    none,
                 };
                 public PCCapturerType capturerType;
                 [Tooltip("Override capturerType by name")]

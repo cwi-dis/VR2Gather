@@ -222,11 +222,11 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#v7.7.6",
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#52-cwipc-v80",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "6d460c3f2c99f270cf844fae4a5d17fb03b13347"
+      "hash": "6b2c04ee8efe0633aab431344bc1fb2e67eb00cc"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",

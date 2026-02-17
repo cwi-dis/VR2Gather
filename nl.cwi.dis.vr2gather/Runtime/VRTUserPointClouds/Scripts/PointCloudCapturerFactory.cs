@@ -19,14 +19,10 @@ namespace VRT.UserRepresentation.PointCloud
             }
             switch(config.capturerType)
             {
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.auto:
-                    return new AsyncAutoReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                case VRTConfig._User._PCSelfConfig.PCCapturerType.camera:
+                    return new AsyncCameraReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.synthetic:
                    return new AsyncSyntheticReader(config.frameRate, config.SynthReaderConfig.nPoints, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.kinect:
-                    return new AsyncKinectReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.realsense:
-                    return new AsyncRealsenseReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.prerecorded:
                     var prConfig = config.PrerecordedReaderConfig;
                     if (prConfig.folder == null || prConfig.folder == "")
@@ -49,7 +45,7 @@ namespace VRT.UserRepresentation.PointCloud
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.developer:
                     try
                     {
-                        return new AsyncAutoReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                        return new AsyncCameraReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                     }
                     #pragma warning disable CS0168
                     catch (Exception e)
