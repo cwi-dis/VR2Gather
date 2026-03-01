@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Management;
+using Cwipc;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -359,6 +360,7 @@ namespace VRT.Core
             Statistics.Initialize(this.statsInterval, this.statsOutputFile, this.statsOutputFileAppend);
 #endif
             Cwipc.CwipcConfig.SetInstance(this.PCs);
+            Cwipc.cwipc.install_logger((Cwipc.cwipc.LogLevel)this.PCs.logLevel);
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
             if (autoInventUsername) {

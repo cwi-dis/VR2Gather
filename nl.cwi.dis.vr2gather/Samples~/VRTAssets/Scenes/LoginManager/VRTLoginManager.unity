@@ -822,8 +822,6 @@ MonoBehaviour:
   TransportDash:
     segmentSize: 4000
     segmentLife: 15000
-    openTimeout: 15000
-    receiveInterval: 10
     logLevel: 1
     nativeLibraryPath: 
   TransportWebRTC:
@@ -835,6 +833,7 @@ MonoBehaviour:
     logFileDirectory: 
     debugLevel: 0
   PCs:
+    logLevel: 2
     Codec: cwi1
     defaultCellSize: 0.002
     cellSizeFactor: 1
