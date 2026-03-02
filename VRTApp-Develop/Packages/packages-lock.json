@@ -226,7 +226,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "b56750768a87463988c72cc17c6e73136f0af39e"
+      "hash": "0d1dba57cd46eda527b7cf68a2781c54ad500b04"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",

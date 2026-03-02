@@ -42,6 +42,7 @@
     },
     "PCs": {
         "logLevel" : 4,
+        "overrideNativeLoadPath": "C:/Users/jack/VRTogether/installed/bin",
         "Codec": "cwi1",
         "defaultCellSize": 0.0020000000949949028,
         "cellSizeFactor": 1.0,
