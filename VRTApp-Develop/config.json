@@ -41,6 +41,7 @@
         "debugLevel": 0
     },
     "PCs": {
+        "logLevel" : 4,
         "Codec": "cwi1",
         "defaultCellSize": 0.0020000000949949028,
         "cellSizeFactor": 1.0,
@@ -78,7 +79,7 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerType": 0,
+            "capturerType": 5,
             "capturerTypeName": "",
             "CameraReaderConfig": {
                 "configFilename": ""
@@ -112,7 +113,7 @@
         "PositionTracker": {
             "outputFile": "",
             "outputIntervalOverride": 0,
-            "inputFile": "userposition.json"
+            "inputFile": ""
         }
     },
     "configOverrideFilename": ""
