@@ -359,8 +359,10 @@ namespace VRT.Core
 #if VRT_WITH_STATS
             Statistics.Initialize(this.statsInterval, this.statsOutputFile, this.statsOutputFileAppend);
 #endif
+            // Communicate cwipc settings to cwipc package. This sets all sorts
+            // of things, from native log level to queue sizes, etc.
             Cwipc.CwipcConfig.SetInstance(this.PCs);
-            Cwipc.cwipc.install_logger((Cwipc.cwipc.LogLevel)this.PCs.logLevel);
+            
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
             if (autoInventUsername) {
