@@ -93,13 +93,58 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
         type: 3}
+      propertyPath: _initializedTimestamp
+      value: -8584285385985857288
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
       propertyPath: <SceneId>k__BackingField
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
         type: 3}
+      propertyPath: <PrefabId>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
       propertyPath: <AssetPathHash>k__BackingField
-      value: 8679263149696634321
+      value: 16026881794739662840
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: SerializedTransformProperties.IsValid
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: SerializedTransformProperties.Scale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: SerializedTransformProperties.Scale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: SerializedTransformProperties.Scale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1954768422725111540, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
+        type: 3}
+      propertyPath: SerializedTransformProperties.Rotation.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 6886076587129330562, guid: 8f1bc1451a2e84d259cffc52fc0d1e70,
         type: 3}

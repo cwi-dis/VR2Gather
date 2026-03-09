@@ -9,7 +9,6 @@
   <Project Path="Unity.XR.Management.csproj" />
   <Project Path="BakeryRuntimeAssembly.csproj" />
   <Project Path="Unity.FishNet.Codegen.csproj" />
-  <Project Path="Edgegap.csproj" />
   <Project Path="Cwipc.csproj" />
   <Project Path="Unity.XR.Interaction.Toolkit.csproj" />
   <Project Path="Unity.XR.CoreUtils.Editor.csproj" />
