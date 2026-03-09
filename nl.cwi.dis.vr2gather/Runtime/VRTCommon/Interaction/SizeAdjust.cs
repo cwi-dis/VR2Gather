@@ -29,13 +29,13 @@ namespace VRT.Pilots.Common
         [Tooltip("The Input System Action that determines whether the HMD is tracking")]
         [SerializeField] InputActionProperty m_hmdTrackingAction;
         [Tooltip("Native total height of destination (introspection)")]
-        [DisableEditing] [SerializeField] float nativeHeight = 1;
+        [DisableEditing][SerializeField] float nativeHeight = 1;
         [Tooltip("Current real player height (introspection)")]
-        [DisableEditing] [SerializeField] float actualHeight = 0;
+        [DisableEditing][SerializeField] float actualHeight = 0;
         [Tooltip("Native size (introspection)")]
-        [DisableEditing] [SerializeField] Vector3 nativeSize;
+        [DisableEditing][SerializeField] Vector3 nativeSize;
         [Tooltip("Current size (introspection)")]
-        [DisableEditing] [SerializeField] Vector3 currentSize;
+        [DisableEditing][SerializeField] Vector3 currentSize;
         [Tooltip("Enable debug logging")]
         [SerializeField] bool debug = false;
 
@@ -76,9 +76,19 @@ namespace VRT.Pilots.Common
             float topY = SourceTop.transform.position.y;
             float botY = SourceBottom.transform.position.y;
             actualHeight = (topY - botY);
+            if (actualHeight < 0.5)
+            {
+                Debug.LogWarning($"SizeAdjust: ignoring preposterous actualHeight={actualHeight}. sourceTop={SourceTop}, sourceBottom={SourceBottom}");
+                return;
+            }
             float factor = actualHeight / nativeHeight;
+            if (factor < 0.5)
+            {
+                Debug.LogWarning($"SizeAdjust: ignoring preposterous factor={factor}, too small. nativeHeight={nativeHeight}, actualHeight={actualHeight}");
+                return;
+            }
             currentSize = nativeSize * factor;
-            
+
             Destination.transform.localScale = currentSize;
             if (debug) Debug.Log($"SizeAdjust: height was {actualHeight}. currentSize={currentSize}. Now height is {SourceTop.transform.position.y - SourceBottom.transform.position.y}");
         }

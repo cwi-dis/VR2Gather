@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 3909529bded1f8644a17cc20f747027e, type: 2}
+  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -131,6 +131,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4627791344939139398, guid: f39eb6158b5e82f449ae38845b9ae7cf,
+        type: 3}
+      propertyPath: near clip plane
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 4771716607586101652, guid: f39eb6158b5e82f449ae38845b9ae7cf,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -785,7 +790,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f5d4564cc5748f44a078ede34cbd4e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  orchestratorURL: http://192.16.197.145:8090/
+  orchestratorURL: http://virtnuc-dis.spin-off.cwi.nl:8090/
   targetFrameRate: -1
   ntpSyncThreshold: 0.1
   statsInterval: 10
@@ -795,7 +800,10 @@ MonoBehaviour:
   autoInventUsername: 1
   ScreenshotTool:
     takeScreenshot: 0
+    fps: 0
     screenshotTargetDirectory: 
+    preDeleteTargetDirectory: 1
+    filenameTemplate: Frame{framenum}.png
   AutoStart:
     ignoreAutoStartForDeveloper: 1
     autoLogin: 1
@@ -812,8 +820,10 @@ MonoBehaviour:
     autoStopAfterLeave: 0
     autoDelay: 1
   TransportDash:
-    segmentSize: 1000
-    segmentLife: 16000
+    segmentSize: 4000
+    segmentLife: 15000
+    logLevel: 1
+    nativeLibraryPath: 
   TransportWebRTC:
     peerExecutablePath: 
     peerInWindow: 0
@@ -823,6 +833,7 @@ MonoBehaviour:
     logFileDirectory: 
     debugLevel: 0
   PCs:
+    logLevel: 2
     Codec: cwi1
     defaultCellSize: 0.002
     cellSizeFactor: 1
@@ -1707,11 +1718,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8141314486536374808, guid: cb215595e54b149439fda5e0b283e3bc,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8141314486536374808, guid: cb215595e54b149439fda5e0b283e3bc,
         type: 3}
       propertyPath: m_LocalPosition.x

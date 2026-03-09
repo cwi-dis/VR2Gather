@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using UnityEngine;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
@@ -18,22 +19,31 @@ namespace VRT.Transport.Dash
 
     public class AsyncDashWriter : AsyncWriter, ITransportProtocolWriter
     {
+        static bool initialized = false;
         static public ITransportProtocolWriter Factory()
         {
+            if (!initialized)
+            {
+                initialized = true;
+                var version = lldpkg.get_version();
+#if VRT_WITH_STATS
+                Statistics.Output("AsyncDashWriter", $"module=lldash-srd-packager, version={version}");
+#endif
+            }
             return new AsyncDashWriter();
         }
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        bool initialized = false;
-        public bin2dash.connection uploader;
+        public lldpkg.connection lldpkgHandle;
         public string url;
         OutgoingStreamDescription[] descriptions;
-        B2DPusher[] streamPushers;
+        DashStreamPusher[] streamPushers;
 
 
         public ITransportProtocolWriter Init(string _url, string userId, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
+            lldpkg.LogLevel = VRTConfig.Instance.TransportDash.logLevel;
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, false);
 
             int _segmentSize = VRTConfig.Instance.TransportDash.segmentSize;
@@ -59,13 +69,13 @@ namespace VRT.Transport.Dash
                 }
                 // xxxjack Is this the correct way to initialize an array of structs?
                 Debug.Log($"xxxjack {Name()}: {descriptions.Length} output streams");
-                bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
+                DashStreamDescriptor[] b2dDescriptors = new DashStreamDescriptor[descriptions.Length];
                 for (int i = 0; i < descriptions.Length; i++)
                 {
                     int nx = (int)(descriptions[i].orientation.x * 1000);
                     int ny = (int)(descriptions[i].orientation.y * 1000);
                     int nz = (int)(descriptions[i].orientation.z * 1000);
-                    b2dDescriptors[i] = new bin2dash.StreamDesc
+                    b2dDescriptors[i] = new DashStreamDescriptor
                     {
                         MP4_4CC = fourccInt,
                         tileNumber = descriptions[i].tileNumber,
@@ -78,8 +88,8 @@ namespace VRT.Transport.Dash
                         throw new System.Exception($"{Name()}.{i}: inQueue");
                     }
                 }
-                uploader = bin2dash.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
-                if (uploader != null)
+                lldpkgHandle = lldpkg.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
+                if (lldpkgHandle != null)
                 {
                     Debug.Log($"{Name()}: started {url + _streamName}.mpd");
                     Start();
@@ -92,7 +102,6 @@ namespace VRT.Transport.Dash
                 Debug.Log($"{Name()}({url}) Exception:{e.Message}");
                 throw;
             }
-            initialized = true;
             return this;
         }
 
@@ -104,15 +113,15 @@ namespace VRT.Transport.Dash
 
         protected override void Start()
         {
+            joinTimeout = 999999; // xxxjack Dash can be very slow stopping currently (Dec 2025).
+            
             int nStreams = descriptions.Length;
-            streamPushers = new B2DPusher[nStreams];
+            streamPushers = new DashStreamPusher[nStreams];
             for (int i = 0; i < nStreams; i++)
             {
-                // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
-                int stream_number = i;
-                streamPushers[i] = new B2DPusher(this, i, descriptions[i]);
+                streamPushers[i] = new DashStreamPusher(this, i, descriptions[i]);
 #if VRT_WITH_STATS
-                Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
+                Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, x={descriptions[i].orientation.x},  y={descriptions[i].orientation.y}, z={descriptions[i].orientation.z}");
 #endif
             }
             base.Start();
@@ -120,6 +129,7 @@ namespace VRT.Transport.Dash
 
         public override void AsyncOnStop()
         {
+            if (debugThreading) Debug.Log($"{Name()}: Stopping");
             // Signal that no more data is forthcoming to every pusher
             for (int i = 0; i < descriptions.Length; i++)
             {
@@ -130,20 +140,24 @@ namespace VRT.Transport.Dash
                     d.inQueue.Close();
                 }
             }
-            // Stop our thread
+            lldpkgHandle?.free();
+            lldpkgHandle = null;
+            // Workaround attempt for lldash#102
+            Debug.Log($"{Name()}: Sleep 4 seconds as workaround for lldash#102");
+            Thread.Sleep(4000);
             base.AsyncOnStop();
-            uploader?.free();
-            uploader = null;
-            Debug.Log($"{Name()} {url} Stopped");
         }
 
         protected override void AsyncUpdate()
         {
             int nStreams = streamPushers.Length;
+            bool anyWork = false;
             for (int i = 0; i < nStreams; i++)
             {
-                if (!streamPushers[i].LockBuffer()) Stop();
+                anyWork |= streamPushers[i].LockBuffer();
             }
+
+            if (!anyWork) return;
             for (int i = 0; i < nStreams; i++)
             {
                 streamPushers[i].PushBuffer();
@@ -157,18 +171,18 @@ namespace VRT.Transport.Dash
             return new SyncConfig.ClockCorrespondence
             {
                 wallClockTime = (Timestamp)sinceEpoch.TotalMilliseconds,
-                streamClockTime = uploader.get_media_time(1000)
+                streamClockTime = lldpkgHandle.get_media_time(0, 1000)
             };
         }
 
-        protected class B2DPusher
+        protected class DashStreamPusher
         {
             AsyncDashWriter parent;
             int stream_index;
             OutgoingStreamDescription description;
             NativeMemoryChunk curBuffer = null;
 
-            public B2DPusher(AsyncDashWriter _parent, int _stream_index, OutgoingStreamDescription _description)
+            public DashStreamPusher(AsyncDashWriter _parent, int _stream_index, OutgoingStreamDescription _description)
             {
                 parent = _parent;
                 stream_index = _stream_index;
@@ -192,7 +206,7 @@ namespace VRT.Transport.Dash
                         curBuffer.free();
                         curBuffer = null;
                     }
-                    curBuffer = (NativeMemoryChunk)description.inQueue.Dequeue();
+                    curBuffer = (NativeMemoryChunk)description.inQueue.TryDequeue(0);
                     return curBuffer != null;
                 }
             }
@@ -205,7 +219,7 @@ namespace VRT.Transport.Dash
 #if VRT_WITH_STATS
                     stats.statsUpdate(curBuffer.length);
 #endif
-                    if (!parent.uploader.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length))
+                    if (!parent.lldpkgHandle.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length))
                         Debug.LogError($"{Name()}({parent.url}): ERROR sending data");
                 }
             }

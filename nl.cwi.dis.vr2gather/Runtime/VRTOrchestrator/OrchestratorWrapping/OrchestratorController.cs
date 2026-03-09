@@ -463,8 +463,8 @@ namespace VRT.Orchestrator.Wrapping
             mySession = null;
 
             // update the lists of session, anyway the result
+            if (_OptionalStopOnLeave()) return;
             orchestratorWrapper.GetSessions();
-            _OptionalStopOnLeave();
         }
 
         public void JoinSession(string pSessionID) {
@@ -496,7 +496,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void LeaveSession() {
-            orchestratorWrapper.LeaveSession();
+            orchestratorWrapper?.LeaveSession();
         }
 
         public void OnLeaveSessionResponse(ResponseStatus status) {
@@ -509,6 +509,7 @@ namespace VRT.Orchestrator.Wrapping
 
             // success
             myScenario = null;
+            if (_OptionalStopOnLeave()) return;
             OnLeaveSessionEvent?.Invoke();
 
             if (mySession != null && SelfUser != null) {
@@ -526,7 +527,7 @@ namespace VRT.Orchestrator.Wrapping
             _OptionalStopOnLeave();
         }
 
-        void _OptionalStopOnLeave()
+        bool _OptionalStopOnLeave()
         {
             // If wanted: stop playing (in editor), or quit application
             if (autoStopOnLeave)
@@ -535,7 +536,10 @@ namespace VRT.Orchestrator.Wrapping
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
 #endif
+                return true;
             }
+
+            return false;
         }
 
         public void OnUserJoinedSession(string userID, User user) {

@@ -58,11 +58,6 @@ namespace VRT.Video
             Start();
         }
 
-        public override void AsyncOnStop()
-        {
-            base.AsyncOnStop();
-            Debug.Log("{Name()}: Stopped");
-        }
 #if ENCODER_MONOTONIC_TIMESTAMPS
         long frame = 0;
 #endif

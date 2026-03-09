@@ -38,8 +38,10 @@ public class VRTInitializer : MonoBehaviour
 #if VRT_WITH_STATS
         Statistics.Output("VRTInitializer", $"quitting=1");
 #endif
+#if xxxjack_removed
         // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
+#endif
     }
 
     private void Start()

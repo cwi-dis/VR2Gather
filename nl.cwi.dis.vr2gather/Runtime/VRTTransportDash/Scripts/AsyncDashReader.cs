@@ -16,23 +16,28 @@ namespace VRT.Transport.Dash
 
     public class AsyncDashReader : AsyncReader, ITransportProtocolReader
     {
+        protected static bool initialized = false;
         static public ITransportProtocolReader Factory()
         {
+            if (!initialized)
+            {
+                initialized = true;
+                var version = lldplay.get_version();
+#if VRT_WITH_STATS
+                Statistics.Output("AsyncDashReader", $"module=lldash-playout, version={version}");
+#endif
+            }
             return new AsyncDashReader();
         }
 
         public delegate bool NeedsSomething();
 
-        protected bool initialized = false;
 
         protected string url;
         protected int streamCount;
         protected uint[] stream4CCs;
-        protected sub.connection subHandle;
+        protected lldplay.connection lldplayHandle;
         protected bool isPlaying;
-        int numberOfUnsuccessfulReceives;
-        System.DateTime subRetryNotBefore = System.DateTime.Now;
-        System.TimeSpan subRetryInterval = System.TimeSpan.FromSeconds(5);
 
         public class TileOrMediaInfo
         {
@@ -40,6 +45,7 @@ namespace VRT.Transport.Dash
             public List<int> streamIndexes;
             public object tileDescriptor;
             public int tileNumber = -1;
+            public int currentStreamIndex = 0;
         }
         protected TileOrMediaInfo[] perTileInfo;
    
@@ -77,17 +83,18 @@ namespace VRT.Transport.Dash
             {
             }
 
-            protected void getDataFromStream(sub.connection subHandle, int stream_index, int bytesNeeded)
+            protected void getDataFromStream(int stream_index, int bytesNeeded)
             {
-                sub.FrameInfo frameInfo = new sub.FrameInfo();
+                lldplay.connection lldplayHandle = parent.lldplayHandle;
+                lldplay.DashFrameMetaData frameInfo = new lldplay.DashFrameMetaData();
 
                 // Allocate and read.
                 NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
+                int bytesRead = lldplayHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
 
                 if (bytesRead != bytesNeeded)
                 {
-                    Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                    Debug.LogError($"{Name()}: programmer error: lldplay.grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                     mc.free();
                     return;
                 }
@@ -102,6 +109,11 @@ namespace VRT.Transport.Dash
 #if VRT_WITH_STATS
                     Statistics.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
 #endif
+                }
+                Timestamp deltaReceivedTimestamp = frameInfo.timestamp - mostRecentDashTimestamp;
+                if (deltaReceivedTimestamp < 0)
+                {
+                    Debug.LogWarning($"{Name()}: received frame with timestamp {frameInfo.timestamp}, previous frame with timestamp {mostRecentDashTimestamp}, delta= {deltaReceivedTimestamp}");
                 }
                 // Convert clock values to wallclock
                 mostRecentDashTimestamp = frameInfo.timestamp;
@@ -122,33 +134,35 @@ namespace VRT.Transport.Dash
 
                 bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
 #if VRT_WITH_STATS
-                stats.statsUpdate(bytesRead, didDrop, mostRecentDashTimestamp, network_latency_ms, stream_index);
+                stats.statsUpdate(bytesRead, didDrop, mostRecentDashTimestamp, deltaReceivedTimestamp, network_latency_ms, stream_index);
 #endif
             }
 
-            public bool getDataForTile(sub.connection subHandle)
+            public bool getDataForTile()
             {
+                lldplay.connection subHandle = parent.lldplayHandle;
                 if (receiverInfo.streamIndexes == null)
                 {
+                    Debug.LogWarning($"{Name()}: no streamIndexes");
                     return false;
                 }
                 bool received_anything = false;
                 foreach (int stream_index in receiverInfo.streamIndexes)
                 {
-                    sub.FrameInfo frameInfo = new sub.FrameInfo();
+                    lldplay.DashFrameMetaData frameInfo = new lldplay.DashFrameMetaData();
                     int bytesNeeded = 0;
 
                     // See whether data is available on this stream, and how many bytes we need to allocate
                     bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
-
-
+                    // Debug.Log($"{Name()}: xxxjack stream {stream_index}: {bytesNeeded} bytes available");
+                    
                     // If no data is available on this stream we try the next
                     if (bytesNeeded == 0)
                     {
                         continue;
                     }
                     received_anything = true;
-                    getDataFromStream(subHandle, stream_index, bytesNeeded);
+                    getDataFromStream(stream_index, bytesNeeded);
                 }
                 return received_anything;
             }
@@ -163,19 +177,23 @@ namespace VRT.Transport.Dash
                 int statsAggregatePackets;
                 double statsTotalDrops;
                 double statsTotalLatency;
+
+                double statsTotalDelta;
                 
-                public void statsUpdate(int nBytes, bool didDrop, Timestamp timeStamp, Timedelta latency, int stream_index)
+                public void statsUpdate(int nBytes, bool didDrop, Timestamp timeStamp, Timestamp timeDelta, Timedelta latency, int stream_index)
                 {
                     statsTotalBytes += nBytes;
+                    statsTotalDelta += timeDelta;
                     statsTotalPackets++;
                     statsAggregatePackets++;
                     statsTotalLatency += latency;
                     if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}, aggregate_packets={statsAggregatePackets}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, gap_ms={(int)(statsTotalDelta / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}, aggregate_packets={statsAggregatePackets}");
                         Clear();
                         statsTotalBytes = 0;
+                        statsTotalDelta = 0;
                         statsTotalPackets = 0;
                         statsTotalDrops = 0;
                         statsTotalLatency = 0;
@@ -188,19 +206,18 @@ namespace VRT.Transport.Dash
         }
 
         TileOrMediaHandler[] perTileHandler;
-        System.Threading.Thread myThread;
-        System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(15);
-        System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(100); // This parameter needs work. 2ms causes jitter with tiled pcs, but 33ms may be too high for audio 
-
+        
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
         bool clockCorrespondenceReceived = false;
 
         protected void _Init(string _url, string _streamName)
         {
+            lldplay.LogLevel = VRTConfig.Instance.TransportDash.logLevel;
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, true);
             lock (this)
             {
-                joinTimeout = 20000;
+                joinTimeout = 999999; // xxxjack Dash can be very slow stopping currently (Dec 2025).
+
 
                 if (_url == "" || _url == null || _streamName == "")
                 {
@@ -229,7 +246,6 @@ namespace VRT.Transport.Dash
                 Start();
 
             }
-            initialized = true;
             return this;
         }
 
@@ -248,29 +264,12 @@ namespace VRT.Transport.Dash
         public override void AsyncOnStop()
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
-            _DeinitDash(true);
+            _DeinitLLDPlay(true);
             base.AsyncOnStop();
-            if (debugThreading) Debug.Log($"{Name()}: Stopped");
-        }
-
-        protected sub.connection getSubHandle()
-        {
-            lock (this)
-            {
-                if (!isPlaying) return null;
-                return (sub.connection)subHandle.AddRef();
-            }
         }
 
 
-        protected void playFailed()
-        {
-            lock (this)
-            {
-                isPlaying = false;
-            }
-        }
-
+        
         protected virtual void _streamInfoAvailable()
         {
             lock (this)
@@ -278,46 +277,39 @@ namespace VRT.Transport.Dash
                 //
                 // Get stream information
                 //
-                streamCount = subHandle.get_stream_count();
+                streamCount = lldplayHandle.get_stream_count();
                 stream4CCs = new uint[streamCount];
                 for (int i = 0; i < streamCount; i++)
                 {
-                    stream4CCs[i] = subHandle.get_stream_4cc(i);
+                    stream4CCs[i] = lldplayHandle.get_stream_4cc(i);
                 }
             }
         }
 
-        protected bool InitDash()
+        protected bool InitLLDPlay()
         {
             lock (this)
             {
-                if (System.DateTime.Now < subRetryNotBefore)
-                {
-                    return false;
-                }
-                subRetryNotBefore = System.DateTime.Now + subRetryInterval;
+             
                 //
-                // Create SUB instance
+                // Create lldplay instance
                 //
-                if (subHandle != null)
+                if (lldplayHandle != null)
                 {
-                    Debug.LogError($"{Name()}: Programmer error: InitDash() called but subHandle != null");
+                    Debug.LogError($"{Name()}: Programmer error: InitLLDPlay() called but lldplayHandle != null");
                 }
-                sub.connection newSubHandle = sub.create(Name());
-                if (newSubHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
-                Debug.Log($"{Name()}: retry sub.create() successful.");
+                lldplayHandle = lldplay.create(Name());
+                if (lldplayHandle == null) throw new System.Exception($"{Name()}: lldplay.create() failed");
+                Debug.Log($"{Name()}: lldplay.create() successful.");
                 //
                 // Start playing
                 //
-                isPlaying = newSubHandle.play(url);
+                isPlaying = lldplayHandle.play(url);
                 if (!isPlaying)
                 {
-                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                    Debug.Log($"{Name()}: sub.play({url}) failed, will try again later");
-                    newSubHandle.free();
+                    
                     return false;
                 }
-                subHandle = newSubHandle;
                 //
                 // Stream information is available. Allow subclasses to act on it to reconfigure.
                 //
@@ -345,9 +337,6 @@ namespace VRT.Transport.Dash
                     Statistics.Output(Name(), msg);
 #endif
                 }
-                myThread = new System.Threading.Thread(ingestThreadRunner);
-                myThread.Name = Name();
-                myThread.Start();
                 foreach (var t in perTileHandler)
                 {
                     t.Start();
@@ -355,17 +344,14 @@ namespace VRT.Transport.Dash
             }
         }
 
-        private void _DeinitDash(bool closeQueues)
+        private void _DeinitLLDPlay(bool closeQueues)
         {
+            if (closeQueues) _closeQueues();
             lock (this)
             {
-                subHandle?.free();
-                subHandle = null;
-                isPlaying = false;
+                lldplayHandle?.free();
+                lldplayHandle = null;
             }
-            if (closeQueues) _closeQueues();
-            myThread?.Join();
-            myThread = null;
             if (perTileHandler == null) return;
             foreach (var t in perTileHandler)
             {
@@ -385,28 +371,20 @@ namespace VRT.Transport.Dash
 
         protected override void AsyncUpdate()
         {
-            bool shouldStop = false;
-            lock (this)
-            {
-                // If we should stop playing we stop
-
-                shouldStop = !isPlaying;
-            }
-            if (shouldStop) {
-                _DeinitDash(false);
-            }
+            
 
             lock (this)
             {
                 // If we are not playing we start
-                if (subHandle == null)
+                if (lldplayHandle == null)
                 {
-                    if (InitDash())
+                    InitLLDPlay();
                     {
                         InitThread();
                     }
                 }
             }
+            handleReceives();
         }
 
         public override void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
@@ -429,66 +407,29 @@ namespace VRT.Transport.Dash
 #endif
         }
 
-        protected void ingestThreadRunner()
+        protected bool handleReceives()
         {
-            System.DateTime lastSuccessfulReceive = System.DateTime.Now;
-            try
+            bool received_anything = false;
+            for(int i= 0; i < perTileInfo.Length; i++)
             {
-                while (true)
+                var receiverInfo = perTileInfo[i];
+                var receiverHandler = perTileHandler[i];
+                if (receiverInfo.outQueue.IsClosed())
                 {
-                    bool received_anything = false;
-                    for(int i= 0; i < perTileInfo.Length; i++)
-                    {
-                        var receiverInfo = perTileInfo[i];
-                        var receiverHandler = perTileHandler[i];
-                        if (receiverInfo.outQueue.IsClosed())
-                        {
-                            continue;
-                        }
-                        if (subHandle == null)
-                        {
-                            Debug.Log($"{Name()}: subHandle was closed, exiting run thread");
-                            return;
-                        }
-                        //
-                        // Check whether we have incoming data for this set of streams. 
-                        //
+                    Debug.Log($"{Name()}: skip tile {i} which is closed");
+                    continue;
+                }
+                    
+                //
+                // Check whether we have incoming data for this set of streams. 
+                //
 
-                        if(receiverHandler.getDataForTile(subHandle))
-                        {
-                            Debug.Log($"{Name()}: xxxjack tile {i} received {receiverHandler.mostRecentDashTimestamp}");
-                            received_anything = true;
-                            lastSuccessfulReceive = System.DateTime.Now;
-                        }
-
-                    }
-
-                    // If no data was available on any stream we may want to close the subHandle, or sleep a bit
-                    if (!received_anything)
-                    {
-                        System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
-                        if (noReceives > maxNoReceives)
-                        {
-                            Debug.LogWarning($"{Name()}: No data received for {noReceives.TotalSeconds} seconds, closing subHandle");
-                            playFailed();
-                            return;
-                        }
-                        System.Threading.Thread.Sleep(receiveInterval);
-                        Debug.Log($"{Name()}: xxxjack no data sleep({receiveInterval}");
-                        continue;
-                    }
+                if(receiverHandler.getDataForTile())
+                {
+                    received_anything = true;
                 }
             }
-#pragma warning disable CS0168
-            catch (System.Exception e)
-            {
-#if UNITY_EDITOR
-                throw;
-#else
-                    Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
-                    Debug.LogError("Error while receiving visual representation or audio from another participant");
-#endif
-            }
+            return received_anything;
         }
     }
 }

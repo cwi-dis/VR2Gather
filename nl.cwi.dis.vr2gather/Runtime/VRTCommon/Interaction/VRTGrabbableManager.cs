@@ -10,6 +10,7 @@ namespace VRT.Pilots.Common
 
 		private static VRTGrabbableManager _Instance;
 
+		public bool debug = true;
 		public static VRTGrabbableManager Instance
 		{
 			get
@@ -19,7 +20,7 @@ namespace VRT.Pilots.Common
 					_Instance = FindObjectOfType<VRTGrabbableManager>();
 					if (_Instance == null)
 					{
-						_Instance = new GameObject("GrabbableObjectManager").AddComponent<VRTGrabbableManager>();
+						_Instance = new GameObject("VRTGrabbableManager").AddComponent<VRTGrabbableManager>();
 					}
 				}
 				return _Instance;
@@ -54,14 +55,26 @@ namespace VRT.Pilots.Common
 		{
 			if (_GrabbableObjects.ContainsKey(grabbable.NetworkId) && _GrabbableObjects[grabbable.NetworkId] != grabbable)
             {
-				Debug.LogWarning($"GrabbableObjectManager: RegisterGrabbable: NetworkID={grabbable.NetworkId} registered to Grabbable={grabbable}, overriding old Grabbable={_GrabbableObjects[grabbable.NetworkId]}");
+				Debug.LogWarning($"VRTGrabbableManager: RegisterGrabbable: NetworkID={grabbable.NetworkId} registered to Grabbable={grabbable}, overriding old Grabbable={_GrabbableObjects[grabbable.NetworkId]}");
             }
+			if (debug)
+			{
+				Debug.Log($"VRTGrabbableManager: Register id={grabbable.NetworkId}, grabbable={grabbable}");
+			}
 			_GrabbableObjects[grabbable.NetworkId] = grabbable;
 		}
 
 		private void UnregisterGrabbableInternal(VRTGrabbableController grabbable)
 		{
-			_GrabbableObjects.Remove(grabbable.NetworkId);
+            if (debug)
+            {
+                Debug.Log($"VRTGrabbableManager: Unregister id={grabbable.NetworkId}");
+            }
+            bool ok = _GrabbableObjects.Remove(grabbable.NetworkId);
+			if (!ok)
+			{
+				Debug.LogWarning($"VRTGrabbableManager: Unregister non-existent id={grabbable.NetworkId}");
+			}
 		}
 
 		private void OnHandGrabEvent(HandNetworkControllerBase.HandGrabEvent handGrabEvent)
@@ -71,22 +84,26 @@ namespace VRT.Pilots.Common
 
 		public void HandleHandGrabEvent(HandNetworkControllerBase.HandGrabEvent handGrabEvent)
 		{
+			if (debug)
+			{
+				Debug.Log($"VRTGrabbableManager: HandleHandGrabEvent: event={handGrabEvent.EventType}, hand={handGrabEvent.Handedness}, id={handGrabEvent.GrabbableObjectId}");
+			}
 			if (!_GrabbableObjects.ContainsKey(handGrabEvent.GrabbableObjectId))
             {
-				Debug.LogError($"GrabbableObjectManager: Grabbing object with unknown ObjectID {handGrabEvent.GrabbableObjectId}");
+				Debug.LogError($"VRTGrabbableManager: Grabbing object with unknown ObjectID {handGrabEvent.GrabbableObjectId}");
 				return;
             }
 			VRTGrabbableController grabbable = _GrabbableObjects[handGrabEvent.GrabbableObjectId];
             PlayerNetworkControllerBase player = SessionPlayersManager.Instance.Players.GetValueOrDefault(handGrabEvent.UserId, null);
 			if (player == null)
 			{
-				Debug.LogError($"GrabbableObjectManager: PlayerID {handGrabEvent.UserId} does not exist");
+				Debug.LogError($"VRTGrabbableManager: PlayerID {handGrabEvent.UserId} does not exist");
 				return;
 			}
 			HandNetworkControllerBase handController = player.GetHandController(handGrabEvent.Handedness);
 			if (handController == null)
             {
-				Debug.LogError($"GrabbableObjectManager: {handGrabEvent.Handedness} hand network controller not found");
+				Debug.LogError($"VRTGrabbableManager: {handGrabEvent.Handedness} hand network controller not found");
 				return;
             }
 			if (handGrabEvent.EventType == HandNetworkControllerBase.HandInteractionEventType.Grab)

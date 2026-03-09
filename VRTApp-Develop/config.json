@@ -1,8 +1,8 @@
 {
-    "orchestratorURL": "http://192.16.197.145:8090/",
+    "_orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
     "targetFrameRate": -1,
     "ntpSyncThreshold": 0.10000000149011612,
-    "statsInterval": 10.0,
+    "statsInterval": 1,
     "statsOutputFile": "",
     "statsOutputFileAppend": false,
     "ffmpegDLLDir": "../ffmpeg/x64",
@@ -11,35 +11,38 @@
         "screenshotTargetDirectory": ""
     },
     "_AutoStart": {
-    	"ignoreAutoStartForDeveloper": true,
+        "ignoreAutoStartForDeveloper": false,
         "autoLogin": true,
-        "autoCreate": true,
+        "autoCreate": false,
         "autoJoin": false,
         "autoCreateForUser": "",
-        "sessionName": "jack-test",
-        "sessionScenario": "Pilot 0",
-        "sessionTransportProtocol": "socketio",
+        "sessionName": "",
+        "sessionScenario": "Technical Playground",
+        "sessionTransportProtocol": "dash",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": 1,
-        "autoLeaveAfter": 0.0,
+        "autoStartWith": 2,
+        "autoLeaveAfter": 60.0,
         "autoStopAfterLeave": true,
-        "autoDelay": 1.0
+        "autoDelay": 0.0
     },
     "TransportDash": {
-        "segmentSize": 1000,
-        "segmentLife": 16000
+    	"logLevel": 3,
+        "segmentSize": 4000,
+        "segmentLife": 60000
     },
     "TransportWebRTC": {
         "peerExecutablePath": "",
-        "peerInWindow": true,
-        "peerWindowDontClose": true,
+        "peerInWindow": false,
+        "peerWindowDontClose": false,
         "peerUDPPort": 8000,
         "peerIPAddress": "127.0.0.1",
         "logFileDirectory": "",
-        "debugLevel": 1
+        "debugLevel": 0
     },
     "PCs": {
+        "logLevel" : 4,
+        "overrideNativeLoadPath": "",
         "Codec": "cwi1",
         "defaultCellSize": 0.0020000000949949028,
         "cellSizeFactor": 1.0,
@@ -63,12 +66,12 @@
         "debugJitterBuffer": false,
         "minLatency": 100,
         "maxLatency": 5000,
-        "latencyMaxDecrease": 1,
-        "latencyMaxIncrease": 33,
-        "acceptDesyncOnDataUnavailable": false
+        "latencyMaxDecrease": 1000,
+        "latencyMaxIncrease": 1000,
+        "acceptDesyncOnDataUnavailable": true
     },
     "TileSelector": {
-        "algorithm": "",
+        "algorithm": "frontTileBest",
         "debugDecisions": false,
         "bitrateBudget": 0
     },
@@ -77,7 +80,8 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerTypeName": "developer",
+            "capturerType": 5,
+            "capturerTypeName": "",
             "CameraReaderConfig": {
                 "configFilename": ""
             },
@@ -93,12 +97,15 @@
                 "nPoints": 16000
             },
             "PrerecordedReaderConfig": {
-                "folder": "../cwipc_test/Samples/loot-150K-4tiles"
+                "folder": ".../cwipc_test/Samples/loot-200K-4tiles/"
             },
             "voxelSize": 0.0,
             "frameRate": 15.0,
-            "tiled": false,
+            "tiled": true,
             "Encoders": [
+                {
+                    "octreeBits": 7
+                },
                 {
                     "octreeBits": 9
                 }

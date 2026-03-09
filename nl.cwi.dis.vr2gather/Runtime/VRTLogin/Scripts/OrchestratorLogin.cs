@@ -415,7 +415,7 @@ namespace VRT.Login
                 return;
             }
             var configData = OrchestratorController.Instance.SelfUser.userData.AsJsonString();
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename, label:"User config");
             Debug.Log("Full config filename: " + fullName);
             System.IO.File.WriteAllText(fullName, configData);
             Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
@@ -430,7 +430,7 @@ namespace VRT.Login
                 OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename, label:"User config");
             if (!System.IO.File.Exists(fullName))
             {
                 Debug.LogWarning($"OrchestratorLogin.LoadUserData: Cannot open {fullName}");
@@ -1353,7 +1353,7 @@ namespace VRT.Login
             // If we want to autoCreate or autoStart depending on username set the right config flags.
             if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
             {
-                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser == LoginPanelUserName.text;
+                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser.ToLower() == LoginPanelUserName.text.ToLower();
                 if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={LoginPanelUserName.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
                 VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;

@@ -14,6 +14,14 @@ namespace VRT.Transport.Dash
     {
         static new public ITransportProtocolReader_Tiled Factory()
         {
+            if (!initialized)
+            {
+                initialized = true;
+                var version = lldplay.get_version();
+#if VRT_WITH_STATS
+                Statistics.Output("AsyncDashReaderTiled", $"module=lldash-playout, version={version}");
+#endif
+            }
             return new AsyncDashReader_Tiled();
         }
 
@@ -27,7 +35,6 @@ namespace VRT.Transport.Dash
             {
                 tileDescriptors = _tileDescriptors;
                 int nTiles = tileDescriptors.Length;
-                //Debug.Log($"xxxjack {Name()}: constructor: nTiles={nTiles}");
                 perTileInfo = new TileOrMediaInfo[nTiles];
                 for (int ti = 0; ti < nTiles; ti++)
                 {
@@ -47,7 +54,6 @@ namespace VRT.Transport.Dash
                 }
                 Start();
             }
-            initialized = true;
             return this;
         }
 
@@ -58,12 +64,12 @@ namespace VRT.Transport.Dash
                 //
                 // Get stream information
                 //
-                streamCount = subHandle.get_stream_count();
+                streamCount = lldplayHandle.get_stream_count();
                 Debug.Log($"{Name()}: streamInfoAvailable: {streamCount} streams.");
                 //
                 // Get more stream information
                 //
-                allStreamDescriptors = subHandle.get_streams();
+                allStreamDescriptors = lldplayHandle.get_streams();
 #if VRT_WITH_STATS
                 foreach (var sd in allStreamDescriptors)
                 {
@@ -78,7 +84,7 @@ namespace VRT.Transport.Dash
         {
             lock (this)
             {
-                if (subHandle == null)
+                if (lldplayHandle == null)
                 {
                     // Too early: not playing yet
                     return;
@@ -86,25 +92,34 @@ namespace VRT.Transport.Dash
                 var td = tileDescriptors[tileIndex];
                 int tileNumber = td.tileNumber;
                 
+                if (qualityIndex == perTileInfo[tileIndex].currentStreamIndex)
+                {
+                    // No change, so nothing to do.
+#if VRT_WITH_STATS
+                    Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}, unchanged=true");
+#endif
+                    return;
+                }
+                perTileInfo[tileIndex].currentStreamIndex = qualityIndex;
                 // Now for this tile (and therefore receiver) find correct stream descriptor for this quality.
                 if (qualityIndex >= 0)
                 {
 #if VRT_WITH_STATS
                     Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
 #endif
-                    bool ok = subHandle.enable_stream(tileIndex, qualityIndex);
+                    bool ok = lldplayHandle.enable_stream(tileIndex, qualityIndex);
                     if (!ok)
                     {
                         Debug.LogError($"{Name()}: Could not enable quality {qualityIndex} for tile {tileNumber}, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
                     }
-                    
+
                 }
                 else
                 {
 #if VRT_WITH_STATS
                     Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=0, tileIndex={tileIndex}");
 #endif
-                    bool ok = subHandle.disable_stream(tileIndex);
+                    bool ok = lldplayHandle.disable_stream(tileIndex);
                     if (!ok)
                     {
                         Debug.LogError($"{Name()}: Could not disable tile {tileNumber}");
@@ -120,7 +135,6 @@ namespace VRT.Transport.Dash
                 //
                 // We have both tile descriptions and stream descriptions. Match them up.
                 //
-                Debug.Log($"{Name()}: xxxjack _recomputeStreams: received tileDescriptors for {tileDescriptors.Length} tiles");
                 if (tileDescriptors.Length != perTileInfo.Length)
                 {
                     Debug.LogError($"{Name()}: _recomputeStreams: {tileDescriptors.Length} tile descriptors but {perTileInfo.Length} receivers");
@@ -136,7 +150,6 @@ namespace VRT.Transport.Dash
                     {
                         if (sd.tileNumber == td.tileNumber)
                         {
-                            Debug.Log($"{Name()}: xxxjack tile {i}: tileNumber={td.tileNumber}: found orientation={sd.orientation} streamIndex={sd.streamIndex}");
                             // If this stream is for this tile we remember the streamIndex.
                             streamDescriptorsPerTile.Add(sd);
                         }
@@ -165,7 +178,7 @@ namespace VRT.Transport.Dash
                     }
                     else
                     {
-                        int wantedIndex = 0; // td.streamDescriptors.Length - 1; // xxxjack debug attempt: select last quality, not first
+                        int wantedIndex = 0;
                         Debug.Log($"{Name()}:_recomputeStreams: tileNumber={td.tileNumber}: {td.streamDescriptors.Length} streams, selecting {wantedIndex}");
                         // And we can also tell the SUB which quality we want for this tile.
                         setTileQualityIndex(tileIndex, wantedIndex);

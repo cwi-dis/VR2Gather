@@ -39,9 +39,9 @@ namespace VRT.UserRepresentation.Voice
 
         public override void AsyncOnStop()
         {
-            base.AsyncOnStop();
             outQueue?.Close();
             outQueue = null;
+            base.AsyncOnStop();
         }
 
         byte[] sendBuffer;

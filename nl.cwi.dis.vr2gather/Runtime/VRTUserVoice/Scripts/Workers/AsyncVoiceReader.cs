@@ -54,8 +54,8 @@ namespace VRT.UserRepresentation.Voice
 
         public override void AsyncOnStop()
         {
-            base.AsyncOnStop();
             outQueue.Close();
+            base.AsyncOnStop();
         }
 
         string device;

@@ -15,25 +15,21 @@ namespace VRT.UserRepresentation.PointCloud
             string configFilename = config.CameraReaderConfig.configFilename;
             if (!string.IsNullOrEmpty(configFilename))
             {
-                configFilename = VRTConfig.ConfigFilename(configFilename);
+                configFilename = VRTConfig.ConfigFilename(configFilename, allowSearch:true, label:"Cameraconfig");
             }
             switch(config.capturerType)
             {
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.auto:
-                    return new AsyncAutoReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                case VRTConfig._User._PCSelfConfig.PCCapturerType.camera:
+                    return new AsyncCameraReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.synthetic:
                    return new AsyncSyntheticReader(config.frameRate, config.SynthReaderConfig.nPoints, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.kinect:
-                    return new AsyncKinectReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.realsense:
-                    return new AsyncRealsenseReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.prerecorded:
                     var prConfig = config.PrerecordedReaderConfig;
                     if (prConfig.folder == null || prConfig.folder == "")
                     {
                         throw new System.Exception($"PointCloudCapturerFactory: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
                     }
-                    string prerecordedFolder = VRTConfig.ConfigFilename(prConfig.folder);
+                    string prerecordedFolder = VRTConfig.ConfigFilename(prConfig.folder, allowSearch:true, label:"Precorded pointcloud folder");
                     Debug.Log($"prConfig.folder: {prerecordedFolder}");
                     if (!System.IO.Directory.Exists(prerecordedFolder))
                     {
@@ -49,7 +45,7 @@ namespace VRT.UserRepresentation.PointCloud
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.developer:
                     try
                     {
-                        return new AsyncAutoReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
+                        return new AsyncCameraReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                     }
                     #pragma warning disable CS0168
                     catch (Exception e)

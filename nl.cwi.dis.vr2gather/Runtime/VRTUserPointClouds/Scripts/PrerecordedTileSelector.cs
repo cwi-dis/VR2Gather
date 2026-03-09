@@ -259,38 +259,14 @@ namespace VRT.UserRepresentation.PointCloud
         {
             return curIndex;
         }
-        protected override Vector3 getCameraForward()
-        {
-            PlayerControllerSelf player = gameObject.GetComponentInParent<PlayerControllerSelf>();
-            Transform cameraTransform = player?.getCameraTransform();
-            if (cameraTransform == null)
-            {
-                Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
-                return new Vector3();
-            }
-            return cameraTransform.forward;
-        }
+       
 
-        public Vector3 getCameraPosition()
-        {
-            // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            PlayerControllerSelf player = gameObject.GetComponentInParent<PlayerControllerSelf>();
-            Transform cameraTransform = player?.getCameraTransform();
-            if (cameraTransform == null)
-            {
-                Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
-                return new Vector3();
-            }
-            return cameraTransform.position;
-        }
 
-        protected override Vector3 getPointCloudPosition(long currentFrameNumber)
+     
+        public override int[] getTileOrder(AlgorithmParameters parameters)
         {
-            return new Vector3(0, 0, 0);
-        }
-
-        public override int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
-        {
+            Vector3 cameraForward = parameters.cameraForward; 
+            Vector3 pointcloudPosition = parameters.pointCloudPosition;
             int[] tileOrder = new int[nTiles];
             int[] tileOrderDistances = new int[nTiles];
             //Initialize index array
@@ -307,7 +283,8 @@ namespace VRT.UserRepresentation.PointCloud
             //Reassign the utility values based on distance to tiles
             float[] tileDistances = new float[nTiles];
             Vector3 camPosition = new Vector3();
-            camPosition = getCameraPosition();
+            // xxxjack wrong, probably...
+            camPosition = getCameraTransform().position;
             Vector3[] tileLocations = new Vector3[nTiles];
             for (int i =0;i < nTiles; i++)
             {

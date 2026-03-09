@@ -62,13 +62,7 @@ namespace VRT.Video
             audioPacket = ffmpeg.av_packet_alloc();
             Start();
         }
-
-        public override void AsyncOnStop()
-        {
-            base.AsyncOnStop();
-            Debug.Log("{Name()}: Stopped");
-        }
-
+        
         protected override void AsyncUpdate()
         {
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue())

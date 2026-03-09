@@ -70,7 +70,7 @@ namespace VRT.Transport.TCPReflector
 
         public override void AsyncOnStop()
         {
-            base.AsyncOnStop();
+            if (debugThreading) Debug.Log($"{Name()}: Stopping");
             for (int i = 0; i < streams.Length; ++i)
             {
                 if (!streams[i].inQueue.IsClosed())
@@ -80,7 +80,7 @@ namespace VRT.Transport.TCPReflector
                 }
                 connection.UnregisterOutgoingStream(streams[i].name);
             }
-            Debug.Log($"{Name()}: Stopped.");
+            base.AsyncOnStop();
         }
 
         protected override void AsyncUpdate()

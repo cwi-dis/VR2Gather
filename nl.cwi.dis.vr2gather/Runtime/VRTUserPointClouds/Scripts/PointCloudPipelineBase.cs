@@ -27,7 +27,9 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public ISynchronizer synchronizer = null;
-        
+
+        [Tooltip("When true, all tiled point clouds are renderered with the point size of the best tile")]
+        public bool maximizePointSize = true;
         protected List<AsyncPointCloudPreparer> preparers = new List<AsyncPointCloudPreparer>();
         protected List<PointCloudRenderer> renderers = new List<PointCloudRenderer>();
 
@@ -68,12 +70,13 @@ namespace VRT.UserRepresentation.PointCloud
         {
             CwipcConfig PCs = CwipcConfig.Instance;
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
-            if (VRTConfig.Instance.PCs.preparerQueueSize > 0) {
+            if (VRTConfig.Instance.PCs.preparerQueueSize > 0)
+            {
                 pcPreparerQueueSize = VRTConfig.Instance.PCs.preparerQueueSize;
 #if VRT_WITH_STATS                
                 Statistics.Output(Name(), $"preparer_queue_size={pcPreparerQueueSize}");
 #endif
-            }            
+            }
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
             AsyncPointCloudPreparer preparer = new AsyncPointCloudPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
@@ -95,7 +98,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void PausePlayback(bool paused)
         {
-            foreach(var r in renderers)
+            foreach (var r in renderers)
             {
                 r.PausePlayback(paused);
             }
@@ -103,7 +106,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         protected void OnDestroy()
         {
-            
+
             foreach (var preparer in preparers)
             {
                 preparer?.StopAndWait();
@@ -120,6 +123,30 @@ namespace VRT.UserRepresentation.PointCloud
         public new float GetBandwidthBudget()
         {
             return 999999.0f;
+        }
+        
+           void Update()
+        {
+            if (maximizePointSize)
+            {
+                float maxPointSize = 9999;
+                foreach (var renderer in renderers)
+                {
+                    float thisPointSize = renderer.pointSizeMostRecentReception;
+                    if ( thisPointSize > 0 && thisPointSize < maxPointSize)
+                    {
+                        maxPointSize = renderer.pointSizeMostRecentReception;
+                    }
+                }
+                if (maxPointSize < 9999)
+                {
+                    foreach (var renderer in renderers)
+                    {
+                        renderer.maximumPointSize = maxPointSize;
+                    }
+                }                
+            }
+
         }
     }
 }

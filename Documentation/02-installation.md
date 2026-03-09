@@ -23,7 +23,7 @@ Mac works, with two caveats:
 
 - You need Unity. Install the Unity Hub. Don't manually install Unity Editor versions: this will lead to no end of pain in the future.
 
-- You need Visual Studio. 2022 is current but 2019 should work. Install the Unity development additions. When you install a Unity Editor from the Unity Hub it can install VS for you, that is fine. You want the Unity additions because it makes debugging a _lot_ easier.
+- You need Visual Studio or Visual Studio Code. VS 2022 is current preferred for Windows, but 2019 should work. VScode is preferred on Mac and Linux. Install the Unity development additions. When you install a Unity Editor from the Unity Hub it can install VS for you, that is fine. You want the Unity additions because it makes debugging a _lot_ easier.
 
 - You need to have `git` and `git lfs` installed on your development machine. And you need to have git lfs enabled for your user account for all repositories (run the command `git lfs install`). Ensure you do this **before** trying to open the `VR2Gather_sample` project in Unity. Failure to do this will cause the Unity Package Manager to download and cache a broken version of VR2Gather.
 	- If you had not read these instructions before trying to install VR2Gather you may be able to fix things by clearing out all Unity's package caches and the `Library` folder inside your project.

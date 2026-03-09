@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Management;
+using Cwipc;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -43,8 +44,16 @@ namespace VRT.Core
         [Serializable]
         public class _ScreenshotTool
         {
+            [Tooltip("Set this to true to enable the screenshot tool")]
             public bool takeScreenshot = false;
+            [Tooltip("FPS for recording. Default is game FPS")]
+            public int fps = 0;
+            [Tooltip("Directory where screenshots will be deposited")]
             public string screenshotTargetDirectory = "";
+            [Tooltip("Set to true to delete directory before starting recording")]
+            public bool preDeleteTargetDirectory = true;
+            [Tooltip("filename format. Can include {ts}, {num} and {framenum} constructs")]
+            public string filenameTemplate = "Frame{framenum}.png";
         }
         public _ScreenshotTool ScreenshotTool;
 
@@ -92,9 +101,13 @@ namespace VRT.Core
         public class _TransportDash
         {
             [Tooltip("How many milliseconds one transmitted DASH segment should contain")]
-            public int segmentSize;
+            public int segmentSize = 4000;
             [Tooltip("After how many milliseconds DASH segments can be deleted by the SFU")]
-            public int segmentLife;
+            public int segmentLife = 15000;
+            [Tooltip("lldash log level: 0-Error, 1-Warn, 2-Info, 3-Debug, 4-APIDebug")]
+            public int logLevel = 0;
+            [Tooltip("Override the lldash native library location.")]
+            public string nativeLibraryPath = "";
         }
         [Tooltip("Settable parameters for DASH protocol")]
         public _TransportDash TransportDash;
@@ -186,15 +199,13 @@ namespace VRT.Core
                 [Serializable]
                 public enum PCCapturerType
                 {
-                    auto,
-                    none,
-                    realsense,
-                    kinect,
+                    camera,
                     synthetic,
                     remote,
                     proxy,
                     prerecorded,
-                    developer
+                    developer,
+                    none,
                 };
                 public PCCapturerType capturerType;
                 [Tooltip("Override capturerType by name")]
@@ -275,7 +286,7 @@ namespace VRT.Core
         [ContextMenu("Save as config.json")]
         private void SaveAsConfigJson()
         {
-            string file = ConfigFilename();
+            string file = ConfigFilename(force:true);
             System.IO.File.WriteAllText(file, JsonUtility.ToJson(this, true));
             Debug.Log($"VRTConfig: Saving configuration to {file}");
         }
@@ -283,7 +294,7 @@ namespace VRT.Core
         [ContextMenu("Load from config.json")]
         private void LoadFromConfigJson()
         {
-            string file = ConfigFilename();
+            string file = ConfigFilename(force:true);
             JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
             Debug.Log($"VRTConfig: Loaded configuration from {file}");
         }
@@ -315,7 +326,7 @@ namespace VRT.Core
 
         private void Initialize()
         {
-            string file = ConfigFilename();
+            string file = ConfigFilename(force:true);
             configOverrideFilename = file;
             if (System.IO.File.Exists(file))
             {
@@ -348,12 +359,16 @@ namespace VRT.Core
 #if VRT_WITH_STATS
             Statistics.Initialize(this.statsInterval, this.statsOutputFile, this.statsOutputFileAppend);
 #endif
+            // Communicate cwipc settings to cwipc package. This sets all sorts
+            // of things, from native log level to queue sizes, etc.
             Cwipc.CwipcConfig.SetInstance(this.PCs);
+            
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
             if (autoInventUsername) {
                 if (!PlayerPrefs.HasKey("userNameLoginIF")) {
                     string userName = System.Environment.MachineName;
+                    userName = userName.ToLower();
                     if (userName.Length > 20) {
                         userName = userName.Substring(0, 20);
                     }
@@ -376,15 +391,27 @@ namespace VRT.Core
 
         static private string configFileFolder;
 
-        public static string ConfigFilename(string filename="config.json", bool force=false)
+        public static string ConfigFilename(string filename="config.json", bool force=false, bool allowSearch=false, string label="Config file")
         {
+            if (allowSearch)
+            {
+                // Special case: filename starting with .../ will be searched in parent folders
+                if (filename.StartsWith(".../"))
+                {
+                    filename = filename.Substring(4);
+                }
+                else
+                {
+                    allowSearch = false;
+                }
+            }
             if (filename == "config.json")
             {
                 string clConfigFile = _ConfigFilenameFromCommandLineArgs();
                 if (clConfigFile != null)
                 {
                     clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
-                    Debug.Log($"Config file {filename}: {clConfigFile}");
+                    Debug.Log($"VRTConfig: {label} {filename}: {clConfigFile}");
                     configFileFolder = System.IO.Path.GetDirectoryName(clConfigFile);
                     return clConfigFile;
                 }
@@ -397,7 +424,7 @@ namespace VRT.Core
                 string candidate = System.IO.Path.Combine(configFileFolder, filename);
                 if (force || System.IO.File.Exists(candidate))
                 {
-                    Debug.Log($"Config file {filename}: {candidate}");
+                    Debug.Log($"VRTConfig: {label} {filename}: {candidate}");
                     return candidate;
                 }
             }
@@ -427,9 +454,25 @@ namespace VRT.Core
                 // something based on persistentDataPath)
                 dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
             }
-            string rv = System.IO.Path.Combine(dataPath, filename);
-            Debug.Log($"Config file {filename}: {rv}");
-            return rv;
+
+            while (true)
+            {
+                string rv = System.IO.Path.Combine(dataPath, filename);
+                if (!allowSearch || System.IO.File.Exists(rv) || System.IO.Directory.Exists(rv))
+                {
+                    Debug.Log($"VRTConfig: {label} {filename}: {rv}");
+                    return rv;
+                }
+                string parentDataPath = System.IO.Path.GetDirectoryName(dataPath);
+                if (parentDataPath == null || parentDataPath == dataPath)
+                {
+                    break;
+                }
+
+                dataPath = parentDataPath;
+            }
+            Debug.LogWarning($"VRTConfig: {label} not found: {filename}");
+            return filename;
         }
     }
 }

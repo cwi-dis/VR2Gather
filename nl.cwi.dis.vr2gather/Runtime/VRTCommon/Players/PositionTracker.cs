@@ -49,7 +49,13 @@ namespace VRT.Pilots.Common
         [Tooltip("Enable debug logging")]
         public bool debug;
 
-        void Awake() 
+        private void Awake()
+        {
+            // Calling Initialize() here results in errors sometimes.
+            // But maybe put it back here (in stead of in Start()) if this causes
+            // other problems.
+        }
+        void Initialize() 
         {
             inputFile = VRTConfig.Instance.LocalUser.PositionTracker.inputFile;
             outputFile = VRTConfig.Instance.LocalUser.PositionTracker.outputFile;
@@ -82,7 +88,7 @@ namespace VRT.Pilots.Common
         }
 
         private void LoadPositions() {
-            string filename = VRTConfig.ConfigFilename(inputFile, force:true);
+            string filename = VRTConfig.ConfigFilename(inputFile, force:true, label:"Position tracker input");
             Debug.Log($"{Name()}: Loading positions from {filename}");
             try
             {
@@ -95,7 +101,7 @@ namespace VRT.Pilots.Common
         }
 
         private void SavePositions() {
-            string filename = VRTConfig.ConfigFilename(outputFile, force:true);
+            string filename = VRTConfig.ConfigFilename(outputFile, force:true, label:"Position tracker output");
             Debug.Log($"{Name()}: Saving positions to {filename}");
 
             string json = JsonUtility.ToJson(positionData, true);
@@ -105,6 +111,7 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
+            Initialize();
             Debug.Log($"{Name()}: Started");
             if (isPlayingBack) {
                 LoadPositions();
@@ -180,6 +187,12 @@ namespace VRT.Pilots.Common
                 CameraTransform.position = nextPosition.c_pos;
                 CameraTransform.rotation = nextPosition.c_rot;
                 previousPosition = nextPosition;
+                if (positionData.positions.Count == 0)
+                {
+                    isPlayingBack = false;
+                    Debug.Log($"{Name()}: End of data, stop playback");
+                    return;
+                }
                 positionData.positions.RemoveAt(0);
                 return;
             }

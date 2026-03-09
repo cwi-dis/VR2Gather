@@ -74,12 +74,6 @@ namespace VRT.UserRepresentation.Voice
             synchronizer = _synchronizer;
         }
 
-        public override void AsyncOnStop()
-        {
-            base.AsyncOnStop();
-            Debug.Log($"{Name()}: Stopped");
-        }
-
         protected override void AsyncUpdate()
         {
         }

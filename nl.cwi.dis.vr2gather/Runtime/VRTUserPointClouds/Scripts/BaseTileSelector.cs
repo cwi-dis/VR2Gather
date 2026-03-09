@@ -10,6 +10,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using VRT.Core;
 using System.Diagnostics.Tracing;
+// using System.Numerics;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -34,10 +35,13 @@ namespace VRT.UserRepresentation.PointCloud
         //
         // Set by overall controller (in production): which algorithm to use for this scene run.
         //
-        public struct AlgorithmParameters {
+        public struct AlgorithmParameters
+        {
             public double budget;
+            public Vector3 cameraPosition;
             public Vector3 cameraForward;
-            public Vector3 pointcloudPosition;
+            public Vector3 pointCloudPosition;
+            public Vector3 pointCloudForward;
             
         };
 
@@ -94,16 +98,33 @@ namespace VRT.UserRepresentation.PointCloud
         abstract protected double getBitrateBudget();
 
         //
-        // Get viewer forward-fsacing vector.
-        // To be implemented by subclass.
+        // Get viewer forward-facing vector.
         //
-        protected abstract Vector3 getCameraForward();
+        protected Transform getCameraTransform()
+        {
+            // xxxjack currently returns camera viedw angle (as the name implies)
+            // but maybe camera position is better. Or both.
 
+            Transform cameraTransform = Camera.main.transform;
+            if (cameraTransform == null)
+            {
+                Debug.LogError($"{Name()}: Camera not found");
+                return gameObject.transform;
+            }
+            return cameraTransform;
+
+        }
         //
         // Get best known position for viewed pointcloud.
-        // To be implemented by subclass.
         //
-        protected abstract Vector3 getPointCloudPosition(long currentFrameNumber);
+
+
+        protected Transform getPointCloudTransform(long currentFrameNumber)
+        {
+            // NOTE: this only works if this MonoBehaviour is attached to the point cloud GameObject,
+            // with the exact same transform.
+            return gameObject.transform;
+        }
 
         protected void Start()
         {
@@ -111,25 +132,34 @@ namespace VRT.UserRepresentation.PointCloud
             var settings = VRTConfig.Instance.TileSelector;
             if (settings != null) {
                 if (!string.IsNullOrEmpty(settings.algorithm)) {
-                    if (!Enum.TryParse<SelectionAlgorithm>(settings.algorithm, out algorithm)) {
-                        Debug.LogError($"{Name()}: Unknown algorithm \"{settings.algorithm}\"");
+                    if (!Enum.TryParse<SelectionAlgorithm>(settings.algorithm, out algorithm))
+                    {
+                        Debug.LogError($"{Name()}: Unknown algorithm \"{settings.algorithm}\". See log for known algorithms.");
+                        foreach (var alg in Enum.GetNames(typeof(SelectionAlgorithm)))
+                        {
+                            Debug.Log($"{Name()}: Known algorithm: {alg}");
+                        }
                     }
                 }
             }
             debugDecisions = settings.debugDecisions;
             if (algorithm == SelectionAlgorithm.none) {
-                Debug.Log($"{Name()}: algorithm==none, disabling");
+                Debug.Log($"{Name()}: algorithm = none, disabling");
                 base.enabled = false;
             }
         }
 
         bool getCurrentAlgorithmParameters(long currentFrameIndex) {
             currentParameters.budget = getBitrateBudget();
-            currentParameters.cameraForward = getCameraForward();
-            currentParameters.pointcloudPosition = getPointCloudPosition(currentFrameIndex);
-            bool rv = !currentParameters.Equals(previousParameters);
+            Transform cameraTransform = getCameraTransform();
+            Transform pointCloudTransform = getPointCloudTransform(currentFrameIndex);
+            currentParameters.cameraPosition = cameraTransform.position;
+            currentParameters.cameraForward = cameraTransform.forward;
+            currentParameters.pointCloudPosition = pointCloudTransform.position;
+            currentParameters.pointCloudForward = pointCloudTransform.forward;
+            bool same = currentParameters.Equals(previousParameters);
             previousParameters = currentParameters;
-            return rv;
+            return !same;
         }
 
         private void Update()
@@ -156,8 +186,8 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             bool changed = getCurrentAlgorithmParameters(currentFrameIndex);
-            if (!changed) {
-                //Debug.Log($"{Name()}: xxxjack nothing changed");
+            if (!changed && algorithm != SelectionAlgorithm.interactive) {
+                // Debug.Log($"{Name()}: xxxjack nothing changed");
                 return;
             }
             int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, currentParameters);
@@ -215,8 +245,15 @@ namespace VRT.UserRepresentation.PointCloud
             yield return null;
         }
 
-        public virtual int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
+        public virtual int[] getTileOrder(AlgorithmParameters parameters)
         {
+            // Get the camera forward vector
+            Vector3 cameraPosition = parameters.cameraPosition;
+            // Get the pointcloud position
+            Vector3 pointcloudPosition = parameters.pointCloudPosition;
+
+            Vector3 pcToCameraVector = (cameraPosition - pointcloudPosition).normalized;
+          
             int[] tileOrder = new int[nTiles];
             //Initialize index array
             for (int i = 0; i < nTiles; i++)
@@ -228,9 +265,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Vector3 thisTileOrientation = TileOrientation[i];
                 thisTileOrientation = transform.TransformDirection(thisTileOrientation);
-                tileUtilities[i] =  Vector3.Dot(cameraForward, thisTileOrientation);
+                tileUtilities[i] =  Vector3.Dot(pcToCameraVector, thisTileOrientation);
                 if (debugDecisions) {
-                    Debug.Log($"{Name()}: tile={i}, orientation={thisTileOrientation}, utility={tileUtilities[i]}");
+                    Debug.Log($"{Name()}: tile={i}, orientation={thisTileOrientation}, pcToCamVector={pcToCameraVector}, utility={tileUtilities[i]}");
                 }
             }
             //Sort tile utilities and apply the same sort to tileOrder
@@ -244,29 +281,47 @@ namespace VRT.UserRepresentation.PointCloud
         // and algorithm
         int[] getTileQualities(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
+            int[] rv = null;
             switch (algorithm)
             {
                 case SelectionAlgorithm.none:
                     Debug.LogError($"{Name()}: algorithm==none, should not happen");
                     return null;
                 case SelectionAlgorithm.interactive:
-                    return getTileQualities_Interactive(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_Interactive(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.alwaysBest:
-                    return getTileQualities_AlwaysBest(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_AlwaysBest(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.frontTileBest:
-                    return getTilesFrontTileBest(bandwidthUsageMatrix, parameters);
+                    rv = getTilesFrontTileBest(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.greedy:
-                    return getTileQualities_Greedy(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_Greedy(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.uniform:
-                    return getTileQualities_Uniform(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_Uniform(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.hybrid:
-                    return getTileQualities_Hybrid(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_Hybrid(bandwidthUsageMatrix, parameters);
+                    break;
                 case SelectionAlgorithm.weightedHybrid:
-                    return getTileQualities_WeightedHybrid(bandwidthUsageMatrix, parameters);
+                    rv = getTileQualities_WeightedHybrid(bandwidthUsageMatrix, parameters);
+                    break;
                 default:
                     Debug.LogError($"{Name()}: Unknown algorithm");
                     return null;
             }
+            if (rv != null)
+            {
+                if (debugDecisions)
+                {
+                    string concatenated = string.Join(", ",
+                          rv.Select(x => x.ToString()).ToArray());
+                    Debug.Log($"{Name()}: {algorithm}: selected qualities: {concatenated}");
+                }
+            }
+            return rv;
         }
 
         int[] getTileQualities_Interactive(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
@@ -336,27 +391,17 @@ namespace VRT.UserRepresentation.PointCloud
             int[] selectedQualities = new int[nTiles];
 
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: AlwaysBest: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
         int[] getTilesFrontTileBest(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: FrontTileBest: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: FrontTileBest: cameraPosition={parameters.cameraPosition}, cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointCloudPosition}, pointCloudForward={parameters.pointCloudForward}");
             }
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters);
             int[] selectedQualities = new int[nTiles];
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
             selectedQualities[tileOrder[0]] = nQualities - 1;
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: FrontTileBest: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
 
@@ -364,10 +409,10 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTileQualities_Greedy(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Greedy: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: Greedy: cameraPosition={parameters.cameraPosition}, cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointCloudPosition}, pointCloudForward={parameters.pointCloudForward}");
             }
             double spent = 0;
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             // Assume we spend at least minimal quality badnwidth requirements for each tile
@@ -398,20 +443,15 @@ namespace VRT.UserRepresentation.PointCloud
                     // UnityEngine.Debug.Log("<color=green> XXXDebug Budget" + budget + " spent " + spent + " savings " + savings + " </color> ");
                 }
             }
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: Greedy: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
         int[] getTileQualities_Uniform(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Uniform: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: Uniform: cameraPosition={parameters.cameraPosition}, cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointCloudPosition}, pointCloudForward={parameters.pointCloudForward}");
             }
             double spent = 0;
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             // Assume we spend at least minimal quality badnwidth requirements for each tile
@@ -441,21 +481,16 @@ namespace VRT.UserRepresentation.PointCloud
                     double savings = parameters.budget - spent;
                 }
             }
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: Uniform: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
         int[] getTileQualities_Hybrid(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: Hybrid: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: Hybrid: cameraPosition={parameters.cameraPosition}, cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointCloudPosition}, pointCloudForward={parameters.pointCloudForward}");
             }
-            bool[] tileVisibility = getTileVisibility(parameters.cameraForward, parameters.pointcloudPosition);
+            bool[] tileVisibility = getTileVisibility(parameters);
             double spent = 0;
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             // Assume we spend at least minimal quality badnwidth requirements for each tile
@@ -503,22 +538,17 @@ namespace VRT.UserRepresentation.PointCloud
                     double savings = parameters.budget - spent;
                 }
             }
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: Hybrid: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
         //xxxshishir new weighted hybrid utility calculation
         int [] getTileQualities_WeightedHybrid(double[][] bandwidthUsageMatrix, AlgorithmParameters parameters)
         {
             if (debugDecisions) {
-                Debug.Log($"{Name()}: WeightedHybrid: cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointcloudPosition}");
+                Debug.Log($"{Name()}: WeightedHybrid: cameraPosition={parameters.cameraPosition}, cameraForward={parameters.cameraForward}, pointCloudPosition={parameters.pointCloudPosition}, pointCloudForward={parameters.pointCloudForward}");
             }
             double spent = 0;
             double[] tileSpent = new double[nTiles];
-            int[] tileOrder = getTileOrder(parameters.cameraForward, parameters.pointcloudPosition);
+            int[] tileOrder = getTileOrder(parameters);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             // Assume we spend at least minimal quality badnwidth requirements for each tile
@@ -581,15 +611,15 @@ namespace VRT.UserRepresentation.PointCloud
                 if (!stepComplete)
                     representationSet = true;
             }
-            if (debugDecisions) {
-                string concatenated = string.Join(", ",
-                          selectedQualities.Select(x => x.ToString()).ToArray());
-                Debug.Log($"{Name()}: WeightedHybrid: selected qualities: {concatenated}");
-            }
             return selectedQualities;
         }
-        bool[] getTileVisibility(Vector3 cameraForward, Vector3 pointcloudPosition)
+        bool[] getTileVisibility(AlgorithmParameters parameters)
         {
+            // Get the camera forward vector
+            Vector3 cameraForward = parameters.cameraForward;
+            // Get the pointcloud position
+            Vector3 pointcloudPosition = parameters.pointCloudPosition;
+
             // xxxjack currently ignores pointcloud position, which is probably wrong...
             bool[] tileVisibility = new bool[nTiles];
             float[] tileDirection = new float[nTiles];

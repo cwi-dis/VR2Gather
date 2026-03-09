@@ -53,3 +53,7 @@ MonoBehaviour:
     scenarioId: 2921ECDF-ECB2-4761-9BF8-19AA0A32AD92
     scenarioDescription: Scenario for developers to test new things
     scenarioSceneName: TechnicalPlayground
+  - scenarioName: Empty
+    scenarioId: eeda8491-d64b-40d8-b1af-bd119e126799
+    scenarioDescription: Empty scenario, good for visual quality assesment
+    scenarioSceneName: VRTEmpty
