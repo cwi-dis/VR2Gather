@@ -4242,7 +4242,7 @@ PrefabInstance:
     - target: {fileID: 7237612167393363028, guid: 9908dcf284aef0e4a8ba245dc5f0f080,
         type: 3}
       propertyPath: NetworkId
-      value: ebdeaf9e-45d5-4060-9060-67d5caa75807
+      value: 00b64b08-42cb-49fe-ba22-da1ad2855de5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2108755284289232089, guid: 9908dcf284aef0e4a8ba245dc5f0f080, type: 3}

@@ -660,6 +660,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tool_FishnetIntegration
       objectReference: {fileID: 0}
+    - target: {fileID: 5312859830984782293, guid: ed566ab8eb86744a0825d85e2a95f139,
+        type: 3}
+      propertyPath: _clientState
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5312859830984782293, guid: ed566ab8eb86744a0825d85e2a95f139,
+        type: 3}
+      propertyPath: _serverState
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 7398764049365097985, guid: ed566ab8eb86744a0825d85e2a95f139,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -125,11 +125,9 @@ namespace VRT.Fishnet {
         }
 
         void StartFishnetServer() {
-            if (_serverState != LocalConnectionState.Started) {
-                
-                if (debug) Debug.Log($"{Name()}: Starting Fishnet server on VR2Gather master.");
-                _networkManager.ServerManager.StartConnection();
-            }
+            
+            if (debug) Debug.Log($"{Name()}: Starting Fishnet server on VR2Gather master.");
+            _networkManager.ServerManager.StartConnection();
         
         }
 
@@ -146,12 +144,7 @@ namespace VRT.Fishnet {
         void StartFishnetClient(FishnetStartupData server) {
             // xxxjack this is going to need at least one argument (the address of the Fishnet server)
             if (debug) Debug.Log($"{Name()}: Starting Fishnet client");
-            if (_clientState != LocalConnectionState.Stopped) {
-                Debug.LogWarning($"{Name()}: StartFishnetClient called, but clientState=={_clientState}");
-            }
-            if (_clientState == LocalConnectionState.Stopped) {
-                _networkManager.ClientManager.StartConnection();
-            }
+            _networkManager.ClientManager.StartConnection();
         }
         private void ClientManager_OnClientConnectionState(ClientConnectionStateArgs obj)
         {
