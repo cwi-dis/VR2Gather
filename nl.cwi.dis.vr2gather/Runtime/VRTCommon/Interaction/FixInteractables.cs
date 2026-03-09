@@ -15,7 +15,7 @@ namespace VRT.Pilots.Common
     public class FixInteractables : MonoBehaviour
     {
         public XRInteractionManager interactionManager;
-        public TeleportationProvider teleportationProvider;
+        public UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationProvider teleportationProvider;
         public bool debug = false;
 
         // Start is called before the first frame update
@@ -31,11 +31,11 @@ namespace VRT.Pilots.Common
                     interactionManager = interactionManagerGO.GetComponent<XRInteractionManager>();
                 }
             }
-            if (teleportationProvider == null) teleportationProvider = GetComponent<TeleportationProvider>();
+            if (teleportationProvider == null) teleportationProvider = GetComponent<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationProvider>();
             if (teleportationProvider != null)
             {
                 if (debug) Debug.Log($"FixInteractables: installing teleportation");
-                var allTeleportations = FindObjectsOfType<BaseTeleportationInteractable>(true);
+                var allTeleportations = FindObjectsOfType<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.BaseTeleportationInteractable>(true);
                 foreach (var ta in allTeleportations)
                 {
                     ta.teleportationProvider = teleportationProvider;
@@ -45,7 +45,7 @@ namespace VRT.Pilots.Common
             if (interactionManager != null)
             {
                 if (debug) Debug.Log($"FixInteractables: installing interactables");
-                var allInteractables = FindObjectsOfType<XRBaseInteractable>(true);
+                var allInteractables = FindObjectsOfType<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>(true);
                 foreach(var go in allInteractables)
                 {
                     go.interactionManager = interactionManager;

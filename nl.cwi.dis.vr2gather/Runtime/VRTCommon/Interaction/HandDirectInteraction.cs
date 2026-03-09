@@ -168,8 +168,8 @@ namespace VRT.Pilots.Common
         /// <param name="args"></param>
         public void OnDirectHoverEnter(HoverEnterEventArgs args)
         {
-            var source = (IXRActivateInteractor)args.interactorObject;
-            var target = (IXRActivateInteractable)args.interactableObject;
+            var source = (UnityEngine.XR.Interaction.Toolkit.Interactors.IXRActivateInteractor)args.interactorObject;
+            var target = (UnityEngine.XR.Interaction.Toolkit.Interactables.IXRActivateInteractable)args.interactableObject;
             if (debug) Debug.Log($"{name}: Direct Hover Enter from {source}, calling {target}.OnActivated() ");
             ActivateEventArgs activateArgs = new ActivateEventArgs
             {
@@ -185,8 +185,8 @@ namespace VRT.Pilots.Common
         /// <param name="args"></param>
         public void OnDirectHoverExit(HoverExitEventArgs args)
         {
-            var source = (IXRActivateInteractor)args.interactorObject;
-            var target = (IXRActivateInteractable)args.interactableObject;
+            var source = (UnityEngine.XR.Interaction.Toolkit.Interactors.IXRActivateInteractor)args.interactorObject;
+            var target = (UnityEngine.XR.Interaction.Toolkit.Interactables.IXRActivateInteractable)args.interactableObject;
             if (debug) Debug.Log($"{name}: Direct Hover Exit from {source}, calling {target}.OnDeactivated() ");
             DeactivateEventArgs activateArgs = new DeactivateEventArgs
             {
