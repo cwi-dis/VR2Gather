@@ -63,11 +63,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.25",
+      "version": "2.0.27",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.test-framework": "1.1.31"
+        "com.unity.test-framework": "1.1.33"
       },
       "url": "https://packages.unity.com"
     },
@@ -189,7 +189,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.management": {
-      "version": "4.5.3",
+      "version": "4.5.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -201,11 +201,12 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.oculus": {
-      "version": "4.5.2",
+      "version": "4.5.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.xr.management": "4.4.0"
+        "com.unity.xr.management": "4.4.0",
+        "com.unity.modules.androidjni": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -222,11 +223,11 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc#52-cwipc-v80",
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "5ca1603cc9bacbe5f4949cb7a0a229ebb1690edc"
+      "hash": "1e6633521127499a3fabccdef0cd95520394156d"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",
@@ -235,14 +236,14 @@
       "dependencies": {
         "nl.cwi.dis.vr2gather.nativelibraries": "0.99.8",
         "nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.6",
-        "nl.cwi.dis.cwipc": "7.7.6",
+        "nl.cwi.dis.cwipc": "8.0.0",
         "com.itisnajim.socketiounity": "1.1.4",
         "com.unity.animation.rigging": "1.2.1",
         "com.unity.recorder": "4.0.3",
         "com.unity.textmeshpro": "3.0.9",
         "com.unity.xr.interaction.toolkit": "2.6.5",
-        "com.unity.xr.management": "4.5.2",
-        "com.unity.xr.oculus": "4.5.2",
+        "com.unity.xr.management": "4.5.4",
+        "com.unity.xr.oculus": "4.5.4",
         "com.unity.xr.openxr": "1.14.3",
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       }
