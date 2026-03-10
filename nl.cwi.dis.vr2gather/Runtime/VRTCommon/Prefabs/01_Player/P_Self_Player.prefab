@@ -111,7 +111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2213c36610e3b1c4bbf886810ed9db12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_System: {fileID: 6401796635452955404}
+  m_Mediator: {fileID: 0}
+  m_TransformationPriority: 0
   m_TurnAmount: 22.5
   m_DebounceTime: 0.5
   m_EnableTurnLeftRight: 1
@@ -154,7 +155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf296fc962d7184ab14ad1841598d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_System: {fileID: 6401796635452955404}
+  m_Mediator: {fileID: 0}
+  m_TransformationPriority: 0
   m_MoveSpeed: 1
   m_EnableStrafe: 1
   m_EnableFly: 0
@@ -528,6 +530,8 @@ GameObject:
   - component: {fileID: 6401796635452955404}
   - component: {fileID: 9038250977890111135}
   - component: {fileID: 1325930266}
+  - component: {fileID: 5559226615129217115}
+  - component: {fileID: 4542735033792595893}
   m_Layer: 0
   m_Name: Locomotion System
   m_TagString: Untagged
@@ -578,7 +582,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f69dc1cb084aa42b2f2f8cd87bc770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_System: {fileID: 6401796635452955404}
+  m_Mediator: {fileID: 0}
+  m_TransformationPriority: 0
   m_DelayTime: 0
 --- !u!114 &1325930266
 MonoBehaviour:
@@ -595,6 +600,34 @@ MonoBehaviour:
   interactionManager: {fileID: 0}
   teleportationProvider: {fileID: 0}
   debug: 0
+--- !u!114 &5559226615129217115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2689821907506672988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a26c941eb8a46f7b6d00416227ab8c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_XROrigin: {fileID: 4736957743163071257}
+  m_BodyPositionEvaluatorObject: {fileID: 0}
+  m_ConstrainedBodyManipulatorObject: {fileID: 0}
+  m_UseCharacterControllerIfExists: 1
+--- !u!114 &4542735033792595893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2689821907506672988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fa7b4195685c3846be746c74f0ab2f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2771937326611889967
 GameObject:
   m_ObjectHideFlags: 0
@@ -1028,7 +1061,6 @@ MonoBehaviour:
   m_TrackedScrollDeltaMultiplier: 5
   m_BypassUIToolkitEvents: 0
   m_ActiveInputMode: 0
-  m_MaxTrackedDeviceRaycastDistance: 1000
   m_EnableXRInput: 1
   m_EnableMouseInput: 1
   m_EnableTouchInput: 1
@@ -1272,63 +1304,63 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 9fb2eb2b-2fb6-4328-8167-10a1bf11b424
-    m_ActionName: RH Locomotion/Turn[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow,/Mouse/rightButton,/Mouse/delta]
+    m_ActionName: 'RH Locomotion/Turn[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow,/Mouse/rightButton,/Mouse/delta]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 00a4dc9f-1ee6-4349-b0e9-72d5dccaadd6
-    m_ActionName: RH Locomotion/Move[/Mouse/leftButton,/Mouse/delta,/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+    m_ActionName: 'RH Locomotion/Move[/Mouse/leftButton,/Mouse/delta,/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: b28863a5-7fa6-4fe1-8598-feeff6fde11c
-    m_ActionName: ViewPosition/ViewReset[/Keyboard/enter]
+    m_ActionName: 'ViewPosition/ViewReset[/Keyboard/enter]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: b959070d-f108-42e1-9fa0-57e195cd5192
-    m_ActionName: ViewPosition/ViewHeight[/Mouse/scroll,/Keyboard/upArrow,/Keyboard/downArrow]
+    m_ActionName: 'ViewPosition/ViewHeight[/Mouse/scroll,/Keyboard/upArrow,/Keyboard/downArrow]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 07eda5f3-4893-490f-8a96-eea664b46c7c
-    m_ActionName: HUD/ShowHide[/Keyboard/escape]
+    m_ActionName: 'HUD/ShowHide[/Keyboard/escape]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 99c2f55c-927b-45a9-bc4f-d4a10e5894a7
-    m_ActionName: Emulation/Enable Mouse Ray[/Keyboard/alt]
+    m_ActionName: 'Emulation/Enable Mouse Ray[/Keyboard/alt]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 01747c65-f929-44f1-ac17-71d0ae74c9f8
-    m_ActionName: Emulation/Activate Mouse Ray[/Mouse/leftButton]
+    m_ActionName: 'Emulation/Activate Mouse Ray[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: c7113baa-2051-4657-8792-98a2e59257af
-    m_ActionName: UI/Navigate[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+    m_ActionName: 'UI/Navigate[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: aa88efd6-74cf-43df-b64d-e2eb4298619e
-    m_ActionName: UI/Submit[/Keyboard/enter]
+    m_ActionName: 'UI/Submit[/Keyboard/enter]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 0e252c31-30c9-40bb-92eb-92dba1d33106
-    m_ActionName: UI/Cancel[/Keyboard/escape]
+    m_ActionName: 'UI/Cancel[/Keyboard/escape]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: fa1407e4-1a8d-4dba-8731-c05b54dd72c3
-    m_ActionName: UI/Point[/Mouse/position,/Touchscreen/touch0/position,/Touchscreen/touch1/position,/Touchscreen/touch2/position,/Touchscreen/touch3/position,/Touchscreen/touch4/position,/Touchscreen/touch5/position,/Touchscreen/touch6/position,/Touchscreen/touch7/position,/Touchscreen/touch8/position,/Touchscreen/touch9/position]
+    m_ActionName: 'UI/Point[/Mouse/position,/Touchscreen/touch0/position,/Touchscreen/touch1/position,/Touchscreen/touch2/position,/Touchscreen/touch3/position,/Touchscreen/touch4/position,/Touchscreen/touch5/position,/Touchscreen/touch6/position,/Touchscreen/touch7/position,/Touchscreen/touch8/position,/Touchscreen/touch9/position]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 481d4941-fd93-4c1f-8b2c-daa8d6e320d1
-    m_ActionName: UI/Click[/Mouse/leftButton,/Touchscreen/touch0/press,/Touchscreen/touch1/press,/Touchscreen/touch2/press,/Touchscreen/touch3/press,/Touchscreen/touch4/press,/Touchscreen/touch5/press,/Touchscreen/touch6/press,/Touchscreen/touch7/press,/Touchscreen/touch8/press,/Touchscreen/touch9/press]
+    m_ActionName: 'UI/Click[/Mouse/leftButton,/Touchscreen/touch0/press,/Touchscreen/touch1/press,/Touchscreen/touch2/press,/Touchscreen/touch3/press,/Touchscreen/touch4/press,/Touchscreen/touch5/press,/Touchscreen/touch6/press,/Touchscreen/touch7/press,/Touchscreen/touch8/press,/Touchscreen/touch9/press]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: a228a425-a673-4cbc-960d-071661398936
-    m_ActionName: UI/ScrollWheel[/Mouse/scroll]
+    m_ActionName: 'UI/ScrollWheel[/Mouse/scroll]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 02d4ab4b-8cc2-4fdb-aed9-1064f4707af0
-    m_ActionName: UI/MiddleClick[/Mouse/middleButton]
+    m_ActionName: 'UI/MiddleClick[/Mouse/middleButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 5a75a2ee-7035-44b9-a758-4c356dd8edb6
-    m_ActionName: UI/RightClick[/Mouse/rightButton]
+    m_ActionName: 'UI/RightClick[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 1930ba45-bf47-48d7-b86d-5fad9988f1a9
@@ -1401,6 +1433,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1525,7 +1560,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2213c36610e3b1c4bbf886810ed9db12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_System: {fileID: 6401796635452955404}
+  m_Mediator: {fileID: 0}
+  m_TransformationPriority: 0
   m_TurnAmount: 22.5
   m_DebounceTime: 0.5
   m_EnableTurnLeftRight: 1
@@ -1569,7 +1605,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf296fc962d7184ab14ad1841598d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_System: {fileID: 6401796635452955404}
+  m_Mediator: {fileID: 0}
+  m_TransformationPriority: 0
   m_MoveSpeed: 1
   m_EnableStrafe: 1
   m_EnableFly: 0
@@ -2492,7 +2529,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5119445738113073671, guid: 6c527cd471a46b547b52b8f80eeca60d,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 1e5b81674acab7c4ba51544385bd42da, type: 2}
     - target: {fileID: 6256145334947356404, guid: 6c527cd471a46b547b52b8f80eeca60d,
@@ -2507,7 +2544,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6436316909497532596, guid: 6c527cd471a46b547b52b8f80eeca60d,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 1e5b81674acab7c4ba51544385bd42da, type: 2}
     - target: {fileID: 8619840172159127361, guid: 6c527cd471a46b547b52b8f80eeca60d,
@@ -2783,12 +2820,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
-      propertyPath: localPlayerOnlyObjects.Array.data[0]
+      propertyPath: 'localPlayerOnlyObjects.Array.data[0]'
       value: 
       objectReference: {fileID: 1526195919971273045}
     - target: {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
-      propertyPath: localPlayerOnlyObjects.Array.data[1]
+      propertyPath: 'localPlayerOnlyObjects.Array.data[1]'
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7118474587514814776, guid: 21abad33e8196954b8f19e6b888a67a4,
