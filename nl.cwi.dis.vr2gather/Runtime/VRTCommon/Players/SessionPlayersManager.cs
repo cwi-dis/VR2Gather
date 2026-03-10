@@ -7,7 +7,6 @@ using VRT.Core;
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Orchestrator.Wrapping;
-using VRT.Transport.WebRTC;
 using VRT.Orchestrator.Elements;
 
 namespace VRT.Pilots.Common
@@ -140,6 +139,7 @@ namespace VRT.Pilots.Common
         public void InstantiatePlayers()
 		{
 			var me = OrchestratorController.Instance.SelfUser;
+#if !VRT_WITHOUT_WEBRTC
             // Initialize WebRTC clientId small integers.
             if (SessionConfig.Instance.protocolType == "webrtc")
             {
@@ -168,6 +168,7 @@ namespace VRT.Pilots.Common
                     indexWithinCurrentSession++;
                 }
             }
+#endif
             
 
 			SetupConfigDistributors();
@@ -240,7 +241,8 @@ namespace VRT.Pilots.Common
 			// For WebRTC transport protocol there is some special handling required.
 			// We need to communicate our WebRTC client ID (index within the session) and we need
 			// to state that all incoming and outgoing connections have been specified (so the peer can be started)
-			//
+				//
+#if !VRT_WITHOUT_WEBRTC
             // Initialize WebRTC and pass our clientId.
             if (SessionConfig.Instance.protocolType == "webrtc")
             {
@@ -254,6 +256,7 @@ namespace VRT.Pilots.Common
                 
                 webRTC.AllConnectionsDone();
             }
+#endif
         }
 
         private void OnUserLeft(string userId)
