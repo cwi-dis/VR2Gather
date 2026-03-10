@@ -75,7 +75,7 @@ namespace VRT.Pilots.Common
 			{
 				if (_Instance == null)
 				{
-					_Instance = FindObjectOfType<SessionPlayersManager>();
+					_Instance = FindAnyObjectByType<SessionPlayersManager>();
 				}
 				return _Instance;
 			}
@@ -125,7 +125,8 @@ namespace VRT.Pilots.Common
 		public void SetupConfigDistributors()
 		{
             if (debug) Debug.Log($"SessionPlayersManager: SetupConfigDistributors");
-            var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
+            // xxxjack or do we need them sorted?
+            var configDistributors = FindObjectsByType<BaseConfigDistributor>(FindObjectsSortMode.None);
             if (configDistributors == null || configDistributors.Length == 0)
             {
                 Debug.LogWarning("No BaseConfigDistributor found");

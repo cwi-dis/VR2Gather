@@ -24,7 +24,7 @@ namespace VRT.Pilots.Common
         {
             if (eventSystem == null)
             {
-                eventSystem = FindObjectOfType<EventSystem>();
+                eventSystem = FindAnyObjectByType<EventSystem>();
             }
             if (inputActionManager == null)
             {

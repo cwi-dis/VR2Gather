@@ -1140,7 +1140,7 @@ namespace VRT.Login
         {
             try
             {
-                InputField[] inputFields = FindObjectsOfType<InputField>();
+                InputField[] inputFields = FindObjectsByType<InputField>(FindObjectsSortMode.None);
                 if (inputFields != null)
                 {
                     inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(EventSystem.current));  //if it's an input field, also set the text caret

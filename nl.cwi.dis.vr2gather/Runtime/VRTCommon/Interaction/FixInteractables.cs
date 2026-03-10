@@ -23,7 +23,7 @@ namespace VRT.Pilots.Common
         {
             if (interactionManager == null)
             {
-                interactionManager = FindObjectOfType<XRInteractionManager>();
+                interactionManager = FindAnyObjectByType<XRInteractionManager>();
                 if (interactionManager == null)
                 {
                     Debug.Log("FixInteractables: Creating interaction manager");
@@ -35,7 +35,9 @@ namespace VRT.Pilots.Common
             if (teleportationProvider != null)
             {
                 if (debug) Debug.Log($"FixInteractables: installing teleportation");
-                var allTeleportations = FindObjectsOfType<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.BaseTeleportationInteractable>(true);
+                var allTeleportations =
+                    FindObjectsByType<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.
+                        BaseTeleportationInteractable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 foreach (var ta in allTeleportations)
                 {
                     ta.teleportationProvider = teleportationProvider;
@@ -45,7 +47,7 @@ namespace VRT.Pilots.Common
             if (interactionManager != null)
             {
                 if (debug) Debug.Log($"FixInteractables: installing interactables");
-                var allInteractables = FindObjectsOfType<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>(true);
+                var allInteractables = FindObjectsByType<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 foreach(var go in allInteractables)
                 {
                     go.interactionManager = interactionManager;

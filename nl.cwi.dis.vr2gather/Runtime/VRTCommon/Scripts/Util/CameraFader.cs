@@ -34,7 +34,7 @@ namespace VRT.Pilots.Common
             {
                 if (_Instance == null)
                 {
-                    _Instance = FindObjectOfType<CameraFader>();
+                    _Instance = FindAnyObjectByType<CameraFader>();
                 }
 
                 return _Instance;
@@ -43,7 +43,7 @@ namespace VRT.Pilots.Common
 
         public void Awake()
         {
-            PilotController ctrl = FindObjectOfType<PilotController>();
+            PilotController ctrl = FindAnyObjectByType<PilotController>();
             if (ctrl != null)
             {
                 startFadedOut = ctrl.startFadedOut;

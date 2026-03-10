@@ -128,7 +128,7 @@ namespace VRT.Pilots.Common
 
         private List<IDataPersistence> FindAllPersistableObjects()
         {
-            IEnumerable<IDataPersistence> persistableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>();
+            IEnumerable<IDataPersistence> persistableObjects = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<IDataPersistence>();
             return new List<IDataPersistence>(persistableObjects);
         }
 
