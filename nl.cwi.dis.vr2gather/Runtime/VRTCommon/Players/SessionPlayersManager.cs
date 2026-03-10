@@ -91,7 +91,10 @@ namespace VRT.Pilots.Common
 			_LocationToPlayerId = new Dictionary<PlayerLocation, string>();
 
 			Spectators = new Dictionary<string, PlayerNetworkControllerBase>();
-			
+			if (OrchestratorController.Instance == null)
+			{
+				return;
+			}
 			OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeft;
 
 			OrchestratorController.Instance.Subscribe<PlayerLocationData>(OnPlayerLocationData);
