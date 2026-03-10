@@ -75,8 +75,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 662712093487186547}
-  - component: {fileID: 9040215456879841801}
-  - component: {fileID: 184840364533042734}
+  - component: {fileID: 7686463718535653467}
+  - component: {fileID: 3423208787556475314}
   m_Layer: 0
   m_Name: Move Turn No Controllers
   m_TagString: Untagged
@@ -99,7 +99,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3673924254292886361}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9040215456879841801
+--- !u!114 &7686463718535653467
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,86 +108,93 @@ MonoBehaviour:
   m_GameObject: {fileID: 1410998351557607464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2213c36610e3b1c4bbf886810ed9db12, type: 3}
+  m_Script: {fileID: 11500000, guid: 626a4d6723d6ad24b9aebb811ad5a3dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mediator: {fileID: 0}
-  m_TransformationPriority: 0
-  m_TurnAmount: 22.5
-  m_DebounceTime: 0.5
-  m_EnableTurnLeftRight: 1
-  m_EnableTurnAround: 0
-  m_DelayTime: 0
-  m_LeftHandSnapTurnAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Left Hand Snap Turn
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: a1d07c24-ca50-422a-a23f-685d9fabf63b
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  m_RightHandSnapTurnAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Right Hand Snap Turn
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: a7b54797-6974-4f75-81d0-42b9c15ef1e0
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -4077348370334497085, guid: 721820db5472c4cdb9e2c49de50d8533,
-      type: 3}
---- !u!114 &184840364533042734
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1410998351557607464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bf296fc962d7184ab14ad1841598d5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Mediator: {fileID: 0}
+  m_Mediator: {fileID: 4542735033792595893}
   m_TransformationPriority: 0
   m_MoveSpeed: 1
   m_EnableStrafe: 1
   m_EnableFly: 0
   m_UseGravity: 1
-  m_GravityApplicationMode: 0
   m_ForwardSource: {fileID: 7845086807825369409}
-  m_LeftHandMoveAction:
-    m_UseReference: 1
-    m_Action:
+  m_LeftHandMoveInput:
+    m_InputSourceMode: 0
+    m_InputAction:
       m_Name: Left Hand Move
       m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 9f03bc3d-aec6-4d05-9900-32bea6991374
+      m_ExpectedControlType: Vector2
+      m_Id: 555f45d2-7b15-49c1-b95c-1e466da4a5b3
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
-  m_RightHandMoveAction:
-    m_UseReference: 1
-    m_Action:
+    m_InputActionReference: {fileID: 0}
+    m_ObjectReferenceObject: {fileID: 0}
+    m_ManualValue: {x: 0, y: 0}
+  m_RightHandMoveInput:
+    m_InputSourceMode: 2
+    m_InputAction:
       m_Name: Right Hand Move
       m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 15c60d31-50ca-476e-9b15-7a0a2830f545
+      m_ExpectedControlType: Vector2
+      m_Id: 809f7aa3-691e-44a3-be5c-96a855457d3e
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 4084302397269835916, guid: 721820db5472c4cdb9e2c49de50d8533,
+    m_InputActionReference: {fileID: 4084302397269835916, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
+    m_ObjectReferenceObject: {fileID: 0}
+    m_ManualValue: {x: 0, y: 0}
+--- !u!114 &3423208787556475314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410998351557607464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9f365cf844c03449bc8973eead2c3c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Mediator: {fileID: 4542735033792595893}
+  m_TransformationPriority: 0
+  m_TurnAmount: 45
+  m_DebounceTime: 0.5
+  m_EnableTurnLeftRight: 1
+  m_EnableTurnAround: 1
+  m_DelayTime: 0
+  m_LeftHandTurnInput:
+    m_InputSourceMode: 0
+    m_InputAction:
+      m_Name: Left Hand Snap Turn
+      m_Type: 0
+      m_ExpectedControlType: Vector2
+      m_Id: 535a1865-48af-4480-8ec8-c0103c5765dd
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_InputActionReference: {fileID: 0}
+    m_ObjectReferenceObject: {fileID: 0}
+    m_ManualValue: {x: 0, y: 0}
+  m_RightHandTurnInput:
+    m_InputSourceMode: 2
+    m_InputAction:
+      m_Name: Right Hand Snap Turn
+      m_Type: 0
+      m_ExpectedControlType: Vector2
+      m_Id: 32f65862-a085-4ff3-80b8-7c08b1f4f8b8
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_InputActionReference: {fileID: -4077348370334497085, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
+    m_ObjectReferenceObject: {fileID: 0}
+    m_ManualValue: {x: 0, y: 0}
 --- !u!1 &1526195919971273045
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,7 +534,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3673924254292886361}
-  - component: {fileID: 6401796635452955404}
   - component: {fileID: 9038250977890111135}
   - component: {fileID: 1325930266}
   - component: {fileID: 5559226615129217115}
@@ -556,20 +562,6 @@ Transform:
   - {fileID: 662712093487186547}
   m_Father: {fileID: 1935332283100515012}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6401796635452955404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2689821907506672988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03a5df2202a8b96488c744be3bd0c33e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Timeout: 10
-  m_XROrigin: {fileID: 4736957743163071257}
 --- !u!114 &9038250977890111135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1524,8 +1516,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1829631288928453384}
-  - component: {fileID: 8732315944019548031}
-  - component: {fileID: 3735977278020926056}
+  - component: {fileID: 5380203086893664554}
+  - component: {fileID: 653373571543468297}
   m_Layer: 0
   m_Name: Move Turn VR Controllers
   m_TagString: Untagged
@@ -1548,7 +1540,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3673924254292886361}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8732315944019548031
+--- !u!114 &5380203086893664554
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1557,88 +1549,95 @@ MonoBehaviour:
   m_GameObject: {fileID: 7004479241362984629}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2213c36610e3b1c4bbf886810ed9db12, type: 3}
+  m_Script: {fileID: 11500000, guid: e9f365cf844c03449bc8973eead2c3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mediator: {fileID: 0}
+  m_Mediator: {fileID: 4542735033792595893}
   m_TransformationPriority: 0
-  m_TurnAmount: 22.5
+  m_TurnAmount: 45
   m_DebounceTime: 0.5
   m_EnableTurnLeftRight: 1
-  m_EnableTurnAround: 0
+  m_EnableTurnAround: 1
   m_DelayTime: 0
-  m_LeftHandSnapTurnAction:
-    m_UseReference: 1
-    m_Action:
+  m_LeftHandTurnInput:
+    m_InputSourceMode: 2
+    m_InputAction:
       m_Name: Left Hand Snap Turn
       m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: a1d07c24-ca50-422a-a23f-685d9fabf63b
+      m_ExpectedControlType: Vector2
+      m_Id: a4ed3a44-6c02-47d2-8132-c616a2e79ce8
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 1010738217276881514, guid: 721820db5472c4cdb9e2c49de50d8533,
+    m_InputActionReference: {fileID: 1010738217276881514, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
-  m_RightHandSnapTurnAction:
-    m_UseReference: 1
-    m_Action:
+    m_ObjectReferenceObject: {fileID: 0}
+    m_ManualValue: {x: 0, y: 0}
+  m_RightHandTurnInput:
+    m_InputSourceMode: 2
+    m_InputAction:
       m_Name: Right Hand Snap Turn
       m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: a7b54797-6974-4f75-81d0-42b9c15ef1e0
+      m_ExpectedControlType: Vector2
+      m_Id: 8ad72cab-c334-4fd3-94a9-2bbd410c705c
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -6493913391331992944, guid: 721820db5472c4cdb9e2c49de50d8533,
+    m_InputActionReference: {fileID: -6493913391331992944, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
---- !u!114 &3735977278020926056
+    m_ObjectReferenceObject: {fileID: 0}
+    m_ManualValue: {x: 0, y: 0}
+--- !u!114 &653373571543468297
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7004479241362984629}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bf296fc962d7184ab14ad1841598d5f, type: 3}
+  m_Script: {fileID: 11500000, guid: 626a4d6723d6ad24b9aebb811ad5a3dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Mediator: {fileID: 0}
+  m_Mediator: {fileID: 4542735033792595893}
   m_TransformationPriority: 0
   m_MoveSpeed: 1
   m_EnableStrafe: 1
   m_EnableFly: 0
   m_UseGravity: 1
-  m_GravityApplicationMode: 0
-  m_ForwardSource: {fileID: 7845086807825369409}
-  m_LeftHandMoveAction:
-    m_UseReference: 1
-    m_Action:
+  m_ForwardSource: {fileID: 0}
+  m_LeftHandMoveInput:
+    m_InputSourceMode: 2
+    m_InputAction:
       m_Name: Left Hand Move
       m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 9f03bc3d-aec6-4d05-9900-32bea6991374
+      m_ExpectedControlType: Vector2
+      m_Id: 4e78d5d8-7bd5-4859-b779-8f4a6ed2f728
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 6972639530819350904, guid: 721820db5472c4cdb9e2c49de50d8533,
+    m_InputActionReference: {fileID: 6972639530819350904, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
-  m_RightHandMoveAction:
-    m_UseReference: 1
-    m_Action:
+    m_ObjectReferenceObject: {fileID: 0}
+    m_ManualValue: {x: 0, y: 0}
+  m_RightHandMoveInput:
+    m_InputSourceMode: 2
+    m_InputAction:
       m_Name: Right Hand Move
       m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 15c60d31-50ca-476e-9b15-7a0a2830f545
+      m_ExpectedControlType: Vector2
+      m_Id: 1e519bed-68c7-4c67-9afe-de4a20a5eea8
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -8198699208435500284, guid: 721820db5472c4cdb9e2c49de50d8533,
+    m_InputActionReference: {fileID: -8198699208435500284, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
+    m_ObjectReferenceObject: {fileID: 0}
+    m_ManualValue: {x: 0, y: 0}
 --- !u!1 &7174326567860151694
 GameObject:
   m_ObjectHideFlags: 0
@@ -1949,11 +1948,6 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1935332283100515003}
-    - target: {fileID: 5503449293659493534, guid: 38346b54d1d6bda4d9a7bb0d5fcd4b9f,
-        type: 3}
-      propertyPath: m_System
-      value: 
-      objectReference: {fileID: 6401796635452955404}
     - target: {fileID: 5503449293659493534, guid: 38346b54d1d6bda4d9a7bb0d5fcd4b9f,
         type: 3}
       propertyPath: cameraOffset
