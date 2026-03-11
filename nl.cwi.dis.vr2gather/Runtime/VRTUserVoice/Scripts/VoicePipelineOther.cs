@@ -103,8 +103,8 @@ namespace VRT.UserRepresentation.Voice
             bool audioIsEncoded = audioCodec == "VR2A";
             string proto = SessionConfig.Instance.protocolType;
 
-            if (VRTConfig.Instance.RepresentationVoice.preparerQueueSize > 0) {
-                preparerQueueSize = VRTConfig.Instance.RepresentationVoice.preparerQueueSize;
+            if (VRTConfig.Instance.VoiceConfig.preparerQueueSize > 0) {
+                preparerQueueSize = VRTConfig.Instance.VoiceConfig.preparerQueueSize;
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"preparer_queue_size={preparerQueueSize}");
 #endif
@@ -137,7 +137,7 @@ namespace VRT.UserRepresentation.Voice
             if (synchronizer != null && synchronizer.isEnabled())
             {
                 preparer.SetSynchronizer(synchronizer);
-                if (!VRTConfig.Instance.RepresentationVoice.ignoreSynchronizer)
+                if (!VRTConfig.Instance.VoiceConfig.ignoreSynchronizer)
                 {
                     synchronizerName = synchronizer.Name();
                 }

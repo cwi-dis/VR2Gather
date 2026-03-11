@@ -69,10 +69,10 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
         {
             CwipcConfig PCs = CwipcConfig.Instance;
-            if (PCs == null) throw new System.Exception($"{Name()}: missing RepresentationPointcloud config");
-            if (VRTConfig.Instance.RepresentationPointcloud.preparerQueueSize > 0)
+            if (PCs == null) throw new System.Exception($"{Name()}: missing CwipcConfig config");
+            if (VRTConfig.Instance.CwipcConfig.preparerQueueSize > 0)
             {
-                pcPreparerQueueSize = VRTConfig.Instance.RepresentationPointcloud.preparerQueueSize;
+                pcPreparerQueueSize = VRTConfig.Instance.CwipcConfig.preparerQueueSize;
 #if VRT_WITH_STATS                
                 Statistics.Output(Name(), $"preparer_queue_size={pcPreparerQueueSize}");
 #endif

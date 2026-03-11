@@ -127,15 +127,15 @@ namespace VRT.Core
         public _TransportWebRTC TransportWebRTC;
 
         [Serializable]
-        public class _RepresentationPointcloud : Cwipc.CwipcConfig {
+        public class _CwipcConfig : Cwipc.CwipcConfig {
             [Tooltip("If non-zero, sets the limit on the number of point clouds buffered for output (otherwise a sensible default is used)")]
             public int preparerQueueSize = 0;
 
         }
-        public _RepresentationPointcloud RepresentationPointcloud;
+        public _CwipcConfig CwipcConfig;
 
         [Serializable]
-        public class _RepresentationVoice
+        public class _VoiceConfig
         {
             [Tooltip("Approximate voice input frame rate (will be rounded down to intgral number of DSP buffers)")]
             public int audioFps = 50;
@@ -149,7 +149,7 @@ namespace VRT.Core
             public bool ignoreSynchronizer = false;
         }
         [Tooltip("Conversational audio settings")]
-        public _RepresentationVoice RepresentationVoice;
+        public _VoiceConfig VoiceConfig;
 
         [Serializable]
         public class _Synchronizer
@@ -362,7 +362,7 @@ namespace VRT.Core
 #endif
             // Communicate cwipc settings to cwipc package. This sets all sorts
             // of things, from native log level to queue sizes, etc.
-            Cwipc.CwipcConfig.SetInstance(this.RepresentationPointcloud);
+            Cwipc.CwipcConfig.SetInstance(this.CwipcConfig);
             
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
