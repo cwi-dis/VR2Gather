@@ -409,13 +409,13 @@ namespace VRT.Login
         private void SaveUserData()
         {
             // And also save a local copy, if wanted
-            if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            if (String.IsNullOrEmpty(VRTConfig.Instance.userConfigFilename))
             {
-                Debug.LogError("OrchestratorLogin.SaveUserData: orchestratorConfigFilename is empty");
+                Debug.LogError("OrchestratorLogin.SaveUserData: userConfigFilename is empty");
                 return;
             }
             var configData = OrchestratorController.Instance.SelfUser.userData.AsJsonString();
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename, label:"User config");
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.userConfigFilename, label:"User config");
             Debug.Log("Full config filename: " + fullName);
             System.IO.File.WriteAllText(fullName, configData);
             Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
@@ -424,13 +424,13 @@ namespace VRT.Login
         private void LoadUserData()
         {
             // Load locally save user data
-            if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            if (String.IsNullOrEmpty(VRTConfig.Instance.userConfigFilename))
             {
-                Debug.LogError("OrchestratorLogin.LoadUserData: LocalUser.orchestratorConfigFilename is empty");
+                Debug.LogError("OrchestratorLogin.LoadUserData: LocalUser.userConfigFilename is empty");
                 OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename, label:"User config");
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.userConfigFilename, label:"User config");
             if (!System.IO.File.Exists(fullName))
             {
                 Debug.LogWarning($"OrchestratorLogin.LoadUserData: Cannot open {fullName}");

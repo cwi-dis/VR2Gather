@@ -26,6 +26,8 @@ namespace VRT.Core
 
         [Tooltip("Orchestrator SocketIO endpoint URL")]
         public string orchestratorURL = "";
+        [Tooltip("local filename where orchestrator config is stored")]
+        public string userConfigFilename;
         [Tooltip("If nonzero: target frame rate. -1 is system default. (ignored when using HMD)")]
         public int targetFrameRate = -1; // system default framerate
         [Tooltip("Maximum NTP desync allowed before a warning is shown")]
@@ -205,8 +207,6 @@ namespace VRT.Core
         [Serializable]
         public class _User
         {
-            [Tooltip("local filename where orchestrator config is stored")]
-            public string orchestratorConfigFilename;
             [Serializable]
             public class _PCSelfConfig
             {
