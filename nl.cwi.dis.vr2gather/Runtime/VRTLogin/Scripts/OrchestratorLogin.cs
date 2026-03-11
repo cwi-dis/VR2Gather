@@ -679,7 +679,7 @@ namespace VRT.Login
             // UserData info in Config
             UserData lUserData = new UserData
             {
-                userAudioUrl = SettingsPanelTCPURLField.text,
+                userRepresentationUrl = SettingsPanelTCPURLField.text,
                 userRepresentationType = (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
                 webcamName = (SettingsPanelWebcamDropdown.options.Count <= 0) ? "None" : SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
                 microphoneName = (SettingsPanelMicrophoneDropdown.options.Count <= 0) ? "None" : SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
@@ -698,7 +698,7 @@ namespace VRT.Login
             }
             UserData userData = user.userData;
 
-            SettingsPanelTCPURLField.text = userData.userAudioUrl;
+            SettingsPanelTCPURLField.text = userData.userRepresentationUrl;
             SettingsPanelRepresentationDropdown.value = (int)userData.userRepresentationType;
             SettingsPanelWebcamDropdown.value = 0;
 

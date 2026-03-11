@@ -118,7 +118,7 @@ namespace VRT.UserRepresentation.WebCam
                         switch (proto)
                         {
                             case "tcp":
-                                url = user.userData.userAudioUrl;
+                                url = user.userData.userRepresentationUrl;
                                 break;
                         }
                         writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "webcam", "wcwc", dashStreamDescriptions);
@@ -156,7 +156,7 @@ namespace VRT.UserRepresentation.WebCam
                 switch (proto)
                 {
                     case "tcp":
-                        url = user.userData.userAudioUrl;
+                        url = user.userData.userRepresentationUrl;
                         break;
                 }
                 reader = TransportProtocol.NewReader(proto).Init(url, user.userId, "webcam", 0, "wcwc", videoCodecQueue);

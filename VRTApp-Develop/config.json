@@ -1,35 +1,41 @@
 {
-    "_orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
+    "configVersion": 20260311,
+    "orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
     "targetFrameRate": -1,
     "ntpSyncThreshold": 0.10000000149011612,
-    "statsInterval": 1,
+    "statsInterval": 10.0,
     "statsOutputFile": "",
     "statsOutputFileAppend": false,
     "ffmpegDLLDir": "../ffmpeg/x64",
+    "autoInventUsername": true,
     "ScreenshotTool": {
         "takeScreenshot": false,
-        "screenshotTargetDirectory": ""
+        "fps": 0,
+        "screenshotTargetDirectory": "",
+        "preDeleteTargetDirectory": true,
+        "filenameTemplate": "Frame{framenum}.png"
     },
-    "_AutoStart": {
-        "ignoreAutoStartForDeveloper": false,
+    "AutoStart": {
+        "ignoreAutoStartForDeveloper": true,
         "autoLogin": true,
         "autoCreate": false,
         "autoJoin": false,
         "autoCreateForUser": "",
         "sessionName": "",
-        "sessionScenario": "Technical Playground",
-        "sessionTransportProtocol": "dash",
+        "sessionScenario": "",
+        "sessionTransportProtocol": "",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": 2,
-        "autoLeaveAfter": 60.0,
-        "autoStopAfterLeave": true,
-        "autoDelay": 0.0
+        "autoStartWith": -1,
+        "autoLeaveAfter": 0.0,
+        "autoStopAfterLeave": false,
+        "autoDelay": 1.0
     },
     "TransportDash": {
-    	"logLevel": 3,
         "segmentSize": 4000,
-        "segmentLife": 60000
+        "segmentLife": 15000,
+        "logLevel": 1,
+        "nativeLibraryPath": ""
     },
     "TransportWebRTC": {
         "peerExecutablePath": "",
@@ -40,12 +46,12 @@
         "logFileDirectory": "",
         "debugLevel": 0
     },
-    "PCs": {
-        "logLevel" : 4,
+    "RepresentationPointcloud": {
+        "logLevel": 2,
         "overrideNativeLoadPath": "",
         "Codec": "cwi1",
-        "defaultCellSize": 0.0020000000949949028,
-        "cellSizeFactor": 1.0,
+        "defaultCellSize": 0.0,
+        "cellSizeFactor": 0.0,
         "debugColorize": false,
         "timeoutBeforeGhosting": 5.0,
         "decoderQueueSizeOverride": 0,
@@ -54,24 +60,24 @@
         "decoderParallelism": 0,
         "preparerQueueSize": 0
     },
-    "Voice": {
+    "RepresentationVoice": {
         "audioFps": 50,
-        "maxPlayoutLatency": 0.06599999964237213,
+        "maxPlayoutLatency": 0.30000001192092898,
         "maxPlayoutAhead": 0.06599999964237213,
         "preparerQueueSize": 0,
-        "ignoreSynchronizer": true
+        "ignoreSynchronizer": false
     },
     "Synchronizer": {
         "debugSynchronizer": false,
         "debugJitterBuffer": false,
         "minLatency": 100,
         "maxLatency": 5000,
-        "latencyMaxDecrease": 1000,
-        "latencyMaxIncrease": 1000,
-        "acceptDesyncOnDataUnavailable": true
+        "latencyMaxDecrease": 1,
+        "latencyMaxIncrease": 33,
+        "acceptDesyncOnDataUnavailable": false
     },
     "TileSelector": {
-        "algorithm": "frontTileBest",
+        "algorithm": "",
         "debugDecisions": false,
         "bitrateBudget": 0
     },
@@ -80,7 +86,7 @@
     "LocalUser": {
         "orchestratorConfigFilename": "config-user.json",
         "PCSelfConfig": {
-            "capturerType": 5,
+            "capturerType": 4,
             "capturerTypeName": "",
             "CameraReaderConfig": {
                 "configFilename": ""
@@ -97,15 +103,12 @@
                 "nPoints": 16000
             },
             "PrerecordedReaderConfig": {
-                "folder": ".../cwipc_test/Samples/loot-200K-4tiles/"
+                "folder": "../cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
             "frameRate": 15.0,
             "tiled": true,
             "Encoders": [
-                {
-                    "octreeBits": 7
-                },
                 {
                     "octreeBits": 9
                 }

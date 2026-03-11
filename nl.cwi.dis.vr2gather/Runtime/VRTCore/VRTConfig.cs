@@ -11,7 +11,9 @@ namespace VRT.Core
     [Serializable]
     public class VRTConfig : MonoBehaviour
     {
-        
+        const int CurrentConfigVersion = 20260311;
+        [Tooltip("Version of this config file/struct. Do not change.")]
+        public int configVersion = CurrentConfigVersion;
         public static bool ISXRActive() {
                 if (XRGeneralSettings.Instance == null) {
                     return false;
@@ -125,15 +127,15 @@ namespace VRT.Core
         public _TransportWebRTC TransportWebRTC;
 
         [Serializable]
-        public class _PC : Cwipc.CwipcConfig {
+        public class _RepresentationPointcloud : Cwipc.CwipcConfig {
             [Tooltip("If non-zero, sets the limit on the number of point clouds buffered for output (otherwise a sensible default is used)")]
             public int preparerQueueSize = 0;
 
         }
-        public _PC PCs;
+        public _RepresentationPointcloud RepresentationPointcloud;
 
         [Serializable]
-        public class _Voice
+        public class _RepresentationVoice
         {
             [Tooltip("Approximate voice input frame rate (will be rounded down to intgral number of DSP buffers)")]
             public int audioFps = 50;
@@ -147,7 +149,7 @@ namespace VRT.Core
             public bool ignoreSynchronizer = false;
         }
         [Tooltip("Conversational audio settings")]
-        public _Voice Voice;
+        public _RepresentationVoice RepresentationVoice;
 
         [Serializable]
         public class _Synchronizer
@@ -331,11 +333,18 @@ namespace VRT.Core
             if (System.IO.File.Exists(file))
             {
                 Debug.Log($"VRTConfig: override settings from {file}");
+                // Hack to ensure we read the config version
+                configVersion = 0;
                 JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
             }
             else
             {
                 Debug.LogWarning($"VRTConfig: override file not found: {file}");
+            }
+
+            if (configVersion != CurrentConfigVersion)
+            {
+                Debug.LogError($"VRTConfig: config file is version {configVersion} in stead of expected version {CurrentConfigVersion}");
             }
             //
             // Update various settings after reading configfile overrides
@@ -361,7 +370,7 @@ namespace VRT.Core
 #endif
             // Communicate cwipc settings to cwipc package. This sets all sorts
             // of things, from native log level to queue sizes, etc.
-            Cwipc.CwipcConfig.SetInstance(this.PCs);
+            Cwipc.CwipcConfig.SetInstance(this.RepresentationPointcloud);
             
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);

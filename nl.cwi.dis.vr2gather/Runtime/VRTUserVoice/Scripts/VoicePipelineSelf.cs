@@ -64,7 +64,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new AsyncVoiceReader(micro, VRTConfig.Instance.audioSampleRate, VRTConfig.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new AsyncVoiceReader(micro, VRTConfig.Instance.audioSampleRate, VRTConfig.Instance.RepresentationVoice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
@@ -78,7 +78,7 @@ namespace VRT.UserRepresentation.Voice
             switch (proto)
             {
                 case "tcp":
-                    url = user.userData.userAudioUrl;
+                    url = user.userData.userRepresentationUrl;
                     break;
             }
             writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, _streamName, audioCodec, b2dStreams);
