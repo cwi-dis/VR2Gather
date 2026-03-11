@@ -205,10 +205,10 @@ namespace VRT.Core
         public _PositionTracker PositionTracker;
 
         [Serializable]
-        public class _User
+        public class _Representation
         {
             [Serializable]
-            public class _PCSelfConfig
+            public class _PointcloudRepresentationConfig
             {
                 [Serializable]
                 public enum PCCapturerType
@@ -267,11 +267,11 @@ namespace VRT.Core
                 }
                 public _Encoder[] Encoders;
             }
-            public _PCSelfConfig PCSelfConfig;
+            public _PointcloudRepresentationConfig PointcloudRepresentationConfig;
         };
 
         [Tooltip("Point cloud avatar capturer, encoder and transmission parameters")]
-        public _User LocalUser;
+        public _Representation Representation;
 
         [Tooltip("Introspection: Config override JSON file used")]
         public string configOverrideFilename;
@@ -349,11 +349,11 @@ namespace VRT.Core
                     Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
                 }
             }
-            if (LocalUser.PCSelfConfig.capturerTypeName != null && LocalUser.PCSelfConfig.capturerTypeName != "") {
-                if (!Enum.TryParse(LocalUser.PCSelfConfig.capturerTypeName, out LocalUser.PCSelfConfig.capturerType))
+            if (Representation.PointcloudRepresentationConfig.capturerTypeName != null && Representation.PointcloudRepresentationConfig.capturerTypeName != "") {
+                if (!Enum.TryParse(Representation.PointcloudRepresentationConfig.capturerTypeName, out Representation.PointcloudRepresentationConfig.capturerType))
                 {
-                    Debug.LogError($"VRTCore.Config: Unknown capturerTypeName \"{LocalUser.PCSelfConfig.capturerTypeName}\"");
-                    LocalUser.PCSelfConfig.capturerType = _User._PCSelfConfig.PCCapturerType.none;
+                    Debug.LogError($"VRTCore.Config: Unknown capturerTypeName \"{Representation.PointcloudRepresentationConfig.capturerTypeName}\"");
+                    Representation.PointcloudRepresentationConfig.capturerType = _Representation._PointcloudRepresentationConfig.PCCapturerType.none;
                 }
             }
             // Initialize some other modules that have their own configuration.

@@ -3,15 +3,15 @@ using VRT.Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static VRT.Core.VRTConfig._User;
-using static VRT.Core.VRTConfig._User._PCSelfConfig;
+using static VRT.Core.VRTConfig._Representation;
+using static VRT.Core.VRTConfig._Representation._PointcloudRepresentationConfig;
 using System;
 
 namespace VRT.UserRepresentation.PointCloud
 {
     public class  PointCloudCapturerFactory
     {
-        public static AsyncPointCloudReader Create(VRTConfig._User._PCSelfConfig config, QueueThreadSafe selfPreparerQueue, QueueThreadSafe encoderQueue) { 
+        public static AsyncPointCloudReader Create(VRTConfig._Representation._PointcloudRepresentationConfig config, QueueThreadSafe selfPreparerQueue, QueueThreadSafe encoderQueue) { 
             string configFilename = config.CameraReaderConfig.configFilename;
             if (!string.IsNullOrEmpty(configFilename))
             {
@@ -19,15 +19,15 @@ namespace VRT.UserRepresentation.PointCloud
             }
             switch(config.capturerType)
             {
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.camera:
+                case VRTConfig._Representation._PointcloudRepresentationConfig.PCCapturerType.camera:
                     return new AsyncCameraReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.synthetic:
+                case VRTConfig._Representation._PointcloudRepresentationConfig.PCCapturerType.synthetic:
                    return new AsyncSyntheticReader(config.frameRate, config.SynthReaderConfig.nPoints, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.prerecorded:
+                case VRTConfig._Representation._PointcloudRepresentationConfig.PCCapturerType.prerecorded:
                     var prConfig = config.PrerecordedReaderConfig;
                     if (prConfig.folder == null || prConfig.folder == "")
                     {
-                        throw new System.Exception($"PointCloudCapturerFactory: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
+                        throw new System.Exception($"PointCloudCapturerFactory: missing self-user PointcloudRepresentationConfig.PrerecordedReaderConfig.folder config");
                     }
                     string prerecordedFolder = VRTConfig.ConfigFilename(prConfig.folder, allowSearch:true, label:"Precorded pointcloud folder");
                     Debug.Log($"prConfig.folder: {prerecordedFolder}");
@@ -36,13 +36,13 @@ namespace VRT.UserRepresentation.PointCloud
                         throw new System.Exception($"PointCloudCapturerFactory: folder {prerecordedFolder} does not exist");
                     }
                     return new AsyncPrerecordedReader(prerecordedFolder, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.proxy:
+                case VRTConfig._Representation._PointcloudRepresentationConfig.PCCapturerType.proxy:
                     var ProxyReaderConfig = config.ProxyReaderConfig;
                     return new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.remote:
+                case VRTConfig._Representation._PointcloudRepresentationConfig.PCCapturerType.remote:
                     var rcConfig = config.RemoteCameraReaderConfig;
                     return new AsyncNetworkCaptureReader(rcConfig.url, rcConfig.isCompressed, selfPreparerQueue, encoderQueue);
-                case VRTConfig._User._PCSelfConfig.PCCapturerType.developer:
+                case VRTConfig._Representation._PointcloudRepresentationConfig.PCCapturerType.developer:
                     try
                     {
                         return new AsyncCameraReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);

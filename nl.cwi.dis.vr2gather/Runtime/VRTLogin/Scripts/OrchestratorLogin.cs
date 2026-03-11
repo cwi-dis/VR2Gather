@@ -426,7 +426,7 @@ namespace VRT.Login
             // Load locally save user data
             if (String.IsNullOrEmpty(VRTConfig.Instance.userConfigFilename))
             {
-                Debug.LogError("OrchestratorLogin.LoadUserData: LocalUser.userConfigFilename is empty");
+                Debug.LogError("OrchestratorLogin.LoadUserData: Representation.userConfigFilename is empty");
                 OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }

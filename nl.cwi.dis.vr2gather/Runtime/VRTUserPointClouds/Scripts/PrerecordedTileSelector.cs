@@ -131,7 +131,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
             prerecordedTileGeometrySets = new List<TileGeometry>[nTiles];
-            VRTConfig._User realUser = VRTConfig.Instance.LocalUser;
+            VRTConfig._Representation realUser = VRTConfig.Instance.Representation;
 #if WITH_QUALITY_ASSESSMENT
             currentStimuli = StimuliController.getCurrentStimulus();
             bitRatebudget = StimuliController.getBitrateBudget();
@@ -163,8 +163,8 @@ namespace VRT.UserRepresentation.PointCloud
             }
 
             //xxxshishir load the tile description csv files
-            string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
-            string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
+            string rootFolder = Config.Instance.Representation.PointcloudRepresentationConfig.PrerecordedReaderConfig.folder;
+            string[] tileFolder = Config.Instance.Representation.PointcloudRepresentationConfig.PrerecordedReaderConfig.tiles;
             for (int i = 0; i < prerecordedTileAdaptationSets.Length; i++)
             {
                 string csvFilename = System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv");

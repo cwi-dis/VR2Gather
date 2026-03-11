@@ -14,7 +14,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.VRTConfig._User;
+    using static VRT.Core.VRTConfig._Representation;
 
     public class PointCloudPipelineSelf : PointCloudPipelineBase, IPointCloudPositionProvider
     {
@@ -39,7 +39,7 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false, GameObject playerGO = null)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._Representation cfg, bool preview = false, GameObject playerGO = null)
         {
             if (!isLocalPlayer)
             {
@@ -79,12 +79,12 @@ namespace VRT.UserRepresentation.PointCloud
             if (!preview) proto = $", proto={SessionConfig.Instance.protocolType}";
             Statistics.Output(Name(), $"self={selfness}, userid={user.userId}, representation={(int)user.userData.userRepresentationType}{proto}");
 #endif
-            _InitForSelfUser(cfg.PCSelfConfig, preview);
+            _InitForSelfUser(cfg.PointcloudRepresentationConfig, preview);
             
             return this;
         }
 
-        protected void _InitForSelfUser(VRTConfig._User._PCSelfConfig PCSelfConfig, bool preview)
+        protected void _InitForSelfUser(VRTConfig._Representation._PointcloudRepresentationConfig PCSelfConfig, bool preview)
         {
             isSource = true;
             if (synchronizer != null)
@@ -220,7 +220,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
 
-        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig._User._PCSelfConfig._Encoder[] Encoders, bool leakyQueues)
+        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig._Representation._PointcloudRepresentationConfig._Encoder[] Encoders, bool leakyQueues)
         {
             int[] octreeBitsArray = new int[Encoders.Length];
             for (int i = 0; i < Encoders.Length; i++)
