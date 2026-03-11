@@ -57,15 +57,15 @@ namespace VRT.Pilots.Common
         }
         void Initialize() 
         {
-            inputFile = VRTConfig.Instance.LocalUser.PositionTracker.inputFile;
-            outputFile = VRTConfig.Instance.LocalUser.PositionTracker.outputFile;
+            inputFile = VRTConfig.Instance.PositionTracker.inputFile;
+            outputFile = VRTConfig.Instance.PositionTracker.outputFile;
             string sceneName = SceneManager.GetActiveScene().name;
             string dateTime = DateTime.Now.ToString("yyyyMMdd-HHmm");
             outputFile = outputFile.Replace("{scene}", sceneName);
             outputFile = outputFile.Replace("{time}", dateTime);
             
-            if (VRTConfig.Instance.LocalUser.PositionTracker.outputIntervalOverride > 0) {
-                timeInterval = VRTConfig.Instance.LocalUser.PositionTracker.outputIntervalOverride;
+            if (VRTConfig.Instance.PositionTracker.outputIntervalOverride > 0) {
+                timeInterval = VRTConfig.Instance.PositionTracker.outputIntervalOverride;
             }
             isPlayingBack = !string.IsNullOrEmpty(inputFile);
             isRecording = !string.IsNullOrEmpty(outputFile);
