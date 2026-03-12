@@ -32,8 +32,6 @@ namespace VRT.Core
         public int targetFrameRate = -1; // system default framerate
         [Tooltip("Maximum NTP desync allowed before a warning is shown")]
         public float ntpSyncThreshold = 1.0f;
-        [Tooltip("Audio sample rate. NOTE: must match between all instances")]
-        public readonly int audioSampleRate = 48000;
         [Tooltip("If nonzero: number of seconds between stats: lines. If zero: every event")]
         public double statsInterval = 10.0;
         [Tooltip("Path name of stats: output file. Empty: to console log")]
@@ -139,6 +137,8 @@ namespace VRT.Core
         [Serializable]
         public class _VoiceConfig
         {
+            [Tooltip("Audio sample rate. NOTE: must match between all instances")]
+            public readonly int AudioSampleRate = 48000;
             [Tooltip("Approximate voice input frame rate (will be rounded down to intgral number of DSP buffers)")]
             public int audioFps = 50;
             [Tooltip("If > 0, voice output is further behind its natural playout time than this, and data is available, we will drop packets to catch up")]

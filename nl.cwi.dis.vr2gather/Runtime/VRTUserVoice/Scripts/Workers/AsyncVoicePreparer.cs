@@ -225,7 +225,7 @@ namespace VRT.UserRepresentation.Voice
             float[] leftOver = new float[remaining];
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
             audioBuffer = leftOver;
-            audioBufferHeadTimestamp += (Timedelta)(1000 * len / VRTConfig.Instance.audioSampleRate);
+            audioBufferHeadTimestamp += (Timedelta)(1000 * len / VRTConfig.Instance.VoiceConfig.AudioSampleRate);
 #pragma warning disable CS0162
             if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
@@ -276,7 +276,7 @@ namespace VRT.UserRepresentation.Voice
                 _fillIntoAudioBuffer(true);
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
-                nextGetAudioBufferExpected = now + (len * 1000 / VRTConfig.Instance.audioSampleRate);
+                nextGetAudioBufferExpected = now + (len * 1000 / VRTConfig.Instance.VoiceConfig.AudioSampleRate);
                 if (audioBufferHeadTimestamp > 0)
                 {
                     sysClockToAudioClock = audioBufferHeadTimestamp - now;

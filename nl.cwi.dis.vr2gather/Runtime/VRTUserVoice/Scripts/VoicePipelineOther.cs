@@ -76,7 +76,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 Debug.LogWarning($"{Name()}: No synchronizer for user {user.GetId()}");
             }
-            VoiceDspController.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
+            VoiceDspController.PrepareDSP(VRTConfig.Instance.VoiceConfig.AudioSampleRate, 0);
             if (audioSource == null)
             {
                 audioSource = gameObject.GetComponent<AudioSource>();

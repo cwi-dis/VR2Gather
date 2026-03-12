@@ -98,7 +98,7 @@ namespace VRT.Login
             currentMicrophoneName = microphoneName;
             if (currentMicrophoneName != "None")
             {
-                VoiceDspController.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
+                VoiceDspController.PrepareDSP(VRTConfig.Instance.VoiceConfig.AudioSampleRate, 0);
                 recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
                 readPosition = 0;
             }
