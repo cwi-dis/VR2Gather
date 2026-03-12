@@ -139,7 +139,7 @@ namespace VRT.UserRepresentation.PointCloud
                 // Determine tiles to transmit
                 //
                 Cwipc.PointCloudTileDescription[] tilesToTransmit = null;
-                if (PCSelfConfig.tiled)
+                if (VRTConfig.Instance.PointCloudTransmissionConfig.tiled)
                 {
                     tilesToTransmit = reader.getTiles();
                     if (tilesToTransmit != null && tilesToTransmit.Length > 1)
@@ -171,7 +171,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // allocate and initialize per-stream outgoing stream datastructures
                 //
-                _CreateDescriptionsForOutgoing(tilesToTransmit, PCSelfConfig.Encoders, leakyQueues);
+                _CreateDescriptionsForOutgoing(tilesToTransmit, VRTConfig.Instance.PointCloudTransmissionConfig.EncoderConfigs, leakyQueues);
 
 
                 //
@@ -205,7 +205,7 @@ namespace VRT.UserRepresentation.PointCloud
                
 
 #if VRT_WITH_STATS
-                Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={tilesToTransmit.Length}, nquality={PCSelfConfig.Encoders.Length}, nStream={outgoingStreamDescriptions.Length}");
+                Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={tilesToTransmit.Length}, nquality={VRTConfig.Instance.PointCloudTransmissionConfig.EncoderConfigs.Length}, nStream={outgoingStreamDescriptions.Length}");
 #endif
             }
         }
@@ -220,7 +220,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
 
-        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig.RepresentationConfigType._PointcloudRepresentationConfig._Encoder[] Encoders, bool leakyQueues)
+        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig.PointCloudTransmissionConfigType.EncoderConfigType[] Encoders, bool leakyQueues)
         {
             int[] octreeBitsArray = new int[Encoders.Length];
             for (int i = 0; i < Encoders.Length; i++)

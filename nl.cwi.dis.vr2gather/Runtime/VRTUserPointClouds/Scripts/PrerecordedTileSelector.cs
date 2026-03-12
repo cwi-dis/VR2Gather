@@ -163,8 +163,8 @@ namespace VRT.UserRepresentation.PointCloud
             }
 
             //xxxshishir load the tile description csv files
-            string rootFolder = Config.Instance.Representation.PointcloudRepresentationConfig.PrerecordedReaderConfig.folder;
-            string[] tileFolder = Config.Instance.Representation.PointcloudRepresentationConfig.PrerecordedReaderConfig.tiles;
+            string rootFolder = Config.Instance.Representation.PointcloudRepresentationConfig.PrerecordedConfig.folder;
+            string[] tileFolder = Config.Instance.Representation.PointcloudRepresentationConfig.PrerecordedConfig.tiles;
             for (int i = 0; i < prerecordedTileAdaptationSets.Length; i++)
             {
                 string csvFilename = System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv");

@@ -50,7 +50,9 @@ namespace VRT.Core
             public bool outputFileAppend = true;
 
         };
+        [Tooltip("Settings for VRTStatistics-style runtime statistics")]
         public StatisticsConfigType StatisticsConfig;
+        
         [Serializable]
         public class ScreenshotConfigType
         {
@@ -65,6 +67,7 @@ namespace VRT.Core
             [Tooltip("filename format. Can include {ts}, {num} and {framenum} constructs")]
             public string filenameTemplate = "Frame{framenum}.png";
         }
+        [Tooltip("Settings for screenshot tool")]
         public ScreenshotConfigType ScreenshotConfig;
 
         [Serializable]
@@ -119,7 +122,7 @@ namespace VRT.Core
             [Tooltip("Override the lldash native library location.")]
             public string nativeLibraryPath = "";
         }
-        [Tooltip("Settable parameters for DASH protocol")]
+        [Tooltip("Settable parameters for DASH transport protocol")]
         public TransportDashConfigType TransportDashConfig;
         [Serializable]
         public class TransportWebRTCConfigType
@@ -132,6 +135,7 @@ namespace VRT.Core
             public string logFileDirectory = null;
             public int debugLevel = 0;
         }
+        [Tooltip("Settable parameters for WebRTC transport protocol")]
         public TransportWebRTCConfigType TransportWebRTCConfig;
 
         [Serializable]
@@ -140,6 +144,7 @@ namespace VRT.Core
             public int preparerQueueSize = 0;
 
         }
+        [Tooltip("Settings for cwipc point cloud support")]
         public CwipcConfigType CwipcConfig;
 
         [Serializable]
@@ -182,9 +187,26 @@ namespace VRT.Core
             [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
             public bool acceptDesyncOnDataUnavailable = false;
         }
-        [Tooltip("Avatar media stream synchronizer parameters")]
+        [Tooltip("Representation media stream synchronizer parameters")]
         public SynchronizerConfigType SynchronizerConfig;
 
+        [Serializable]
+        public class PointCloudTransmissionConfigType
+        {
+            [Tooltip("Set to true to transmit point clouds in multiple tiles")]
+            public bool tiled;
+            [Serializable]
+            public class EncoderConfigType
+            {
+                [Tooltip("cwipc_codec octreeBits parameter (higher is better)")]
+                public int octreeBits;
+            }
+            [Tooltip("How to encode point cloud streams. Multiple values result in multiple quality streams (per tile, possibly)")]
+            public EncoderConfigType[] EncoderConfigs;
+        }
+        [Tooltip("Settable parameters for point cloud transmission streams")]
+        public PointCloudTransmissionConfigType PointCloudTransmissionConfig;
+        
         [Serializable]
         public class TileSelectorConfigType {
             [Tooltip("Algorithm for selection. Default: none")]
@@ -193,8 +215,6 @@ namespace VRT.Core
             public bool debugDecisions = false;
             [Tooltip("Override bitrate budget with a static value if non-zero (in stead of measuring it)")]
             public int bitrateBudget;
-
-
         }
 
         [Tooltip("Tile selection algorithm parameters")]
@@ -209,7 +229,7 @@ namespace VRT.Core
             [Tooltip("If non-empty, file where user location and gaze orientation are played back from")]
             public string inputFile;
         }
-
+        [Tooltip("Parameters for saving or playing back user position")]
         public PositionTrackerConfigType PositionTrackerConfig;
 
         [Serializable]
@@ -219,7 +239,7 @@ namespace VRT.Core
             public class _PointcloudRepresentationConfig
             {
                 [Serializable]
-                public enum PCCapturerType
+                public enum RepresentationPointcloudVariant
                 {
                     camera,
                     synthetic,
@@ -230,56 +250,57 @@ namespace VRT.Core
                     none,
                 };
                 [Tooltip("PC capturer type")]
-                public PCCapturerType capturerType;
-                [Tooltip("Override capturerType (string)")]
-                public string capturerType_str;
+                public RepresentationPointcloudVariant variant;
+                [Tooltip("Override variant (string)")]
+                public string variant_str;
                 [Serializable]
-                public class _CameraReaderConfig
+                public class CameraConfigType
                 {
+                    [Tooltip("Override cameraconfig.json")]
                     public string configFilename;
                 }
-                public _CameraReaderConfig CameraReaderConfig;
+                [Tooltip("Settings for camera variant")]
+                public CameraConfigType CameraConfig;
                 [Serializable]
-                public class _RemoteCameraReaderConfig
+                public class RemoteConfigType
                 {
                     public string url;
                     public bool isCompressed;
                 }
-                public _RemoteCameraReaderConfig RemoteCameraReaderConfig;
+                [Tooltip("Settings for remote variant (opens TCP connection to a remote camera)")]
+                public RemoteConfigType RemoteConfig;
                 [Serializable]
-                public class _ProxyReaderConfig
+                public class ProxyConfigType
                 {
                     public string localIP;
                     public int port;
                 }
-                public _ProxyReaderConfig ProxyReaderConfig;
+                [Tooltip("Settings for proxy variant (creates TCP server to which remote camera connects)")]
+                public ProxyConfigType ProxyConfig;
                 [Serializable]
-                public class _SynthReaderConfig
+                public class SyntheticConfigType
                 {
                     public int nPoints;
                 }
-                public _SynthReaderConfig SynthReaderConfig;
+                [Tooltip("Settings for synthetic point cloud variant")]
+                public SyntheticConfigType SyntheticConfig;
                 [Serializable]
-				public class _PrerecordedReaderConfig
+				public class PrerecordedConfigType
 				{
 					public string folder;
                 };
-				public _PrerecordedReaderConfig PrerecordedReaderConfig;
-				
+                [Tooltip("Settings for prerecorded variant (which plays back a prerecorded sequence)")]
+				public PrerecordedConfigType PrerecordedConfig;
+				[Tooltip("If non-zero: override voxelsize of point cloud capturer")]
                 public float voxelSize;
+                [Tooltip("If non-zero: override framerate of point cloud capturer")]
                 public float frameRate;
-                public bool tiled;
-                [Serializable]
-                public class _Encoder
-                {
-                    public int octreeBits;
-                }
-                public _Encoder[] Encoders;
+                
             }
             public _PointcloudRepresentationConfig PointcloudRepresentationConfig;
         };
 
-        [Tooltip("Point cloud avatar capturer, encoder and transmission parameters")]
+        [Tooltip("User representation configuration")]
         public RepresentationConfigType RepresentationConfig;
 
 #if UNITY_EDITOR
@@ -330,14 +351,14 @@ namespace VRT.Core
         private void _PostLoad()
         {
             // Convert all enums to their string representation
-            if (!String.IsNullOrEmpty(RepresentationConfig.PointcloudRepresentationConfig.capturerType_str))
+            if (!String.IsNullOrEmpty(RepresentationConfig.PointcloudRepresentationConfig.variant_str))
             {
-                if (!Enum.TryParse<RepresentationConfigType._PointcloudRepresentationConfig.PCCapturerType>(
-                    RepresentationConfig.PointcloudRepresentationConfig.capturerType_str,
+                if (!Enum.TryParse<RepresentationConfigType._PointcloudRepresentationConfig.RepresentationPointcloudVariant>(
+                    RepresentationConfig.PointcloudRepresentationConfig.variant_str,
                     true, 
-                    out RepresentationConfig.PointcloudRepresentationConfig.capturerType))
+                    out RepresentationConfig.PointcloudRepresentationConfig.variant))
                 {
-                    Debug.LogError($"VRTConfig: Invalid value for capturerType_str");
+                    Debug.LogError($"VRTConfig: Invalid value for variant_str");
                 }
             }
             // And ensure everything is consistent again
@@ -346,7 +367,7 @@ namespace VRT.Core
 
         private void _PreSave()
         {
-            RepresentationConfig.PointcloudRepresentationConfig.capturerType_str = RepresentationConfig.PointcloudRepresentationConfig.capturerType.ToString();
+            RepresentationConfig.PointcloudRepresentationConfig.variant_str = RepresentationConfig.PointcloudRepresentationConfig.variant.ToString();
         }
         
         private void Initialize()
