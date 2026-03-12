@@ -152,8 +152,8 @@ namespace VRT.Pilots.Common
                     }
                     catch (Exception e)
                     {
-                        Debug.Log($"Cannot set representation {userRepresentation}. Exception {e}");
-                        Debug.LogError($"Cannot set representation {userRepresentation}. Revert to avatar.");
+                        Debug.Log($"Cannot set representation PointCloud, variant {VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant}. Exception {e}");
+                        Debug.LogError($"Cannot set representation PointCloud, variant {VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant}. Revert to avatar.");
                         userRepresentation = UserRepresentationType.SimpleAvatar;
                         avatar.SetActive(true);
                         this.pointcloud.SetActive(false);

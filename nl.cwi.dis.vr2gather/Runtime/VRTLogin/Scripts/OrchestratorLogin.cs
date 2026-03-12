@@ -672,7 +672,7 @@ namespace VRT.Login
         {
             VRTConfig.RepresentationConfigType config = VRTConfig.Instance.RepresentationConfig;
             config.representation = (UserRepresentationType)SettingsPanelRepresentationDropdown.value;
-            config.RepresentationPointcloudConfig.variant = (RepresentationPointcloudVariant)SettingsPanelRepresentationDropdown.value;
+            config.RepresentationPointcloudConfig.variant = (RepresentationPointcloudVariant)SettingsPanelPointcloudVariantDropdown.value;
             config.webcamName = SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text;
             config.microphoneName = SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text;
             config.userRepresentationTCPUrl = SettingsPanelTCPURLField.text;
@@ -718,7 +718,7 @@ namespace VRT.Login
         {
             // xxxjack hack: we actually set the point cloud variant right away in the user settings.
             // There is no easy way to pass the parameter otherwise.
-            VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant = (RepresentationPointcloudVariant)SettingsPanelRepresentationDropdown.value;
+            VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant = (RepresentationPointcloudVariant)SettingsPanelPointcloudVariantDropdown.value;
             // Preview
             SettingsPanel_SetRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
             SelfRepresentationPreview.ChangeRepresentation(
