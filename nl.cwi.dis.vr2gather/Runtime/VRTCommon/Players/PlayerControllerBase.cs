@@ -141,7 +141,7 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     webcam.SetActive(true);
                     BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, userRepresentation, isLocalPlayer);
-                    wcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
+                    wcPipeline?.Init(isLocalPlayer, user, isPreviewPlayer);
                     break;
                 case UserRepresentationType.SimpleAvatar:
                     isVisible = true;
@@ -154,7 +154,7 @@ namespace VRT.Pilots.Common
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, userRepresentation, isLocalPlayer);
                     try
                     {
-                        pcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer, playerGO: this.gameObject);
+                        pcPipeline?.Init(isLocalPlayer, user, isPreviewPlayer, playerGO: this.gameObject);
                     }
                     catch (Exception e)
                     {

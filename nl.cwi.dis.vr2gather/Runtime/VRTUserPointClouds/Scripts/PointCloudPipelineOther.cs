@@ -47,7 +47,7 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig.RepresentationConfigType cfg, bool preview = false, GameObject playerGO = null)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, bool preview = false, GameObject playerGO = null)
         {
             if (isLocalPlayer)
             {

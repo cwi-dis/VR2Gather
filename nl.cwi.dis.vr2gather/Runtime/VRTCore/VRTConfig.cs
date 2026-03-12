@@ -236,7 +236,7 @@ namespace VRT.Core
         public class RepresentationConfigType
         {
             [Serializable]
-            public class _PointcloudRepresentationConfig
+            public class RepresentationPointcloudConfigType
             {
                 [Serializable]
                 public enum RepresentationPointcloudVariant
@@ -297,7 +297,7 @@ namespace VRT.Core
                 public float frameRate;
                 
             }
-            public _PointcloudRepresentationConfig PointcloudRepresentationConfig;
+            public RepresentationPointcloudConfigType RepresentationPointcloudConfig;
         };
 
         [Tooltip("User representation configuration")]
@@ -351,12 +351,12 @@ namespace VRT.Core
         private void _PostLoad()
         {
             // Convert all enums to their string representation
-            if (!String.IsNullOrEmpty(RepresentationConfig.PointcloudRepresentationConfig.variant_str))
+            if (!String.IsNullOrEmpty(RepresentationConfig.RepresentationPointcloudConfig.variant_str))
             {
-                if (!Enum.TryParse<RepresentationConfigType._PointcloudRepresentationConfig.RepresentationPointcloudVariant>(
-                    RepresentationConfig.PointcloudRepresentationConfig.variant_str,
+                if (!Enum.TryParse<RepresentationConfigType.RepresentationPointcloudConfigType.RepresentationPointcloudVariant>(
+                    RepresentationConfig.RepresentationPointcloudConfig.variant_str,
                     true, 
-                    out RepresentationConfig.PointcloudRepresentationConfig.variant))
+                    out RepresentationConfig.RepresentationPointcloudConfig.variant))
                 {
                     Debug.LogError($"VRTConfig: Invalid value for variant_str");
                 }
@@ -367,7 +367,7 @@ namespace VRT.Core
 
         private void _PreSave()
         {
-            RepresentationConfig.PointcloudRepresentationConfig.variant_str = RepresentationConfig.PointcloudRepresentationConfig.variant.ToString();
+            RepresentationConfig.RepresentationPointcloudConfig.variant_str = RepresentationConfig.RepresentationPointcloudConfig.variant.ToString();
         }
         
         private void Initialize()
