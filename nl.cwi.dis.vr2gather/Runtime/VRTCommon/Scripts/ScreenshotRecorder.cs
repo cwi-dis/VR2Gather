@@ -37,12 +37,12 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-            var config = VRTConfig.Instance.ScreenshotTool;
+            var config = VRTConfig.Instance.ScreenshotConfig;
             takeScreenshot = config.takeScreenshot;
             if (!takeScreenshot)
             {
                 gameObject.SetActive(false);
-                Debug.Log($"{Name()}: disabling, config.ScreenshotTool.takeScreenshot = false");
+                Debug.Log($"{Name()}: disabling, config.ScreenshotConfig.takeScreenshot = false");
                 return;
             }
             if (string.IsNullOrEmpty(config.screenshotTargetDirectory))

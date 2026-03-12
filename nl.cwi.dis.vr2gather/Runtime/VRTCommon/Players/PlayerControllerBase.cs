@@ -126,7 +126,7 @@ namespace VRT.Pilots.Common
             if (altRepOne != null) altRepOne.SetActive(false);
             if (altRepTwo != null) altRepTwo.SetActive(false);
             // Enable and initialize the correct representation
-            VRTConfig._Representation userCfg = isLocalPlayer ? VRTConfig.Instance.Representation : null;
+            VRTConfig.RepresentationConfigType userCfg = isLocalPlayer ? VRTConfig.Instance.RepresentationConfig : null;
             if (charControl != null) charControl.enabled = true;
             switch (userRepresentation)
             {
@@ -217,7 +217,7 @@ namespace VRT.Pilots.Common
             }
             if (isLocalPlayer)
             { // Sender
-                var userCfg = VRTConfig.Instance.Representation;
+                var userCfg = VRTConfig.Instance.RepresentationConfig;
                 VoicePipelineSelf voicePipelineSelf = voice.GetComponent<VoicePipelineSelf>();
                 if (voicePipelineSelf != null)
                 {

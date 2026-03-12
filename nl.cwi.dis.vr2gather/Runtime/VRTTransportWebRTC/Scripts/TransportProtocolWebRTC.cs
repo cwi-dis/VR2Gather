@@ -73,8 +73,8 @@ namespace VRT.Transport.WebRTC
         {
             Uri url = new(_url);
             peerSFUAddress = $"{url.Host}:{url.Port}";
-            logFileDirectory = VRTConfig.Instance.TransportWebRTC.logFileDirectory;
-            debugLevel = VRTConfig.Instance.TransportWebRTC.debugLevel;
+            logFileDirectory = VRTConfig.Instance.TransportWebRTCConfig.logFileDirectory;
+            debugLevel = VRTConfig.Instance.TransportWebRTCConfig.debugLevel;
             WebRTCConnectorPinvoke.ConfigureDebug(logFileDirectory, debugLevel);
         }
 
@@ -106,11 +106,11 @@ namespace VRT.Transport.WebRTC
                 }
 
                 // Get settings from the config file
-                peerExecutablePath = VRTConfig.Instance.TransportWebRTC.peerExecutablePath;
-                peerInWindow = VRTConfig.Instance.TransportWebRTC.peerInWindow;
-                peerWindowDontClose = VRTConfig.Instance.TransportWebRTC.peerWindowDontClose;
-                peerUDPPort = VRTConfig.Instance.TransportWebRTC.peerUDPPort;
-                peerIPAddress = VRTConfig.Instance.TransportWebRTC.peerIPAddress;
+                peerExecutablePath = VRTConfig.Instance.TransportWebRTCConfig.peerExecutablePath;
+                peerInWindow = VRTConfig.Instance.TransportWebRTCConfig.peerInWindow;
+                peerWindowDontClose = VRTConfig.Instance.TransportWebRTCConfig.peerWindowDontClose;
+                peerUDPPort = VRTConfig.Instance.TransportWebRTCConfig.peerUDPPort;
+                peerIPAddress = VRTConfig.Instance.TransportWebRTCConfig.peerIPAddress;
                 if (!string.IsNullOrEmpty(peerExecutablePath)) {
                     // An override peer executable path is set in the config file.
                     // Convert to absolute.

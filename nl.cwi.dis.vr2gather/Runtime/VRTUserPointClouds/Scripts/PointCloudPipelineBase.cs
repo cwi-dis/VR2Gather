@@ -16,7 +16,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.VRTConfig._Representation;
+    using static VRT.Core.VRTConfig.RepresentationConfigType;
 
     public abstract class PointCloudPipelineBase : BasePipeline
     {

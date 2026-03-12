@@ -22,7 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.VRTConfig._Representation;
+    using static VRT.Core.VRTConfig.RepresentationConfigType;
 
 
     public class PointCloudPipelineOther : PointCloudPipelineBase
@@ -47,7 +47,7 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._Representation cfg, bool preview = false, GameObject playerGO = null)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig.RepresentationConfigType cfg, bool preview = false, GameObject playerGO = null)
         {
             if (isLocalPlayer)
             {

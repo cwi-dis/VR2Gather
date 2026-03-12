@@ -278,7 +278,7 @@ namespace VRT.Login
         private void AutoStart_StateUpdate()
         {
             // We do a quick exit if we don't have an autostart config, or if shift is pressed.
-            VRTConfig._AutoStart config = VRTConfig.Instance.AutoStart;
+            VRTConfig.AutoStartConfigType config = VRTConfig.Instance.AutoStartConfig;
             if (config == null) return;
             if (Keyboard.current.shiftKey.isPressed) {
                 Debug.Log($"OrchestratorLogin: AutoStart: shift pressed, disabling autostart");
@@ -289,7 +289,7 @@ namespace VRT.Login
                 Debug.Log($"OrchestratorLogin: AutoStart: developer mode, disabling autostart");
                 autoState = AutoState.Done;
             }
-            if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart.autoLogin)
+            if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStartConfig.autoLogin)
             {
                 if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
                 if (Login())
@@ -298,16 +298,16 @@ namespace VRT.Login
                 }
                 else
                 {
-                    VRTConfig.Instance.AutoStart.autoLogin = false;
+                    VRTConfig.Instance.AutoStartConfig.autoLogin = false;
                 }
                 return;
             }
-            if (autoState == AutoState.DidLogIn && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin))
+            if (autoState == AutoState.DidLogIn && (VRTConfig.Instance.AutoStartConfig.autoCreate || VRTConfig.Instance.AutoStartConfig.autoJoin))
             {
-                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
+                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStartConfig.autoCreate} autoJoin {VRTConfig.Instance.AutoStartConfig.autoJoin}");
                 autoState = AutoState.DidPlay;
                 ChangeState(State.Play);
-                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStartConfig.autoDelay);
                 return;
             }
             if (state == State.Play && autoState == AutoState.DidPlay)
@@ -426,7 +426,7 @@ namespace VRT.Login
             // Load locally save user data
             if (String.IsNullOrEmpty(VRTConfig.Instance.userConfigFilename))
             {
-                Debug.LogError("OrchestratorLogin.LoadUserData: Representation.userConfigFilename is empty");
+                Debug.LogError("OrchestratorLogin.LoadUserData: userConfigFilename is empty");
                 OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }
@@ -965,8 +965,8 @@ namespace VRT.Login
             LobbyPanelSessionNumUsers.text = sessionUsers.Length.ToString() /*+ "/" + "4"*/;
             Debug.Log($"xxxjack OrchestratorLogin: UpdateUsersSession: {sessionUsers.Length} users in session");
             // We may be able to continue auto-starting
-            if (VRTConfig.Instance.AutoStart != null)
-                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+            if (VRTConfig.Instance.AutoStartConfig != null)
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStartConfig.autoDelay);
         }
 
         // xxxjack is not currently called...
@@ -1344,19 +1344,19 @@ namespace VRT.Login
             var userName = LoginPanelUserName.text;
             if (userName == "")
             {
-                if (!VRTConfig.Instance.AutoStart.autoLogin)
+                if (!VRTConfig.Instance.AutoStartConfig.autoLogin)
                 {
                     Debug.LogError("Cannot login if no username specified");
                 }
                 return false;
             }
             // If we want to autoCreate or autoStart depending on username set the right config flags.
-            if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
+            if (VRTConfig.Instance.AutoStartConfig != null && VRTConfig.Instance.AutoStartConfig.autoCreateForUser != "")
             {
-                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser.ToLower() == LoginPanelUserName.text.ToLower();
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={LoginPanelUserName.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
-                VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
-                VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
+                bool isThisUser = VRTConfig.Instance.AutoStartConfig.autoCreateForUser.ToLower() == LoginPanelUserName.text.ToLower();
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={LoginPanelUserName.text} autoCreateForUser={VRTConfig.Instance.AutoStartConfig.autoCreateForUser} isThisUser={isThisUser}");
+                VRTConfig.Instance.AutoStartConfig.autoCreate = isThisUser;
+                VRTConfig.Instance.AutoStartConfig.autoJoin = !isThisUser;
             }
             OrchestratorController.Instance.Login(userName, "");
             return true;
@@ -1439,8 +1439,8 @@ namespace VRT.Login
                 // update the list of available sessions
                 JoinPanel_UpdateSessions();
                 // We may be able to advance auto-connection
-                if (VRTConfig.Instance.AutoStart != null)
-                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                if (VRTConfig.Instance.AutoStartConfig != null)
+                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStartConfig.autoDelay);
             }
         }
 
@@ -1475,8 +1475,8 @@ namespace VRT.Login
                 state = State.Lobby;
                 AllPanels_UpdateAfterStateChange();
                 // We may be able to advance auto-connection
-                if (VRTConfig.Instance.AutoStart != null)
-                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                if (VRTConfig.Instance.AutoStartConfig != null)
+                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStartConfig.autoDelay);
             }
             else
             {

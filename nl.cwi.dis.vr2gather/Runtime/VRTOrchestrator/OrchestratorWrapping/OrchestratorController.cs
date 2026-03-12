@@ -159,7 +159,7 @@ namespace VRT.Orchestrator.Wrapping
 
         void Start()
         {
-            autoStopOnLeave = VRTConfig.Instance.AutoStart.autoStopAfterLeave;
+            autoStopOnLeave = VRTConfig.Instance.AutoStartConfig.autoStopAfterLeave;
         }
 
         private void OnDestroy() {
@@ -647,12 +647,12 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
                 Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession?.sessionId}, sessionName={mySession?.sessionName}");
 #endif
-                if (VRTConfig.Instance.AutoStart.autoLeaveAfter > 0)
+                if (VRTConfig.Instance.AutoStartConfig.autoLeaveAfter > 0)
                 {
 #if VRT_WITH_STATS
-                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={VRTConfig.Instance.AutoStart.autoLeaveAfter}");
+                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={VRTConfig.Instance.AutoStartConfig.autoLeaveAfter}");
 #endif
-                    Invoke("LeaveSession", VRTConfig.Instance.AutoStart.autoLeaveAfter);
+                    Invoke("LeaveSession", VRTConfig.Instance.AutoStartConfig.autoLeaveAfter);
                 }
             }
             OnUserMessageReceivedEvent?.Invoke(userMessage);

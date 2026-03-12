@@ -43,11 +43,11 @@ namespace VRT.Transport.Dash
 
         public ITransportProtocolWriter Init(string _url, string userId, string _streamName, string fourcc, OutgoingStreamDescription[] _descriptions)
         {
-            lldpkg.LogLevel = VRTConfig.Instance.TransportDash.logLevel;
+            lldpkg.LogLevel = VRTConfig.Instance.TransportDashConfig.logLevel;
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, false);
 
-            int _segmentSize = VRTConfig.Instance.TransportDash.segmentSize;
-            int _segmentLife = VRTConfig.Instance.TransportDash.segmentLife;
+            int _segmentSize = VRTConfig.Instance.TransportDashConfig.segmentSize;
+            int _segmentLife = VRTConfig.Instance.TransportDashConfig.segmentLife;
             if (_descriptions == null || _descriptions.Length == 0)
             {
                 throw new System.Exception($"{Name()}: descriptions is null or empty");

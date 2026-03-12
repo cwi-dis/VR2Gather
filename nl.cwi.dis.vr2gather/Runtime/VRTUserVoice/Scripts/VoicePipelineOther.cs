@@ -51,7 +51,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
         // Start is called before the first frame update
-        public void Init(bool isLocalPlayer, object _user, VRTConfig._Representation cfg, bool preview, GameObject playerGO)
+        public void Init(bool isLocalPlayer, object _user, VRTConfig.RepresentationConfigType cfg, bool preview, GameObject playerGO)
         //public void Init(User user, string _streamName, int _streamNumber)
         {
             User user = (User)_user;

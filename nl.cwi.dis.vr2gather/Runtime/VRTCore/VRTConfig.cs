@@ -28,6 +28,8 @@ namespace VRT.Core
         public string orchestratorURL = "";
         [Tooltip("local filename where orchestrator config is stored")]
         public string userConfigFilename;
+        [Tooltip("Introspection: Config override JSON file used")]
+        public string configOverrideFilename;
         [Tooltip("If nonzero: target frame rate. -1 is system default. (ignored when using HMD)")]
         public int targetFrameRate = -1; // system default framerate
         [Tooltip("Maximum NTP desync allowed before a warning is shown")]
@@ -38,7 +40,7 @@ namespace VRT.Core
         public bool autoInventUsername = true;
 
         [Serializable]
-        public class _StatisticsConfig
+        public class StatisticsConfigType
         {
             [Tooltip("If nonzero: number of seconds between stats: lines. If zero: every event")]
             public double interval = 10.0;
@@ -48,9 +50,9 @@ namespace VRT.Core
             public bool outputFileAppend = true;
 
         };
-        public _StatisticsConfig StatisticsConfig;
+        public StatisticsConfigType StatisticsConfig;
         [Serializable]
-        public class _ScreenshotTool
+        public class ScreenshotConfigType
         {
             [Tooltip("Set this to true to enable the screenshot tool")]
             public bool takeScreenshot = false;
@@ -63,10 +65,10 @@ namespace VRT.Core
             [Tooltip("filename format. Can include {ts}, {num} and {framenum} constructs")]
             public string filenameTemplate = "Frame{framenum}.png";
         }
-        public _ScreenshotTool ScreenshotTool;
+        public ScreenshotConfigType ScreenshotConfig;
 
         [Serializable]
-        public class _AutoStart
+        public class AutoStartConfigType
         {
             // This class allows to setup a machine (through config.json) to
             // - automatically login,
@@ -103,10 +105,10 @@ namespace VRT.Core
             public float autoDelay = 0.2f;
         };
         [Tooltip("Automation of LoginManager dialogs")]
-        public _AutoStart AutoStart;
+        public AutoStartConfigType AutoStartConfig;
 
         [Serializable]
-        public class _TransportDash
+        public class TransportDashConfigType
         {
             [Tooltip("How many milliseconds one transmitted DASH segment should contain")]
             public int segmentSize = 4000;
@@ -118,9 +120,9 @@ namespace VRT.Core
             public string nativeLibraryPath = "";
         }
         [Tooltip("Settable parameters for DASH protocol")]
-        public _TransportDash TransportDash;
+        public TransportDashConfigType TransportDashConfig;
         [Serializable]
-        public class _TransportWebRTC
+        public class TransportWebRTCConfigType
         {
             public string peerExecutablePath;
             public bool peerInWindow = false;
@@ -130,18 +132,18 @@ namespace VRT.Core
             public string logFileDirectory = null;
             public int debugLevel = 0;
         }
-        public _TransportWebRTC TransportWebRTC;
+        public TransportWebRTCConfigType TransportWebRTCConfig;
 
         [Serializable]
-        public class _CwipcConfig : Cwipc.CwipcConfig {
+        public class CwipcConfigType : Cwipc.CwipcConfig {
             [Tooltip("If non-zero, sets the limit on the number of point clouds buffered for output (otherwise a sensible default is used)")]
             public int preparerQueueSize = 0;
 
         }
-        public _CwipcConfig CwipcConfig;
+        public CwipcConfigType CwipcConfig;
 
         [Serializable]
-        public class _VoiceConfig
+        public class VoiceConfigType
         {
             [Tooltip("Audio sample rate. NOTE: must match between all instances")]
             public readonly int AudioSampleRate = 48000;
@@ -157,10 +159,10 @@ namespace VRT.Core
             public bool ignoreSynchronizer = false;
         }
         [Tooltip("Conversational audio settings")]
-        public _VoiceConfig VoiceConfig;
+        public VoiceConfigType VoiceConfig;
 
         [Serializable]
-        public class _Synchronizer
+        public class SynchronizerConfigType
         {
             [Tooltip("Enable to get lots of log messages on Synchronizer use")]
             public bool debugSynchronizer = false;
@@ -181,10 +183,10 @@ namespace VRT.Core
             public bool acceptDesyncOnDataUnavailable = false;
         }
         [Tooltip("Avatar media stream synchronizer parameters")]
-        public _Synchronizer Synchronizer;
+        public SynchronizerConfigType SynchronizerConfig;
 
         [Serializable]
-        public class _TileSelector {
+        public class TileSelectorConfigType {
             [Tooltip("Algorithm for selection. Default: none")]
             public string algorithm;
             [Tooltip("Print log messages to allow debugging the decisions of the tile selector")]
@@ -196,10 +198,10 @@ namespace VRT.Core
         }
 
         [Tooltip("Tile selection algorithm parameters")]
-        public _TileSelector TileSelector;
+        public TileSelectorConfigType TileSelectorConfig;
 
         [Serializable]
-        public class _PositionTracker {
+        public class PositionTrackerConfigType {
             [Tooltip("If non-empty, file where user location and gaze orientation are recorded")]
             public string outputFile;
             [Tooltip("Output recording interval override if non-zero, in milliseconds")]
@@ -208,10 +210,10 @@ namespace VRT.Core
             public string inputFile;
         }
 
-        public _PositionTracker PositionTracker;
+        public PositionTrackerConfigType PositionTrackerConfig;
 
         [Serializable]
-        public class _Representation
+        public class RepresentationConfigType
         {
             [Serializable]
             public class _PointcloudRepresentationConfig
@@ -278,10 +280,7 @@ namespace VRT.Core
         };
 
         [Tooltip("Point cloud avatar capturer, encoder and transmission parameters")]
-        public _Representation Representation;
-
-        [Tooltip("Introspection: Config override JSON file used")]
-        public string configOverrideFilename;
+        public RepresentationConfigType RepresentationConfig;
 
 #if UNITY_EDITOR
         [ContextMenu("Save as config.json")]
@@ -299,6 +298,7 @@ namespace VRT.Core
             string file = ConfigFilename(force:true);
             JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
             _PostLoad();
+            configOverrideFilename = file;
             Debug.Log($"VRTConfig: Loaded configuration from {file}");
         }
 #endif
@@ -330,12 +330,12 @@ namespace VRT.Core
         private void _PostLoad()
         {
             // Convert all enums to their string representation
-            if (!String.IsNullOrEmpty(Representation.PointcloudRepresentationConfig.capturerType_str))
+            if (!String.IsNullOrEmpty(RepresentationConfig.PointcloudRepresentationConfig.capturerType_str))
             {
-                if (!Enum.TryParse<_Representation._PointcloudRepresentationConfig.PCCapturerType>(
-                    Representation.PointcloudRepresentationConfig.capturerType_str,
+                if (!Enum.TryParse<RepresentationConfigType._PointcloudRepresentationConfig.PCCapturerType>(
+                    RepresentationConfig.PointcloudRepresentationConfig.capturerType_str,
                     true, 
-                    out Representation.PointcloudRepresentationConfig.capturerType))
+                    out RepresentationConfig.PointcloudRepresentationConfig.capturerType))
                 {
                     Debug.LogError($"VRTConfig: Invalid value for capturerType_str");
                 }
@@ -346,13 +346,12 @@ namespace VRT.Core
 
         private void _PreSave()
         {
-            Representation.PointcloudRepresentationConfig.capturerType_str = Representation.PointcloudRepresentationConfig.capturerType.ToString();
+            RepresentationConfig.PointcloudRepresentationConfig.capturerType_str = RepresentationConfig.PointcloudRepresentationConfig.capturerType.ToString();
         }
         
         private void Initialize()
         {
             string file = ConfigFilename(force:true);
-            configOverrideFilename = file;
             if (System.IO.File.Exists(file))
             {
                 Debug.Log($"VRTConfig: override settings from {file}");
@@ -360,6 +359,7 @@ namespace VRT.Core
                 configVersion = 0;
                 JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
                 _PostLoad();
+                configOverrideFilename = file;
             }
             else
             {

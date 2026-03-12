@@ -40,7 +40,7 @@ namespace VRT.Transport.Dash
         public static void PreLoadModule(string module_base)
         {
             string libPath = Path.Combine(VRT.NativeLibraries.VRTNativeLoader.platformLibrariesPath, module_base);
-            string overrideLibPath = VRTConfig.Instance.TransportDash.nativeLibraryPath;
+            string overrideLibPath = VRTConfig.Instance.TransportDashConfig.nativeLibraryPath;
             if (!string.IsNullOrEmpty(overrideLibPath))
             {
                 libPath = Path.Combine(overrideLibPath, module_base);
