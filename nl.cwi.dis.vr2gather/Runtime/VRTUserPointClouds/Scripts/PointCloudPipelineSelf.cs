@@ -78,7 +78,7 @@ namespace VRT.UserRepresentation.PointCloud
             int selfness = preview ? -1 : 1;
             string proto = "";
             if (!preview) proto = $", proto={SessionConfig.Instance.protocolType}";
-            Statistics.Output(Name(), $"self={selfness}, userid={user.userId}, representation={(int)user.userData.userRepresentationType}{proto}");
+            Statistics.Output(Name(), $"self={selfness}, userid={user.userId}, representation={VRTConfig.Instance.RepresentationConfig.representation}{proto}");
 #endif
             _InitForSelfUser(preview);
             
@@ -200,7 +200,7 @@ namespace VRT.UserRepresentation.PointCloud
                 switch (proto)
                 {
                     case "tcp":
-                        url = user.userData.userRepresentationUrl;
+                        url = VRTConfig.Instance.RepresentationConfig.userRepresentationTCPUrl;
                         break;
                 }
                 writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);

@@ -90,13 +90,13 @@ namespace VRT.Pilots.Common
             //
             // Setup visual representation (pointcloud, avatar, webcam, etc)
             //
-            SetRepresentation(user.userData.userRepresentationType);
+            SetRepresentation(user.userData.userRepresentation);
             //
             // Setup voice representation
             //
             // xxxjack Don't like this special case here: it means that everyone except 
             // NoRepresentation has audio (including the camermaman)
-            if (user.userData.userRepresentationType != UserRepresentationType.NoRepresentation)
+            if (user.userData.userRepresentation != UserRepresentationType.NoRepresentation)
             {
                 // Audio
                 voice.SetActive(true);
@@ -104,16 +104,11 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public virtual void SetRepresentation(UserRepresentationType type, bool onlyIfVisible = false, bool permanent = false)
+        public virtual void SetRepresentation(UserRepresentationType type)
         {
             if (isInitialized && type == userRepresentation) return;
-            if (isInitialized && onlyIfVisible && !isVisible) return;
             isInitialized = true;
             userRepresentation = type;
-            if (permanent)
-            {
-                user.userData.userRepresentationType = type;
-            }
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
                 Destroy(webpipeline);
@@ -126,7 +121,6 @@ namespace VRT.Pilots.Common
             if (altRepOne != null) altRepOne.SetActive(false);
             if (altRepTwo != null) altRepTwo.SetActive(false);
             // Enable and initialize the correct representation
-            VRTConfig.RepresentationConfigType userCfg = isLocalPlayer ? VRTConfig.Instance.RepresentationConfig : null;
             if (charControl != null) charControl.enabled = true;
             switch (userRepresentation)
             {
@@ -207,7 +201,7 @@ namespace VRT.Pilots.Common
         public void LoadVoicePipeline(VRT.Orchestrator.Elements.User user)
         {
             if (isPreviewPlayer) return;
-            if (user.userData.microphoneName == "None" || user.userData.microphoneName == "")
+            if (user.userData.hasVoice)
             {
                 if (isLocalPlayer)
                 {

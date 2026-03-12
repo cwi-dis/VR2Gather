@@ -148,7 +148,7 @@ namespace VRT.UserRepresentation.PointCloud
             switch (proto)
             {
                 case "tcp":
-                    url = user.userData.userRepresentationUrl;
+                    url = user.userData.userRepresentationTCPUrl;
                     break;
             }
             reader = TransportProtocol.NewReader_Tiled(proto).Init(url, user.userId, "pointcloud", pointcloudCodec, tilesToReceive);

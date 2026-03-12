@@ -122,7 +122,7 @@ namespace VRT.UserRepresentation.Voice
             switch(proto)
             {
                 case "tcp":
-                    url = user.userData.userRepresentationUrl;
+                    url = user.userData.userRepresentationTCPUrl;
                     break;
             }
             reader = TransportProtocol.NewReader(proto).Init(url, user.userId, _streamName, _streamNumber, audioCodec, _readerOutputQueue);

@@ -193,19 +193,5 @@ namespace VRT.Pilots.Common
             return false;
         }
 
-#if UNITY_EDITOR
-        [ContextMenu("Toggle Invisibility (Editor-only hack)")]
-        private void ForceTrigger()
-        {
-            if (userRepresentation == user.userData.userRepresentationType)
-            {
-                SetRepresentation(UserRepresentationType.NoRepresentation);
-            }
-            else
-            {
-                SetRepresentation(user.userData.userRepresentationType);
-            }
-        }
-#endif
     }
 }

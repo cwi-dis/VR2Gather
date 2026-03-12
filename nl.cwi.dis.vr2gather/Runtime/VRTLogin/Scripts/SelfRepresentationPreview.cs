@@ -28,24 +28,23 @@ namespace VRT.Login
 
         public void InitializeSelfPlayer()
         {
-            User user = OrchestratorController.Instance.SelfUser;
-            if (OrchestratorController.Instance?.SelfUser?.userData != null)
+            var config = VRTConfig.Instance.RepresentationConfig;
+            User tmpSelfUser = new User()
             {
-                // ChangeRepresentation(userData.userRepresentationType, userData.webcamName);
-                UpdateSelfPlayer(null);
-            }
+                userName = "Preview",
+                userData = new UserData()
+                {
+                    hasVoice = (config.microphoneName != ""  && config.microphoneName != "None"),
+                    userRepresentation = config.representation
+                }
+            };
+            UpdateSelfPlayer(tmpSelfUser);
+            ChangeMicrophone(config.microphoneName);
         }
 
         void UpdateSelfPlayer(User user)
         {
-            if (user == null)
-            {
-                user = OrchestratorController.Instance.SelfUser;
-            }
-            else
-            {
-                user.userName = OrchestratorController.Instance.SelfUser.userName;
-            }
+            
             if (!playerHasBeenInitialized)
             {
                 // We set HasBeenInitialized early, because SetupPlayerController may raise an exception
@@ -55,7 +54,7 @@ namespace VRT.Login
                 playerHasBeenInitialized = true;
                 player.SetUpPlayerController(true, user);
             }
-            player.SetRepresentation(user.userData.userRepresentationType, permanent: true);
+            player.SetRepresentation(user.userData.userRepresentation);
         }    
 
         void Update()
@@ -71,7 +70,7 @@ namespace VRT.Login
         void UpdateMicrophoneLevel()
         { 
             // See if we need to listen to audio for VU-meter.
-            if (currentMicrophoneName != "None")
+            if (currentMicrophoneName != "" && currentMicrophoneName != "None")
             {
                 int writePosition = Microphone.GetPosition(currentMicrophoneName);
                 int available;
@@ -96,7 +95,7 @@ namespace VRT.Login
         {
             StopMicrophone();
             currentMicrophoneName = microphoneName;
-            if (currentMicrophoneName != "None")
+            if (currentMicrophoneName != "" && currentMicrophoneName != "None")
             {
                 VoiceDspController.PrepareDSP(VRTConfig.Instance.VoiceConfig.AudioSampleRate, 0);
                 recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
@@ -114,20 +113,21 @@ namespace VRT.Login
         }
 
 
-        public void ChangeRepresentation(UserRepresentationType representation, string webcamName)
+        public void ChangeRepresentation(UserRepresentationType representation, string webcamName, string microphoneName)
         {
             Debug.Log($"SelfRepresentationPreview: representation={representation}, webCamName={webcamName}");
             if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
             User tmpSelfUser = new User()
             {
+                userName = "Preview",
                 userData = new UserData()
                 {
-                    microphoneName = "None",
-                    webcamName = webcamName,
-                    userRepresentationType = representation
+                    hasVoice = (microphoneName != "" &&  microphoneName != "None"),
+                    userRepresentation = representation
                 }
             };
             UpdateSelfPlayer(tmpSelfUser);
+            ChangeMicrophone(microphoneName);
         }
     }
 }

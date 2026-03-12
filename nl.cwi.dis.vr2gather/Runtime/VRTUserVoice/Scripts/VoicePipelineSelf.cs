@@ -33,11 +33,9 @@ namespace VRT.UserRepresentation.Voice
         {
             User user = (User)_user;
             string _streamName = "audio";
-            string micro = null;
-            if (user != null && user.userData != null)
-                micro = user.userData.microphoneName;
+            string microphoneName = VRTConfig.Instance.RepresentationConfig.microphoneName;
             int minBufferSize = 0;
-            if (micro == "None" || micro == "")
+            if (microphoneName == "None" || microphoneName == "")
             {
                 Debug.LogError($"{Name()}: no microphone, other participants will not hear you");
                 return;
@@ -64,7 +62,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new AsyncVoiceReader(micro, VRTConfig.Instance.VoiceConfig.AudioSampleRate, VRTConfig.Instance.VoiceConfig.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new AsyncVoiceReader(microphoneName, VRTConfig.Instance.VoiceConfig.AudioSampleRate, VRTConfig.Instance.VoiceConfig.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
@@ -78,7 +76,7 @@ namespace VRT.UserRepresentation.Voice
             switch (proto)
             {
                 case "tcp":
-                    url = user.userData.userRepresentationUrl;
+                    url = VRTConfig.Instance.RepresentationConfig.userRepresentationTCPUrl;
                     break;
             }
             writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, _streamName, audioCodec, b2dStreams);

@@ -24,8 +24,8 @@ namespace VRT.Login
                 userName = "TestInteractionUser",
                 userData = new Orchestrator.Elements.UserData()
                 {
-                    microphoneName = "None",
-                    userRepresentationType = UserRepresentationType.SimpleAvatar // xxxjack need correct one.
+                    hasVoice = false,
+                    userRepresentation = VRTConfig.Instance.RepresentationConfig.representation,
                 }
             };
             selfPlayer.SetUpPlayerController(true, user);

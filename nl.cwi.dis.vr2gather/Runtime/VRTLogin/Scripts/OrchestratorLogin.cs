@@ -408,17 +408,7 @@ namespace VRT.Login
 
         private void SaveUserData()
         {
-            // And also save a local copy, if wanted
-            if (String.IsNullOrEmpty(VRTConfig.Instance.userConfigFilename))
-            {
-                Debug.LogError("OrchestratorLogin.SaveUserData: userConfigFilename is empty");
-                return;
-            }
-            var configData = OrchestratorController.Instance.SelfUser.userData.AsJsonString();
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.userConfigFilename, label:"User config");
-            Debug.Log("Full config filename: " + fullName);
-            System.IO.File.WriteAllText(fullName, configData);
-            Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
+            VRTConfig.Instance.SaveUserConfig();
         }
 
         private void LoadUserData()
@@ -676,35 +666,32 @@ namespace VRT.Login
 
         private void SettingsPanel_ExtractUserData()
         {
+            VRTConfig.RepresentationConfigType config = VRTConfig.Instance.RepresentationConfig;
+            config.representation = (UserRepresentationType)SettingsPanelRepresentationDropdown.value;
+            config.webcamName = SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text;
+            config.microphoneName = SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text;
+            config.userRepresentationTCPUrl = SettingsPanelTCPURLField.text;
             // UserData info in Config
             UserData lUserData = new UserData
             {
-                userRepresentationUrl = SettingsPanelTCPURLField.text,
-                userRepresentationType = (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
-                webcamName = (SettingsPanelWebcamDropdown.options.Count <= 0) ? "None" : SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
-                microphoneName = (SettingsPanelMicrophoneDropdown.options.Count <= 0) ? "None" : SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
+                userRepresentationTCPUrl = config.userRepresentationTCPUrl,
+                userRepresentation = config.representation,
+                hasVoice = (config.microphoneName != "" && config.microphoneName != "None"),
             };
             OrchestratorController.Instance.SelfUser.userData = lUserData;
         }
 
         public void SettingsPanel_UpdateUserData()
         {
-            User user = OrchestratorController.Instance.SelfUser;
+            VRTConfig.RepresentationConfigType config = VRTConfig.Instance.RepresentationConfig;
 
-            // Config Info
-            if (user.userData == null)
-            {
-                user.userData = new UserData();
-            }
-            UserData userData = user.userData;
-
-            SettingsPanelTCPURLField.text = userData.userRepresentationUrl;
-            SettingsPanelRepresentationDropdown.value = (int)userData.userRepresentationType;
+            SettingsPanelTCPURLField.text = config.userRepresentationTCPUrl;
+            SettingsPanelRepresentationDropdown.value = (int)config.representation;
             SettingsPanelWebcamDropdown.value = 0;
 
             for (int i = 0; i < SettingsPanelWebcamDropdown.options.Count; ++i)
             {
-                if (SettingsPanelWebcamDropdown.options[i].text == userData.webcamName)
+                if (SettingsPanelWebcamDropdown.options[i].text == config.webcamName)
                 {
                     SettingsPanelWebcamDropdown.value = i;
                     break;
@@ -713,7 +700,7 @@ namespace VRT.Login
             SettingsPanelMicrophoneDropdown.value = 0;
             for (int i = 0; i < SettingsPanelMicrophoneDropdown.options.Count; ++i)
             {
-                if (SettingsPanelMicrophoneDropdown.options[i].text == userData.microphoneName)
+                if (SettingsPanelMicrophoneDropdown.options[i].text == config.microphoneName)
                 {
                     SettingsPanelMicrophoneDropdown.value = i;
                     break;
@@ -735,9 +722,7 @@ namespace VRT.Login
             SettingsPanel_SetRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
             SelfRepresentationPreview.ChangeRepresentation(
                 (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
-                SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text
-                );
-            SelfRepresentationPreview.ChangeMicrophone(
+                SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
                 SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
                 );
         }
@@ -1084,7 +1069,7 @@ namespace VRT.Login
             rectImage.localScale = Vector3.one;
             // IMAGE
 
-            switch (user.userData.userRepresentationType)
+            switch (VRTConfig.Instance.RepresentationConfig.representation)
             {
                 case UserRepresentationType.NoRepresentation:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
@@ -1119,7 +1104,7 @@ namespace VRT.Login
                     textItem.text += " - (AppDefined 2)";
                     break;
                 default:
-                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {user.userData.userRepresentationType}");
+                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {VRTConfig.Instance.RepresentationConfig.representation}");
                     break;
             }
         }

@@ -235,6 +235,17 @@ namespace VRT.Core
         [Serializable]
         public class RepresentationConfigType
         {
+            [SerializeField]
+            [Tooltip("Representation of this user")]
+            public UserRepresentationType representation = UserRepresentationType.SimpleAvatar;
+            [Tooltip("Representation of this user, as string. Overrides representation")]
+            public string representation_str;
+            [Tooltip("Name of webcam to use (for webcam representation")]
+            public string webcamName = "";
+            [Tooltip("Name of microphone to use (empty or None for no voice transmission)")]
+            public string microphoneName = "";
+            [Tooltip("For TCP: URL to use for representation transport protocol")]
+            public string userRepresentationTCPUrl = "";
             [Serializable]
             public class RepresentationPointcloudConfigType
             {
@@ -300,17 +311,47 @@ namespace VRT.Core
             public RepresentationPointcloudConfigType RepresentationPointcloudConfig;
         };
 
-        [Tooltip("User representation configuration")]
+        [Tooltip("User representation configuration, overridden by config-user.json")]
         public RepresentationConfigType RepresentationConfig;
 
+        public void SaveUserConfig()
+        {
+            // And also save a local copy, if wanted
+            if (String.IsNullOrEmpty(userConfigFilename))
+            {
+                userConfigFilename = "config-user.json";
+            }
+            _PreSave();
+            var configData = JsonUtility.ToJson(RepresentationConfig, true);
+            var fullName = ConfigFilename(userConfigFilename, label:"User config");
+            Debug.Log($"VRTConfig: Full user config filename: {fullName}");
+            System.IO.File.WriteAllText(fullName, configData);
+            Debug.Log($"VRTConfig: saved UserData to {fullName}");
+            
+        }
+
+        public void LoadUserConfig()
+        {
+            if (String.IsNullOrEmpty(userConfigFilename))
+            {
+                userConfigFilename = "config-user.json";
+            }
+            var fullName = ConfigFilename(userConfigFilename, label:"User config");
+            Debug.Log($"VRTConfig: Full user config filename: {fullName}");
+            JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(fullName), RepresentationConfig);
+            _PostLoad();
+            Debug.Log($"VRTConfig: loaded UserData from {fullName}");
+        }
+        
 #if UNITY_EDITOR
-        [ContextMenu("Save as config.json")]
+        [ContextMenu("Save as config.json and config-user.json")]
         private void SaveAsConfigJson()
         {
             string file = ConfigFilename(force:true);
             _PreSave();
             System.IO.File.WriteAllText(file, JsonUtility.ToJson(this, true));
-            Debug.Log($"VRTConfig: Saving configuration to {file}");
+            Debug.Log($"VRTConfig: Saved configuration to {file}");
+            SaveUserConfig();
         }
 
         [ContextMenu("Load from config.json")]
@@ -318,6 +359,7 @@ namespace VRT.Core
         {
             string file = ConfigFilename(force:true);
             JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+            LoadUserConfig();
             _PostLoad();
             configOverrideFilename = file;
             Debug.Log($"VRTConfig: Loaded configuration from {file}");
@@ -361,6 +403,17 @@ namespace VRT.Core
                     Debug.LogError($"VRTConfig: Invalid value for variant_str");
                 }
             }
+
+            if (!string.IsNullOrEmpty(RepresentationConfig.representation_str))
+            {
+                if (!Enum.TryParse<UserRepresentationType>(
+                    RepresentationConfig.representation_str,
+                    true,
+                    out RepresentationConfig.representation))
+                {
+                    Debug.LogError($"VRTConfig: Invalid value for representation_str");
+                }
+            }
             // And ensure everything is consistent again
             _PreSave();
         }
@@ -368,6 +421,7 @@ namespace VRT.Core
         private void _PreSave()
         {
             RepresentationConfig.RepresentationPointcloudConfig.variant_str = RepresentationConfig.RepresentationPointcloudConfig.variant.ToString();
+            RepresentationConfig.representation_str = RepresentationConfig.representation.ToString();
         }
         
         private void Initialize()
@@ -379,6 +433,7 @@ namespace VRT.Core
                 // Hack to ensure we read the config version
                 configVersion = 0;
                 JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+                LoadUserConfig();
                 _PostLoad();
                 configOverrideFilename = file;
             }

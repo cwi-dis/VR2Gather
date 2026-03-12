@@ -1,7 +1,8 @@
 {
     "configVersion": 20260311,
     "orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
-    "userConfigFilename": "",
+    "userConfigFilename": "config-user.json",
+    "configOverrideFilename": "",
     "targetFrameRate": -1,
     "ntpSyncThreshold": 0.10000000149011612,
     "ffmpegDLLDir": "../ffmpeg/x64",
@@ -11,18 +12,18 @@
         "outputFile": "",
         "outputFileAppend": true
     },
-    "ScreenshotTool": {
+    "ScreenshotConfig": {
         "takeScreenshot": false,
         "fps": 0,
         "screenshotTargetDirectory": "",
         "preDeleteTargetDirectory": true,
         "filenameTemplate": "Frame{framenum}.png"
     },
-    "AutoStart": {
-        "ignoreAutoStartForDeveloper": true,
-        "autoLogin": true,
+    "AutoStartConfig": {
+        "ignoreAutoStartForDeveloper": false,
+        "autoLogin": false,
         "autoCreate": false,
-        "autoJoin": false,
+        "autoJoin": true,
         "autoCreateForUser": "",
         "sessionName": "",
         "sessionScenario": "",
@@ -32,15 +33,15 @@
         "autoStartWith": -1,
         "autoLeaveAfter": 0.0,
         "autoStopAfterLeave": false,
-        "autoDelay": 1.0
+        "autoDelay": 0.20000000298023225
     },
-    "TransportDash": {
+    "TransportDashConfig": {
         "segmentSize": 4000,
         "segmentLife": 15000,
-        "logLevel": 1,
+        "logLevel": 0,
         "nativeLibraryPath": ""
     },
-    "TransportWebRTC": {
+    "TransportWebRTCConfig": {
         "peerExecutablePath": "",
         "peerInWindow": false,
         "peerWindowDontClose": false,
@@ -70,51 +71,57 @@
         "preparerQueueSize": 0,
         "ignoreSynchronizer": false
     },
-    "Synchronizer": {
+    "SynchronizerConfig": {
         "debugSynchronizer": false,
         "debugJitterBuffer": false,
-        "minLatency": 100,
-        "maxLatency": 5000,
+        "minLatency": 0,
+        "maxLatency": 0,
         "latencyMaxDecrease": 1,
         "latencyMaxIncrease": 33,
         "acceptDesyncOnDataUnavailable": false
     },
-    "TileSelector": {
+    "PointCloudTransmissionConfig": {
+        "tiled": false,
+        "EncoderConfigs": []
+    },
+    "TileSelectorConfig": {
         "algorithm": "",
         "debugDecisions": false,
         "bitrateBudget": 0
     },
-    "PositionTracker": {
+    "PositionTrackerConfig": {
         "outputFile": "",
         "outputIntervalOverride": 0,
         "inputFile": ""
     },
-    "Representation": {
-        "PointcloudRepresentationConfig": {
-            "capturerType": 0,
-            "capturerType_str": "camera",
-            "CameraReaderConfig": {
+    "RepresentationConfig": {
+        "representation": 0,
+        "representation_str": "PointCloud",
+        "webcamName": "",
+        "microphoneName": "",
+        "userRepresentationTCPUrl": "",
+        "RepresentationPointcloudConfig": {
+            "variant": 5,
+            "variant_str": "developer",
+            "CameraConfig": {
                 "configFilename": ""
             },
-            "RemoteCameraReaderConfig": {
+            "RemoteConfig": {
                 "url": "",
                 "isCompressed": false
             },
-            "ProxyReaderConfig": {
+            "ProxyConfig": {
                 "localIP": "",
                 "port": 0
             },
-            "SynthReaderConfig": {
+            "SyntheticConfig": {
                 "nPoints": 0
             },
-            "PrerecordedReaderConfig": {
+            "PrerecordedConfig": {
                 "folder": ""
             },
             "voxelSize": 0.0,
-            "frameRate": 0.0,
-            "tiled": false,
-            "Encoders": []
+            "frameRate": 0.0
         }
-    },
-    "configOverrideFilename": ""
+    }
 }
