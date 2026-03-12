@@ -32,17 +32,23 @@ namespace VRT.Core
         public int targetFrameRate = -1; // system default framerate
         [Tooltip("Maximum NTP desync allowed before a warning is shown")]
         public float ntpSyncThreshold = 1.0f;
-        [Tooltip("If nonzero: number of seconds between stats: lines. If zero: every event")]
-        public double statsInterval = 10.0;
-        [Tooltip("Path name of stats: output file. Empty: to console log")]
-        public string statsOutputFile = "";
-        [Tooltip("Append to stats: file in stead of overwriting")]
-        public bool statsOutputFileAppend = true;
         [Tooltip("If not empty: directory path where ffmpeg native DLLs are stored")]
         public string ffmpegDLLDir = "";
-
         [Tooltip("Automatically invent a username if not set")]
         public bool autoInventUsername = true;
+
+        [Serializable]
+        public class _StatisticsConfig
+        {
+            [Tooltip("If nonzero: number of seconds between stats: lines. If zero: every event")]
+            public double interval = 10.0;
+            [Tooltip("Path name of stats: output file. Empty: to console log")]
+            public string outputFile = "";
+            [Tooltip("Append to stats: file in stead of overwriting")]
+            public bool outputFileAppend = true;
+
+        };
+        public _StatisticsConfig StatisticsConfig;
         [Serializable]
         public class _ScreenshotTool
         {
@@ -358,7 +364,7 @@ namespace VRT.Core
             }
             // Initialize some other modules that have their own configuration.
 #if VRT_WITH_STATS
-            Statistics.Initialize(this.statsInterval, this.statsOutputFile, this.statsOutputFileAppend);
+            Statistics.Initialize(this.StatisticsConfig.interval, this.StatisticsConfig.outputFile, this.StatisticsConfig.outputFileAppend);
 #endif
             // Communicate cwipc settings to cwipc package. This sets all sorts
             // of things, from native log level to queue sizes, etc.
