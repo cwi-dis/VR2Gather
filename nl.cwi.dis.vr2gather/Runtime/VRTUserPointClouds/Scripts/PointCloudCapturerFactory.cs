@@ -19,11 +19,11 @@ namespace VRT.UserRepresentation.PointCloud
             }
             switch(config.variant)
             {
-                case VRTConfig.RepresentationConfigType.RepresentationPointcloudConfigType.RepresentationPointcloudVariant.camera:
+                case RepresentationPointcloudVariant.camera:
                     return new AsyncCameraReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-                case VRTConfig.RepresentationConfigType.RepresentationPointcloudConfigType.RepresentationPointcloudVariant.synthetic:
+                case RepresentationPointcloudVariant.synthetic:
                    return new AsyncSyntheticReader(config.frameRate, config.SyntheticConfig.nPoints, selfPreparerQueue, encoderQueue);
-                case VRTConfig.RepresentationConfigType.RepresentationPointcloudConfigType.RepresentationPointcloudVariant.prerecorded:
+                case RepresentationPointcloudVariant.prerecorded:
                     var prConfig = config.PrerecordedConfig;
                     if (prConfig.folder == null || prConfig.folder == "")
                     {
@@ -36,13 +36,13 @@ namespace VRT.UserRepresentation.PointCloud
                         throw new System.Exception($"PointCloudCapturerFactory: folder {prerecordedFolder} does not exist");
                     }
                     return new AsyncPrerecordedReader(prerecordedFolder, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-                case VRTConfig.RepresentationConfigType.RepresentationPointcloudConfigType.RepresentationPointcloudVariant.proxy:
+                case RepresentationPointcloudVariant.proxy:
                     var ProxyReaderConfig = config.ProxyConfig;
                     return new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-                case VRTConfig.RepresentationConfigType.RepresentationPointcloudConfigType.RepresentationPointcloudVariant.remote:
+                case RepresentationPointcloudVariant.remote:
                     var rcConfig = config.RemoteConfig;
                     return new AsyncNetworkCaptureReader(rcConfig.url, rcConfig.isCompressed, selfPreparerQueue, encoderQueue);
-                case VRTConfig.RepresentationConfigType.RepresentationPointcloudConfigType.RepresentationPointcloudVariant.developer:
+                case RepresentationPointcloudVariant.developer:
                     try
                     {
                         return new AsyncCameraReader(configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);

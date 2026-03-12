@@ -249,17 +249,7 @@ namespace VRT.Core
             [Serializable]
             public class RepresentationPointcloudConfigType
             {
-                [Serializable]
-                public enum RepresentationPointcloudVariant
-                {
-                    camera,
-                    synthetic,
-                    remote,
-                    proxy,
-                    prerecorded,
-                    developer,
-                    none,
-                };
+                
                 [Tooltip("PC capturer type")]
                 public RepresentationPointcloudVariant variant;
                 [Tooltip("Override variant (string)")]
@@ -395,7 +385,7 @@ namespace VRT.Core
             // Convert all enums to their string representation
             if (!String.IsNullOrEmpty(RepresentationConfig.RepresentationPointcloudConfig.variant_str))
             {
-                if (!Enum.TryParse<RepresentationConfigType.RepresentationPointcloudConfigType.RepresentationPointcloudVariant>(
+                if (!Enum.TryParse<RepresentationPointcloudVariant>(
                     RepresentationConfig.RepresentationPointcloudConfig.variant_str,
                     true, 
                     out RepresentationConfig.RepresentationPointcloudConfig.variant))

@@ -690,7 +690,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -15, y: 0}
+  m_AnchoredPosition: {x: -190, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8914956572751198702
@@ -6723,7 +6723,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -15, y: 0}
+  m_AnchoredPosition: {x: -190, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6876404626965834694
@@ -7834,7 +7834,7 @@ MonoBehaviour:
     m_BestFit: 1
     m_MinSize: 1
     m_MaxSize: 24
-    m_Alignment: 3
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -12085,7 +12085,7 @@ MonoBehaviour:
     m_BestFit: 1
     m_MinSize: 1
     m_MaxSize: 24
-    m_Alignment: 3
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -13257,9 +13257,9 @@ MonoBehaviour:
   HomePanelPlayButton: {fileID: 6439520597403270058}
   HomePanelSettingsButton: {fileID: 4324839371827238586}
   settingsPanel: {fileID: 6457971033183718167}
-  SettingsPanelWebcamInfoGO: {fileID: 5916575847965431227}
   SettingsPanelTCPURLField: {fileID: 3096292403496545405}
   SettingsPanelRepresentationDropdown: {fileID: 845156337131251218}
+  SettingsPanelPointcloudVariantDropdown: {fileID: 7311961767198679491}
   SettingsPanelWebcamDropdown: {fileID: 5916575848221921211}
   SettingsPanelMicrophoneDropdown: {fileID: 5916575848051990048}
   SettingsPanelVUMeter: {fileID: 861818860071689431}

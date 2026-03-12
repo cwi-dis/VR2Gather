@@ -70,9 +70,9 @@ namespace VRT.Login
 
         [Header("SettingsPanel")]
         [SerializeField] private GameObject settingsPanel = null;
-        [SerializeField] private GameObject SettingsPanelWebcamInfoGO = null;
         [SerializeField] private InputField SettingsPanelTCPURLField = null;
         [SerializeField] private Dropdown SettingsPanelRepresentationDropdown = null;
+        [SerializeField] private Dropdown SettingsPanelPointcloudVariantDropdown = null;
         [SerializeField] private Dropdown SettingsPanelWebcamDropdown = null;
         [SerializeField] private Dropdown SettingsPanelMicrophoneDropdown = null;
         [SerializeField] private RectTransform SettingsPanelVUMeter = null;
@@ -190,6 +190,10 @@ namespace VRT.Login
             SettingsPanelRepresentationDropdown.onValueChanged.AddListener(delegate {
                 SettingsPanel_UpdateAfterRepresentationChange();
                 // xxxjack AllPanels_UpdateAfterStateChange();
+            });
+            SettingsPanelPointcloudVariantDropdown.onValueChanged.AddListener(delegate
+            {
+                SettingsPanel_UpdateAfterRepresentationChange();
             });
             SettingsPanelWebcamDropdown.onValueChanged.AddListener(delegate {
                 SettingsPanel_UpdateAfterRepresentationChange();
@@ -594,12 +598,12 @@ namespace VRT.Login
         {
             Dropdown dd = SettingsPanelRepresentationDropdown;
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
-            // xxxjack this has the huge disadvantage that they are numerically sorted.
-            // xxxjack and the order is difficult to change currently, because the values
-            // xxxjack are stored by the orchestrator in the user record, in numerical form...
             dd.ClearOptions();
             dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
-
+            // And fill point cloud variants
+            dd = SettingsPanelPointcloudVariantDropdown;
+            dd.ClearOptions();
+            dd.AddOptions(new List<string>(Enum.GetNames(typeof(RepresentationPointcloudVariant))));
         }
 
         private void SettingsPanel_UpdateWebcams()
@@ -668,6 +672,7 @@ namespace VRT.Login
         {
             VRTConfig.RepresentationConfigType config = VRTConfig.Instance.RepresentationConfig;
             config.representation = (UserRepresentationType)SettingsPanelRepresentationDropdown.value;
+            config.RepresentationPointcloudConfig.variant = (RepresentationPointcloudVariant)SettingsPanelRepresentationDropdown.value;
             config.webcamName = SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text;
             config.microphoneName = SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text;
             config.userRepresentationTCPUrl = SettingsPanelTCPURLField.text;
@@ -687,6 +692,7 @@ namespace VRT.Login
 
             SettingsPanelTCPURLField.text = config.userRepresentationTCPUrl;
             SettingsPanelRepresentationDropdown.value = (int)config.representation;
+            SettingsPanelPointcloudVariantDropdown.value = (int)config.RepresentationPointcloudConfig.variant;
             SettingsPanelWebcamDropdown.value = 0;
 
             for (int i = 0; i < SettingsPanelWebcamDropdown.options.Count; ++i)
@@ -710,14 +716,9 @@ namespace VRT.Login
 
         public void SettingsPanel_UpdateAfterRepresentationChange()
         {
-            // Dropdown Logic
-            SettingsPanelWebcamInfoGO.SetActive(false);
-
-
-            if ((UserRepresentationType)SettingsPanelRepresentationDropdown.value == UserRepresentationType.VideoAvatar)
-            {
-                SettingsPanelWebcamInfoGO.SetActive(true);
-            }
+            // xxxjack hack: we actually set the point cloud variant right away in the user settings.
+            // There is no easy way to pass the parameter otherwise.
+            VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant = (RepresentationPointcloudVariant)SettingsPanelRepresentationDropdown.value;
             // Preview
             SettingsPanel_SetRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
             SelfRepresentationPreview.ChangeRepresentation(
