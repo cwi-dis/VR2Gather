@@ -227,9 +227,10 @@ namespace VRT.Core
                     developer,
                     none,
                 };
+                [Tooltip("PC capturer type")]
                 public PCCapturerType capturerType;
-                [Tooltip("Override capturerType by name")]
-                public string capturerTypeName;
+                [Tooltip("Override capturerType (string)")]
+                public string capturerType_str;
                 [Serializable]
                 public class _CameraReaderConfig
                 {
@@ -287,6 +288,7 @@ namespace VRT.Core
         private void SaveAsConfigJson()
         {
             string file = ConfigFilename(force:true);
+            _PreSave();
             System.IO.File.WriteAllText(file, JsonUtility.ToJson(this, true));
             Debug.Log($"VRTConfig: Saving configuration to {file}");
         }
@@ -296,6 +298,7 @@ namespace VRT.Core
         {
             string file = ConfigFilename(force:true);
             JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+            _PostLoad();
             Debug.Log($"VRTConfig: Loaded configuration from {file}");
         }
 #endif
@@ -324,6 +327,32 @@ namespace VRT.Core
             Initialize();
         }
 
+        private void _PostLoad()
+        {
+            // Convert all enums to their string representation
+            if (!String.IsNullOrEmpty(Representation
+                    .PointcloudRepresentationConfig.capturerType_str))
+            {
+                try
+                {
+                    Representation.PointcloudRepresentationConfig.capturerType =
+                        Enum.Parse<_Representation._PointcloudRepresentationConfig.PCCapturerType>(Representation
+                            .PointcloudRepresentationConfig.capturerType_str, true);
+                }
+                catch (ArgumentException)
+                {
+                    Debug.LogError($"VRTConfig: Invalid value for capturerType_str");
+                }
+            }
+            // And ensure everything is consistent again
+            _PreSave();
+        }
+
+        private void _PreSave()
+        {
+            Representation.PointcloudRepresentationConfig.capturerType_str = Representation.PointcloudRepresentationConfig.capturerType.ToString();
+        }
+        
         private void Initialize()
         {
             string file = ConfigFilename(force:true);
@@ -334,6 +363,7 @@ namespace VRT.Core
                 // Hack to ensure we read the config version
                 configVersion = 0;
                 JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+                _PostLoad();
             }
             else
             {
@@ -355,10 +385,10 @@ namespace VRT.Core
                     Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
                 }
             }
-            if (Representation.PointcloudRepresentationConfig.capturerTypeName != null && Representation.PointcloudRepresentationConfig.capturerTypeName != "") {
-                if (!Enum.TryParse(Representation.PointcloudRepresentationConfig.capturerTypeName, out Representation.PointcloudRepresentationConfig.capturerType))
+            if (Representation.PointcloudRepresentationConfig.capturerType_str != null && Representation.PointcloudRepresentationConfig.capturerType_str != "") {
+                if (!Enum.TryParse(Representation.PointcloudRepresentationConfig.capturerType_str, out Representation.PointcloudRepresentationConfig.capturerType))
                 {
-                    Debug.LogError($"VRTCore.Config: Unknown capturerTypeName \"{Representation.PointcloudRepresentationConfig.capturerTypeName}\"");
+                    Debug.LogError($"VRTCore.Config: Unknown capturerType_str \"{Representation.PointcloudRepresentationConfig.capturerType_str}\"");
                     Representation.PointcloudRepresentationConfig.capturerType = _Representation._PointcloudRepresentationConfig.PCCapturerType.none;
                 }
             }

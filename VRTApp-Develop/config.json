@@ -1,13 +1,16 @@
 {
     "configVersion": 20260311,
     "orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
+    "userConfigFilename": "",
     "targetFrameRate": -1,
     "ntpSyncThreshold": 0.10000000149011612,
-    "statsInterval": 10.0,
-    "statsOutputFile": "",
-    "statsOutputFileAppend": false,
     "ffmpegDLLDir": "../ffmpeg/x64",
     "autoInventUsername": true,
+    "StatisticsConfig": {
+        "interval": 10.0,
+        "outputFile": "",
+        "outputFileAppend": true
+    },
     "ScreenshotTool": {
         "takeScreenshot": false,
         "fps": 0,
@@ -46,7 +49,7 @@
         "logFileDirectory": "",
         "debugLevel": 0
     },
-    "RepresentationPointcloud": {
+    "CwipcConfig": {
         "logLevel": 2,
         "overrideNativeLoadPath": "",
         "Codec": "cwi1",
@@ -60,7 +63,7 @@
         "decoderParallelism": 0,
         "preparerQueueSize": 0
     },
-    "RepresentationVoice": {
+    "VoiceConfig": {
         "audioFps": 50,
         "maxPlayoutLatency": 0.30000001192092898,
         "maxPlayoutAhead": 0.06599999964237213,
@@ -81,13 +84,15 @@
         "debugDecisions": false,
         "bitrateBudget": 0
     },
-    "VQEGLatencies": [],
-    "temp": 0,
-    "LocalUser": {
-        "orchestratorConfigFilename": "config-user.json",
-        "PCSelfConfig": {
-            "capturerType": 4,
-            "capturerTypeName": "",
+    "PositionTracker": {
+        "outputFile": "",
+        "outputIntervalOverride": 0,
+        "inputFile": ""
+    },
+    "Representation": {
+        "PointcloudRepresentationConfig": {
+            "capturerType": 0,
+            "capturerType_str": "camera",
             "CameraReaderConfig": {
                 "configFilename": ""
             },
@@ -97,27 +102,18 @@
             },
             "ProxyReaderConfig": {
                 "localIP": "",
-                "port": 9335
+                "port": 0
             },
             "SynthReaderConfig": {
-                "nPoints": 16000
+                "nPoints": 0
             },
             "PrerecordedReaderConfig": {
-                "folder": "../cwipc_test/Samples/loot-150K-4tiles"
+                "folder": ""
             },
             "voxelSize": 0.0,
-            "frameRate": 15.0,
-            "tiled": true,
-            "Encoders": [
-                {
-                    "octreeBits": 9
-                }
-            ]
-        },
-        "PositionTracker": {
-            "outputFile": "",
-            "outputIntervalOverride": 0,
-            "inputFile": ""
+            "frameRate": 0.0,
+            "tiled": false,
+            "Encoders": []
         }
     },
     "configOverrideFilename": ""
