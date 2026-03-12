@@ -330,16 +330,12 @@ namespace VRT.Core
         private void _PostLoad()
         {
             // Convert all enums to their string representation
-            if (!String.IsNullOrEmpty(Representation
-                    .PointcloudRepresentationConfig.capturerType_str))
+            if (!String.IsNullOrEmpty(Representation.PointcloudRepresentationConfig.capturerType_str))
             {
-                try
-                {
-                    Representation.PointcloudRepresentationConfig.capturerType =
-                        Enum.Parse<_Representation._PointcloudRepresentationConfig.PCCapturerType>(Representation
-                            .PointcloudRepresentationConfig.capturerType_str, true);
-                }
-                catch (ArgumentException)
+                if (!Enum.TryParse<_Representation._PointcloudRepresentationConfig.PCCapturerType>(
+                    Representation.PointcloudRepresentationConfig.capturerType_str,
+                    true, 
+                    out Representation.PointcloudRepresentationConfig.capturerType))
                 {
                     Debug.LogError($"VRTConfig: Invalid value for capturerType_str");
                 }
@@ -383,13 +379,6 @@ namespace VRT.Core
                 if (Application.targetFrameRate > 0)
                 {
                     Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
-                }
-            }
-            if (Representation.PointcloudRepresentationConfig.capturerType_str != null && Representation.PointcloudRepresentationConfig.capturerType_str != "") {
-                if (!Enum.TryParse(Representation.PointcloudRepresentationConfig.capturerType_str, out Representation.PointcloudRepresentationConfig.capturerType))
-                {
-                    Debug.LogError($"VRTCore.Config: Unknown capturerType_str \"{Representation.PointcloudRepresentationConfig.capturerType_str}\"");
-                    Representation.PointcloudRepresentationConfig.capturerType = _Representation._PointcloudRepresentationConfig.PCCapturerType.none;
                 }
             }
             // Initialize some other modules that have their own configuration.
