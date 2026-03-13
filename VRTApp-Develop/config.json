@@ -21,9 +21,9 @@
     },
     "AutoStartConfig": {
         "ignoreAutoStartForDeveloper": false,
-        "autoLogin": false,
+        "autoLogin": true,
         "autoCreate": false,
-        "autoJoin": true,
+        "autoJoin": false,
         "autoCreateForUser": "",
         "sessionName": "",
         "sessionScenario": "",
@@ -107,8 +107,8 @@
                 "configFilename": ""
             },
             "RemoteConfig": {
-                "url": "",
-                "isCompressed": false
+                "url": "tcp://virtnuc-dis.spin-off.cwi.nl:8089/",
+                "isCompressed": true
             },
             "ProxyConfig": {
                 "localIP": "",
@@ -118,7 +118,7 @@
                 "nPoints": 0
             },
             "PrerecordedConfig": {
-                "folder": ""
+                "folder": "../../cwipc_test/Samples/loot-150K-4tiles"
             },
             "voxelSize": 0.0,
             "frameRate": 0.0
