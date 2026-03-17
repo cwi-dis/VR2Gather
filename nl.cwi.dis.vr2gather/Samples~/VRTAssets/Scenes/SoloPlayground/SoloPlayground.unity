@@ -699,6 +699,8 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
+  m_AutoFindParentInteractableInHierarchy: 0
+  m_ParentInteractableObject: {fileID: 0}
   m_TeleportationProvider: {fileID: 0}
   m_MatchOrientation: 0
   m_MatchDirectionalInput: 0
@@ -771,6 +773,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -792,9 +796,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &275766867
 MeshFilter:
@@ -969,6 +975,8 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
+  m_AutoFindParentInteractableInHierarchy: 0
+  m_ParentInteractableObject: {fileID: 0}
   m_TeleportationProvider: {fileID: 0}
   m_MatchOrientation: 0
   m_MatchDirectionalInput: 0
@@ -1050,25 +1058,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f5d4564cc5748f44a078ede34cbd4e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  configVersion: 20260311
   orchestratorURL: http://192.16.197.145:8080/socket.io/
+  userConfigFilename: 
+  configOverrideFilename: 
   targetFrameRate: -1
   ntpSyncThreshold: 0.1
-  statsInterval: 10
-  statsOutputFile: 
-  statsOutputFileAppend: 0
   ffmpegDLLDir: ../ffmpeg/x64
   autoInventUsername: 1
-  ScreenshotTool:
+  StatisticsConfig:
+    interval: 10
+    outputFile: 
+    outputFileAppend: 1
+  ScreenshotConfig:
     takeScreenshot: 0
     fps: 0
     screenshotTargetDirectory: 
     preDeleteTargetDirectory: 1
     filenameTemplate: Frame{framenum}.png
-  AutoStart:
+  AutoStartConfig:
     ignoreAutoStartForDeveloper: 0
-    autoLogin: 1
+    autoLogin: 0
     autoCreate: 0
-    autoJoin: 0
+    autoJoin: 1
     autoCreateForUser: 
     sessionName: 
     sessionScenario: 
@@ -1078,13 +1090,13 @@ MonoBehaviour:
     autoStartWith: -1
     autoLeaveAfter: 0
     autoStopAfterLeave: 0
-    autoDelay: 1
-  TransportDash:
+    autoDelay: 0.2
+  TransportDashConfig:
     segmentSize: 4000
     segmentLife: 15000
     logLevel: 0
     nativeLibraryPath: 
-  TransportWebRTC:
+  TransportWebRTCConfig:
     peerExecutablePath: 
     peerInWindow: 0
     peerWindowDontClose: 0
@@ -1092,12 +1104,12 @@ MonoBehaviour:
     peerIPAddress: 127.0.0.1
     logFileDirectory: 
     debugLevel: 0
-  PCs:
+  CwipcConfig:
     logLevel: 2
     overrideNativeLoadPath: 
     Codec: cwi1
-    defaultCellSize: 0.002
-    cellSizeFactor: 1
+    defaultCellSize: 0
+    cellSizeFactor: 0
     debugColorize: 0
     timeoutBeforeGhosting: 5
     decoderQueueSizeOverride: 0
@@ -1105,53 +1117,54 @@ MonoBehaviour:
     encoderParallelism: 0
     decoderParallelism: 0
     preparerQueueSize: 0
-  Voice:
+  VoiceConfig:
     audioFps: 50
     maxPlayoutLatency: 0.3
     maxPlayoutAhead: 0.066
     preparerQueueSize: 0
     ignoreSynchronizer: 0
-  Synchronizer:
+  SynchronizerConfig:
     debugSynchronizer: 0
     debugJitterBuffer: 0
-    minLatency: 100
-    maxLatency: 5000
+    minLatency: 0
+    maxLatency: 0
     latencyMaxDecrease: 1
     latencyMaxIncrease: 33
     acceptDesyncOnDataUnavailable: 0
-  TileSelector:
+  PointCloudTransmissionConfig:
+    tiled: 0
+    EncoderConfigs: []
+  TileSelectorConfig:
     algorithm: 
     debugDecisions: 0
     bitrateBudget: 0
-  VQEGLatencies: []
-  temp: 0
-  LocalUser:
-    orchestratorConfigFilename: 
-    PCSelfConfig:
-      capturerType: 4
-      capturerTypeName: 
-      CameraReaderConfig:
+  PositionTrackerConfig:
+    outputFile: 
+    outputIntervalOverride: 0
+    inputFile: 
+  RepresentationConfig:
+    representation: 1
+    representation_str: 
+    webcamName: 
+    microphoneName: 
+    userRepresentationTCPUrl: 
+    RepresentationPointcloudConfig:
+      variant: 0
+      variant_str: 
+      CameraConfig:
         configFilename: 
-      RemoteCameraReaderConfig:
+      RemoteConfig:
         url: 
         isCompressed: 0
-      ProxyReaderConfig:
+      ProxyConfig:
         localIP: 
-        port: 9335
-      SynthReaderConfig:
-        nPoints: 16000
-      PrerecordedReaderConfig:
-        folder: ../cwipc_test/Samples/loot-150K-4tiles
+        port: 0
+      SyntheticConfig:
+        nPoints: 0
+      PrerecordedConfig:
+        folder: 
       voxelSize: 0
-      frameRate: 15
-      tiled: 0
-      Encoders:
-      - octreeBits: 9
-    PositionTracker:
-      outputFile: 
-      outputIntervalOverride: 0
-      inputFile: 
-  configOverrideFilename: 
+      frameRate: 0
 --- !u!4 &328854238
 Transform:
   m_ObjectHideFlags: 0
@@ -1400,6 +1413,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1421,9 +1436,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &721341857 stripped
 GameObject:
@@ -2614,6 +2631,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2635,9 +2654,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1948061074
 GameObject:
@@ -2714,6 +2735,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2735,9 +2758,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &2128829273
 GameObject:
@@ -2814,6 +2839,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2835,9 +2862,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &2143276673 stripped
 Transform:
