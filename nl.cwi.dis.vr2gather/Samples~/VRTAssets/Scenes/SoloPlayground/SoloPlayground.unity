@@ -1215,6 +1215,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 389170432}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &438706677 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5314760444045026559, guid: df9d7aca71843104b9da7ce560eca8af,
+    type: 3}
+  m_PrefabInstance: {fileID: 1771448866}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &438706678 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5314760444045026556, guid: df9d7aca71843104b9da7ce560eca8af,
+    type: 3}
+  m_PrefabInstance: {fileID: 1771448866}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &667962055
 GameObject:
   m_ObjectHideFlags: 0
@@ -2135,6 +2147,36 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 287674172}
     m_Modifications:
+    - target: {fileID: 766621950873700327, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 766621950873700327, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_HoverEntered.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 766621950873700327, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_HoverEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 766621950873700327, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_HoverEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 438706677}
+    - target: {fileID: 766621950873700327, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_HoverEntered.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1551390429256016468, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_PokeConfiguration.m_ConstantValue.m_PokeDirection
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2233386709596210070, guid: df9d7aca71843104b9da7ce560eca8af,
         type: 3}
       propertyPath: NetworkId
@@ -2195,6 +2237,46 @@ PrefabInstance:
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
       value: 1801810542
       objectReference: {fileID: 0}
+    - target: {fileID: 5314760444045026556, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.000000059604645
+      objectReference: {fileID: 0}
+    - target: {fileID: 5314760444045026556, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.012030005
+      objectReference: {fileID: 0}
+    - target: {fileID: 5518923975855788406, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5518923975855788406, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_PlayAutomatically
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323553952748933795, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323553952748933795, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_MaxDistance
+      value: 0.002
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323553952748933795, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_ClampToMaxDistance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323553952748933795, guid: df9d7aca71843104b9da7ce560eca8af,
+        type: 3}
+      propertyPath: m_PokeFollowTransform
+      value: 
+      objectReference: {fileID: 438706678}
     - target: {fileID: 6701759704802828936, guid: df9d7aca71843104b9da7ce560eca8af,
         type: 3}
       propertyPath: m_RootOrder
@@ -2805,6 +2887,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_trackingAction.m_Action.m_Name
       value: Tracking
+      objectReference: {fileID: 0}
+    - target: {fileID: 4455740983819630192, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 4523511456899227492, guid: e4a2ad980cb30454eab747ddbac46ff6,
         type: 3}
