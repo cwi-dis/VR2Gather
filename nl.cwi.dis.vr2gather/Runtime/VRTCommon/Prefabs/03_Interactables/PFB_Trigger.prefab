@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1906011789919997361}
   - component: {fileID: 1227991343755832435}
   - component: {fileID: 6002401300370873476}
-  m_Layer: 28
+  m_Layer: 0
   m_Name: PFB_Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
