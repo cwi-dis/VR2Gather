@@ -140,7 +140,7 @@ GameObject:
   - component: {fileID: 2245411196160612057}
   - component: {fileID: 7093815002646818031}
   - component: {fileID: 3552990746037604374}
-  m_Layer: 29
+  m_Layer: 0
   m_Name: PhoneFinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
