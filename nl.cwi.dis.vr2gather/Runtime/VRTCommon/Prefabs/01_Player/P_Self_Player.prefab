@@ -3959,7 +3959,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 1152696687286928520}
   holoCamera: {fileID: 0}
-  cameraOffset: {fileID: 6931174748990271404}
+  cameraOffset: {fileID: 5210676998801630328}
   userRepresentation: 0
   avatar: {fileID: 7342134860299516999}
   webcam: {fileID: 7171150154254213433}
@@ -3991,13 +3991,13 @@ MonoBehaviour:
   HeadTransform: {fileID: 0}
   Head2Transform: {fileID: 0}
   Head3TransformAlsoMove: {fileID: 0}
-  LeftHandTransform: {fileID: 0}
-  RightHandTransform: {fileID: 0}
+  LeftHandTransform: {fileID: 1310974505417587039}
+  RightHandTransform: {fileID: 5341018814333240860}
   AlternativeUserRepresentation: {fileID: 0}
   SendRate: 10
   _IsLocalPlayer: 1
   playerController: {fileID: 0}
-  camTransform: {fileID: 0}
+  camTransform: {fileID: 6931174748990271404}
 --- !u!114 &2857986504284185995
 MonoBehaviour:
   m_ObjectHideFlags: 0
