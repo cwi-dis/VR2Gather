@@ -96,7 +96,7 @@
     },
     "RepresentationConfig": {
         "representation": 0,
-        "representation_str": "PointCloud",
+        "representation_str": "SimpleAvatar",
         "webcamName": "",
         "microphoneName": "",
         "userRepresentationTCPUrl": "",
