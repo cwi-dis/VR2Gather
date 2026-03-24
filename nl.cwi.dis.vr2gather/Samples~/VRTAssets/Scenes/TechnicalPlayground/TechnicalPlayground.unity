@@ -739,8 +739,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 878353571}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnSave
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: VRT.Pilots.Common.PersistenceManager, Pilots
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: VRT.Pilots.Common.PersistenceManager, VRT.Pilots.Common
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
@@ -906,8 +921,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 878353571}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnLoad
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: VRT.Pilots.Common.PersistenceManager, Pilots
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: VRT.Pilots.Common.PersistenceManager, VRT.Pilots.Common
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}

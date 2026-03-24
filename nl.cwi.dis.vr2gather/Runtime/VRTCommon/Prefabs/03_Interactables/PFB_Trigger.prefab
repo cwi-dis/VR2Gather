@@ -106,8 +106,8 @@ MonoBehaviour:
   m_SelectEntered:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1906011789919997361}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.NetworkTrigger, VRT.Pilots.Common
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.NetworkInstantiator, VRT.Pilots.Common
         m_MethodName: Trigger
         m_Mode: 1
         m_Arguments:
