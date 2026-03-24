@@ -34,8 +34,8 @@ TagManager:
   - 
   - 
   - 
-  - VRT-TouchableObject
-  - VRT-GrabbableObject
+  - OLD-VRT-TouchableObject
+  - OLD-VRT-GrabbableObject
   - 
   - 
   m_SortingLayers:
