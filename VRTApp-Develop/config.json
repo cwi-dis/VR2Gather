@@ -1,9 +1,10 @@
 {
     "configVersion": 20260311,
     "orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
-    "userConfigFilename": "config-user.json",
+    "userConfigFilename": "",
     "configOverrideFilename": "",
     "targetFrameRate": -1,
+    "disableVR": false,
     "ntpSyncThreshold": 0.10000000149011612,
     "ffmpegDLLDir": "../ffmpeg/x64",
     "autoInventUsername": true,
@@ -21,9 +22,9 @@
     },
     "AutoStartConfig": {
         "ignoreAutoStartForDeveloper": false,
-        "autoLogin": true,
+        "autoLogin": false,
         "autoCreate": false,
-        "autoJoin": false,
+        "autoJoin": true,
         "autoCreateForUser": "",
         "sessionName": "",
         "sessionScenario": "",
@@ -95,20 +96,20 @@
         "inputFile": ""
     },
     "RepresentationConfig": {
-        "representation": 0,
+        "representation": 1,
         "representation_str": "SimpleAvatar",
         "webcamName": "",
         "microphoneName": "",
         "userRepresentationTCPUrl": "",
         "RepresentationPointcloudConfig": {
-            "variant": 5,
-            "variant_str": "developer",
+            "variant": 0,
+            "variant_str": "camera",
             "CameraConfig": {
                 "configFilename": ""
             },
             "RemoteConfig": {
-                "url": "tcp://virtnuc-dis.spin-off.cwi.nl:8089/",
-                "isCompressed": true
+                "url": "",
+                "isCompressed": false
             },
             "ProxyConfig": {
                 "localIP": "",
@@ -118,7 +119,7 @@
                 "nPoints": 0
             },
             "PrerecordedConfig": {
-                "folder": "../../cwipc_test/Samples/loot-150K-4tiles"
+                "folder": ""
             },
             "voxelSize": 0.0,
             "frameRate": 0.0

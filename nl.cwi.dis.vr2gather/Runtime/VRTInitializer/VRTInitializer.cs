@@ -17,6 +17,7 @@ using VRT.Transport.WebRTC;
 using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
+using VRT.Core;
 
 public class VRTInitializer : MonoBehaviour
 {
@@ -55,6 +56,16 @@ public class VRTInitializer : MonoBehaviour
     private void Start()
     {
         Debug.Log("VRTInitializer: Start");
+        if (VRTConfig.Instance.disableVR)
+        {
+            if (XRGeneralSettings.Instance?.Manager?.activeLoader != null)
+            {
+                XRGeneralSettings.Instance.Manager.StopSubsystems();
+                XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+            }
+            Debug.Log("VRTInitializer: VR disabled");
+            return;
+        }
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         if (XRGeneralSettings.Instance?.Manager?.activeLoader != null)
         {

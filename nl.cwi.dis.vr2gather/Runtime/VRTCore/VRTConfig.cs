@@ -32,6 +32,8 @@ namespace VRT.Core
         public string configOverrideFilename;
         [Tooltip("If nonzero: target frame rate. -1 is system default. (ignored when using HMD)")]
         public int targetFrameRate = -1; // system default framerate
+        [Tooltip("Disable VR even if it could be supported")]
+        public bool disableVR = false;
         [Tooltip("Maximum NTP desync allowed before a warning is shown")]
         public float ntpSyncThreshold = 1.0f;
         [Tooltip("If not empty: directory path where ffmpeg native DLLs are stored")]
