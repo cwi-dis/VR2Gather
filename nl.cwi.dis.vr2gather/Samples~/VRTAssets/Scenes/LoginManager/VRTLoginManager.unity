@@ -193,6 +193,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f39eb6158b5e82f449ae38845b9ae7cf, type: 3}
+--- !u!20 &338882284 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 6276917319328131032, guid: f39eb6158b5e82f449ae38845b9ae7cf,
+    type: 3}
+  m_PrefabInstance: {fileID: 338882283}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &372768216
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,12 +671,6 @@ MonoBehaviour:
   m_Teleporting:
     m_PersistentCalls:
       m_Calls: []
---- !u!20 &1272965839 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 4627791344939139398, guid: f39eb6158b5e82f449ae38845b9ae7cf,
-    type: 3}
-  m_PrefabInstance: {fileID: 338882283}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1288591987
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +781,7 @@ MonoBehaviour:
   userConfigFilename: 
   configOverrideFilename: 
   targetFrameRate: -1
+  disableVR: 0
   ntpSyncThreshold: 0.1
   ffmpegDLLDir: ../ffmpeg/x64
   autoInventUsername: 1
@@ -1276,7 +1277,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 1272965839}
+      objectReference: {fileID: 338882284}
     - target: {fileID: 6457971032522044966, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: m_Name
