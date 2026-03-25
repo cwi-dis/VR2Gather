@@ -1007,6 +1007,7 @@ MonoBehaviour:
   userConfigFilename: 
   configOverrideFilename: 
   targetFrameRate: -1
+  disableVR: 0
   ntpSyncThreshold: 0.1
   ffmpegDLLDir: ../ffmpeg/x64
   autoInventUsername: 1
