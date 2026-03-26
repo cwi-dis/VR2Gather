@@ -169,19 +169,41 @@ namespace VRT.Pilots.Common
             if (command == "resetview")
             {
                 ViewAdjust va = GetComponentInChildren<ViewAdjust>();
-                if (va != null) va.ResetOrigin();
+                if (va != null)
+                {
+                    va.ResetOrigin();
+                }
+                else
+                {
+                    Debug.LogWarning($"{Name()}: No ViewAdjust found for {command}");
+                }
                 return true;
             }
             if (command == "lowerview")
             {
                 ViewAdjust va = GetComponentInChildren<ViewAdjust>();
-                if (va != null) va.LowerView();
+                if (va != null)
+                {
+                    va.LowerView();
+                }
+                else
+                {
+                    Debug.LogWarning($"{Name()}: No ViewAdjust found for {command}");
+                }
+
                 return true;
             }
             if (command == "higherview")
             {
                 ViewAdjust va = GetComponentInChildren<ViewAdjust>();
-                if (va != null) va.HigherView();
+                if (va != null)
+                {
+                    va.HigherView();
+                }
+                else
+                {
+                    Debug.LogWarning($"{Name()}: No ViewAdjust found for {command}");
+                }
                 return true;
             }
             if (command == "resetposition")
