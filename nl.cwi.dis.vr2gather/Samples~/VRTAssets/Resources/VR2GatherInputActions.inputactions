@@ -331,39 +331,6 @@
             ],
             "bindings": [
                 {
-                    "name": "One Modifier",
-                    "id": "24d4288e-4989-4b3d-a472-292d8a3ed45d",
-                    "path": "OneModifier",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "modifier",
-                    "id": "5d1b7764-c137-47fa-abc0-b0ffd697d055",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "binding",
-                    "id": "269efbf7-abcb-4e90-b377-030417d956ac",
-                    "path": "<Mouse>/delta",
-                    "interactions": "",
-                    "processors": "ScaleVector2(x=10,y=10)",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "2D Vector",
                     "id": "c994405b-684a-4470-81b0-7242c54020f9",
                     "path": "2DVector",
