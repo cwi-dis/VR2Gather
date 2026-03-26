@@ -2319,7 +2319,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2577357887735165856
 Transform:
   m_ObjectHideFlags: 0
@@ -4254,6 +4254,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: P_Handsfree Controller
+      objectReference: {fileID: 0}
+    - target: {fileID: 4288606396186382934, guid: 7381cab04f03e4d5d86de0bb1fa6efcb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -2496,6 +2496,11 @@ PrefabInstance:
       propertyPath: NetworkId
       value: 532a77e9-8abc-415f-9d65-52d971270c5a
       objectReference: {fileID: 0}
+    - target: {fileID: 7843769743635110542, guid: 9f62a695f65bf47318a10ec13b184c67,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
