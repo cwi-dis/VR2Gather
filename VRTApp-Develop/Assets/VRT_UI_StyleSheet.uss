@@ -4,14 +4,22 @@ Button {
     -unity-font-definition: url("project://database/Library/unity%20default%20resources?fileID=10102&guid=0000000000000000e000000000000000&type=0#LegacyRuntime");
     min-height: 60px;
     min-width: 180px;
-    border-left-color: rgb(0, 0, 0);
-    border-right-color: rgb(0, 0, 0);
-    border-top-color: rgb(0, 0, 0);
-    border-bottom-color: rgb(0, 0, 0);
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
+    border-left-color: rgb(22, 123, 202);
+    border-right-color: rgb(22, 123, 202);
+    border-top-color: rgb(22, 123, 202);
+    border-bottom-color: rgb(22, 123, 202);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    font-size: 29px;
+    -unity-text-align: upper-center;
+    -unity-text-outline-width: 0;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    transition-duration: 0.5s;
 }
 
 Button.unity-button--with-icon {
@@ -19,10 +27,13 @@ Button.unity-button--with-icon {
     min-width: auto;
     width: 60px;
     height: 60px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 Button:hover {
     background-color: rgb(24, 112, 182);
+    scale: 1.03 1.03 1.03;
 }
 
 Button:active {
@@ -162,7 +173,7 @@ Toggle:hover #unity-checkmark {
 }
 
 Toggle.IconToggle:checked #unity-checkmark {
-    background-image: url("project://database/Assets/Samples/XR%20Interaction%20Toolkit/3.2.0-pre.1/Starter%20Assets/DemoSceneAssets/Sprites/Checkmark.png?fileID=2800000&guid=db3e7b7c8db355e499429545071a0321&type=3#Checkmark");
+    background-image: url("project://database/Assets/Samples/XR%20Interaction%20Toolkit/3.3.1/Starter%20Assets/DemoSceneAssets/Sprites/Checkmark.png?fileID=2800000&guid=db3e7b7c8db355e499429545071a0321&type=3#Checkmark");
     background-size: 50% 50%;
 }
 
