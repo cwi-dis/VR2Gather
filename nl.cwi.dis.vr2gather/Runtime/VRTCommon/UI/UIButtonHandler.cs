@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
@@ -8,50 +10,137 @@ namespace VRT.Pilots.Common {
     /// </summary>
     public class UIButtonHandler : MonoBehaviour
     {
-        [SerializeField]
-        UnityEvent m_OnButtonClicked = new UnityEvent();
-
-        /// <summary>
-        /// Event to be invoked when the UI Toolkit button is clicked.
-        /// </summary>
-        public UnityEvent onButtonClicked
+        [Serializable]
+        public class ButtonDefinition
         {
-            get => m_OnButtonClicked;
-            set => m_OnButtonClicked = value;
-        }
-        
-        [SerializeField]
-        string k_buttonName = null;
-        [SerializeField]
-        string k_LabelName = "DebugLabel";
-        Button m_Button;
-        Label m_Label;
+            [SerializeField][Tooltip("The name of the button in the UI document.")]
+            public string k_buttonName = null;
 
-        void Start()
+            [SerializeField] [DisableEditing][Tooltip("If this is set during runtime or after populate there is no button with this name")]
+            public bool is_invalid = false;
+            [SerializeField][Tooltip("Callback for this button")]
+            public UnityEvent m_OnButtonClicked = new UnityEvent();
+            public Button m_Button;
+            /// <summary>
+            /// Event to be invoked when the UI Toolkit button is clicked.
+            /// </summary>
+            public void HandleButtonClicked()
+            {
+                // Debug.Log($"UIButtonHandler: button '{k_buttonName}' clicked");
+                if (m_OnButtonClicked != null)
+                {
+                    if (m_OnButtonClicked.GetPersistentEventCount() == 0)
+                    {
+                        Debug.LogWarning($"UIButtonHandler: button '{k_buttonName}' clicked but no events were invoked");
+                    }
+                    m_OnButtonClicked.Invoke();
+                }
+                else
+                {
+                    Debug.LogError($"UIButtonHandler: unexpected HandleButtonClicked for button named {k_buttonName}");
+                }
+            }
+            
+        }
+
+        [SerializeField][Tooltip("UI button callbacks. Hint: Use editor context menu to populate.")]
+        private List<ButtonDefinition> buttons;
+#if UNITY_EDITOR
+        [ContextMenu("Populate and check buttons from attached UI document")]
+        private void PopulateButtons()
         {
             var uiToolkitDoc = GetComponent<UIDocument>();
-            if(uiToolkitDoc != null)
+            if (uiToolkitDoc == null)
             {
-                var root = uiToolkitDoc.rootVisualElement;
-                m_Button = root.Q<Button>(string.IsNullOrEmpty(k_buttonName) ? null : k_buttonName);
-                if (m_Button != null)
-                {
-                    k_buttonName = m_Button.name;
-                    m_Button.clicked += HandleButtonClicked;
+                Debug.LogError($"UIButtonHandler({name}): UI Toolkit document not found");
+                return;
+            }
+            var root = uiToolkitDoc.rootVisualElement;
+            // First check which buttons don't exist.
+            foreach (var button in buttons)
+            {
+                if (string.IsNullOrEmpty(button.k_buttonName)) {
+                    Debug.LogError($"UIButtonHandler({name}): UI button name is empty");
+                    button.is_invalid = true;
+                    continue;
                 }
 
-                // Find label by name
-                m_Label = root.Q<Label>(k_LabelName);
+                if (root.Q<Button>(button.k_buttonName) == null)
+                {
+                    Debug.LogError($"UIButtonHandler({name}): UI button {button.k_buttonName} not found");
+                    button.is_invalid = true;
+                    continue;
+                }
+                Debug.Log($"UIButtonHandler: button '{button.k_buttonName}' is valid");
+                button.is_invalid = false;
+            }
+            // Now go over all buttons and add entries if they don't have one
+            foreach (Button uiButton in root.Query<Button>().Build())
+            {
+                var name = uiButton.name;
+                if (string.IsNullOrEmpty(name)) {
+                    Debug.LogWarning($"UIButtonHandler({name}): UI button name is empty, ignoring");
+                    continue;
+                }
+                var button = buttons.Find(b => b.k_buttonName == name);
+                if (button == null)
+                {
+                    // It does not exist yet.
+                    button = new ButtonDefinition();
+                    button.k_buttonName = name;
+                    button.is_invalid = false;
+                    buttons.Add(button);
+                    Debug.Log($"UIButtonHandler: button '{button.k_buttonName}' has been added");
+                }
             }
         }
 
-        private void HandleButtonClicked()
-        {
-            if (m_OnButtonClicked != null)
-                m_OnButtonClicked.Invoke();
+#endif
 
-            if (m_Label != null)
-                m_Label.text = "Button clicked at: " + Time.time;
+        void Start()
+        {
+            InstallButtons();
+        }
+        
+        void InstallButtons() {
+            var uiToolkitDoc = GetComponent<UIDocument>();
+            if (uiToolkitDoc == null)
+            {
+                Debug.LogError($"UIButtonHandler({name}): UI Toolkit document not found");
+                return;
+            }
+
+            var root = uiToolkitDoc.rootVisualElement;
+            foreach (var button in buttons)
+            {
+                if (string.IsNullOrEmpty(button.k_buttonName)) {
+                    Debug.LogError($"UIButtonHandler({name}): UI button name is empty");
+                    continue;
+                }
+                button.m_Button = root.Q<Button>(button.k_buttonName);
+                if (button.m_Button != null)
+                {
+                    button.m_Button.clicked += button.HandleButtonClicked;
+                    button.is_invalid = false;
+                }
+                else
+                {
+                    button.is_invalid = true;
+                    Debug.LogError($"UIButtonHandler({name}): UI button '{button.k_buttonName}' not found");
+                }
+            }
+        }
+
+        void UninstallButtons()
+        {
+            foreach (var button in buttons)
+            {
+                if (button.m_Button != null) 
+                {
+                    button.m_Button.clicked -= button.HandleButtonClicked;
+                }
+                button.m_Button = null;
+            }
         }
     }
 }

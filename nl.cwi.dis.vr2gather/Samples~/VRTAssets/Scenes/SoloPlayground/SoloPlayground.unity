@@ -2578,23 +2578,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7880e5d6bb0c234f8b6e993b8cb4230, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VRT.Pilots.Common::VRT.Pilots.Common.UIButtonHandler
-  m_OnButtonClicked:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 304953146}
-        m_TargetAssemblyTypeName: VRT.Pilots.Pilot0.Pilot0Controller, Assembly-CSharp
-        m_MethodName: OnUserCommand_ext
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: exit
-          m_BoolArgument: 0
-        m_CallState: 2
-  k_buttonName: 
-  k_LabelName: DebugLabel
+  buttons:
+  - k_buttonName: MyFirstButton
+    is_invalid: 0
+    m_OnButtonClicked:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 304953146}
+          m_TargetAssemblyTypeName: VRT.Pilots.Pilot0.Pilot0Controller, Assembly-CSharp
+          m_MethodName: OnUserCommand_ext
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: exit
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1001 &1771448866
 PrefabInstance:
   m_ObjectHideFlags: 0
