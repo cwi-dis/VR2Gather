@@ -1,0 +1,11 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; width: 1000px; height: 400px; align-self: auto; align-items: auto; align-content: auto; justify-content: flex-start;">
+        <ui:VisualElement name="Header" style="flex-grow: 1; flex-direction: row; align-items: auto; align-content: auto; position: relative; justify-content: flex-start; align-self: auto; min-height: 60px;">
+            <ui:Button text="" name="HUD_Close" style="align-items: auto; align-content: auto; width: 60px; height: 60px;">
+                <ui:Image source="project://database/Assets/Samples/XR%20Interaction%20Toolkit/3.3.1/World%20Space%20UI/Styles/XRIDefaultRuntimeTheme.tss?fileID=5866165431930342980&amp;guid=511976cd788ea5442a20b479849b0cef&amp;type=3#Remove@2x" style="align-items: auto; align-content: auto; width: 60px; height: 60px;"/>
+            </ui:Button>
+            <ui:Label text="Controller top button, ESC or close box to hide." style="font-size: 32px; -unity-font-style: bold; align-items: auto; align-content: auto; height: 57px; width: 882px;"/>
+        </ui:VisualElement>
+        <ui:TabView/>
+    </ui:VisualElement>
+</ui:UXML>
