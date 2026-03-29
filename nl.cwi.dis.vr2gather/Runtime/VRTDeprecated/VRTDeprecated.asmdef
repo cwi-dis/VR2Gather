@@ -1,0 +1,20 @@
+{
+    "name": "VRT.Deprecated",
+    "rootNamespace": "",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:fe685ec1767f73d42b749ea8045bfe43",
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:4c004646048bad64bbb4037581d275d6",
+        "GUID:8830b9e06f5eb184f963f1aec82206c7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
