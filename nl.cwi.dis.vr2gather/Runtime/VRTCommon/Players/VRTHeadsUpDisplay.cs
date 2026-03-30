@@ -14,6 +14,8 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("The Input System Action that will show/hide the HUD")]
         [SerializeField] InputActionProperty m_ShowHideAction;
+        [Tooltip("GameObject with the UIDocument")]
+        [SerializeField] GameObject canvas;
         [Tooltip("How far away is the HMD from the users eyes?")]
         public float distance = 1;
         [Tooltip("How far up/down from the center is the HMD?")]
@@ -38,7 +40,7 @@ namespace VRT.Pilots.Common
         void Start()
         {
             Hide();
-             if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
+            if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
             if (interceptErrors)
             {
                 if (ErrorManager.Instance == null)
@@ -55,8 +57,8 @@ namespace VRT.Pilots.Common
         {
             if (m_ShowHideAction.action.WasPressedThisFrame())
             {
-#if OLD_CODE
                 canvas.SetActive(!canvas.activeSelf);
+#if OLD_CODE
                 if (canvas.activeSelf)
                 {
                     PilotController.Instance.DisableDirectInteraction();
@@ -113,9 +115,9 @@ namespace VRT.Pilots.Common
 
         public void Hide()
         {
+            canvas.SetActive(false);
 #if OLD_CODE
             PilotController.Instance.EnableDirectInteraction();
-            canvas.SetActive(false);
             UserInterfaceGO.SetActive(true);
             MessagesGO.SetActive(false);
             HelpGO.SetActive(false);
