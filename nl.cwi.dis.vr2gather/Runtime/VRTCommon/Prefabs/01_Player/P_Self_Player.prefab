@@ -7497,7 +7497,7 @@ PrefabInstance:
     - target: {fileID: 4040406381615210457, guid: 188f23253ece24965accc124ca8cabf4,
         type: 3}
       propertyPath: m_Name
-      value: P_HeadsUpDisplay
+      value: P_Old_HeadsUpDisplay
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
