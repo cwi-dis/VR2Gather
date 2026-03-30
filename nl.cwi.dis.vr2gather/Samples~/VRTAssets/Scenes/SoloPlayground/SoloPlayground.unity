@@ -2596,6 +2596,8 @@ MonoBehaviour:
             m_StringArgument: exit
             m_BoolArgument: 0
           m_CallState: 2
+    parent: {fileID: 0}
+  debug: 1
 --- !u!1001 &1771448866
 PrefabInstance:
   m_ObjectHideFlags: 0
