@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
+using UnityEngine.UIElements;
 using VRT.Core;
 
 namespace VRT.Pilots.Common
@@ -51,7 +51,13 @@ namespace VRT.Pilots.Common
                 }
                 ErrorManager.Instance.RegisterSink(this);
             }
-            
+
+        }
+
+        VisualElement GetRoot()
+        {
+            var uiDoc = canvas.GetComponent<UIDocument>();
+            return uiDoc?.rootVisualElement;
         }
 
         // Update is called once per frame
@@ -104,6 +110,29 @@ namespace VRT.Pilots.Common
              }
         }
 
+        void SetActiveTab(string activePanelName)
+        {
+            var root = GetRoot();
+            foreach (var name in new[] { "CommandsPanel", "MessagesPanel" })
+            {
+                root.Q<VisualElement>(name)?.EnableInClassList("vrt-tab-panel--active", name == activePanelName);
+            }
+            foreach (var (name, buttonName) in new[] { ("CommandsPanel", "CommandsTabButton"), ("MessagesPanel", "MessagesTabButton") })
+            {
+                root.Q<Button>(buttonName)?.EnableInClassList("vrt-tab-button--active", name == activePanelName);
+            }
+        }
+
+        public void ShowCommandsTab()
+        {
+            SetActiveTab("CommandsPanel");
+        }
+
+        public void ShowMessagesTab()
+        {
+            SetActiveTab("MessagesPanel");
+        }
+
         public void FillError(string title, string message)
         {
 #if OLD_CODE
@@ -147,47 +176,6 @@ namespace VRT.Pilots.Common
 #endif
         }
 
-        public void ShowCommands()
-        {
-#if OLD_CODE
-            UserInterfaceGO.SetActive(true);
-            MessagesGO.SetActive(false);
-            HelpGO.SetActive(false);
-            UserInterfaceToggle.isOn = true;
-            MessagesToggle.isOn = false;
-            HelpToggle.isOn = false;
-            canvas.SetActive(true);
-            PilotController.Instance.DisableDirectInteraction();
-#endif
-        }
-
-        public void ShowMessages()
-        {
-#if OLD_CODE
-            UserInterfaceGO.SetActive(false);
-            MessagesGO.SetActive(true);
-            HelpGO.SetActive(false);
-            UserInterfaceToggle.isOn = false;
-            MessagesToggle.isOn = true;
-            HelpToggle.isOn = false;
-            canvas.SetActive(true);
-            PilotController.Instance.DisableDirectInteraction();
-#endif
-        }
-
-        public void ShowHelp()
-        {
-#if OLD_CODE
-            UserInterfaceGO.SetActive(false);
-            MessagesGO.SetActive(false);
-            HelpGO.SetActive(true);
-            UserInterfaceToggle.isOn = false;
-            MessagesToggle.isOn = false;
-            HelpToggle.isOn = true;
-            canvas.SetActive(true);
-            PilotController.Instance.DisableDirectInteraction();
-#endif
-        }
 
         public void OnHUDCommand(string command)
         {

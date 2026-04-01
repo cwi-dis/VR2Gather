@@ -4539,6 +4539,16 @@ PrefabInstance:
       propertyPath: buttons.Array.data[0].m_OnButtonClicked.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 3484654235810482946}
+    - target: {fileID: 6045866883838921279, guid: b05c3133eb43f471c8493c21d2ec1191,
+        type: 3}
+      propertyPath: buttons.Array.data[1].m_OnButtonClicked.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 3484654235810482946}
+    - target: {fileID: 6045866883838921279, guid: b05c3133eb43f471c8493c21d2ec1191,
+        type: 3}
+      propertyPath: buttons.Array.data[2].m_OnButtonClicked.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 3484654235810482946}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

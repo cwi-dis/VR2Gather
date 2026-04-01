@@ -61,3 +61,33 @@
     padding-left: 16px;
     padding-right: 16px;
 }
+
+/* Tab buttons in the header */
+.vrt-tab-button {
+    min-width: 120px;
+    min-height: 44px;
+    background-color: rgb(24, 112, 182);
+    margin-right: 4px;
+}
+
+.vrt-tab-button:hover {
+    background-color: rgb(14, 82, 142);
+}
+
+.vrt-tab-button--active {
+    background-color: rgb(46, 46, 46);
+}
+
+.vrt-tab-button--active:hover {
+    background-color: rgb(46, 46, 46);
+}
+
+/* Tab panels */
+.vrt-tab-panel {
+    display: none;
+    flex-grow: 1;
+}
+
+.vrt-tab-panel--active {
+    display: flex;
+}
