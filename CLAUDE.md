@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Collaborator Preferences
+
+**Jack** (main contributor): If Jack suggests an approach or implementation strategy that you think isn't the best way, say so and explain why — don't just implement it silently.
+
 ## Project Overview
 
 VR2Gather is a Unity package (`nl.cwi.dis.vr2gather`) for collaborative networked social VR with live volumetric video (point clouds). Participants appear as real-time 3D reconstructions in shared virtual spaces. Built for Unity 6000.3+.
