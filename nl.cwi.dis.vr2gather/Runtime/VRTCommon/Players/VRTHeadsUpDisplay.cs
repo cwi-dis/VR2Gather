@@ -42,9 +42,7 @@ namespace VRT.Pilots.Common
             if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
             if (interceptErrors)
             {
-#if BREAKS_INTERACTION
                 Hide();
-#endif
 
                 if (ErrorManager.Instance == null)
                 {

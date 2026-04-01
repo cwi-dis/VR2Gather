@@ -106,9 +106,14 @@ namespace VRT.Pilots.Common {
 
 #endif
 
-        void Start()
+        void OnEnable()
         {
             InstallButtons();
+        }
+
+        void OnDisable()
+        {
+            UninstallButtons();
         }
         
         void InstallButtons() {
