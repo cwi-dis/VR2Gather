@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
-using UnityEngine.UIElements;
 using VRT.Core;
 
 namespace VRT.Pilots.Common
@@ -52,12 +51,6 @@ namespace VRT.Pilots.Common
                 ErrorManager.Instance.RegisterSink(this);
             }
 
-        }
-
-        VisualElement GetRoot()
-        {
-            var uiDoc = canvas.GetComponent<UIDocument>();
-            return uiDoc?.rootVisualElement;
         }
 
         // Update is called once per frame
@@ -108,29 +101,6 @@ namespace VRT.Pilots.Common
                     shouldChange = false;
                 }
              }
-        }
-
-        void SetActiveTab(string activePanelName)
-        {
-            var root = GetRoot();
-            foreach (var name in new[] { "CommandsPanel", "MessagesPanel" })
-            {
-                root.Q<VisualElement>(name)?.EnableInClassList("vrt-tab-panel--active", name == activePanelName);
-            }
-            foreach (var (name, buttonName) in new[] { ("CommandsPanel", "CommandsTabButton"), ("MessagesPanel", "MessagesTabButton") })
-            {
-                root.Q<Button>(buttonName)?.EnableInClassList("vrt-tab-button--active", name == activePanelName);
-            }
-        }
-
-        public void ShowCommandsTab()
-        {
-            SetActiveTab("CommandsPanel");
-        }
-
-        public void ShowMessagesTab()
-        {
-            SetActiveTab("MessagesPanel");
         }
 
         public void FillError(string title, string message)

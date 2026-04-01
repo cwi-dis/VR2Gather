@@ -3364,6 +3364,56 @@ PrefabInstance:
       propertyPath: startFadedOut
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[3].parent
+      value: 
+      objectReference: {fileID: 7957250787338241243}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[1].is_invalid
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[2].is_invalid
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[3].is_invalid
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[1].k_buttonName
+      value: ExitButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[2].k_buttonName
+      value: CommandsTabButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[3].k_buttonName
+      value: CommandsTabButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[1].m_OnButtonClicked.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: buttons.Array.data[2].m_OnButtonClicked.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7957250788412427322, guid: e4a2ad980cb30454eab747ddbac46ff6,
         type: 3}
       propertyPath: m_Name
@@ -3433,6 +3483,18 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: e4a2ad980cb30454eab747ddbac46ff6, type: 3}
+--- !u!114 &7957250787338241243 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3865648190358856617, guid: e4a2ad980cb30454eab747ddbac46ff6,
+    type: 3}
+  m_PrefabInstance: {fileID: 7957250787338241242}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7880e5d6bb0c234f8b6e993b8cb4230, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VRT.Pilots.Common::VRT.Pilots.Common.UIButtonHandler
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

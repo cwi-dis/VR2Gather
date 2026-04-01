@@ -3,20 +3,18 @@
     <Style src="./VRT_Dialog.uss"/>
     <ui:VisualElement class="vrt-dialog">
         <ui:VisualElement name="Head" class="vrt-dialog__head">
-            <ui:Button text="Commands" name="CommandsTabButton" class="vrt-tab-button vrt-tab-button--active"/>
-            <ui:Button text="Messages" name="MessagesTabButton" class="vrt-tab-button"/>
-            <ui:VisualElement style="flex-grow: 1;"/>
+            <ui:Label text="HUD" class="vrt-dialog__title"/>
             <ui:Button text="Close" name="CloseButton" class="vrt-dialog__close-button"/>
         </ui:VisualElement>
-        <ui:VisualElement name="Body" class="vrt-dialog__body">
-            <ui:VisualElement name="CommandsPanel" class="vrt-tab-panel vrt-tab-panel--active">
+        <ui:TabView name="HUDTabs" class="vrt-dialog__body">
+            <ui:Tab label="Commands" name="CommandsTab">
                 <ui:Button text="Exit VR2Gather" name="ExitButton"/>
-            </ui:VisualElement>
-            <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel">
+            </ui:Tab>
+            <ui:Tab label="Messages" name="MessagesTab">
                 <ui:ScrollView name="MessagesScrollView">
                     <ui:Label text="Log output will show up here."/>
                 </ui:ScrollView>
-            </ui:VisualElement>
-        </ui:VisualElement>
+            </ui:Tab>
+        </ui:TabView>
     </ui:VisualElement>
 </ui:UXML>
