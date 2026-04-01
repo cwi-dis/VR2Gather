@@ -39,10 +39,13 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-            Hide();
             if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
             if (interceptErrors)
             {
+#if BREAKS_INTERACTION
+                Hide();
+#endif
+
                 if (ErrorManager.Instance == null)
                 {
                     Debug.LogError("HeadsUpDisplay: interceptErrors is true, but there is no ErrorManager");
@@ -50,6 +53,7 @@ namespace VRT.Pilots.Common
                 }
                 ErrorManager.Instance.RegisterSink(this);
             }
+            
         }
 
         // Update is called once per frame
