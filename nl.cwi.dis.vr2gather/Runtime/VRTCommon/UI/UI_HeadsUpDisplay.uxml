@@ -1,9 +1,11 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="flex-grow: 1; background-color: rgba(255, 238, 140, 0.48);">
-        <ui:VisualElement name="Head" style="flex-grow: 1;">
-            <ui:Label text="Close with X button, ESC key or controller top button"/>
-            <ui:Button text="Close" name="CloseButton"/>
+    <Style src="./VRT_UI_StyleSheet.uss"/>
+    <Style src="./VRT_Dialog.uss"/>
+    <ui:VisualElement class="vrt-dialog">
+        <ui:VisualElement name="Head" class="vrt-dialog__head">
+            <ui:Label text="HUD" class="vrt-dialog__title"/>
+            <ui:Button text="Close" name="CloseButton" class="vrt-dialog__close-button"/>
         </ui:VisualElement>
-        <ui:VisualElement name="Body" style="flex-grow: 1;"/>
+        <ui:VisualElement name="Body" class="vrt-dialog__body"/>
     </ui:VisualElement>
 </ui:UXML>
