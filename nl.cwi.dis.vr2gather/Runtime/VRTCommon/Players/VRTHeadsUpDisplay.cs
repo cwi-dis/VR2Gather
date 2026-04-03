@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,8 @@ namespace VRT.Pilots.Common
         public float maxAngle = 1;
         [Tooltip("Should this HUD intercept and display error messages?")]
         [SerializeField] bool interceptErrors = true;
+        [Tooltip("Auto-show messages")]
+        [SerializeField] bool autoShowMessages = true;
         [Tooltip("Prefab for error messages")]
         [SerializeField] GameObject errorPrefab;
 
@@ -36,6 +39,8 @@ namespace VRT.Pilots.Common
         [Tooltip("Dialog needs to move")]
         [DisableEditing][SerializeField] bool shouldChange;
 
+        private List<string> currentMessages  = new List<string>();
+        
         // Start is called before the first frame update
         void Start()
         {
@@ -135,6 +140,15 @@ namespace VRT.Pilots.Common
 
         public void FillError(string title, string message)
         {
+            string newMessage = $"{title}: {message}";
+            currentMessages.Add(newMessage);
+            string AllContent = String.Join("\n", currentMessages);
+            if (autoShowMessages)
+            {
+                canvas.SetActive(true);
+                SetActiveTab("MessagesPanel");
+            }
+            GetRoot().Q<TextField>("MessagesContent").value = AllContent;
 #if OLD_CODE
             var popupGO = Instantiate(errorPrefab, MessagesGO.transform);
             popupGO.SetActive(true);

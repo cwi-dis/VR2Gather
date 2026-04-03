@@ -1,6 +1,6 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="./VRT_UI_StyleSheet.uss"/>
-    <Style src="./VRT_Dialog.uss"/>
+    <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_UI_StyleSheet.uss?fileID=7433441132597879392&amp;guid=01f34e88dae28498bac043b07f25038f&amp;type=3#VRT_UI_StyleSheet"/>
+    <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_Dialog.uss?fileID=7433441132597879392&amp;guid=ccade230efe254913ba526093cc7263e&amp;type=3#VRT_Dialog"/>
     <ui:VisualElement class="vrt-dialog">
         <ui:VisualElement name="Head" class="vrt-dialog__head">
             <ui:Button text="Commands" name="CommandsTabButton" class="vrt-tab-button vrt-tab-button--active"/>
@@ -9,12 +9,12 @@
             <ui:Button text="Close" name="CloseButton" class="vrt-dialog__close-button"/>
         </ui:VisualElement>
         <ui:VisualElement name="Body" class="vrt-dialog__body">
-            <ui:VisualElement name="CommandsPanel" class="vrt-tab-panel vrt-tab-panel--active">
+            <ui:VisualElement name="CommandsPanel" class="vrt-tab-panel">
                 <ui:Button text="Exit VR2Gather" name="ExitButton"/>
             </ui:VisualElement>
-            <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel">
+            <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel vrt-tab-panel--active">
                 <ui:ScrollView name="MessagesScrollView">
-                    <ui:Label text="Log output will show up here."/>
+                    <ui:TextField name="MessagesContent" value="Log output will show up here.&#10;And here." readonly="true" multiline="true"/>
                 </ui:ScrollView>
             </ui:VisualElement>
         </ui:VisualElement>
