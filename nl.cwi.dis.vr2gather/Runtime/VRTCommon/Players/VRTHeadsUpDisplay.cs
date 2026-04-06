@@ -39,7 +39,8 @@ namespace VRT.Pilots.Common
         [Tooltip("Dialog needs to move")]
         [DisableEditing][SerializeField] bool shouldChange;
 
-        private List<string> currentMessages  = new List<string>();
+        private List<string> currentMessageList  = new List<string>();
+        private string currentMessageString = null;
         
         // Start is called before the first frame update
         void Start()
@@ -81,6 +82,12 @@ namespace VRT.Pilots.Common
                     PilotController.Instance.EnableDirectInteraction();
                 }
 #endif
+            }
+
+            if (currentMessageString != null && canvas.activeSelf)
+            {
+                GetRoot().Q<TextField>("MessagesContent").value = currentMessageString;
+                currentMessageString = null;
             }
         }
 
@@ -141,14 +148,15 @@ namespace VRT.Pilots.Common
         public void FillError(string title, string message)
         {
             string newMessage = $"{title}: {message}";
-            currentMessages.Add(newMessage);
-            string AllContent = String.Join("\n", currentMessages);
+            currentMessageList.Remove(newMessage);
+            currentMessageList.Add(newMessage);
+            currentMessageString = String.Join("\n", currentMessageList);
             if (autoShowMessages)
             {
                 canvas.SetActive(true);
                 SetActiveTab("MessagesPanel");
             }
-            GetRoot().Q<TextField>("MessagesContent").value = AllContent;
+            
 #if OLD_CODE
             var popupGO = Instantiate(errorPrefab, MessagesGO.transform);
             popupGO.SetActive(true);
