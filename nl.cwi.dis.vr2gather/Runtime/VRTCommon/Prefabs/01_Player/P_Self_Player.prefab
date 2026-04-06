@@ -4514,17 +4514,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4061814547494569468, guid: b05c3133eb43f471c8493c21d2ec1191,
+    - target: {fileID: 3392800643553741113, guid: b05c3133eb43f471c8493c21d2ec1191,
         type: 3}
       propertyPath: m_LocalScale.x
       value: 0.1
       objectReference: {fileID: 0}
-    - target: {fileID: 4061814547494569468, guid: b05c3133eb43f471c8493c21d2ec1191,
+    - target: {fileID: 3392800643553741113, guid: b05c3133eb43f471c8493c21d2ec1191,
         type: 3}
       propertyPath: m_LocalScale.y
       value: 0.1
       objectReference: {fileID: 0}
-    - target: {fileID: 4061814547494569468, guid: b05c3133eb43f471c8493c21d2ec1191,
+    - target: {fileID: 3392800643553741113, guid: b05c3133eb43f471c8493c21d2ec1191,
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.1
@@ -4595,7 +4595,6 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: -3941016355960383524, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
-  canvas: {fileID: 8037859760064511079}
   distance: 1
   height: 0
   velocity: 0.01
@@ -4605,12 +4604,6 @@ MonoBehaviour:
   errorPrefab: {fileID: 0}
   playerController: {fileID: 0}
   shouldChange: 0
---- !u!1 &8037859760064511079 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7467903700052761531, guid: b05c3133eb43f471c8493c21d2ec1191,
-    type: 3}
-  m_PrefabInstance: {fileID: 589800047562287068}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &795391453705155307
 PrefabInstance:
   m_ObjectHideFlags: 0

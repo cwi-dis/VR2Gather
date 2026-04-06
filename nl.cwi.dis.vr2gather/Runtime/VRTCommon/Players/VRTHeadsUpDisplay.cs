@@ -15,8 +15,6 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("The Input System Action that will show/hide the HUD")]
         [SerializeField] InputActionProperty m_ShowHideAction;
-        [Tooltip("GameObject with the UIDocument")]
-        [SerializeField] GameObject canvas;
         [Tooltip("How far away is the HMD from the users eyes?")]
         public float distance = 1;
         [Tooltip("How far up/down from the center is the HMD?")]
@@ -41,7 +39,21 @@ namespace VRT.Pilots.Common
 
         private List<string> currentMessageList  = new List<string>();
         private string currentMessageString = null;
-        
+        private bool _hudVisible = false;
+
+        void OnAutoShowMessagesChanged(ChangeEvent<bool> evt)
+        {
+            autoShowMessages = evt.newValue;
+        }
+
+        void SetHudVisible(bool visible)
+        {
+            var root = GetRoot();
+            if (root != null)
+                root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            _hudVisible = visible;
+        }
+
         // Start is called before the first frame update
         void Start()
         {
@@ -57,12 +69,17 @@ namespace VRT.Pilots.Common
                 }
                 ErrorManager.Instance.RegisterSink(this);
             }
-
+            var toggle = GetRoot()?.Q<Toggle>("AutoShowMessagesToggle");
+            if (toggle != null)
+            {
+                toggle.value = autoShowMessages;
+                toggle.RegisterValueChangedCallback(OnAutoShowMessagesChanged);
+            }
         }
 
         VisualElement GetRoot()
         {
-            var uiDoc = canvas.GetComponent<UIDocument>();
+            var uiDoc = GetComponent<UIDocument>();
             return uiDoc?.rootVisualElement;
         }
 
@@ -71,20 +88,10 @@ namespace VRT.Pilots.Common
         {
             if (m_ShowHideAction.action.WasPressedThisFrame())
             {
-                canvas.SetActive(!canvas.activeSelf);
-#if OLD_CODE
-                if (canvas.activeSelf)
-                {
-                    PilotController.Instance.DisableDirectInteraction();
-                }
-                else
-                {
-                    PilotController.Instance.EnableDirectInteraction();
-                }
-#endif
+                SetHudVisible(!_hudVisible);
             }
 
-            if (currentMessageString != null && canvas.activeSelf)
+            if (currentMessageString != null && _hudVisible)
             {
                 GetRoot().Q<TextField>("MessagesContent").value = currentMessageString;
                 currentMessageString = null;
@@ -153,7 +160,7 @@ namespace VRT.Pilots.Common
             currentMessageString = String.Join("\n", currentMessageList);
             if (autoShowMessages)
             {
-                canvas.SetActive(true);
+                SetHudVisible(true);
                 SetActiveTab("MessagesPanel");
             }
             
@@ -168,7 +175,7 @@ namespace VRT.Pilots.Common
 
         public void Hide()
         {
-            canvas.SetActive(false);
+            SetHudVisible(false);
 #if OLD_CODE
             PilotController.Instance.EnableDirectInteraction();
             UserInterfaceGO.SetActive(true);
