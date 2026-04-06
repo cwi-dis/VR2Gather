@@ -13,7 +13,11 @@
                 <ui:Button text="Exit VR2Gather" name="ExitButton"/>
             </ui:VisualElement>
             <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel vrt-tab-panel--active">
-                <ui:Toggle name="AutoShowMessagesToggle" label="Auto-show on new messages" value="true"/>
+                <ui:VisualElement name="MessagesToolbar" class="vrt-toolbar">
+                    <ui:Toggle name="AutoShowMessagesToggle" label="Auto-show on new messages" value="true" class="vrt-checkbox"/>
+                    <ui:VisualElement style="flex-grow: 1;"/>
+                    <ui:Button text="Clear" name="ClearMessagesButton" class="vrt-small-button"/>
+                </ui:VisualElement>
                 <ui:ScrollView name="MessagesScrollView">
                     <ui:TextField name="MessagesContent" value="Log output will show up here.&#10;And here." readonly="true" multiline="true"/>
                 </ui:ScrollView>

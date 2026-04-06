@@ -151,6 +151,66 @@ Toggle:active #unity-checkmark {
     background-color: rgb(88, 176, 246);
 }
 
+/* Compact button for use in toolbars */
+Button.vrt-small-button {
+    min-width: 80px;
+    min-height: 44px;
+}
+
+/* Checkbox-style toggle: small box on the left, label on the right */
+Toggle.vrt-checkbox {
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+Toggle.vrt-checkbox #unity-checkmark {
+    background-image: none;
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-left-color: rgb(180, 180, 180);
+    border-right-color: rgb(180, 180, 180);
+    border-top-color: rgb(180, 180, 180);
+    border-bottom-color: rgb(180, 180, 180);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background-color: rgb(46, 46, 46);
+}
+
+Toggle.vrt-checkbox:hover #unity-checkmark {
+    background-image: none;
+    background-color: rgb(60, 60, 60);
+}
+
+Toggle.vrt-checkbox:checked #unity-checkmark {
+    background-image: none;
+    background-color: rgb(32, 150, 243);
+}
+
+Toggle.vrt-checkbox:checked:hover #unity-checkmark {
+    background-image: none;
+    background-color: rgb(24, 112, 182);
+}
+
+Toggle.vrt-checkbox .unity-toggle__text {
+    position: relative;
+    min-width: 0;
+    max-width: 400px;
+    min-height: 0;
+    max-height: 60px;
+    -unity-text-align: middle-left;
+    padding-left: 8px;
+    color: rgb(255, 255, 255);
+    font-size: 24px;
+}
+
 ScrollView #unity-dragger {
     background-color: rgb(255, 255, 255);
 }

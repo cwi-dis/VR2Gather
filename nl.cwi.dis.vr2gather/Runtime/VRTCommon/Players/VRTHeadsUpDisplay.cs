@@ -75,6 +75,9 @@ namespace VRT.Pilots.Common
                 toggle.value = autoShowMessages;
                 toggle.RegisterValueChangedCallback(OnAutoShowMessagesChanged);
             }
+            var clearButton = GetRoot()?.Q<Button>("ClearMessagesButton");
+            if (clearButton != null)
+                clearButton.clicked += ClearMessages;
         }
 
         VisualElement GetRoot()
@@ -150,6 +153,12 @@ namespace VRT.Pilots.Common
         public void ShowMessagesTab()
         {
             SetActiveTab("MessagesPanel");
+        }
+
+        public void ClearMessages()
+        {
+            currentMessageList.Clear();
+            currentMessageString = "";
         }
 
         public void FillError(string title, string message)

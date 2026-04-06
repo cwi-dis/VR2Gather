@@ -82,6 +82,13 @@
     background-color: rgb(46, 46, 46);
 }
 
+/* Toolbar row inside a tab panel or dialog body */
+.vrt-toolbar {
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
 /* Tab panels */
 .vrt-tab-panel {
     display: none;
