@@ -29,7 +29,9 @@ namespace VRT.Pilots.Common
         [SerializeField] bool interceptErrors = true;
         [Tooltip("Auto-show messages")]
         [SerializeField] bool autoShowMessages = true;
-        [Tooltip("Prefab for error messages")]
+        [Tooltip("Filter out duplicate messages")] [SerializeField]
+        private bool filterDuplicates = true;
+        [Tooltip("Prefab for error messages")] 
         [SerializeField] GameObject errorPrefab;
 
         [Tooltip("Player controller (found dynamically)")]
@@ -44,6 +46,11 @@ namespace VRT.Pilots.Common
         void OnAutoShowMessagesChanged(ChangeEvent<bool> evt)
         {
             autoShowMessages = evt.newValue;
+        }
+
+        void OnFilterDuplicatesChanged(ChangeEvent<bool> evt)
+        {
+            filterDuplicates = evt.newValue;
         }
 
         void SetHudVisible(bool visible)
@@ -75,6 +82,12 @@ namespace VRT.Pilots.Common
                 toggle.value = autoShowMessages;
                 toggle.RegisterValueChangedCallback(OnAutoShowMessagesChanged);
             }
+            var filterToggle = GetRoot()?.Q<Toggle>("FilterDuplicatesToggle");
+            if (filterToggle != null)
+            {
+                filterToggle.value = filterDuplicates;
+                filterToggle.RegisterValueChangedCallback(OnFilterDuplicatesChanged);
+            }
             var clearButton = GetRoot()?.Q<Button>("ClearMessagesButton");
             if (clearButton != null)
                 clearButton.clicked += ClearMessages;
@@ -96,7 +109,7 @@ namespace VRT.Pilots.Common
 
             if (currentMessageString != null && _hudVisible)
             {
-                GetRoot().Q<TextField>("MessagesContent").value = currentMessageString;
+                GetRoot().Q<Label>("MessagesContent").text = currentMessageString;
                 currentMessageString = null;
             }
         }
@@ -164,7 +177,10 @@ namespace VRT.Pilots.Common
         public void FillError(string title, string message)
         {
             string newMessage = $"{title}: {message}";
-            currentMessageList.Remove(newMessage);
+            if (filterDuplicates)
+            {
+                currentMessageList.Remove(newMessage);
+            }
             currentMessageList.Add(newMessage);
             currentMessageString = String.Join("\n", currentMessageList);
             if (autoShowMessages)

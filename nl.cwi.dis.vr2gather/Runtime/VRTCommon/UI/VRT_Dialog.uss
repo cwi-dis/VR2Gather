@@ -107,11 +107,12 @@
     background-color: rgba(10, 30, 60, 0.9);
 }
 
-.vrt-log-view .unity-base-text-field__input {
-    background-color: rgba(10, 30, 60, 0.9);
+.vrt-log-view Label {
+    align-self: flex-start;
+    min-width: 100%;
     color: rgb(255, 255, 255);
     font-size: 28px;
-    border-width: 0;
+    white-space: nowrap;
 }
 
 /* Tab panels */

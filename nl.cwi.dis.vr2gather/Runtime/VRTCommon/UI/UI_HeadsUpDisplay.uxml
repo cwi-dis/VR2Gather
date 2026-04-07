@@ -9,7 +9,7 @@
             <ui:Button text="Close" name="CloseButton" class="vrt-dialog__close-button"/>
         </ui:VisualElement>
         <ui:VisualElement name="Body" class="vrt-dialog__body">
-            <ui:VisualElement name="CommandsPanel" class="vrt-tab-panel vrt-tab-panel--active">
+            <ui:VisualElement name="CommandsPanel" class="vrt-tab-panel">
                 <ui:VisualElement name="CommandsGrid" class="vrt-commands-grid">
                     <ui:VisualElement name="CommandsLeft" class="vrt-commands-column"/>
                     <ui:VisualElement name="CommandsMiddle" class="vrt-commands-column">
@@ -24,14 +24,15 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel">
+            <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel vrt-tab-panel--active">
                 <ui:VisualElement name="MessagesToolbar" class="vrt-toolbar">
                     <ui:Toggle name="AutoShowMessagesToggle" label="Auto-show on new messages" value="true" class="vrt-checkbox"/>
+                    <ui:Toggle name="FilterDuplicatesToggle" label="Filter duplicates" value="true" class="vrt-checkbox"/>
                     <ui:VisualElement style="flex-grow: 1;"/>
                     <ui:Button text="Clear" name="ClearMessagesButton" class="vrt-small-button"/>
                 </ui:VisualElement>
-                <ui:ScrollView name="MessagesScrollView" class="vrt-log-view">
-                    <ui:TextField name="MessagesContent" value="Log output will show up here.&#10;And here." readonly="true" multiline="true"/>
+                <ui:ScrollView name="MessagesScrollView" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="AlwaysVisible" mode="VerticalAndHorizontal" class="vrt-log-view">
+                    <ui:Label name="MessagesContent" text="Log output will show up here,&#10;And here."/>
                 </ui:ScrollView>
             </ui:VisualElement>
         </ui:VisualElement>
