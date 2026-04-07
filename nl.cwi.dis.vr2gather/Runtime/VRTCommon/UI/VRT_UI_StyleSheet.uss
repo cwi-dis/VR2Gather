@@ -3,18 +3,28 @@ Button {
     color: rgb(255, 255, 255);
     min-height: 60px;
     min-width: 180px;
-    border-left-color: rgb(0, 0, 0);
-    border-right-color: rgb(0, 0, 0);
-    border-top-color: rgb(0, 0, 0);
-    border-bottom-color: rgb(0, 0, 0);
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
+    border-left-color: rgb(22, 123, 202);
+    border-right-color: rgb(22, 123, 202);
+    border-top-color: rgb(22, 123, 202);
+    border-bottom-color: rgb(22, 123, 202);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    transition-duration: 0.5s;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 Button:hover {
     background-color: rgb(24, 112, 182);
+    scale: 1.1 1.1 1.1;
 }
 
 Button:active {

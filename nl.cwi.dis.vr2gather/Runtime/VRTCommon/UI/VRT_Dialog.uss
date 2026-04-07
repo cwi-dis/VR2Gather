@@ -1,7 +1,7 @@
 /* Outer panel */
 .vrt-dialog {
     flex-grow: 1;
-    background-color: rgba(46, 46, 46, 0.9);
+    background-color: rgba(10, 30, 60, 0.9);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -20,7 +20,7 @@
 .vrt-dialog__head {
     flex-direction: row;
     align-items: center;
-    background-color: rgb(32, 150, 243);
+    background-color: rgba(10, 30, 60, 0.9);
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     padding-top: 8px;
@@ -99,6 +99,19 @@
     flex-direction: column;
     flex: 1;
     padding: 4px;
+}
+
+/* Scrollable log/text area */
+.vrt-log-view {
+    flex-grow: 1;
+    background-color: rgba(10, 30, 60, 0.9);
+}
+
+.vrt-log-view .unity-base-text-field__input {
+    background-color: rgba(10, 30, 60, 0.9);
+    color: rgb(255, 255, 255);
+    font-size: 28px;
+    border-width: 0;
 }
 
 /* Tab panels */

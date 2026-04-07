@@ -30,7 +30,7 @@
                     <ui:VisualElement style="flex-grow: 1;"/>
                     <ui:Button text="Clear" name="ClearMessagesButton" class="vrt-small-button"/>
                 </ui:VisualElement>
-                <ui:ScrollView name="MessagesScrollView">
+                <ui:ScrollView name="MessagesScrollView" class="vrt-log-view">
                     <ui:TextField name="MessagesContent" value="Log output will show up here.&#10;And here." readonly="true" multiline="true"/>
                 </ui:ScrollView>
             </ui:VisualElement>
