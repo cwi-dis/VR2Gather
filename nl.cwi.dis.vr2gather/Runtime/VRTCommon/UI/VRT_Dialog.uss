@@ -89,6 +89,18 @@
     padding-bottom: 8px;
 }
 
+/* Three-column grid for Commands tab */
+.vrt-commands-grid {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.vrt-commands-column {
+    flex-direction: column;
+    flex: 1;
+    padding: 4px;
+}
+
 /* Tab panels */
 .vrt-tab-panel {
     display: none;

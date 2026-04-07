@@ -151,6 +151,11 @@ Toggle:active #unity-checkmark {
     background-color: rgb(88, 176, 246);
 }
 
+/* Important/prominent button — slightly taller than standard */
+Button.vrt-button-important {
+    min-height: 90px;
+}
+
 /* Compact button for use in toolbars */
 Button.vrt-small-button {
     min-width: 80px;

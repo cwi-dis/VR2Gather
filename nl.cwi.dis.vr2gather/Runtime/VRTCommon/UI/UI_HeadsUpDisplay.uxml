@@ -9,10 +9,22 @@
             <ui:Button text="Close" name="CloseButton" class="vrt-dialog__close-button"/>
         </ui:VisualElement>
         <ui:VisualElement name="Body" class="vrt-dialog__body">
-            <ui:VisualElement name="CommandsPanel" class="vrt-tab-panel">
-                <ui:Button text="Exit VR2Gather" name="ExitButton"/>
+            <ui:VisualElement name="CommandsPanel" class="vrt-tab-panel vrt-tab-panel--active">
+                <ui:VisualElement name="CommandsGrid" class="vrt-commands-grid">
+                    <ui:VisualElement name="CommandsLeft" class="vrt-commands-column"/>
+                    <ui:VisualElement name="CommandsMiddle" class="vrt-commands-column">
+                        <ui:Button text="Higher Viewpoint" name="HigherViewButton"/>
+                        <ui:Button text="Reset View" name="ResetViewButton" class="vrt-button-important"/>
+                        <ui:Button text="Lower Viewpoint" name="LowerViewButton"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="CommandsRight" class="vrt-commands-column">
+                        <ui:Button text="Teleport Home" name="TeleportHomeButton"/>
+                        <ui:Button text="Leave Session" name="LeaveSessionButton"/>
+                        <ui:Button text="Exit VR2Gather" name="ExitButton"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel vrt-tab-panel--active">
+            <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel">
                 <ui:VisualElement name="MessagesToolbar" class="vrt-toolbar">
                     <ui:Toggle name="AutoShowMessagesToggle" label="Auto-show on new messages" value="true" class="vrt-checkbox"/>
                     <ui:VisualElement style="flex-grow: 1;"/>
