@@ -124,4 +124,112 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
     parent: {fileID: 6045866883838921279}
+  - k_buttonName: ExitButton
+    is_invalid: 0
+    m_OnButtonClicked:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHeadsUpDisplay, VRT.Pilots.Common
+          m_MethodName: OnHUDCommand
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: exit
+            m_BoolArgument: 0
+          m_CallState: 2
+    parent: {fileID: 6045866883838921279}
+  - k_buttonName: LeaveSessionButton
+    is_invalid: 0
+    m_OnButtonClicked:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHeadsUpDisplay, VRT.Pilots.Common
+          m_MethodName: OnHUDCommand
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: leave
+            m_BoolArgument: 0
+          m_CallState: 2
+    parent: {fileID: 6045866883838921279}
+  - k_buttonName: ResetViewButton
+    is_invalid: 0
+    m_OnButtonClicked:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHeadsUpDisplay, VRT.Pilots.Common
+          m_MethodName: OnHUDCommand
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: resetview
+            m_BoolArgument: 0
+          m_CallState: 2
+    parent: {fileID: 6045866883838921279}
+  - k_buttonName: HigherViewButton
+    is_invalid: 0
+    m_OnButtonClicked:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHeadsUpDisplay, VRT.Pilots.Common
+          m_MethodName: OnHUDCommand
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: higherview
+            m_BoolArgument: 0
+          m_CallState: 2
+    parent: {fileID: 6045866883838921279}
+  - k_buttonName: LowerViewButton
+    is_invalid: 0
+    m_OnButtonClicked:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHeadsUpDisplay, VRT.Pilots.Common
+          m_MethodName: OnHUDCommand
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: lowerview
+            m_BoolArgument: 0
+          m_CallState: 2
+    parent: {fileID: 6045866883838921279}
+  - k_buttonName: TeleportHomeButton
+    is_invalid: 0
+    m_OnButtonClicked:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHeadsUpDisplay, VRT.Pilots.Common
+          m_MethodName: OnHUDCommand
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: resetposition
+            m_BoolArgument: 0
+          m_CallState: 2
+    parent: {fileID: 6045866883838921279}
   debug: 1
