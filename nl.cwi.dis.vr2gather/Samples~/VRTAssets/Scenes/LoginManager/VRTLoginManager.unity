@@ -191,7 +191,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1814272974910553865, guid: f39eb6158b5e82f449ae38845b9ae7cf,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: f39eb6158b5e82f449ae38845b9ae7cf, type: 3}
 --- !u!20 &338882284 stripped
 Camera:
@@ -1281,7 +1285,7 @@ PrefabInstance:
     - target: {fileID: 6457971032522044966, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: m_Name
-      value: Tool_OrchestratorLogin
+      value: Tool_Old_OrchestratorLogin
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
