@@ -237,6 +237,8 @@ namespace VRT.Core
         [Serializable]
         public class RepresentationConfigType
         {
+            [Tooltip("Username for this user (used when connecting to orchestrator)")]
+            public string userName = "";
             [SerializeField]
             [Tooltip("Representation of this user")]
             public UserRepresentationType representation = UserRepresentationType.SimpleAvatar;
@@ -460,15 +462,18 @@ namespace VRT.Core
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
             if (autoInventUsername) {
-                if (!PlayerPrefs.HasKey("userNameLoginIF")) {
-                    string userName = System.Environment.MachineName;
-                    userName = userName.ToLower();
-                    if (userName.Length > 20) {
-                        userName = userName.Substring(0, 20);
+                if (string.IsNullOrEmpty(RepresentationConfig.userName)) {
+                    // Migrate from PlayerPrefs if available, otherwise invent from machine name
+                    if (PlayerPrefs.HasKey("userNameLoginIF") && !string.IsNullOrEmpty(PlayerPrefs.GetString("userNameLoginIF"))) {
+                        RepresentationConfig.userName = PlayerPrefs.GetString("userNameLoginIF");
+                        Debug.Log($"VRTConfig: Migrated username from PlayerPrefs: {RepresentationConfig.userName}");
+                    } else {
+                        string invented = System.Environment.MachineName.ToLower();
+                        if (invented.Length > 20) invented = invented.Substring(0, 20);
+                        RepresentationConfig.userName = invented;
+                        Debug.Log($"VRTConfig: Invented username: {RepresentationConfig.userName}");
                     }
-                    Debug.Log($"VRTConfig: Invented username {userName}");
-                    PlayerPrefs.SetString("userNameLoginIF", userName);
-                    PlayerPrefs.Save();
+                    SaveUserConfig();
                 }
             }
         }

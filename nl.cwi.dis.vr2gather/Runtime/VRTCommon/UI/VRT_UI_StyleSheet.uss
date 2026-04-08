@@ -275,3 +275,10 @@ ScrollView .unity-scroll-view__horizontal-scroller #unity-dragger {
     min-height: 6px;
     max-height: 6px;
 }
+
+/* Session list item in JoinDialog — highlighted when selected */
+Button.vrt-list-item--selected {
+    background-color: rgb(46, 46, 46);
+    border-left-color: rgb(32, 150, 243);
+    border-left-width: 4px;
+}

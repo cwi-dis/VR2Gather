@@ -1,0 +1,11 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_UI_StyleSheet.uss?fileID=7433441132597879392&amp;guid=01f34e88dae28498bac043b07f25038f&amp;type=3#VRT_UI_StyleSheet"/>
+    <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_Dialog.uss?fileID=7433441132597879392&amp;guid=ccade230efe254913ba526093cc7263e&amp;type=3#VRT_Dialog"/>
+    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center;">
+        <ui:Label name="WelcomeLabel" text="" style="font-size: 24px; color: rgba(255, 255, 255, 0.7); margin-bottom: 40px;"/>
+        <ui:Button name="CreateSessionButton" text="Create Session" class="vrt-button-important" style="width: 500px;"/>
+        <ui:Button name="JoinSessionButton" text="Join Session" class="vrt-button-important" style="width: 500px;"/>
+        <ui:Button name="CreateStandaloneButton" text="Create Standalone Session" class="vrt-button-important" style="width: 500px;"/>
+        <ui:Button name="SettingsButton" text="Settings" style="width: 500px;"/>
+    </ui:VisualElement>
+</ui:UXML>

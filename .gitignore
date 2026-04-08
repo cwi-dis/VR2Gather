@@ -49,3 +49,6 @@ config-user.json
 
 # Unsure where thise come from...
 com.Tivadar.*.xml
+
+# We want to include the Samples directory
+!Samples~

@@ -1,0 +1,17 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_UI_StyleSheet.uss?fileID=7433441132597879392&amp;guid=01f34e88dae28498bac043b07f25038f&amp;type=3#VRT_UI_StyleSheet"/>
+    <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_Dialog.uss?fileID=7433441132597879392&amp;guid=ccade230efe254913ba526093cc7263e&amp;type=3#VRT_Dialog"/>
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:TextField name="UserNameField" label="Username" style="margin-bottom: 8px;"/>
+        <ui:DropdownField name="RepresentationDropdown" label="Self Representation" style="margin-bottom: 8px;"/>
+        <ui:DropdownField name="PointcloudVariantDropdown" label="Pointcloud Variant" style="margin-bottom: 8px;"/>
+        <ui:DropdownField name="WebcamDropdown" label="Webcam" style="margin-bottom: 8px;"/>
+        <ui:DropdownField name="MicrophoneDropdown" label="Microphone" style="margin-bottom: 8px;"/>
+        <ui:TextField name="TCPURLField" label="TCP Representation URL" style="margin-bottom: 8px;"/>
+        <ui:VisualElement style="flex-grow: 1;"/>
+        <ui:VisualElement style="flex-direction: row; justify-content: flex-end; margin-top: 16px;">
+            <ui:Button name="CancelButton" text="Cancel"/>
+            <ui:Button name="SaveButton" text="Save"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
