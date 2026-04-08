@@ -72,7 +72,7 @@ namespace VRT.Orchestrator.Wrapping
         public static OrchestratorController Instance {
             get {
                 if (instance is null) {
-                    Debug.LogError("OrchestratorController.Instance: No OrchestratorController yet");
+                    Debug.Log("OrchestratorController.Instance: No OrchestratorController yet");
                 }
                 return instance;
             }
@@ -142,7 +142,6 @@ namespace VRT.Orchestrator.Wrapping
         private void Awake() {
             if (instance == null) {
                 DontDestroyOnLoad(this.gameObject);
-                this.gameObject.name = this.gameObject.name + "_keep";
                 instance = this;
             } else if (instance != this) {
 #if UNITY_EDITOR
@@ -152,8 +151,7 @@ namespace VRT.Orchestrator.Wrapping
                 string newName = gameObject.name;
                 string oldName = instance.gameObject.name;
 #endif
-                Debug.LogWarning($"OrchestratorController: attempt to create second instance from {newName}. Keep first one, from {oldName}.");
-                // xxxjack Destroy(gameObject);
+                Debug.LogError($"OrchestratorController: attempt to create second instance from {newName}. Keep first one, from {oldName}.");
             }
         }
 
@@ -227,14 +225,16 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 #if VRT_WITH_STATS
-            Statistics.Output("OrchestratorController", $"orchestrator_version={version}");
+            Statistics.Output("OrchestratorController", $"connected=1, orchestrator_version={version}");
 #endif
             OnGetOrchestratorVersionEvent?.Invoke(version);
         }
 
         // SockerDisconnect response callback
         public void OnDisconnect() {
-            Debug.LogWarning($"OrchestratorController: disconnected from orchestrator");
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"connected=0");
+#endif
             SelfUser = null;
             connectedToOrchestrator = false;
             connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
