@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Debug markers**: Jack uses `xxxjack` to flag his own temporary debug code. Claude should use `xxxclaude` for any temporary debug code, log statements, or comments it adds, so they're easy to identify and clean up.
 
+**Unexpected obstacles**: When hitting something unexpected (a file is gitignored, a tool is missing, a path doesn't exist, a permission is denied), stop and ask Jack rather than working around it silently. The unexpected thing is often a symptom of a misconfiguration that Jack would want to fix at the source.
+
 ## Project Overview
 
 VR2Gather is a Unity package (`nl.cwi.dis.vr2gather`) for collaborative networked social VR with live volumetric video (point clouds). Participants appear as real-time 3D reconstructions in shared virtual spaces. Built for Unity 6000.3+.
