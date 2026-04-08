@@ -11,6 +11,7 @@ namespace VRT.Pilots.Common
 {
     public class SessionController : MonoBehaviour
     {
+        private bool orchestratorInitialized = false;
         
         public string Name()
         {
@@ -20,18 +21,22 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-         
-            InitialiseControllerEvents();
+            InitialiseOrchestratorEvents();
         }
 
         private void OnDestroy()
         {
-            TerminateControllerEvents();
+            ClearOrchestratorEvents();
         }
 
         // Subscribe to Orchestrator Wrapper Events
-        private void InitialiseControllerEvents()
+        private void InitialiseOrchestratorEvents()
         {
+            if (orchestratorInitialized)
+            {
+                Debug.LogError($"{Name()}: Orchestrator already initialized");
+                return;
+            }
             OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
             OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
@@ -39,11 +44,17 @@ namespace VRT.Pilots.Common
             OrchestratorController.Instance.OnConnectionEvent += OnConnectionEventHandler;
 
             OrchestratorController.Instance.RegisterMessageForwarder();
+            orchestratorInitialized = true;
         }
 
         // Un-Subscribe to Orchestrator Wrapper Events
-        private void TerminateControllerEvents()
+        private void ClearOrchestratorEvents()
         {
+            if (!orchestratorInitialized)
+            {
+                return;
+            }
+            orchestratorInitialized = false;
             OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
             OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
@@ -67,6 +78,7 @@ namespace VRT.Pilots.Common
                 OrchestratorController.Instance.DeleteSession(OrchestratorController.Instance.MySession.sessionId);
             }
 #endif
+            ClearOrchestratorEvents();
             Debug.Log($"{Name()}: left session, loading LoginManager scene");
             PilotController.Instance.LoadNewScene();
         }
