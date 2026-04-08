@@ -8,8 +8,8 @@ namespace VRT.Login
 {
     /// <summary>
     /// View for the "Create Standalone Session" screen.
-    /// Like CreateDialog but without protocol selection, and uses a Start button
-    /// that triggers immediate session launch (no lobby wait).
+    /// Like CreateDialog but without protocol selection or codec toggles.
+    /// The controller starts the session immediately after creation (no lobby).
     /// </summary>
     public class CreateStandaloneDialog
     {
@@ -20,8 +20,6 @@ namespace VRT.Login
         private readonly TextField _sessionNameField;
         private readonly DropdownField _scenarioDropdown;
         private readonly Label _scenarioDescriptionLabel;
-        private readonly Toggle _uncompressedPointcloudsToggle;
-        private readonly Toggle _uncompressedAudioToggle;
         private readonly Button _startButton;
 
         private List<ScenarioRegistry.ScenarioInfo> _scenarios;
@@ -32,8 +30,6 @@ namespace VRT.Login
             _sessionNameField = root.Q<TextField>("SessionNameField");
             _scenarioDropdown = root.Q<DropdownField>("ScenarioDropdown");
             _scenarioDescriptionLabel = root.Q<Label>("ScenarioDescriptionLabel");
-            _uncompressedPointcloudsToggle = root.Q<Toggle>("UncompressedPointcloudsToggle");
-            _uncompressedAudioToggle = root.Q<Toggle>("UncompressedAudioToggle");
             _startButton = root.Q<Button>("StartButton");
 
             root.Q<Button>("CancelButton").clicked += () => OnCancelClicked?.Invoke();
@@ -45,9 +41,6 @@ namespace VRT.Login
             string time = DateTime.Now.ToString("HHmmss");
             string userName = VRTConfig.Instance.RepresentationConfig.userName;
             _sessionNameField.value = $"{userName}_{time}";
-
-            _uncompressedPointcloudsToggle.value = SessionConfig.Instance.pointCloudCodec == "cwi0";
-            _uncompressedAudioToggle.value = SessionConfig.Instance.voiceCodec == "VR2a";
 
             SetReady(false);
         }
@@ -77,9 +70,6 @@ namespace VRT.Login
                 int idx = _scenarios?.FindIndex(s => s.scenarioName == config.sessionScenario) ?? -1;
                 if (idx >= 0) _scenarioDropdown.index = idx;
             }
-
-            _uncompressedPointcloudsToggle.value = config.sessionUncompressed;
-            _uncompressedAudioToggle.value = config.sessionUncompressedAudio;
         }
 
         private void PopulateScenarios()
@@ -123,8 +113,8 @@ namespace VRT.Login
                 sessionName = _sessionNameField.value,
                 scenarioInfo = scenario,
                 protocolType = "socketio",  // standalone always uses socketio for now
-                uncompressedPointclouds = _uncompressedPointcloudsToggle.value,
-                uncompressedAudio = _uncompressedAudioToggle.value,
+                uncompressedPointclouds = false,
+                uncompressedAudio = false,
             };
             OnStartClicked?.Invoke(data);
         }

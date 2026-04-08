@@ -338,8 +338,16 @@ namespace VRT.Login
                 SetActiveDialogStatus("Failed to create session.", isError: true);
                 return;
             }
-            // AddSession also joins the created session, so we go straight to lobby.
-            ShowLobby();
+            if (_state == State.CreateStandalone)
+            {
+                // No lobby for standalone: start immediately.
+                OnStartSessionRequested();
+            }
+            else
+            {
+                // Regular create: wait in lobby for other participants.
+                ShowLobby();
+            }
         }
 
         private void OnJoinSessionEvent(Session session)
@@ -539,8 +547,28 @@ namespace VRT.Login
 
         private void AutoStart_TriggerCreateStandalone()
         {
-            // Mirror of AutoStart_TriggerCreate for standalone.
-            AutoStart_TriggerCreate();
+            var config = VRTConfig.Instance.AutoStartConfig;
+            var scenarios = ScenarioRegistry.Instance?.Scenarios;
+            ScenarioRegistry.ScenarioInfo scenarioInfo = null;
+            if (scenarios != null)
+            {
+                int idx = scenarios.FindIndex(s => s.scenarioName == config.sessionScenario);
+                if (idx >= 0) scenarioInfo = scenarios[idx];
+                else if (scenarios.Count > 0) scenarioInfo = scenarios[0];
+            }
+            if (scenarioInfo == null) return;
+
+            var data = new CreateSessionData
+            {
+                sessionName = string.IsNullOrEmpty(config.sessionName)
+                    ? _pendingSessionData.sessionName
+                    : config.sessionName,
+                scenarioInfo = scenarioInfo,
+                protocolType = "socketio",
+                uncompressedPointclouds = false,
+                uncompressedAudio = false,
+            };
+            OnCreateStandaloneRequested(data);
         }
 
         private void AutoStart_OnSessionsLoaded(Session[] sessions)

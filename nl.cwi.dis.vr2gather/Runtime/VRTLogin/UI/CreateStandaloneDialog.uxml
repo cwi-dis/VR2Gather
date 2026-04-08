@@ -6,8 +6,6 @@
         <ui:TextField name="SessionNameField" label="Session Name" style="margin-bottom: 8px;"/>
         <ui:DropdownField name="ScenarioDropdown" label="Scenario" style="margin-bottom: 4px;"/>
         <ui:Label name="ScenarioDescriptionLabel" text="" style="color: rgba(255, 255, 255, 0.7); font-size: 20px; margin-bottom: 12px; margin-left: 8px;"/>
-        <ui:Toggle name="UncompressedPointcloudsToggle" label="Uncompressed Pointclouds" class="vrt-checkbox" style="margin-bottom: 4px;"/>
-        <ui:Toggle name="UncompressedAudioToggle" label="Uncompressed Audio" class="vrt-checkbox" style="margin-bottom: 8px;"/>
         <ui:VisualElement style="flex-grow: 1;"/>
         <ui:VisualElement style="flex-direction: row; justify-content: flex-end; margin-top: 16px;">
             <ui:Button name="CancelButton" text="Cancel"/>
