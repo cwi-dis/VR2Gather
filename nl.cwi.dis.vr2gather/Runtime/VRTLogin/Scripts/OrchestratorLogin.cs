@@ -30,8 +30,10 @@ namespace VRT.Login
     /// fires C# events; this controller reacts to those events and decides what to do.
     ///
     /// On entering the Home state, any existing OrchestratorController singleton is
-    /// destroyed. On entering Create/Join/CreateStandalone, a fresh OrchestratorController
-    /// is instantiated and connected. Cancel always returns to Home, where cleanup happens.
+    /// destroyed. On entering Create/Join, a fresh NetworkOrchestratorController is
+    /// instantiated and connected. On entering CreateStandalone, a fresh
+    /// StandaloneOrchestratorController is instantiated instead. Cancel always returns
+    /// to Home, where cleanup happens.
     /// </summary>
     public class OrchestratorLogin : MonoBehaviour
     {
@@ -45,8 +47,10 @@ namespace VRT.Login
         [SerializeField] private VisualTreeAsset lobbyDialogAsset;
 
         [Header("Orchestrator")]
-        [Tooltip("Prefab that contains the OrchestratorController component")]
-        [SerializeField] private GameObject orchestratorControllerPrefab;
+        [Tooltip("Prefab that contains the NetworkOrchestratorController component")]
+        [SerializeField] private GameObject networkControllerPrefab;
+        [Tooltip("Prefab that contains the StandaloneOrchestratorController component")]
+        [SerializeField] private GameObject standaloneControllerPrefab;
 
         // ── Private state ───────────────────────────────────────────────────────
         private enum State { Home, Settings, Create, Join, CreateStandalone, Lobby }
@@ -154,7 +158,7 @@ namespace VRT.Login
             _createStandaloneDialog.OnCancelClicked += ShowHome;
 
             _state = State.CreateStandalone;
-            StartOrchestratorConnection();
+            StartStandaloneController();
         }
 
         private void ShowLobby()
@@ -188,18 +192,34 @@ namespace VRT.Login
 
         private void StartOrchestratorConnection()
         {
-            if (orchestratorControllerPrefab == null)
+            if (networkControllerPrefab == null)
             {
-                Debug.LogError("OrchestratorLogin: orchestratorControllerPrefab not assigned");
-                SetActiveDialogStatus("Error: OrchestratorController prefab missing", isError: true);
+                Debug.LogError("OrchestratorLogin: networkControllerPrefab not assigned");
+                SetActiveDialogStatus("Error: NetworkOrchestratorController prefab missing", isError: true);
                 return;
             }
 
             SetActiveDialogStatus("Connecting to orchestrator...");
-            Instantiate(orchestratorControllerPrefab);
+            Instantiate(networkControllerPrefab);
 
             RegisterOrchestratorEvents();
             OrchestratorController.Instance.SocketConnect(VRTConfig.Instance.orchestratorURL);
+        }
+
+        private void StartStandaloneController()
+        {
+            if (standaloneControllerPrefab == null)
+            {
+                Debug.LogError("OrchestratorLogin: standaloneControllerPrefab not assigned");
+                SetActiveDialogStatus("Error: StandaloneOrchestratorController prefab missing", isError: true);
+                return;
+            }
+
+            Instantiate(standaloneControllerPrefab);
+            RegisterOrchestratorEvents();
+            // SocketConnect on the standalone controller fires the connection → login →
+            // version → ntp chain synchronously, ending with SetReady(true) on the dialog.
+            OrchestratorController.Instance.SocketConnect("");
         }
 
         private void CleanupOrchestrator()
