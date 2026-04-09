@@ -42,6 +42,9 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Claude Code local settings (machine-specific, not for sharing)
+.claude/settings.local.json
+
 # VR2Gather-specific settings files
 cameraconfig.xml
 cameraconfig.json
