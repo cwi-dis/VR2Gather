@@ -29,10 +29,12 @@ namespace VRT.Pilots.Common
 	/// </summary>
 	public static class OrchestratorControllerExtensions
 	{
+		// All extension methods operate on IVRTOrchestratorComm since they
+		// are purely within-session communication helpers.
 		private static MessageForwarderManager _MessageForwarderManager = new MessageForwarderManager();
 
 
-		public static void RegisterEventType(this IVRTOrchestrator controller, MessageTypeID typeId, Type T)
+		public static void RegisterEventType(this IVRTOrchestratorComm controller, MessageTypeID typeId, Type T)
 		{
 			_MessageForwarderManager.AddTypeIdMapping(typeId, T);
 		}
@@ -44,7 +46,7 @@ namespace VRT.Pilots.Common
 		/// <param name="controller">The OrchestratorController on which this extension method is called</param>
 		/// <param name="data">The data of type T to send</param>
 		/// <param name="forward">Whether or not we forward this message. Defaults to false. Should be set to true if it's a message received by the Master, to be forwarded to all users</param>
-		public static void SendTypeEventToAll<T>(this IVRTOrchestrator controller, T data, bool forward = false) where T : BaseMessage
+		public static void SendTypeEventToAll<T>(this IVRTOrchestratorComm controller, T data, bool forward = false) where T : BaseMessage
 		{
 			if (controller == null)
 			{
@@ -86,7 +88,7 @@ namespace VRT.Pilots.Common
 		/// <typeparam name="T">Exact type of the derived BaseMessage type to send</typeparam>
 		/// <param name="controller">The OrchestratorController on which this extension method is called</param>
 		/// <param name="data">The data of type T to send</param>
-		public static void SendTypeEventToMaster<T>(this IVRTOrchestrator controller, T data) where T : BaseMessage
+		public static void SendTypeEventToMaster<T>(this IVRTOrchestratorComm controller, T data) where T : BaseMessage
 		{
 			if (controller == null)
 			{
@@ -126,7 +128,7 @@ namespace VRT.Pilots.Common
 		/// <param name="controller">The OrchestratorController on which this extension method is called</param>
 		/// <param name="userId">The userId of the user to which the master wants to send the message</param>
 		/// <param name="data">The data of type T to send</param>
-		public static void SendTypeEventToUser<T>(this IVRTOrchestrator controller, string userId, T data) where T : BaseMessage
+		public static void SendTypeEventToUser<T>(this IVRTOrchestratorComm controller, string userId, T data) where T : BaseMessage
 		{
 			if (controller == null)
 			{
@@ -166,7 +168,7 @@ namespace VRT.Pilots.Common
 		/// <typeparam name="T">The typename of what messages you want to subscribe to</typeparam>
 		/// <param name="controller">The controller on which to call this extension method</param>
 		/// <param name="callback">The callback to call upon receiving a message of the specific type</param>
-		public static void Subscribe<T>(this IVRTOrchestrator controller, Action<T> callback) where T : BaseMessage
+		public static void Subscribe<T>(this IVRTOrchestratorComm controller, Action<T> callback) where T : BaseMessage
 		{
 			_MessageForwarderManager.Subscribe(callback);
 		}
@@ -177,12 +179,12 @@ namespace VRT.Pilots.Common
 		/// <typeparam name="T">The typename of what messages you want to unsubscribe from</typeparam>
 		/// <param name="controller">The controller on which to call this extension method</param>
 		/// <param name="callback">The callback to unsubscribe</param>
-		public static void Unsubscribe<T>(this IVRTOrchestrator controller, Action<T> callback) where T : BaseMessage
+		public static void Unsubscribe<T>(this IVRTOrchestratorComm controller, Action<T> callback) where T : BaseMessage
 		{
 			_MessageForwarderManager.Unsubscribe(callback);
 		}
 
-		public static void RegisterMessageForwarder(this IVRTOrchestrator controller)
+		public static void RegisterMessageForwarder(this IVRTOrchestratorComm controller)
 		{
 			// Remove before adding to guarantee no double-registration.
 			controller.OnUserEventReceivedEvent -= ForwardUserEvent;
@@ -191,7 +193,7 @@ namespace VRT.Pilots.Common
 			controller.OnMasterEventReceivedEvent += ForwardMasterEvent;
 		}
 
-		public static void UnregisterMessageForwarder(this IVRTOrchestrator controller)
+		public static void UnregisterMessageForwarder(this IVRTOrchestratorComm controller)
 		{
 			controller.OnUserEventReceivedEvent -= ForwardUserEvent;
 			controller.OnMasterEventReceivedEvent -= ForwardMasterEvent;
