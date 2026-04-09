@@ -1,9 +1,6 @@
-﻿using VRT.Orchestrator.Elements;
-
-namespace VRT.Orchestrator.Responses { 
-    public interface IOrchestratorResponseBody { }
-
-    // class that describes the status for the response from the orchestrator
+namespace VRT.Orchestrator.Responses
+{
+    // Status returned with every orchestrator response.
     public class ResponseStatus
     {
         public int Error;
@@ -17,45 +14,8 @@ namespace VRT.Orchestrator.Responses {
         public ResponseStatus() : this(0, "OK") { }
     }
 
-    public class OrchestratorResponse<T>
-    {
-        public int error { get; set; }
-        public string message { get; set; }
-
-        public T body;
-
-        public ResponseStatus ResponseStatus {
-            get {
-                return new ResponseStatus(error, message);
-            }
-        }
-    }
-
-    public class EmptyResponse : IOrchestratorResponseBody {}
-
-    public class VersionResponse : IOrchestratorResponseBody {
-        public string orchestratorVersion;
-    }
-
-    public class LoginResponse : IOrchestratorResponseBody {
-        public string userId;
-    }
-
-    public class SessionUpdateEventData {
-        public string userId;
-        public User userData;
-    }
-
-    public class SessionUpdate {
-        public string eventId;
-        public SessionUpdateEventData eventData;
-    }
-
-    public class SceneEvent {
-        public string sceneEventFrom;
-    }
-
-    // class that stores a user data-stream packet incoming from the orchestrator
+    // Class that stores a user data-stream packet incoming from the orchestrator.
+    // Part of the contract: used by transport assemblies.
     public class UserDataStreamPacket
     {
         public string dataStreamUserID;
@@ -77,7 +37,7 @@ namespace VRT.Orchestrator.Responses {
         }
     }
 
-    // class that stores a user message incoming from the orchestrator
+    // Class that stores a user message incoming from the orchestrator.
     public class UserMessage
     {
         public string messageFrom;
@@ -94,8 +54,7 @@ namespace VRT.Orchestrator.Responses {
         }
     }
 
-    // class that stores a user event incoming from the orchestrator
-    // necessary new parameters welcomed
+    // Class that stores a user event incoming from the orchestrator.
     public class UserEvent
     {
         public string sceneEventFrom;

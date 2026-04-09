@@ -19,7 +19,7 @@ using Statistics = Cwipc.Statistics;
 
 namespace VRT.Orchestrator.Wrapping
 {
-    public class OrchestratorController : MonoBehaviour, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
+    public class OrchestratorController : MonoBehaviour, IVRTOrchestrator, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {
         [Tooltip("Enable trace logging output")]
         [SerializeField] private bool enableLogging = true;
@@ -69,7 +69,7 @@ namespace VRT.Orchestrator.Wrapping
         #region public
 
         //Orchestrator Controller Singleton
-        public static OrchestratorController Instance {
+        public static IVRTOrchestrator Instance {
             get {
                 if (instance is null) {
                     Debug.Log("OrchestratorController.Instance: No OrchestratorController yet");
@@ -80,41 +80,37 @@ namespace VRT.Orchestrator.Wrapping
 
 
         // Orchestrator Error Response Events
-        public Action<ResponseStatus> OnErrorEvent;
+        public event Action<ResponseStatus> OnErrorEvent;
 
         // Orchestrator Connection Events
-        public Action<bool> OnConnectionEvent;
-        public Action OnConnectingEvent;
-        public Action<string> OnGetOrchestratorVersionEvent;
-
-        // Orchestrator Messages Events
-        public Action<string> OnOrchestratorRequestEvent;
-        public Action<string> OnOrchestratorResponseEvent;
+        public event Action<bool> OnConnectionEvent;
+        public event Action OnConnectingEvent;
+        public event Action<string> OnGetOrchestratorVersionEvent;
 
         // Orchestrator Login Events
-        public Action<bool> OnLoginEvent;
-        public Action<bool> OnLogoutEvent;
-        
+        public event Action<bool> OnLoginEvent;
+        public event Action<bool> OnLogoutEvent;
+
         // Orchestrator NTP clock Events
-        public Action<NtpClock> OnGetNTPTimeEvent;
+        public event Action<NtpClock> OnGetNTPTimeEvent;
 
         // Orchestrator Sessions Events
-        public Action<Session[]> OnSessionsEvent;
-        public Action<Session> OnSessionInfoEvent;
-        public Action<Session> OnAddSessionEvent;
-        public Action<Session> OnJoinSessionEvent;
-        public Action OnSessionJoinedEvent;
-        public Action OnLeaveSessionEvent;
-        public Action OnDeleteSessionEvent;
-        public Action<string> OnUserJoinSessionEvent;
-        public Action<string> OnUserLeaveSessionEvent;
+        public event Action<Session[]> OnSessionsEvent;
+        public event Action<Session> OnSessionInfoEvent;
+        public event Action<Session> OnAddSessionEvent;
+        public event Action<Session> OnJoinSessionEvent;
+        public event Action OnSessionJoinedEvent;
+        public event Action OnLeaveSessionEvent;
+        public event Action OnDeleteSessionEvent;
+        public event Action<string> OnUserJoinSessionEvent;
+        public event Action<string> OnUserLeaveSessionEvent;
 
         // Orchestrator User Messages Events
-        public Action<UserMessage> OnUserMessageReceivedEvent;
+        public event Action<UserMessage> OnUserMessageReceivedEvent;
 
-        // Orchestrator User Messages Events
-        public Action<UserEvent> OnMasterEventReceivedEvent;
-        public Action<UserEvent> OnUserEventReceivedEvent;
+        // Orchestrator Scene Events
+        public event Action<UserEvent> OnMasterEventReceivedEvent;
+        public event Action<UserEvent> OnUserEventReceivedEvent;
         // Orchestrator Accessors
         public void LocalUserSessionForDevelopmentTests()
         {
@@ -161,6 +157,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         private void OnDestroy() {
+            instance = null;
             Debug.Log($"{gameObject.name}: OrchestratorController.OnDestroy() called. Will close orchestrator connection. ");
             orchestratorWrapper?.Disconnect();
 
@@ -211,6 +208,11 @@ namespace VRT.Orchestrator.Wrapping
         public void Abort() {
             orchestratorWrapper.Disconnect();
             OnDisconnect();
+        }
+
+        // Tear down this controller (destroys the GameObject).
+        public void Shutdown() {
+            Destroy(gameObject);
         }
 
         public void GetVersion()

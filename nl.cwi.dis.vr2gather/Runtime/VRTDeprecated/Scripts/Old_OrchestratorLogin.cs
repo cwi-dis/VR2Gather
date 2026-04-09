@@ -215,17 +215,23 @@ namespace VRT.Login
             if (OrchestratorController.Instance.UserIsLogged)
             { // Comes from another scene
               // Set status to online
+#if VRT_OLD_ORCHESTRATOR
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+#endif
                 statusText.color = colorConnected;
                 AllPanels_UpdateUserData();
                 JoinPanel_UpdateSessions();
            
+#if VRT_OLD_ORCHESTRATOR
                 OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), StatusPanelUserId.text);
+#endif
             }
             else
             { // Enter for first time
               // Set status to offline
+#if VRT_OLD_ORCHESTRATOR
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+#endif
                 statusText.color = colorDisconnecting;
                 state = State.Offline;
 
@@ -1237,6 +1243,7 @@ namespace VRT.Login
 
         private void SocketConnect()
         {
+#if VRT_OLD_ORCHESTRATOR
             switch (OrchestratorController.Instance.ConnectionStatus)
             {
                 case OrchestratorController.orchestratorConnectionStatus.__DISCONNECTED__:
@@ -1246,13 +1253,16 @@ namespace VRT.Login
                     OrchestratorController.Instance.Abort();
                     break;
             }
+#endif
         }
 
         private void UpdateStateOnConnectionEvent(bool pConnected)
         {
             if (pConnected)
             {
+#if VRT_OLD_ORCHESTRATOR
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+#endif
                 statusText.color = colorConnected;
                 state = State.Online;
                 AllPanels_UpdateAfterStateChange();
@@ -1262,7 +1272,9 @@ namespace VRT.Login
             else
             {
                 UpdateStateOnLogout(true);
+#if VRT_OLD_ORCHESTRATOR
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+#endif
                 statusText.color = colorDisconnecting;
                 AllPanels_UpdateAfterStateChange();
                 state = State.Offline;

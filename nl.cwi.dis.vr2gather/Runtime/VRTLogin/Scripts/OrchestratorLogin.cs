@@ -206,7 +206,7 @@ namespace VRT.Login
         {
             if (OrchestratorController.Instance == null) return;
             UnregisterOrchestratorEvents();
-            Destroy(OrchestratorController.Instance.gameObject);
+            OrchestratorController.Instance.Shutdown();
         }
 
         private void RegisterOrchestratorEvents()
