@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4199990664456854849}
-  - component: {fileID: 1428028439696384793}
+  - component: {fileID: 9008644666887661629}
   m_Layer: 0
-  m_Name: Tool_OrchestratorController
+  m_Name: Tool_StandaloneOrchestratorController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1428028439696384793
+--- !u!114 &9008644666887661629
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,7 +41,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3991120480309365947}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60c6e771718f43e46b489e72571354a1, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a860207ed0d143d2807f9d96872c72b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  enableLogging: 1
+  m_EditorClassIdentifier: VRT.OrchestratorImplementation::VRT.Orchestrator.Wrapping.StandaloneOrchestratorController

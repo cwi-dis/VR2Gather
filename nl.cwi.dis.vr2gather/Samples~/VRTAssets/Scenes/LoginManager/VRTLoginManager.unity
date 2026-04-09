@@ -1188,6 +1188,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8610429764865867248, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: networkControllerPrefab
+      value: 
+      objectReference: {fileID: 3991120480309365947, guid: daba5ffe7714b490aa81298e785a68ed,
+        type: 3}
+    - target: {fileID: 8610429764865867248, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: standaloneControllerPrefab
+      value: 
+      objectReference: {fileID: 3991120480309365947, guid: 59713b3d4e69349238a95c35e9f8994b,
+        type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

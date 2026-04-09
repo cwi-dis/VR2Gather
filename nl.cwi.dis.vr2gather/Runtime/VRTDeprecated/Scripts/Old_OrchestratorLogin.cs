@@ -1283,7 +1283,9 @@ namespace VRT.Login
 
         private void UpdateStateOnConnectingEvent()
         {
+#if VRT_OLD_ORCHESTRATOR
             statusText.text = OrchestratorController.orchestratorConnectionStatus.__CONNECTING__.ToString();
+#endif
             statusText.color = colorConnecting;
         }
 
