@@ -111,6 +111,9 @@ namespace VRT.Orchestrator.Wrapping
         // Orchestrator Scene Events
         public event Action<UserEvent> OnMasterEventReceivedEvent;
         public event Action<UserEvent> OnUserEventReceivedEvent;
+
+        // Orchestrator DataStream Events
+        public event Action<UserDataStreamPacket> OnDataStreamReceived;
         // Orchestrator Accessors
         public void LocalUserSessionForDevelopmentTests()
         {
@@ -180,6 +183,7 @@ namespace VRT.Orchestrator.Wrapping
             Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
 #endif
             orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this);
+            orchestratorWrapper.OnDataStreamReceived += packet => OnDataStreamReceived?.Invoke(packet);
             orchestratorWrapper.Connect();
         }
 
@@ -727,6 +731,30 @@ namespace VRT.Orchestrator.Wrapping
                 DeleteSession(mySession.sessionId);
             }
             _OptionalStopOnLeave();
+        }
+
+        #endregion
+
+        #region DataStreams
+
+        public void DeclareDataStream(string streamType) {
+            orchestratorWrapper.DeclareDataStream(streamType);
+        }
+
+        public void RemoveDataStream(string streamType) {
+            orchestratorWrapper.RemoveDataStream(streamType);
+        }
+
+        public void RegisterForDataStream(string userId, string streamType) {
+            orchestratorWrapper.RegisterForDataStream(userId, streamType);
+        }
+
+        public void UnregisterFromDataStream(string userId, string streamType) {
+            orchestratorWrapper.UnregisterFromDataStream(userId, streamType);
+        }
+
+        public void SendData(string streamType, byte[] data) {
+            orchestratorWrapper.SendData(streamType, data);
         }
 
         #endregion
