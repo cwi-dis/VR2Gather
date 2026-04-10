@@ -45,10 +45,24 @@ namespace VRT.Orchestrator.Wrapping
         public override event Action<UserEvent> OnUserEventReceivedEvent;
         public override event Action<UserDataStreamPacket> OnDataStreamReceived;
 
+        // ── Tracing ──────────────────────────────────────────────────────────────
+        [Tooltip("Log all orchestrator calls and events to the console")]
+        public bool traceCalls = false;
+        // Set to true in source to also trace high-frequency calls (SendEvent*, SendData)
+        private const bool traceHighFrequency = false;
+
+        private void Trace(string direction, string name)
+        {
+            if (traceCalls) Debug.Log($"StandaloneOrchestratorController: {direction}:{name}");
+        }
+
         // ── State ────────────────────────────────────────────────────────────────
         private User _selfUser;
         private Session _currentSession;
         private Scenario _currentScenario;
+
+        // ── IVRTOrchestratorComm ─────────────────────────────────────────────────
+        public override bool TraceCalls => traceCalls;
 
         // ── IVRTOrchestratorSessionState ─────────────────────────────────────────
         public override User SelfUser { get { return _selfUser; } set { _selfUser = value; } }
@@ -66,14 +80,17 @@ namespace VRT.Orchestrator.Wrapping
         /// </summary>
         public override void SocketConnect(string url)
         {
+            Trace("send", nameof(SocketConnect));
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url=standalone");
 #endif
+            Trace("recv", nameof(OnConnectionEvent));
             OnConnectionEvent?.Invoke(true);
         }
 
         public override void Login(string name)
         {
+            Trace("send", nameof(Login));
             var config = VRTConfig.Instance.RepresentationConfig;
             _selfUser = new User
             {
@@ -86,19 +103,23 @@ namespace VRT.Orchestrator.Wrapping
                     userRepresentationTCPUrl = config.userRepresentationTCPUrl,
                 }
             };
+            Trace("recv", nameof(OnLoginEvent));
             OnLoginEvent?.Invoke(true);
         }
 
         public override void GetVersion()
         {
+            Trace("send", nameof(GetVersion));
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"connected=1, orchestrator_version=standalone");
 #endif
+            Trace("recv", nameof(OnGetOrchestratorVersionEvent));
             OnGetOrchestratorVersionEvent?.Invoke("standalone");
         }
 
         public override void GetNTPTime()
         {
+            Trace("send", nameof(GetNTPTime));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             var ntpTime = new NtpClock
             {
@@ -108,11 +129,13 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms=0, uncertainty_interval_ms=0");
 #endif
+            Trace("recv", nameof(OnGetNTPTimeEvent));
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
         public override void AddSession(string scenarioId, Scenario scenario, string name, string description, string protocol)
         {
+            Trace("send", nameof(AddSession));
             _currentScenario = scenario;
             _currentSession = new Session
             {
@@ -128,17 +151,20 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"created=1, sessionId={_currentSession.sessionId}, sessionName={_currentSession.sessionName}, isMaster=1, nUser=1");
 #endif
+            Trace("recv", nameof(OnAddSessionEvent));
             OnAddSessionEvent?.Invoke(_currentSession);
         }
 
         public override void LeaveSession()
         {
+            Trace("send", nameof(LeaveSession));
 #if VRT_WITH_STATS
             if (_currentSession != null)
                 Statistics.Output("OrchestratorController", $"stopping=1, sessionId={_currentSession.sessionId}");
 #endif
             _currentSession = null;
             _currentScenario = null;
+            Trace("recv", nameof(OnLeaveSessionEvent));
             OnLeaveSessionEvent?.Invoke();
         }
 
@@ -149,6 +175,7 @@ namespace VRT.Orchestrator.Wrapping
         /// </summary>
         public override void SendMessageToAll(string message)
         {
+            Trace("send", nameof(SendMessageToAll));
             if (message.StartsWith("START_"))
             {
 #if VRT_WITH_STATS
@@ -166,38 +193,41 @@ namespace VRT.Orchestrator.Wrapping
                 _selfUser?.userId ?? "",
                 _selfUser?.userName ?? "",
                 message);
+            Trace("recv", nameof(OnUserMessageReceivedEvent));
             OnUserMessageReceivedEvent?.Invoke(userMessage);
         }
 
         public override void Shutdown()
         {
+            Trace("send", nameof(Shutdown));
             Destroy(gameObject);
         }
 
         public override void UpdateFullUserData(UserData userData)
         {
+            Trace("send", nameof(UpdateFullUserData));
             if (_selfUser != null)
                 _selfUser.userData = userData;
         }
 
-        public override void Abort() { }
-        public override void Logout() { OnLogoutEvent?.Invoke(true); }
-        public override void GetSessions() { OnSessionsEvent?.Invoke(new Session[0]); }
-        public override void JoinSession(string sessionId) { }
-        public override void DeleteSession(string sessionId) { }
-        public override void GetSessionInfo() { }
+        public override void Abort() { Trace("send", nameof(Abort)); }
+        public override void Logout() { Trace("send", nameof(Logout)); Trace("recv", nameof(OnLogoutEvent)); OnLogoutEvent?.Invoke(true); }
+        public override void GetSessions() { Trace("send", nameof(GetSessions)); Trace("recv", nameof(OnSessionsEvent)); OnSessionsEvent?.Invoke(new Session[0]); }
+        public override void JoinSession(string sessionId) { Trace("send", nameof(JoinSession)); }
+        public override void DeleteSession(string sessionId) { Trace("send", nameof(DeleteSession)); }
+        public override void GetSessionInfo() { Trace("send", nameof(GetSessionInfo)); }
 
         // ── IVRTOrchestratorComm: no-ops (no other participants) ─────────────────
-        public override void SendMessage(string message, string userId) { }
-        public override void SendEventToMaster(string eventData) { }
-        public override void SendEventToAll(string eventData) { }
-        public override void SendEventToUser(string userId, string eventData) { }
+        public override void SendMessage(string message, string userId) { Trace("send", nameof(SendMessage)); }
+        public override void SendEventToMaster(string eventData) { if (traceHighFrequency) Trace("send", nameof(SendEventToMaster)); }
+        public override void SendEventToAll(string eventData) { if (traceHighFrequency) Trace("send", nameof(SendEventToAll)); }
+        public override void SendEventToUser(string userId, string eventData) { if (traceHighFrequency) Trace("send", nameof(SendEventToUser)); }
 
         // ── IVRTOrchestratorDataStream: no-ops ───────────────────────────────────
-        public override void DeclareDataStream(string streamType) { }
-        public override void RemoveDataStream(string streamType) { }
-        public override void RegisterForDataStream(string userId, string streamType) { }
-        public override void UnregisterFromDataStream(string userId, string streamType) { }
-        public override void SendData(string streamType, byte[] data) { }
+        public override void DeclareDataStream(string streamType) { Trace("send", nameof(DeclareDataStream)); }
+        public override void RemoveDataStream(string streamType) { Trace("send", nameof(RemoveDataStream)); }
+        public override void RegisterForDataStream(string userId, string streamType) { Trace("send", nameof(RegisterForDataStream)); }
+        public override void UnregisterFromDataStream(string userId, string streamType) { Trace("send", nameof(UnregisterFromDataStream)); }
+        public override void SendData(string streamType, byte[] data) { if (traceHighFrequency) Trace("send", nameof(SendData)); }
     }
 }

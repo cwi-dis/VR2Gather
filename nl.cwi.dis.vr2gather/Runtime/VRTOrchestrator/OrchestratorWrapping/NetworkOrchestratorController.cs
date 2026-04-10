@@ -23,6 +23,15 @@ namespace VRT.Orchestrator.Wrapping
     {
         [Tooltip("Enable trace logging output")]
         [SerializeField] private bool enableLogging = true;
+        [Tooltip("Log all orchestrator calls and events to the console")]
+        public bool traceCalls = false;
+        // Set to true in source to also trace high-frequency calls (SendEvent*, SendData)
+        private const bool traceHighFrequency = false;
+
+        private void Trace(string direction, string name)
+        {
+            if (traceCalls) Debug.Log($"NetworkOrchestratorController: {direction}:{name}");
+        }
 
         #region enum
 
@@ -103,6 +112,7 @@ namespace VRT.Orchestrator.Wrapping
         public override event Action<UserDataStreamPacket> OnDataStreamReceived;
 
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
+        public override bool TraceCalls => traceCalls;
         public override bool UserIsLogged { get { return userIsLogged; } }
         public override bool UserIsMaster { get { return userIsMaster; } }
         public override User SelfUser { get { return _me; } set { _me = value; } }
@@ -139,6 +149,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // Connect to the orchestrator
         public override void SocketConnect(string pUrl) {
+            Trace("send", nameof(SocketConnect));
             if (enableLogging) Debug.Log($"NetworkOrchestratorController: connect to {pUrl}");
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
@@ -155,6 +166,7 @@ namespace VRT.Orchestrator.Wrapping
             connectedToOrchestrator = true;
             hasBeenConnectedToOrchestrator = true;
             connectionStatus = orchestratorConnectionStatus.__CONNECTED__;
+            Trace("recv", nameof(OnConnectionEvent));
             OnConnectionEvent?.Invoke(true);
         }
 
@@ -166,22 +178,26 @@ namespace VRT.Orchestrator.Wrapping
                 Debug.LogWarning("NetworkOrchestratorController: attempting to reconnect to orchestrator");
             }
             connectionStatus = orchestratorConnectionStatus.__CONNECTING__;
+            Trace("recv", nameof(OnConnectingEvent));
             OnConnectingEvent?.Invoke();
         }
 
         // Abort Socket connection
         public override void Abort() {
+            Trace("send", nameof(Abort));
             orchestratorWrapper.Disconnect();
             OnDisconnect();
         }
 
         // Tear down this controller (destroys the GameObject).
         public override void Shutdown() {
+            Trace("send", nameof(Shutdown));
             Destroy(gameObject);
         }
 
         public override void GetVersion()
         {
+            Trace("send", nameof(GetVersion));
             orchestratorWrapper.GetOrchestratorVersion();
         }
 
@@ -194,6 +210,7 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"connected=1, orchestrator_version={version}");
 #endif
+            Trace("recv", nameof(OnGetOrchestratorVersionEvent));
             OnGetOrchestratorVersionEvent?.Invoke(version);
         }
 
@@ -206,6 +223,7 @@ namespace VRT.Orchestrator.Wrapping
             connectedToOrchestrator = false;
             connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
             userIsLogged = false;
+            Trace("recv", nameof(OnConnectionEvent));
             OnConnectionEvent?.Invoke(false);
         }
 
@@ -214,6 +232,7 @@ namespace VRT.Orchestrator.Wrapping
         #region Login/Logout
 
         public override void Login(string pName) {
+            Trace("send", nameof(Login));
             SelfUser = new User();
             SelfUser.userName = pName;
             orchestratorWrapper.Login(pName);
@@ -246,11 +265,13 @@ namespace VRT.Orchestrator.Wrapping
                 }
             }
 
+            Trace("recv", nameof(OnLoginEvent));
             OnLoginEvent?.Invoke(userLoggedSucessfully);
         }
 
 
         public override void Logout() {
+            Trace("send", nameof(Logout));
             orchestratorWrapper.Logout();
         }
 
@@ -283,6 +304,7 @@ namespace VRT.Orchestrator.Wrapping
                 }
             }
 
+            Trace("recv", nameof(OnLogoutEvent));
             OnLogoutEvent?.Invoke(userLoggedOutSucessfully);
         }
 
@@ -293,6 +315,7 @@ namespace VRT.Orchestrator.Wrapping
         long timeOfGetNTPTimeRequest = 0;
 
         public override void GetNTPTime() {
+            Trace("send", nameof(GetNTPTime));
             if (enableLogging) Debug.Log("NetworkOrchestratorController: GetNTPTime: DateTimeNow: " + GetClockTimestamp(DateTime.Now));
             if (enableLogging) Debug.Log("NetworkOrchestratorController: GetNTPTime: DateTimeUTC: " + GetClockTimestamp(DateTime.UtcNow));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
@@ -316,6 +339,7 @@ namespace VRT.Orchestrator.Wrapping
             Statistics.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs - localTimeMs}, uncertainty_interval_ms={uncertainty}");
 #endif
             if (OnGetNTPTimeEvent == null) Debug.LogWarning("NetworkOrchestratorController: NTP time response received but nothing listens");
+            Trace("recv", nameof(OnGetNTPTimeEvent));
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
@@ -324,6 +348,7 @@ namespace VRT.Orchestrator.Wrapping
         #region Sessions
 
         public override void GetSessions() {
+            Trace("send", nameof(GetSessions));
             orchestratorWrapper.GetSessions();
         }
 
@@ -342,12 +367,12 @@ namespace VRT.Orchestrator.Wrapping
             // update the list of available sessions
             availableSessions = sessions;
 
+            Trace("recv", nameof(OnSessionsEvent));
             OnSessionsEvent?.Invoke(sessions.ToArray());
-
-
         }
 
         public override void AddSession(string pScenarioID, Scenario scOrch, string pSessionName, string pSessionDescription, string pSessionProtocol) {
+            Trace("send", nameof(AddSession));
             myScenario = scOrch;
             orchestratorWrapper.AddSession(pScenarioID, scOrch, pSessionName, pSessionDescription, pSessionProtocol);
         }
@@ -378,10 +403,12 @@ namespace VRT.Orchestrator.Wrapping
 #endif
 
             availableSessions.Add(session);
+            Trace("recv", nameof(OnAddSessionEvent));
             OnAddSessionEvent?.Invoke(session);
         }
 
         public override void GetSessionInfo() {
+            Trace("send", nameof(GetSessionInfo));
             orchestratorWrapper.GetSessionInfo();
         }
 
@@ -405,10 +432,12 @@ namespace VRT.Orchestrator.Wrapping
             int userCount = mySession.GetUserCount();
             if (enableLogging) Debug.Log($"NetworkOrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={userCount}");
 
+            Trace("recv", nameof(OnSessionInfoEvent));
             OnSessionInfoEvent?.Invoke(session);
         }
 
         public override void DeleteSession(string pSessionID) {
+            Trace("send", nameof(DeleteSession));
             orchestratorWrapper.DeleteSession(pSessionID);
         }
 
@@ -420,6 +449,7 @@ namespace VRT.Orchestrator.Wrapping
 
             if (enableLogging) Debug.Log("NetworkOrchestratorController: OnDeleteSessionResponse: Session succesfully deleted.");
 
+            Trace("recv", nameof(OnDeleteSessionEvent));
             OnDeleteSessionEvent?.Invoke();
             mySession = null;
 
@@ -429,6 +459,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public override void JoinSession(string pSessionID) {
+            Trace("send", nameof(JoinSession));
             orchestratorWrapper.JoinSession(pSessionID);
         }
 
@@ -452,11 +483,14 @@ namespace VRT.Orchestrator.Wrapping
                 }
             }
 
+            Trace("recv", nameof(OnJoinSessionEvent));
             OnJoinSessionEvent?.Invoke(mySession);
+            Trace("recv", nameof(OnSessionJoinedEvent));
             OnSessionJoinedEvent?.Invoke();
         }
 
         public override void LeaveSession() {
+            Trace("send", nameof(LeaveSession));
             orchestratorWrapper?.LeaveSession();
         }
 
@@ -471,6 +505,7 @@ namespace VRT.Orchestrator.Wrapping
             // success
             myScenario = null;
             if (_OptionalStopOnLeave()) return;
+            Trace("recv", nameof(OnLeaveSessionEvent));
             OnLeaveSessionEvent?.Invoke();
 
             if (mySession != null && SelfUser != null) {
@@ -523,6 +558,7 @@ namespace VRT.Orchestrator.Wrapping
             }
             if (enableLogging) Debug.Log("NetworkOrchestratorController: OnUserJoinedSession: User " + user.userName + " joined the session.");
             orchestratorWrapper.GetSessionInfo();
+            Trace("recv", nameof(OnUserJoinSessionEvent));
             OnUserJoinSessionEvent?.Invoke(userID);
         }
 
@@ -538,6 +574,7 @@ namespace VRT.Orchestrator.Wrapping
                     if (enableLogging) Debug.Log("NetworkOrchestratorController: OnUserLeftSession: User " + mySession.GetUser(userID).userName + " left the session. Getting new session info.");
                     // Required to update the list of connect users.
                     orchestratorWrapper.GetSessionInfo();
+                    Trace("recv", nameof(OnUserLeaveSessionEvent));
                     OnUserLeaveSessionEvent?.Invoke(userID);
                 }
             }
@@ -548,6 +585,7 @@ namespace VRT.Orchestrator.Wrapping
         #region Users
 
         public override void UpdateFullUserData(UserData pUserData) {
+            Trace("send", nameof(UpdateFullUserData));
             orchestratorWrapper.UpdateUserDataJson(pUserData);
         }
 
@@ -565,6 +603,7 @@ namespace VRT.Orchestrator.Wrapping
         #region Messages
 
         public override void SendMessage(string pMessage, string pUserID) {
+            Trace("send", nameof(SendMessage));
             orchestratorWrapper.SendMessage(pMessage, pUserID);
         }
 
@@ -576,6 +615,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public override void SendMessageToAll(string pMessage) {
+            Trace("send", nameof(SendMessageToAll));
             orchestratorWrapper.SendMessageToAll(pMessage);
         }
 
@@ -603,6 +643,7 @@ namespace VRT.Orchestrator.Wrapping
                     Invoke("LeaveSession", VRTConfig.Instance.AutoStartConfig.autoLeaveAfter);
                 }
             }
+            Trace("recv", nameof(OnUserMessageReceivedEvent));
             OnUserMessageReceivedEvent?.Invoke(userMessage);
         }
 
@@ -611,6 +652,7 @@ namespace VRT.Orchestrator.Wrapping
         #region Events
 
         public override void SendEventToMaster(string pEventData) {
+            if (traceHighFrequency) Trace("send", nameof(SendEventToMaster));
             byte[] lData = Encoding.ASCII.GetBytes(pEventData);
 
             if (lData != null) {
@@ -619,6 +661,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public override void SendEventToUser(string pUserID, string pEventData) {
+            if (traceHighFrequency) Trace("send", nameof(SendEventToUser));
             byte[] lData = Encoding.ASCII.GetBytes(pEventData);
 
             if (lData != null) {
@@ -627,6 +670,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public override void SendEventToAll(string pEventData) {
+            if (traceHighFrequency) Trace("send", nameof(SendEventToAll));
             if (!userIsMaster)
             {
                 Debug.LogError("NetworkOrchestratorController: SendEventToAll() called, but not master user");
@@ -641,6 +685,7 @@ namespace VRT.Orchestrator.Wrapping
         public void OnMasterEventReceived(UserEvent pMasterEventData) {
             if (pMasterEventData.sceneEventFrom != SelfUser.userId) {
                 if (enableLogging) Debug.Log("NetworkOrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.sceneEventFrom + " sent: " + pMasterEventData.sceneEventData);
+                if (traceHighFrequency) Trace("recv", nameof(OnMasterEventReceivedEvent));
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
         }
@@ -648,6 +693,7 @@ namespace VRT.Orchestrator.Wrapping
         public void OnUserEventReceived(UserEvent pUserEventData) {
             if (pUserEventData.sceneEventFrom != SelfUser.userId) {
                 if (enableLogging) Debug.Log("NetworkOrchestratorController: OnUserEventReceived: User: " + pUserEventData.sceneEventFrom + " sent: " + pUserEventData.sceneEventData);
+                if (traceHighFrequency) Trace("recv", nameof(OnUserEventReceivedEvent));
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }
@@ -657,18 +703,22 @@ namespace VRT.Orchestrator.Wrapping
         #region DataStreams
 
         public override void DeclareDataStream(string streamType) {
+            Trace("send", nameof(DeclareDataStream));
             orchestratorWrapper.DeclareDataStream(streamType);
         }
 
         public override void RemoveDataStream(string streamType) {
+            Trace("send", nameof(RemoveDataStream));
             orchestratorWrapper.RemoveDataStream(streamType);
         }
 
         public override void RegisterForDataStream(string userId, string streamType) {
+            Trace("send", nameof(RegisterForDataStream));
             orchestratorWrapper.RegisterForDataStream(userId, streamType);
         }
 
         public override void UnregisterFromDataStream(string userId, string streamType) {
+            Trace("send", nameof(UnregisterFromDataStream));
             orchestratorWrapper.UnregisterFromDataStream(userId, streamType);
         }
 
@@ -677,6 +727,7 @@ namespace VRT.Orchestrator.Wrapping
             // pipelines have been fully stopped. Ideally transports are torn down before
             // the session ends and this never triggers.
             if (!connectedToOrchestrator) return;
+            if (traceHighFrequency) Trace("send", nameof(SendData));
             orchestratorWrapper.SendData(streamType, data);
         }
 

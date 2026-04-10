@@ -102,6 +102,7 @@ namespace VRT.Orchestrator.Wrapping
         public abstract void SendMessageToAll(string message);
 
         // ── IVRTOrchestratorComm ────────────────────────────────────────────────
+        public virtual bool TraceCalls => false;
         public abstract event Action<UserEvent> OnMasterEventReceivedEvent;
         public abstract event Action<UserEvent> OnUserEventReceivedEvent;
         public abstract void SendMessage(string message, string userId);

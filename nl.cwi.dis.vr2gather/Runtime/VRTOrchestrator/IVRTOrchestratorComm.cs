@@ -10,6 +10,9 @@ namespace VRT.Orchestrator.Wrapping
     /// </summary>
     public interface IVRTOrchestratorComm : IVRTOrchestratorSessionState
     {
+        // Tracing
+        bool TraceCalls { get; }
+
         // Incoming scene events
         event Action<UserEvent> OnMasterEventReceivedEvent;
         event Action<UserEvent> OnUserEventReceivedEvent;

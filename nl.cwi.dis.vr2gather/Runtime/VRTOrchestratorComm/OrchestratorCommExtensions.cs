@@ -51,6 +51,7 @@ namespace VRT.OrchestratorComm
 			{
 				return;
 			}
+			if (controller.TraceCalls) Debug.Log($"OrchestratorCommExtensions: send:SendTypeEventToAll<{typeof(T).Name}>");
 			if (controller.SelfUser == null)
 			{
 				Debug.LogWarning("OrchestratorCommExtensions: SendTypeEventToAll: controller.SelfUser is null");
@@ -93,6 +94,7 @@ namespace VRT.OrchestratorComm
 			{
 				return;
 			}
+			if (controller.TraceCalls) Debug.Log($"OrchestratorCommExtensions: send:SendTypeEventToMaster<{typeof(T).Name}>");
 			if (controller.SelfUser == null)
 			{
 				Debug.LogWarning("OrchestratorCommExtensions: SendTypeEventToMaster: controller.SelfUser is null");
@@ -134,6 +136,7 @@ namespace VRT.OrchestratorComm
 				Debug.LogWarning("OrchestratorCommExtensions: SendTypeEventToUser: controller==null");
 				return;
 			}
+			if (controller.TraceCalls) Debug.Log($"OrchestratorCommExtensions: send:SendTypeEventToUser<{typeof(T).Name}>");
 			if (controller.SelfUser == null)
 			{
 				Debug.LogWarning("OrchestratorCommExtensions: SendTypeEventToUser: controller.SelfUser is null");
@@ -200,11 +203,13 @@ namespace VRT.OrchestratorComm
 
 		private static void ForwardMasterEvent(UserEvent userEvent)
 		{
+			if (VRTOrchestrator.Comm?.TraceCalls ?? false) Debug.Log($"OrchestratorCommExtensions: recv:ForwardMasterEvent");
 			_MessageForwarderManager.Forward(userEvent.sceneEventData);
 		}
 
 		private static void ForwardUserEvent(UserEvent userEvent)
 		{
+			if (VRTOrchestrator.Comm?.TraceCalls ?? false) Debug.Log($"OrchestratorCommExtensions: recv:ForwardUserEvent");
 			_MessageForwarderManager.Forward(userEvent.sceneEventData);
 		}
 	}
