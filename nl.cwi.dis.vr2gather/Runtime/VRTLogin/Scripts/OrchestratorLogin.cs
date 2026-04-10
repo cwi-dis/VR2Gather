@@ -200,7 +200,8 @@ namespace VRT.Login
             }
 
             SetActiveDialogStatus("Connecting to orchestrator...");
-            Instantiate(networkControllerPrefab);
+            var go = Instantiate(networkControllerPrefab);
+            go.SetActive(true);
 
             RegisterOrchestratorEvents();
             VRTOrchestrator.Login.SocketConnect(VRTConfig.Instance.orchestratorURL);
@@ -215,7 +216,8 @@ namespace VRT.Login
                 return;
             }
 
-            Instantiate(standaloneControllerPrefab);
+            var go = Instantiate(standaloneControllerPrefab);
+            go.SetActive(true);
             RegisterOrchestratorEvents();
             // SocketConnect on the standalone controller fires the connection → login →
             // version → ntp chain synchronously, ending with SetReady(true) on the dialog.
