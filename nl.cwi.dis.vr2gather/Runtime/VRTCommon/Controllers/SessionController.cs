@@ -80,7 +80,7 @@ namespace VRT.Pilots.Common
 #endif
             ClearOrchestratorEvents();
             Debug.Log($"{Name()}: left session, loading LoginManager scene");
-            PilotController.Instance.LoadNewScene();
+            PilotController.Instance.TerminateScene(sessionAlreadyLeft: true);
         }
 
         private void OnUserJoinedSessionHandler(string userID)

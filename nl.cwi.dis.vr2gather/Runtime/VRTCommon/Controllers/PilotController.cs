@@ -60,23 +60,26 @@ namespace VRT.Pilots.Common
 
         /// <summary>
         /// Call when the session is ending (button press, session creator leaving, etc.).
-        /// Sets IsLeavingSession and triggers the scene transition. If there is a
-        /// SessionController it will leave the session first; the scene load happens
-        /// when the leave is confirmed via OnLeaveSessionHandler.
+        /// Sets IsLeavingSession and triggers the scene transition.
+        /// If sessionAlreadyLeft is false (default), asks the SessionController to leave
+        /// the session first; the scene load happens when the leave is confirmed via
+        /// OnLeaveSessionHandler. If sessionAlreadyLeft is true (e.g. forced out because
+        /// the master left), skips the leave step and loads the new scene immediately.
         /// </summary>
-        public void TerminateScene()
+        public void TerminateScene(bool sessionAlreadyLeft = false)
         {
             if (IsLeavingSession) return;
             IsLeavingSession = true;
-            SessionController ctrl = GetComponent<SessionController>();
-            if (ctrl != null)
+            if (!sessionAlreadyLeft)
             {
-                ctrl.LeaveSession();
+                SessionController ctrl = GetComponent<SessionController>();
+                if (ctrl != null)
+                {
+                    ctrl.LeaveSession();
+                    return; // LoadNewScene called from OnLeaveSessionHandler
+                }
             }
-            else
-            {
-                LoadNewScene();
-            }
+            LoadNewScene();
         }
 
         private void OnApplicationQuit()
