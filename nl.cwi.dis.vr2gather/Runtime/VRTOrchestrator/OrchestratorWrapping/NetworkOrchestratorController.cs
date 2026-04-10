@@ -688,7 +688,7 @@ namespace VRT.Orchestrator.Wrapping
 
         public void OnMasterEventReceived(UserEvent pMasterEventData) {
             if (pMasterEventData.sceneEventFrom != SelfUser.userId) {
-                if (enableLogging) Debug.Log("NetworkOrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.sceneEventFrom + " sent: " + pMasterEventData.sceneEventData);
+                if (enableLogging && traceHighFrequency) Debug.Log("NetworkOrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.sceneEventFrom + " sent: " + pMasterEventData.sceneEventData);
                 if (traceHighFrequency) Trace("recv", nameof(OnMasterEventReceivedEvent));
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
@@ -696,7 +696,7 @@ namespace VRT.Orchestrator.Wrapping
 
         public void OnUserEventReceived(UserEvent pUserEventData) {
             if (pUserEventData.sceneEventFrom != SelfUser.userId) {
-                if (enableLogging) Debug.Log("NetworkOrchestratorController: OnUserEventReceived: User: " + pUserEventData.sceneEventFrom + " sent: " + pUserEventData.sceneEventData);
+                if (enableLogging && traceHighFrequency) Debug.Log("NetworkOrchestratorController: OnUserEventReceived: User: " + pUserEventData.sceneEventFrom + " sent: " + pUserEventData.sceneEventData);
                 if (traceHighFrequency) Trace("recv", nameof(OnUserEventReceivedEvent));
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
