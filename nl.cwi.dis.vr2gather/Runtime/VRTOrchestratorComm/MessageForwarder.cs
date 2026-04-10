@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,22 +42,6 @@ namespace VRT.Pilots.Common
 
 		public MessageForwarderManager()
 		{
-			//Map a type to a specific integer ID. IDs can be chosen freely, as long as all clients have the same ID assignments
-			//AddTypeIdMapping(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayer.NetworkPlayerData));
-			//AddTypeIdMapping(MessageTypeID.TID_HandControllerData, typeof(HandController.HandControllerData));
-			//AddTypeIdMapping(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTrigger.NetworkTriggerData));
-			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationData, typeof(SessionPlayersManager.PlayerLocationData));
-			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationDataRequest, typeof(SessionPlayersManager.PlayerLocationDataRequest));
-			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationChangeRequest, typeof(SessionPlayersManager.PlayerLocationChangeRequest));
-			//AddTypeIdMapping(MessageTypeID.TID_HandGrabEvent, typeof(HandController.HandGrabEvent));
-			//AddTypeIdMapping(MessageTypeID.TID_NetworkTransformSyncData, typeof(NetworkTransformSyncBehaviour.NetworkTransformSyncData));
-			//AddTypeIdMapping(MessageTypeID.TID_RigidbodySyncMessage, typeof(Grabbable.RigidbodySyncMessage));
-			//AddTypeIdMapping(MessageTypeID.TID_TextChatDataMessage, typeof(TextChatManager.TextChatDataMessage));
-			//AddTypeIdMapping(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigDistributor.TilingConfigMessage));
-			//AddTypeIdMapping(MessageTypeID.TID_InitCompleteMessage, typeof(Pilot3ExperienceController.InitCompleteMessage));
-			//AddTypeIdMapping(MessageTypeID.TID_KeywordsResponseData, typeof(KeywordResponseListener.KeywordsResponseData));
-			//AddTypeIdMapping(MessageTypeID.TID_PlayerTransformSyncData, typeof(PlayerTransformSyncBehaviour.PlayerTransformSyncData));
-			//AddTypeIdMapping(MessageTypeID.TID_AddPlayerToSequenceData, typeof(Pilot3SequenceController.AddPlayerToSequenceData));
 		}
 
 		public void AddTypeIdMapping(MessageTypeID _typeId, Type type)

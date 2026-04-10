@@ -2,6 +2,7 @@
     "name": "VRT.Pilots.Common",
     "rootNamespace": "",
     "references": [
+        "GUID:9f07e896dee8465099c06bcc52c19c2c",
         "GUID:6f16117c2be38af4f989c1918efefead",
         "GUID:30bd862cd7044fd4484784b07598041d",
         "GUID:bdf4a34c59d5d43eaad0a08a406fb973",
