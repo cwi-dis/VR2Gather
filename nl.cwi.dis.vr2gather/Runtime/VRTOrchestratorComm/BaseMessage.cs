@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VRT.Pilots.Common
+namespace VRT.OrchestratorComm
 {
 
     /// <summary>

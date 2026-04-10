@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRT.Pilots.Common
+namespace VRT.OrchestratorComm
 {
 
 	public enum MessageTypeID

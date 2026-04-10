@@ -2,6 +2,7 @@
 using UnityEngine;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
+using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {

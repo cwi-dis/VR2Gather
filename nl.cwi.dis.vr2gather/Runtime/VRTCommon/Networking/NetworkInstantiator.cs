@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using VRT.Orchestrator.Wrapping;
+using VRT.OrchestratorComm;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif

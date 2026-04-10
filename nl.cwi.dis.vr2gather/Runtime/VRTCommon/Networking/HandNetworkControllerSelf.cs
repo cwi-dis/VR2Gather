@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
+using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {

@@ -2,6 +2,7 @@
 using UnityEngine.SpatialTracking;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
+using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {
@@ -67,7 +68,7 @@ namespace VRT.Pilots.Common
 			return $"{GetType().Name}";
 		}
 
-		protected virtual void Start()
+		protected virtual void Awake()
 		{
 			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
 			VRTOrchestrator.Comm.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);

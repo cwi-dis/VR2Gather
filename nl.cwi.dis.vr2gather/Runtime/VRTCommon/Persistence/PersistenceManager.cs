@@ -5,6 +5,7 @@ using System.Linq;
 using System.IO;
 using System;
 using VRT.Orchestrator.Wrapping;
+using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {

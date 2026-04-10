@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using VRT.Orchestrator.Wrapping;
 using VRT.Orchestrator.Responses;
 using VRT.Pilots.Common;
+using VRT.OrchestratorComm;
 using VRT.Core;
 
 namespace VRT.Pilots.Common

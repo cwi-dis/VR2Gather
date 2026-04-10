@@ -4,6 +4,7 @@ using VRT.Core;
 using Cwipc;
 using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
+using VRT.OrchestratorComm;
 
 namespace VRT.UserRepresentation.PointCloud
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
+using VRT.OrchestratorComm;
 using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
