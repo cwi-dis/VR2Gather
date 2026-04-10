@@ -30,14 +30,14 @@ namespace VRT.Pilots.Common
 		public void Awake()
 		{
 			DontDestroyOnLoad(this);
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandNetworkControllerBase.HandGrabEvent));
-			OrchestratorController.Instance.Subscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
+			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandNetworkControllerBase.HandGrabEvent));
+			VRTOrchestrator.Comm.Subscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public void OnDisable()
 		{
             if(!this.gameObject.scene.isLoaded) return;
-			OrchestratorController.Instance.Unsubscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
+			VRTOrchestrator.Comm.Unsubscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public static void RegisterGrabbable(VRTGrabbableController grabbable)
@@ -115,9 +115,9 @@ namespace VRT.Pilots.Common
 				handController.OnNetworkRelease(grabbable);
 			}
 
-			if (OrchestratorController.Instance.UserIsMaster)
+			if (VRTOrchestrator.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToAll(handGrabEvent, true);
+				VRTOrchestrator.Comm.SendTypeEventToAll(handGrabEvent, true);
 			}
 		}
 	}

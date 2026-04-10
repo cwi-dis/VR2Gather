@@ -72,13 +72,13 @@ namespace VRT.Pilots.Common
                     handState = handAppearance.state
                 };
 
-                if (OrchestratorController.Instance.UserIsMaster)
+                if (VRTOrchestrator.Comm.UserIsMaster)
                 {
-                    OrchestratorController.Instance.SendTypeEventToAll(data);
+                    VRTOrchestrator.Comm.SendTypeEventToAll(data);
                 }
                 else
                 {
-                    OrchestratorController.Instance.SendTypeEventToMaster(data);
+                    VRTOrchestrator.Comm.SendTypeEventToMaster(data);
                 }
             }
         }

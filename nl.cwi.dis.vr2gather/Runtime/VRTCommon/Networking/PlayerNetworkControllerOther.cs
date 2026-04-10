@@ -21,7 +21,7 @@ namespace VRT.Pilots.Common
 
 		private void OnDestroy()
 		{
-			OrchestratorController.Instance.Unsubscribe<NetworkPlayerData>(OnNetworkPlayerData);
+			VRTOrchestrator.Comm.Unsubscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 	}
 }

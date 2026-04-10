@@ -46,10 +46,10 @@ namespace VRT.Transport.SocketIO
                 {
                     this.descriptors[i].name = $"{userId}.{streamName}#{i}";
                     Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name} from {userId}");
-                    OrchestratorController.Instance.RegisterForDataStream(userId, this.descriptors[i].name);
+                    VRTOrchestrator.Streams.RegisterForDataStream(userId, this.descriptors[i].name);
                 }
 
-                OrchestratorController.Instance.OnDataStreamReceived += OnDataPacketReceived;
+                VRTOrchestrator.Streams.OnDataStreamReceived += OnDataPacketReceived;
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
@@ -90,8 +90,8 @@ namespace VRT.Transport.SocketIO
             for (int i = 0; i < descriptors.Length; ++i)
             {
                 descriptors[i].outQueue?.Close();
-                if (OrchestratorController.Instance != null && OrchestratorController.Instance.SelfUser != null)
-                    OrchestratorController.Instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
+                if (VRTOrchestrator.Streams != null && VRTOrchestrator.Streams.SelfUser != null)
+                    VRTOrchestrator.Streams.UnregisterFromDataStream(VRTOrchestrator.Streams.SelfUser.userId, descriptors[i].name);
             }
         }
 

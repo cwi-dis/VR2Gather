@@ -1,5 +1,6 @@
 using UnityEngine;
 using VRT.Core;
+using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
@@ -15,7 +16,7 @@ namespace VRT.Pilots.Common
 
         public void Start()
         {
-           Orchestrator.Wrapping.OrchestratorController.Instance.LocalUserSessionForDevelopmentTests();
+           VRTOrchestrator.Login.LocalUserSessionForDevelopmentTests();
             Orchestrator.Elements.User user = new Orchestrator.Elements.User()
             {
                 userId = "no-userid",

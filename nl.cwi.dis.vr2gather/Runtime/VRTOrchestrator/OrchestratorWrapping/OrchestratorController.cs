@@ -19,30 +19,36 @@ namespace VRT.Orchestrator.Wrapping
     /// </summary>
     public abstract class OrchestratorController : MonoBehaviour, IVRTOrchestrator
     {
-        private static OrchestratorController instance;
+        /// <summary>
+        /// Obsolete: use VRTOrchestrator.Login, .Comm, or .Streams instead.
+        /// </summary>
+        [Obsolete("Use VRTOrchestrator.Login, .Comm, or .Streams instead of the full interface.")]
+        public static IVRTOrchestrator Instance => VRTOrchestrator.Comm as IVRTOrchestrator;
 
-        public static IVRTOrchestrator Instance => instance;
-
+        /// <summary>
+        /// Obsolete: use VRTOrchestrator.GetClockTimestamp instead.
+        /// </summary>
+        [Obsolete("Use VRTOrchestrator.GetClockTimestamp instead.")]
         public static double GetClockTimestamp(System.DateTime pDate)
         {
-            return pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
+            return VRTOrchestrator.GetClockTimestamp(pDate);
         }
 
         protected virtual void Awake()
         {
-            if (instance == null)
+            if (VRTOrchestrator.Comm == null)
             {
                 DontDestroyOnLoad(gameObject);
-                instance = this;
+                VRTOrchestrator.Register(this);
             }
-            else if (instance != this)
+            else if (!object.ReferenceEquals(VRTOrchestrator.Comm, this))
             {
 #if UNITY_EDITOR
                 string newName = SearchUtils.GetHierarchyPath(gameObject, false);
-                string oldName = SearchUtils.GetHierarchyPath(instance.gameObject, false);
+                string oldName = SearchUtils.GetHierarchyPath((VRTOrchestrator.Comm as MonoBehaviour)?.gameObject, false);
 #else
                 string newName = gameObject.name;
-                string oldName = instance.gameObject.name;
+                string oldName = (VRTOrchestrator.Comm as MonoBehaviour)?.gameObject.name ?? "unknown";
 #endif
                 Debug.LogError($"OrchestratorController: attempt to create second instance from {newName}. Keep first one, from {oldName}.");
             }
@@ -50,7 +56,7 @@ namespace VRT.Orchestrator.Wrapping
 
         protected virtual void OnDestroy()
         {
-            instance = null;
+            VRTOrchestrator.Unregister(this);
         }
 
         // ── IVRTOrchestratorSessionState ────────────────────────────────────────

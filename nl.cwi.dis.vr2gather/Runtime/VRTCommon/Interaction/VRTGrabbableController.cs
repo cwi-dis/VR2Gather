@@ -44,14 +44,14 @@ namespace VRT.Pilots.Common
         protected override void Awake()
 		{
 			base.Awake();
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
+			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
 
 		}
 		public void OnEnable()
 		{
 			VRTGrabbableManager.RegisterGrabbable(this);
 
-			OrchestratorController.Instance.Subscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
+			VRTOrchestrator.Comm.Subscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void OnDisable()
@@ -59,7 +59,7 @@ namespace VRT.Pilots.Common
 			
 			VRTGrabbableManager.UnregisterGrabbable(this);
 
-			OrchestratorController.Instance.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
+			VRTOrchestrator.Comm.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void Update()
@@ -83,13 +83,13 @@ namespace VRT.Pilots.Common
 				Position = Rigidbody.transform.position,
 				Rotation = Rigidbody.transform.rotation
 			};
-			if (!OrchestratorController.Instance.UserIsMaster)
+			if (!VRTOrchestrator.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(message);
+				VRTOrchestrator.Comm.SendTypeEventToMaster(message);
 			}
 			else
 			{
-				OrchestratorController.Instance.SendTypeEventToAll(message);
+				VRTOrchestrator.Comm.SendTypeEventToAll(message);
 			}
 		}
 
@@ -134,9 +134,9 @@ namespace VRT.Pilots.Common
 				return;
 			}
 			// If we are master we also forward the message
-			if (OrchestratorController.Instance.UserIsMaster)
+			if (VRTOrchestrator.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToAll(rigidBodySyncMessage, true);
+				VRTOrchestrator.Comm.SendTypeEventToAll(rigidBodySyncMessage, true);
 			}
 			Rigidbody.Sleep();
 			Rigidbody.transform.position = rigidBodySyncMessage.Position;

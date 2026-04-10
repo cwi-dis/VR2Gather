@@ -83,32 +83,32 @@ namespace VRT.Pilots.Common
 
 		public void Awake()
 		{
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationData, typeof(PlayerLocationData));
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationDataRequest, typeof(PlayerLocationDataRequest));
+			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_PlayerLocationData, typeof(PlayerLocationData));
+			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_PlayerLocationDataRequest, typeof(PlayerLocationDataRequest));
 			AllUsers = new List<PlayerNetworkControllerBase>();
 			Players = new Dictionary<string, PlayerNetworkControllerBase>();
 			_PlayerIdToLocation = new Dictionary<string, PlayerLocation>();
 			_LocationToPlayerId = new Dictionary<PlayerLocation, string>();
 
 			Spectators = new Dictionary<string, PlayerNetworkControllerBase>();
-			if (OrchestratorController.Instance == null)
+			if (VRTOrchestrator.Comm == null)
 			{
 				return;
 			}
-			OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeft;
+			VRTOrchestrator.Comm.OnUserLeaveSessionEvent += OnUserLeft;
 
-			OrchestratorController.Instance.Subscribe<PlayerLocationData>(OnPlayerLocationData);
-			OrchestratorController.Instance.Subscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
+			VRTOrchestrator.Comm.Subscribe<PlayerLocationData>(OnPlayerLocationData);
+			VRTOrchestrator.Comm.Subscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
 			if (debug) Debug.Log($"SessionPlayersManager: Awake, subscribed to PlayerLocationData");
 		}
 
 		public void OnDestroy()
 		{
             if (debug) Debug.Log($"SessionPlayersManager: OnDestroy, unsubscribing to PlayerLocationData");
-            OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeft;
+            VRTOrchestrator.Comm.OnUserLeaveSessionEvent -= OnUserLeft;
 
-			OrchestratorController.Instance.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
-			OrchestratorController.Instance.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
+			VRTOrchestrator.Comm.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
+			VRTOrchestrator.Comm.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
 		}
 
 		public void Start()
@@ -133,19 +133,19 @@ namespace VRT.Pilots.Common
             }
             foreach (var cd in configDistributors)
             {
-                cd?.SetSelfUserId(OrchestratorController.Instance.SelfUser.userId);
+                cd?.SetSelfUserId(VRTOrchestrator.Comm.SelfUser.userId);
             }
         }
 
         public void InstantiatePlayers()
 		{
-			var me = OrchestratorController.Instance.SelfUser;
+			var me = VRTOrchestrator.Comm.SelfUser;
 #if !VRT_WITHOUT_WEBRTC
             // Initialize WebRTC clientId small integers.
             if (SessionConfig.Instance.protocolType == "webrtc")
             {
                 int indexWithinCurrentSession = 0;
-                foreach (User user in OrchestratorController.Instance.CurrentSession.GetUsers())
+                foreach (User user in VRTOrchestrator.Comm.CurrentSession.GetUsers())
                 {
                     bool isLocalPlayer = me.userId == user.userId;
                     // This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
@@ -175,7 +175,7 @@ namespace VRT.Pilots.Common
 			SetupConfigDistributors();
             if (debug) Debug.Log($"SessionPlayersManager: Instantiating players");
 
-            foreach (User user in OrchestratorController.Instance.CurrentSession.GetUsers())
+            foreach (User user in VRTOrchestrator.Comm.CurrentSession.GetUsers())
 			{
 				bool isLocalPlayer = me.userId == user.userId;
 				GameObject player = null;
@@ -227,7 +227,7 @@ namespace VRT.Pilots.Common
 			}
 
 
-            if (OrchestratorController.Instance.UserIsMaster)
+            if (VRTOrchestrator.Comm.UserIsMaster)
 			{
 				if (debug) Debug.Log($"SessionPlayersManager: sending playerLocationData to all");
 				SendPlayerLocationData();
@@ -281,7 +281,7 @@ namespace VRT.Pilots.Common
 		{
 			Players.Add(player.UserId, player);
 
-			if (OrchestratorController.Instance.UserIsMaster && AutoSpawnOnLocation)
+			if (VRTOrchestrator.Comm.UserIsMaster && AutoSpawnOnLocation)
 			{
 				foreach (var location in PlayerLocations)
 				{
@@ -349,22 +349,22 @@ namespace VRT.Pilots.Common
 			//If a specific user requested the data, just send to that user.
 			if (!string.IsNullOrEmpty(userId))
 			{
-				OrchestratorController.Instance.SendTypeEventToUser(userId, data);
+				VRTOrchestrator.Comm.SendTypeEventToUser(userId, data);
 			}
 			else
 			{
-				OrchestratorController.Instance.SendTypeEventToAll(data);
+				VRTOrchestrator.Comm.SendTypeEventToAll(data);
 			}
 		}
 
 		private void RequestPlayerLocationData()
 		{
-			if (OrchestratorController.Instance.UserIsMaster)
+			if (VRTOrchestrator.Comm.UserIsMaster)
 			{
 				Debug.LogError($"SessionPlayersManager: master should not call RequestPlayerLocationData");
 			}
 			PlayerLocationDataRequest data = new PlayerLocationDataRequest();
-			OrchestratorController.Instance.SendTypeEventToMaster(data);
+			VRTOrchestrator.Comm.SendTypeEventToMaster(data);
 		}
 
 		private void OnPlayerLocationData(PlayerLocationData playerLocationData)
@@ -374,7 +374,7 @@ namespace VRT.Pilots.Common
 				Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationData: playerLocationData is null");
                 return;
             }
-            if (OrchestratorController.Instance.UserIsMaster)
+            if (VRTOrchestrator.Comm.UserIsMaster)
             {
                 Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationData: we are not master");
                 return;
@@ -400,7 +400,7 @@ namespace VRT.Pilots.Common
 
 		private void OnPlayerLocationDataRequest(PlayerLocationDataRequest request)
 		{
-			if (OrchestratorController.Instance.UserIsMaster)
+			if (VRTOrchestrator.Comm.UserIsMaster)
 			{
 				Debug.Log($"SessionPlayersManager: OnPlayerLocationDataRequest: reply to {request.SenderId}");
 				SendPlayerLocationData(request.SenderId);

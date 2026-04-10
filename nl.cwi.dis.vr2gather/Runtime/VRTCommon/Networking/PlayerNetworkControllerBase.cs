@@ -69,8 +69,8 @@ namespace VRT.Pilots.Common
 
 		protected virtual void Start()
 		{
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
-			OrchestratorController.Instance.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);
+			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
+			VRTOrchestrator.Comm.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 
 		public abstract void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId);
@@ -79,10 +79,10 @@ namespace VRT.Pilots.Common
 		{
 			if (!IsLocalPlayer && UserId == data.SenderId)
 			{
-				if (OrchestratorController.Instance.UserIsMaster)
+				if (VRTOrchestrator.Comm.UserIsMaster)
 				{
 					//We're the master, so inform the others
-					OrchestratorController.Instance.SendTypeEventToAll(data, true);
+					VRTOrchestrator.Comm.SendTypeEventToAll(data, true);
 				}
 				if (data.representation != playerController.userRepresentation)
 				{

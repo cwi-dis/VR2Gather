@@ -40,7 +40,7 @@ namespace VRT.Transport.SocketIO
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
-                OrchestratorController.Instance.DeclareDataStream(streams[i].name);
+                VRTOrchestrator.Streams.DeclareDataStream(streams[i].name);
             }
             try
             {
@@ -79,7 +79,7 @@ namespace VRT.Transport.SocketIO
             {
                 for (int i = 0; i < streams.Length; ++i)
                 {
-                    OrchestratorController.Instance?.RemoveDataStream(streams[i].name);
+                    VRTOrchestrator.Streams?.RemoveDataStream(streams[i].name);
                 }
             }
             base.AsyncOnStop();
@@ -87,7 +87,7 @@ namespace VRT.Transport.SocketIO
 
         protected override void AsyncUpdate()
         {
-            if (OrchestratorController.Instance != null && OrchestratorController.Instance.ConnectedToOrchestrator)
+            if (VRTOrchestrator.Streams != null && VRTOrchestrator.Streams.ConnectedToOrchestrator)
             {
                 for (int i = 0; i < streams.Length; ++i)
                 {
@@ -104,7 +104,7 @@ namespace VRT.Transport.SocketIO
                     var buf = new byte[chk.length+sizeof(long)];
                     Array.Copy(hdr_timestamp, buf, sizeof(long));
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
-                    OrchestratorController.Instance.SendData(streams[i].name, buf);
+                    VRTOrchestrator.Streams.SendData(streams[i].name, buf);
 #if VRT_WITH_STATS
                     stats.statsUpdate(chk.length, i);
 #endif

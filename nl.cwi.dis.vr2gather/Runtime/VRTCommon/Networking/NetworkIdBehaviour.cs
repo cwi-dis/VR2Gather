@@ -62,7 +62,7 @@ namespace VRT.Pilots.Common
 #endif
 				NetworkId = System.Guid.NewGuid().ToString();
 				Debug.Log($"NetworkIdBehaviour({name}): invented {NetworkId}");
-				if (OrchestratorController.Instance != null && !OrchestratorController.Instance.UserIsMaster)
+				if (VRTOrchestrator.Comm != null && !VRTOrchestrator.Comm.UserIsMaster)
 				{
 					Debug.LogWarning($"NetworkIdBehaviour({name}): Invented NetworkID but not session master. Probably a software bug.");
 				}

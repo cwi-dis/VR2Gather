@@ -58,8 +58,8 @@ namespace VRT.Pilots.Common
 		{
 			_Player = GetComponentInParent<PlayerNetworkControllerBase>();
 
-            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
-            OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
+            VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
+            VRTOrchestrator.Comm.Subscribe<HandControllerData>(OnHandControllerData);
 			subscribed = true;
 		}
 
@@ -67,7 +67,7 @@ namespace VRT.Pilots.Common
 		{
 			if (!subscribed) return;
 			subscribed = false;
-			OrchestratorController.Instance.Unsubscribe<HandControllerData>(OnHandControllerData);
+			VRTOrchestrator.Comm.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 
 		protected void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
@@ -80,9 +80,9 @@ namespace VRT.Pilots.Common
 			}
 			//If we're not master, inform the master
 			//And then execute the event locally already instead of waiting for it to return
-			if (!OrchestratorController.Instance.UserIsMaster)
+			if (!VRTOrchestrator.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(handGrabEvent);
+				VRTOrchestrator.Comm.SendTypeEventToMaster(handGrabEvent);
 			}
 			else
 			{
@@ -123,9 +123,9 @@ namespace VRT.Pilots.Common
 			//
 			if (!_Player.IsLocalPlayer && _Player.UserId == data.SenderId)
 			{
-				if (OrchestratorController.Instance.UserIsMaster)
+				if (VRTOrchestrator.Comm.UserIsMaster)
 				{
-					OrchestratorController.Instance.SendTypeEventToAll(data, true);
+					VRTOrchestrator.Comm.SendTypeEventToAll(data, true);
 				}
 
 				if (data.handHandedness == handHandedness)

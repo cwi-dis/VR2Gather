@@ -67,13 +67,13 @@ namespace VRT.Pilots.Common
 				BodySize = BodySize
 			};
 
-			if (OrchestratorController.Instance.UserIsMaster)
+			if (VRTOrchestrator.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToAll(data);
+				VRTOrchestrator.Comm.SendTypeEventToAll(data);
 			}
 			else
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(data);
+				VRTOrchestrator.Comm.SendTypeEventToMaster(data);
 			}
 			// Print a warning if it was preposterously long ago that we last sent this message
 			if (_LastSendTime > 0 && Time.realtimeSinceStartup > _LastSendTime + 10.0)

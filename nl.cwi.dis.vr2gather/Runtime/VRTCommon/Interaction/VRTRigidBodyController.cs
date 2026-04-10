@@ -29,7 +29,7 @@ namespace VRT.Pilots.Common
 			if (_Rigidbody.IsSleeping())
 			{
 			
-				if (OrchestratorController.Instance.UserIsMaster)
+				if (VRTOrchestrator.Comm.UserIsMaster)
 				{
 					if (defaultKinematic)
 					{

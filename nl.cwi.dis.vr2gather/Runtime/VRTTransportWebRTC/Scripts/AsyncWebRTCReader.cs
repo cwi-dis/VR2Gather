@@ -247,7 +247,7 @@ namespace VRT.Transport.WebRTC
         }
 
         protected int GetClientIdFromUserId(string userId) {
-            User user = OrchestratorController.Instance.CurrentSession.GetUser(userId);
+            User user = VRTOrchestrator.Comm.CurrentSession.GetUser(userId);
             return user.webRTCClientId;
         }
 

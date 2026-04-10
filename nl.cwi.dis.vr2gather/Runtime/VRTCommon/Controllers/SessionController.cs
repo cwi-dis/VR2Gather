@@ -37,13 +37,13 @@ namespace VRT.Pilots.Common
                 Debug.LogError($"{Name()}: Orchestrator already initialized");
                 return;
             }
-            OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
-            OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
-            OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
-            OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
-            OrchestratorController.Instance.OnConnectionEvent += OnConnectionEventHandler;
+            VRTOrchestrator.Comm.OnLeaveSessionEvent += OnLeaveSessionHandler;
+            VRTOrchestrator.Comm.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
+            VRTOrchestrator.Comm.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
+            VRTOrchestrator.Comm.OnErrorEvent += OnErrorHandler;
+            VRTOrchestrator.Comm.OnConnectionEvent += OnConnectionEventHandler;
 
-            OrchestratorController.Instance.RegisterMessageForwarder();
+            VRTOrchestrator.Comm.RegisterMessageForwarder();
             orchestratorInitialized = true;
         }
 
@@ -55,27 +55,27 @@ namespace VRT.Pilots.Common
                 return;
             }
             orchestratorInitialized = false;
-            OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
-            OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
-            OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
-            OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
-            OrchestratorController.Instance.OnConnectionEvent -= OnConnectionEventHandler;
-            OrchestratorController.Instance.UnregisterMessageForwarder();
+            VRTOrchestrator.Comm.OnLeaveSessionEvent -= OnLeaveSessionHandler;
+            VRTOrchestrator.Comm.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
+            VRTOrchestrator.Comm.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
+            VRTOrchestrator.Comm.OnErrorEvent -= OnErrorHandler;
+            VRTOrchestrator.Comm.OnConnectionEvent -= OnConnectionEventHandler;
+            VRTOrchestrator.Comm.UnregisterMessageForwarder();
         }
 
         public void LeaveSession()
         {
-            OrchestratorController.Instance.LeaveSession();
+            VRTOrchestrator.Comm.LeaveSession();
         }
 
         private void OnLeaveSessionHandler()
         {
 #if xxxjack_not
             // Code disabled: the session controller should handle deleting the session for the master user.
-            if (OrchestratorController.Instance.UserIsMaster)
+            if (VRTOrchestrator.Comm.UserIsMaster)
             {
                 Debug.Log($"{Name()}: left session as master, deleting.");
-                OrchestratorController.Instance.DeleteSession(OrchestratorController.Instance.MySession.sessionId);
+                VRTOrchestrator.Comm.DeleteSession(VRTOrchestrator.Comm.MySession.sessionId);
             }
 #endif
             ClearOrchestratorEvents();
