@@ -54,11 +54,12 @@ namespace VRT.Pilots.Common
 
 		public void OnDisable()
 		{
-			VRTOrchestrator.Comm.Unsubscribe<RigidBodyData>(OnRigidBodyData);
+			VRTOrchestrator.Comm?.Unsubscribe<RigidBodyData>(OnRigidBodyData);
 		}
 
 		private void Update()
 		{
+			if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
 			float updateDelta = 1.0f / UpdateFrequency;
 			if (SyncAutomatically)
 			{

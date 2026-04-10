@@ -70,7 +70,7 @@ namespace VRT.Pilots.Common
 
 		protected virtual void OnDisable()
 		{
-			VRTOrchestrator.Comm.Unsubscribe<HandControllerData>(OnHandControllerData);
+			VRTOrchestrator.Comm?.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 
 		protected void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)

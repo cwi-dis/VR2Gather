@@ -109,14 +109,14 @@ namespace VRT.Pilots.Common
 
 		public void OnDisable()
 		{
-			VRTOrchestrator.Comm.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
-			VRTOrchestrator.Comm.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
+			VRTOrchestrator.Comm?.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
+			VRTOrchestrator.Comm?.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
 		}
 
 		public void OnDestroy()
 		{
             if (debug) Debug.Log($"SessionPlayersManager: OnDestroy");
-            VRTOrchestrator.Comm.OnUserLeaveSessionEvent -= OnUserLeft;
+            if (VRTOrchestrator.Comm != null) VRTOrchestrator.Comm.OnUserLeaveSessionEvent -= OnUserLeft;
 		}
 
 		public void Start()

@@ -45,7 +45,7 @@ namespace VRT.Pilots.Common
 
         public virtual void OnDisable()
         {
-            VRTOrchestrator.Comm.Unsubscribe<PersistenceManagerData>(OnPersistenceCall);
+            VRTOrchestrator.Comm?.Unsubscribe<PersistenceManagerData>(OnPersistenceCall);
         }
         
         // Start is called before the first frame update

@@ -42,7 +42,7 @@ namespace VRT.Pilots.Common
 		public void OnDisable()
 		{
             if(!this.gameObject.scene.isLoaded) return;
-			VRTOrchestrator.Comm.Unsubscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
+			VRTOrchestrator.Comm?.Unsubscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public static void RegisterGrabbable(VRTGrabbableController grabbable)

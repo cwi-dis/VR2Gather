@@ -37,11 +37,12 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void OnDisable()
         {
-            VRTOrchestrator.Comm.Unsubscribe<SyncConfigMessage>(OnSyncConfig);
+            VRTOrchestrator.Comm?.Unsubscribe<SyncConfigMessage>(OnSyncConfig);
         }
 
         void Update()
         {
+            if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
             // If we haven't been inited yet return.
             if (selfUserId == null || !pipelines.ContainsKey(selfUserId)) return;
             // Quick return if interval hasn't expired since last transmission.

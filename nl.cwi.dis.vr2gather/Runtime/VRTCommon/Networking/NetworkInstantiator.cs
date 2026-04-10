@@ -43,7 +43,7 @@ namespace VRT.Pilots.Common
 
 		public void OnDisable()
 		{
-			VRTOrchestrator.Comm.Unsubscribe<NetworkInstantiatorData>(OnNetworkTrigger);
+			VRTOrchestrator.Comm?.Unsubscribe<NetworkInstantiatorData>(OnNetworkTrigger);
 		}
 
 		/// <summary>

@@ -46,7 +46,7 @@ namespace VRT.Pilots.Common
 
 		public virtual void OnDisable()
 		{
-			VRTOrchestrator.Comm.Unsubscribe<NetworkTriggerData>(OnNetworkTrigger);
+			VRTOrchestrator.Comm?.Unsubscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
 
 		/// <summary>

@@ -80,7 +80,7 @@ namespace VRT.Pilots.Common
 
 		protected virtual void OnDisable()
 		{
-			VRTOrchestrator.Comm.Unsubscribe<NetworkPlayerData>(OnNetworkPlayerData);
+			VRTOrchestrator.Comm?.Unsubscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 
 		public abstract void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId);

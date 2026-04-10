@@ -33,6 +33,7 @@ namespace VRT.Pilots.Common
 		}
 		void SendPlayerData()
 		{
+			if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
 			if (playerController == null)
 			{
 				Debug.LogError($"{Name()}: SendPlayerData with no playerController. Probably SetupPlayerNetworkController was not called.");

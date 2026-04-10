@@ -63,6 +63,7 @@ namespace VRT.Pilots.Common
 
         private void Update()
         {
+            if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
             if (oldState != handAppearance.state)
             {
                 oldState = handAppearance.state;

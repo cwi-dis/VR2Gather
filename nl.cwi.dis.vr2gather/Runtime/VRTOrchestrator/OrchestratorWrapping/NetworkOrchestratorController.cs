@@ -413,8 +413,12 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void OnGetSessionInfoResponse(ResponseStatus status, Session session) {
-            if (mySession == null || string.IsNullOrEmpty(session.sessionId)) {
+            if (mySession == null || session == null || string.IsNullOrEmpty(session.sessionId)) {
                 if (enableLogging) Debug.LogError("NetworkOrchestratorController: OnGetSessionInfoResponse: Aborted, current session is null.");
+                return;
+            }
+            if (SelfUser == null) {
+                Debug.LogWarning("NetworkOrchestratorController: OnGetSessionInfoResponse: Aborted, SelfUser is null (session already torn down).");
                 return;
             }
 

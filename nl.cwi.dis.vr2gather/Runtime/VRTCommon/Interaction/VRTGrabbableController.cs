@@ -60,11 +60,12 @@ namespace VRT.Pilots.Common
 			
 			VRTGrabbableManager.UnregisterGrabbable(this);
 
-			VRTOrchestrator.Comm.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
+			VRTOrchestrator.Comm?.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void Update()
 		{
+			if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
 			// If the local user is not grabbing this grabble we have nothing to do.
 			if (!isGrabbed) return;
 			// xxxjack bail out if sending too many updates
