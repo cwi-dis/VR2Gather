@@ -71,7 +71,16 @@ namespace VRT.Pilots.Common
 		protected virtual void Awake()
 		{
 			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
+		}
+
+		protected virtual void OnEnable()
+		{
 			VRTOrchestrator.Comm.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);
+		}
+
+		protected virtual void OnDisable()
+		{
+			VRTOrchestrator.Comm.Unsubscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 
 		public abstract void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId);

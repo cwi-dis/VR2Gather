@@ -32,6 +32,10 @@ namespace VRT.Pilots.Common
 		{
 			DontDestroyOnLoad(this);
 			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandNetworkControllerBase.HandGrabEvent));
+		}
+
+		public void OnEnable()
+		{
 			VRTOrchestrator.Comm.Subscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 

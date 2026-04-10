@@ -98,18 +98,25 @@ namespace VRT.Pilots.Common
 			}
 			VRTOrchestrator.Comm.OnUserLeaveSessionEvent += OnUserLeft;
 
+			if (debug) Debug.Log($"SessionPlayersManager: Awake");
+		}
+
+		public void OnEnable()
+		{
 			VRTOrchestrator.Comm.Subscribe<PlayerLocationData>(OnPlayerLocationData);
 			VRTOrchestrator.Comm.Subscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
-			if (debug) Debug.Log($"SessionPlayersManager: Awake, subscribed to PlayerLocationData");
+		}
+
+		public void OnDisable()
+		{
+			VRTOrchestrator.Comm.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
+			VRTOrchestrator.Comm.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
 		}
 
 		public void OnDestroy()
 		{
-            if (debug) Debug.Log($"SessionPlayersManager: OnDestroy, unsubscribing to PlayerLocationData");
+            if (debug) Debug.Log($"SessionPlayersManager: OnDestroy");
             VRTOrchestrator.Comm.OnUserLeaveSessionEvent -= OnUserLeft;
-
-			VRTOrchestrator.Comm.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
-			VRTOrchestrator.Comm.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
 		}
 
 		public void Start()

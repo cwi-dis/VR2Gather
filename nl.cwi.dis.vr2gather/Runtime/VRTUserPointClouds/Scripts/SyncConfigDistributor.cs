@@ -25,16 +25,18 @@ namespace VRT.UserRepresentation.PointCloud
             VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_SyncConfigMessage, typeof(SyncConfigMessage));
         }
 
-         void Start()
+        void Start()
         {
             if (debug) Debug.Log($"SyncConfigDistributor: Started");
-            //Subscribe to incoming data of the type we're interested in. 
+        }
+
+        public void OnEnable()
+        {
             VRTOrchestrator.Comm.Subscribe<SyncConfigMessage>(OnSyncConfig);
         }
 
-        private void OnDestroy()
+        public void OnDisable()
         {
-            //If we no longer exist, we should unsubscribe. 
             VRTOrchestrator.Comm.Unsubscribe<SyncConfigMessage>(OnSyncConfig);
         }
 

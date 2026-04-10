@@ -27,19 +27,21 @@ namespace VRT.UserRepresentation.PointCloud
         {
             if (debug) Debug.Log($"TilingConfigDistributor: Awake");
             VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
-            VRTOrchestrator.Comm.Subscribe<TilingConfigMessage>(OnTilingConfig);
         }
 
         void Start()
         {
             if (debug) Debug.Log($"TilingConfigDistributor: Started");
             started = true;
-            //Subscribe to incoming data of the type we're interested in. 
         }
 
-        private void OnDestroy()
+        public void OnEnable()
         {
-            //If we no longer exist, we should unsubscribe. 
+            VRTOrchestrator.Comm.Subscribe<TilingConfigMessage>(OnTilingConfig);
+        }
+
+        public void OnDisable()
+        {
             VRTOrchestrator.Comm.Unsubscribe<TilingConfigMessage>(OnTilingConfig);
         }
 

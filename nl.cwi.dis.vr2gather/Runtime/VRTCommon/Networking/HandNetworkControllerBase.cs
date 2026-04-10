@@ -53,21 +53,23 @@ namespace VRT.Pilots.Common
 
 		protected PlayerNetworkControllerBase _Player;
 
-		bool subscribed = false;
+		protected virtual void Awake()
+		{
+			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
+		}
 
 		protected virtual void Start()
 		{
 			_Player = GetComponentInParent<PlayerNetworkControllerBase>();
-
-            VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
-            VRTOrchestrator.Comm.Subscribe<HandControllerData>(OnHandControllerData);
-			subscribed = true;
 		}
 
-		private void OnDestroy()
+		protected virtual void OnEnable()
 		{
-			if (!subscribed) return;
-			subscribed = false;
+			VRTOrchestrator.Comm.Subscribe<HandControllerData>(OnHandControllerData);
+		}
+
+		protected virtual void OnDisable()
+		{
 			VRTOrchestrator.Comm.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 
