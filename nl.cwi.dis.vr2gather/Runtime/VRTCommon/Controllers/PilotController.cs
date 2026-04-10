@@ -68,7 +68,6 @@ namespace VRT.Pilots.Common
         /// </summary>
         public void TerminateScene(bool sessionAlreadyLeft = false)
         {
-            if (IsLeavingSession) return;
             IsLeavingSession = true;
             if (!sessionAlreadyLeft)
             {
