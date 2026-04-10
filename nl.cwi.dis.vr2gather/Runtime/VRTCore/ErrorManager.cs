@@ -41,6 +41,10 @@ namespace VRT.Core
             {
                 instance = this;
             }
+            else
+            {
+                Debug.LogError($"ErrorManager({name}): another error manager already exists on GO {instance.name}");
+            }
             if (myCanvas == null)
             {
                 myCanvas = gameObject;
