@@ -829,7 +829,7 @@ PrefabInstance:
     - target: {fileID: 1110161537398986040, guid: 63b3587612a9c7544a2033bb563eb45a,
         type: 3}
       propertyPath: m_Name
-      value: ErrorManager
+      value: Tool_ErrorManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
