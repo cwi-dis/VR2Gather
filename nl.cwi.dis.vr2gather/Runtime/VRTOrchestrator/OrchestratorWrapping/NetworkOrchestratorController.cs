@@ -143,7 +143,7 @@ namespace VRT.Orchestrator.Wrapping
 
             if (mySession != null) {
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkOrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
+                Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
 #endif
             }
             _OptionalStopOnLeave();
@@ -158,7 +158,7 @@ namespace VRT.Orchestrator.Wrapping
         public override void SocketConnect(string pUrl) {
             if (enableLogging) Debug.Log($"NetworkOrchestratorController: connect to {pUrl}");
 #if VRT_WITH_STATS
-            Statistics.Output("NetworkOrchestratorController", $"orchestrator_url={pUrl}");
+            Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
 #endif
             orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this);
             orchestratorWrapper.OnDataStreamReceived += packet => OnDataStreamReceived?.Invoke(packet);
@@ -209,7 +209,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 #if VRT_WITH_STATS
-            Statistics.Output("NetworkOrchestratorController", $"connected=1, orchestrator_version={version}");
+            Statistics.Output("OrchestratorController", $"connected=1, orchestrator_version={version}");
 #endif
             OnGetOrchestratorVersionEvent?.Invoke(version);
         }
@@ -217,7 +217,7 @@ namespace VRT.Orchestrator.Wrapping
         // SockerDisconnect response callback
         public void OnDisconnect() {
 #if VRT_WITH_STATS
-            Statistics.Output("NetworkOrchestratorController", $"connected=0");
+            Statistics.Output("OrchestratorController", $"connected=0");
 #endif
             SelfUser = null;
             connectedToOrchestrator = false;
@@ -331,7 +331,7 @@ namespace VRT.Orchestrator.Wrapping
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
             long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;
 #if VRT_WITH_STATS
-            Statistics.Output("NetworkOrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs - localTimeMs}, uncertainty_interval_ms={uncertainty}");
+            Statistics.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs - localTimeMs}, uncertainty_interval_ms={uncertainty}");
 #endif
             if (OnGetNTPTimeEvent == null) Debug.LogWarning("NetworkOrchestratorController: NTP time response received but nothing listens");
             OnGetNTPTimeEvent?.Invoke(ntpTime);
@@ -392,7 +392,7 @@ namespace VRT.Orchestrator.Wrapping
             int  userCount = session.GetUserCount();
 
 #if VRT_WITH_STATS
-            Statistics.Output("NetworkOrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={userCount}");
+            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={userCount}");
 #endif
 
             availableSessions.Add(session);
@@ -624,12 +624,12 @@ namespace VRT.Orchestrator.Wrapping
                 // xxxjack this is gross. We have to print the stats line for "session started" , because
                 // in LoginController we don't know the session ID.
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkOrchestratorController", $"starting=1, sessionId={mySession?.sessionId}, sessionName={mySession?.sessionName}");
+                Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession?.sessionId}, sessionName={mySession?.sessionName}");
 #endif
                 if (VRTConfig.Instance.AutoStartConfig.autoLeaveAfter > 0)
                 {
 #if VRT_WITH_STATS
-                    Statistics.Output("NetworkOrchestratorController", $"autoLeaveAfter={VRTConfig.Instance.AutoStartConfig.autoLeaveAfter}");
+                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={VRTConfig.Instance.AutoStartConfig.autoLeaveAfter}");
 #endif
                     Invoke("LeaveSession", VRTConfig.Instance.AutoStartConfig.autoLeaveAfter);
                 }

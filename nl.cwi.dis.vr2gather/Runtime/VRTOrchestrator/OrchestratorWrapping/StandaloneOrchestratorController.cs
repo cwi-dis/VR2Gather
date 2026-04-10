@@ -5,6 +5,10 @@ using VRT.Core;
 using VRT.Orchestrator.Elements;
 using VRT.Orchestrator.Responses;
 
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
+
 namespace VRT.Orchestrator.Wrapping
 {
     /// <summary>
@@ -63,6 +67,9 @@ namespace VRT.Orchestrator.Wrapping
         /// </summary>
         public override void SocketConnect(string url)
         {
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_url=standalone");
+#endif
             OnConnectionEvent?.Invoke(true);
         }
 
@@ -85,6 +92,9 @@ namespace VRT.Orchestrator.Wrapping
 
         public override void GetVersion()
         {
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"connected=1, orchestrator_version=standalone");
+#endif
             OnGetOrchestratorVersionEvent?.Invoke("standalone");
         }
 
@@ -96,6 +106,9 @@ namespace VRT.Orchestrator.Wrapping
                 ntpDate = System.DateTime.UtcNow.ToString("o"),
                 ntpTimeMs = (long)sinceEpoch.TotalMilliseconds,
             };
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms=0, uncertainty_interval_ms=0");
+#endif
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
@@ -113,11 +126,18 @@ namespace VRT.Orchestrator.Wrapping
                 sessionUsers = new[] { _selfUser.userId },
                 sessionUserDefinitions = new List<User> { _selfUser },
             };
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"created=1, sessionId={_currentSession.sessionId}, sessionName={_currentSession.sessionName}, isMaster=1, nUser=1");
+#endif
             OnAddSessionEvent?.Invoke(_currentSession);
         }
 
         public override void LeaveSession()
         {
+#if VRT_WITH_STATS
+            if (_currentSession != null)
+                Statistics.Output("OrchestratorController", $"stopping=1, sessionId={_currentSession.sessionId}");
+#endif
             _currentSession = null;
             _currentScenario = null;
             OnLeaveSessionEvent?.Invoke();
@@ -130,6 +150,19 @@ namespace VRT.Orchestrator.Wrapping
         /// </summary>
         public override void SendMessageToAll(string message)
         {
+            if (message.StartsWith("START_"))
+            {
+#if VRT_WITH_STATS
+                Statistics.Output("OrchestratorController", $"starting=1, sessionId={_currentSession?.sessionId}, sessionName={_currentSession?.sessionName}");
+#endif
+                if (VRTConfig.Instance.AutoStartConfig.autoLeaveAfter > 0)
+                {
+#if VRT_WITH_STATS
+                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={VRTConfig.Instance.AutoStartConfig.autoLeaveAfter}");
+#endif
+                    Invoke("LeaveSession", VRTConfig.Instance.AutoStartConfig.autoLeaveAfter);
+                }
+            }
             var userMessage = new UserMessage(
                 _selfUser?.userId ?? "",
                 _selfUser?.userName ?? "",
