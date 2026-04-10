@@ -103,6 +103,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // ── IVRTOrchestratorComm ────────────────────────────────────────────────
         public virtual bool TraceCalls => false;
+        public virtual bool WarnOnUnhandledEvents => false;
         public abstract event Action<UserEvent> OnMasterEventReceivedEvent;
         public abstract event Action<UserEvent> OnUserEventReceivedEvent;
         public abstract void SendMessage(string message, string userId);

@@ -12,6 +12,7 @@ namespace VRT.Orchestrator.Wrapping
     {
         // Tracing
         bool TraceCalls { get; }
+        bool WarnOnUnhandledEvents { get; }
 
         // Incoming scene events
         event Action<UserEvent> OnMasterEventReceivedEvent;

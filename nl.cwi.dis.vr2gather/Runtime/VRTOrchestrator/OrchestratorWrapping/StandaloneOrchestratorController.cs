@@ -48,6 +48,8 @@ namespace VRT.Orchestrator.Wrapping
         // ── Tracing ──────────────────────────────────────────────────────────────
         [Tooltip("Log all orchestrator calls and events to the console")]
         public bool traceCalls = false;
+        [Tooltip("Warn when an event is received but no handler is registered")]
+        public bool warnOnUnhandledEvents = true;
         // Set to true in source to also trace high-frequency calls (SendEvent*, SendData)
         private const bool traceHighFrequency = false;
 
@@ -63,6 +65,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // ── IVRTOrchestratorComm ─────────────────────────────────────────────────
         public override bool TraceCalls => traceCalls;
+        public override bool WarnOnUnhandledEvents => warnOnUnhandledEvents;
 
         // ── IVRTOrchestratorSessionState ─────────────────────────────────────────
         public override User SelfUser { get { return _selfUser; } set { _selfUser = value; } }

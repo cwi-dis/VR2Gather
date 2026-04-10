@@ -40,6 +40,8 @@ namespace VRT.OrchestratorComm
 
 		public Dictionary<Type, IMessageForwarder> MessageForwarders = new Dictionary<Type, IMessageForwarder>();
 
+		public bool WarnOnUnhandled = true;
+
 		public MessageForwarderManager()
 		{
 		}
@@ -117,13 +119,13 @@ namespace VRT.OrchestratorComm
 				}
 				else
 				{
-                    Debug.LogWarning($"MessageForwarder: null forwarder for messageType {messageType.Name}");
-                }
-            }
+					if (WarnOnUnhandled) Debug.LogWarning($"MessageForwarder: null forwarder for messageType {messageType.Name}");
+				}
+			}
 			else
-            {
-				Debug.LogWarning($"MessageForwarder: no forwarder for messageType {messageType.Name}");
-            }
+			{
+				if (WarnOnUnhandled) Debug.LogWarning($"MessageForwarder: no forwarder for messageType {messageType.Name}");
+			}
 		}
 	}
 
@@ -142,9 +144,10 @@ namespace VRT.OrchestratorComm
 		{
 			if (nSubscribed == 0)
 			{
-				Debug.LogWarning("MessageForwarder: Forward() but no-one subscribed");
+				Debug.LogWarning($"MessageForwarder: Forward() for {typeof(T).Name} but no-one subscribed");
+				return;
 			}
-			_ev(message);
+			_ev?.Invoke(message);
 		}
 
 		void IMessageForwarder.Forward(string message)

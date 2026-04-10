@@ -25,6 +25,8 @@ namespace VRT.Orchestrator.Wrapping
         [SerializeField] private bool enableLogging = true;
         [Tooltip("Log all orchestrator calls and events to the console")]
         public bool traceCalls = false;
+        [Tooltip("Warn when an event is received but no handler is registered")]
+        public bool warnOnUnhandledEvents = true;
         // Set to true in source to also trace high-frequency calls (SendEvent*, SendData)
         private const bool traceHighFrequency = false;
 
@@ -113,6 +115,7 @@ namespace VRT.Orchestrator.Wrapping
 
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
         public override bool TraceCalls => traceCalls;
+        public override bool WarnOnUnhandledEvents => warnOnUnhandledEvents;
         public override bool UserIsLogged { get { return userIsLogged; } }
         public override bool UserIsMaster { get { return userIsMaster; } }
         public override User SelfUser { get { return _me; } set { _me = value; } }
@@ -690,6 +693,8 @@ namespace VRT.Orchestrator.Wrapping
             if (pMasterEventData.sceneEventFrom != SelfUser.userId) {
                 if (enableLogging && traceHighFrequency) Debug.Log("NetworkOrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.sceneEventFrom + " sent: " + pMasterEventData.sceneEventData);
                 if (traceHighFrequency) Trace("recv", nameof(OnMasterEventReceivedEvent));
+                if (warnOnUnhandledEvents && OnMasterEventReceivedEvent == null)
+                    Debug.LogWarning("NetworkOrchestratorController: OnMasterEventReceived: no handlers registered (RegisterMessageForwarder not called?)");
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
         }
@@ -698,6 +703,8 @@ namespace VRT.Orchestrator.Wrapping
             if (pUserEventData.sceneEventFrom != SelfUser.userId) {
                 if (enableLogging && traceHighFrequency) Debug.Log("NetworkOrchestratorController: OnUserEventReceived: User: " + pUserEventData.sceneEventFrom + " sent: " + pUserEventData.sceneEventData);
                 if (traceHighFrequency) Trace("recv", nameof(OnUserEventReceivedEvent));
+                if (warnOnUnhandledEvents && OnUserEventReceivedEvent == null)
+                    Debug.LogWarning("NetworkOrchestratorController: OnUserEventReceived: no handlers registered (RegisterMessageForwarder not called?)");
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }

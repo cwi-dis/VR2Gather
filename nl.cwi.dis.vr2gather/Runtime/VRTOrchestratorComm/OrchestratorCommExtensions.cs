@@ -193,6 +193,7 @@ namespace VRT.OrchestratorComm
 			controller.OnUserEventReceivedEvent += ForwardUserEvent;
 			controller.OnMasterEventReceivedEvent -= ForwardMasterEvent;
 			controller.OnMasterEventReceivedEvent += ForwardMasterEvent;
+			_MessageForwarderManager.WarnOnUnhandled = controller.WarnOnUnhandledEvents;
 		}
 
 		public static void UnregisterMessageForwarder(this IVRTOrchestratorComm controller)
