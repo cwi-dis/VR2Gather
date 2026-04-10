@@ -68,7 +68,6 @@ namespace VRT.Orchestrator.Wrapping
         public abstract User SelfUser { get; set; }
         public abstract bool UserIsMaster { get; }
         public abstract Session CurrentSession { get; }
-        public abstract bool ConnectedToOrchestrator { get; }
         public abstract void LeaveSession();
 
         // ── IVRTOrchestratorLogin ───────────────────────────────────────────────
@@ -91,7 +90,7 @@ namespace VRT.Orchestrator.Wrapping
         public abstract void Abort();
         public abstract void GetVersion();
         public abstract void Shutdown();
-        public abstract void Login(string name, string password);
+        public abstract void Login(string name);
         public abstract void Logout();
         public abstract void GetNTPTime();
         public abstract void GetSessions();
@@ -101,7 +100,6 @@ namespace VRT.Orchestrator.Wrapping
         public abstract void GetSessionInfo();
         public abstract void UpdateFullUserData(UserData userData);
         public abstract void SendMessageToAll(string message);
-        public abstract void LocalUserSessionForDevelopmentTests();
 
         // ── IVRTOrchestratorComm ────────────────────────────────────────────────
         public abstract event Action<UserEvent> OnMasterEventReceivedEvent;

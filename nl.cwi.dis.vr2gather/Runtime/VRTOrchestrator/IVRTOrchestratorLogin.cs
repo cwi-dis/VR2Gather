@@ -33,9 +33,9 @@ namespace VRT.Orchestrator.Wrapping
         event Action<UserMessage> OnUserMessageReceivedEvent;
 
         // Session state visible to login
-        Scenario CurrentScenario { get; }
-        bool UserIsLogged { get; }
-        Session[] AvailableSessions { get; }
+        Scenario CurrentScenario { get; } // Used only by OrchestratorLogin and Old_OrchestratorLogin. Once Old_OrchestratorLogin is removed, consider moving the implementation into OrchestratorLogin rather than keeping it on the interface.
+        bool UserIsLogged { get; } // Used only by Old_OrchestratorLogin (VRTDeprecated). Remove when that is removed.
+        Session[] AvailableSessions { get; } // Used only by Old_OrchestratorLogin (VRTDeprecated). Remove entirely when that is removed.
 
         // Connection management
         void SocketConnect(string url);
@@ -44,7 +44,7 @@ namespace VRT.Orchestrator.Wrapping
         void Shutdown();
 
         // Login
-        void Login(string name, string password);
+        void Login(string name);
         void Logout();
 
         // NTP
@@ -63,7 +63,5 @@ namespace VRT.Orchestrator.Wrapping
         // Send to all (used by login to broadcast START_* for now)
         void SendMessageToAll(string message);
 
-        // Development / testing
-        void LocalUserSessionForDevelopmentTests();
     }
 }

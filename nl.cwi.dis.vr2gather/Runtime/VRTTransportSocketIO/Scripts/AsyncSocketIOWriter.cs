@@ -87,7 +87,7 @@ namespace VRT.Transport.SocketIO
 
         protected override void AsyncUpdate()
         {
-            if (VRTOrchestrator.Streams != null && VRTOrchestrator.Streams.ConnectedToOrchestrator)
+            if (VRTOrchestrator.Streams != null)
             {
                 for (int i = 0; i < streams.Length; ++i)
                 {

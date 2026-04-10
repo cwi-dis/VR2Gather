@@ -1358,7 +1358,7 @@ namespace VRT.Login
                 VRTConfig.Instance.AutoStartConfig.autoCreate = isThisUser;
                 VRTConfig.Instance.AutoStartConfig.autoJoin = !isThisUser;
             }
-            OrchestratorController.Instance.Login(userName, "");
+            OrchestratorController.Instance.Login(userName);
             return true;
         }
 

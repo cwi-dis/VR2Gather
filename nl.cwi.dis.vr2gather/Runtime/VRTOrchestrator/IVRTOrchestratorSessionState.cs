@@ -24,7 +24,6 @@ namespace VRT.Orchestrator.Wrapping
         User SelfUser { get; set; }
         bool UserIsMaster { get; }
         Session CurrentSession { get; }
-        bool ConnectedToOrchestrator { get; }
 
         void LeaveSession();
     }

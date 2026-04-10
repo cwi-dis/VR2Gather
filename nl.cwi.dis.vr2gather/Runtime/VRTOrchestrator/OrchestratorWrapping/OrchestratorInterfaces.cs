@@ -2,17 +2,8 @@
 using VRT.Orchestrator.Responses;
 using VRT.Orchestrator.Elements;
 
-//Interfaces to be implemented to supervise the orchestrator
 namespace VRT.Orchestrator.Interfaces
 {
-    public interface IOrchestratorConnectionListener
-    {
-        void OnSocketConnect();
-        void OnSocketConnecting();
-        void OnSocketDisconnect();
-        void OnSocketError(ResponseStatus message);
-    }
-
     // Interface to implement to listen the user messages emitted spontaneously
     // by the orchestrator
     public interface IUserMessagesListener

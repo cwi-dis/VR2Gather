@@ -54,7 +54,6 @@ namespace VRT.Orchestrator.Wrapping
         public override User SelfUser { get { return _selfUser; } set { _selfUser = value; } }
         public override bool UserIsMaster => true;
         public override Session CurrentSession => _currentSession;
-        public override bool ConnectedToOrchestrator => true;
 
         // ── IVRTOrchestratorLogin ────────────────────────────────────────────────
         public override Scenario CurrentScenario => _currentScenario;
@@ -73,12 +72,12 @@ namespace VRT.Orchestrator.Wrapping
             OnConnectionEvent?.Invoke(true);
         }
 
-        public override void Login(string name, string password)
+        public override void Login(string name)
         {
             var config = VRTConfig.Instance.RepresentationConfig;
             _selfUser = new User
             {
-                userId = System.Guid.NewGuid().ToString(),
+                userId = "standalone-userid",
                 userName = name,
                 userData = new UserData
                 {
@@ -117,7 +116,7 @@ namespace VRT.Orchestrator.Wrapping
             _currentScenario = scenario;
             _currentSession = new Session
             {
-                sessionId = "standalone",
+                sessionId = "standalone-sessionid",
                 sessionName = name,
                 sessionDescription = description,
                 scenarioId = scenarioId,
@@ -187,7 +186,6 @@ namespace VRT.Orchestrator.Wrapping
         public override void JoinSession(string sessionId) { }
         public override void DeleteSession(string sessionId) { }
         public override void GetSessionInfo() { }
-        public override void LocalUserSessionForDevelopmentTests() { }
 
         // ── IVRTOrchestratorComm: no-ops (no other participants) ─────────────────
         public override void SendMessage(string message, string userId) { }

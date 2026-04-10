@@ -285,7 +285,7 @@ namespace VRT.Login
 
             SetActiveDialogStatus("Logging in...");
             string userName = VRTConfig.Instance.RepresentationConfig.userName;
-            VRTOrchestrator.Login.Login(userName, "");
+            VRTOrchestrator.Login.Login(userName);
         }
 
         private void OnLoginEvent(bool success)

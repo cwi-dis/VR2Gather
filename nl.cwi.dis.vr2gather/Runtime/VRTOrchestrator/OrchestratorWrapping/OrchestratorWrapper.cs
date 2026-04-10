@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
@@ -10,39 +10,28 @@ using VRT.Orchestrator.Interfaces;
 using VRT.Orchestrator.Elements;
 
 namespace VRT.Orchestrator.Wrapping {
-    public class OrchestratorWrapper : IOrchestratorConnectionListener
+    public class OrchestratorWrapper
     {
         private SocketIOUnity Socket;
         private readonly object sendLock = new();
 
-        public static OrchestratorWrapper instance;
         // Listener for the responses of the orchestrator
         private IOrchestratorResponsesListener ResponsesListener;
 
         // Listener for the messages emitted spontaneously by the orchestrator
         private IUserMessagesListener UserMessagesListener;
 
-        // Listeners for the user events emitted when a session is updated by the orchestrator
-        private List<IUserSessionEventsListener> UserSessionEventslisteners;
+        // Listener for user events emitted when a session is updated by the orchestrator
+        private IUserSessionEventsListener UserSessionEventsListener;
 
         public Action<UserDataStreamPacket> OnDataStreamReceived;
         private string myUserID = "";
 
-        public bool debug = false;
-
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
-            if (instance is null)
-            {
-                instance = this;
-            }
-
             ResponsesListener = responsesListener;
             UserMessagesListener = userMessagesListener;
-
-            UserSessionEventslisteners = new List<IUserSessionEventsListener> {
-                userSessionEventsListener
-            };
+            UserSessionEventsListener = userSessionEventsListener;
 
             Socket = new SocketIOUnity(new Uri(orchestratorSocketUrl), new SocketIOOptions {
                 Transport = SocketIOClient.Transport.TransportProtocol.WebSocket,
@@ -52,27 +41,9 @@ namespace VRT.Orchestrator.Wrapping {
             Socket.JsonSerializer = new NewtonsoftJsonSerializer();
 
             Socket.OnConnected += (sender, e) => OnSocketConnect();
-            Socket.OnDisconnected += (sender, e) =>
-            {
-                OnSocketDisconnect();
-            };
-            Socket.OnError += (sender, e) =>
-            {
-                Debug.LogError($"OrchestratorWrapper: {e}");
-                OnSocketError(null);
-            };
+            Socket.OnDisconnected += (sender, e) => OnSocketDisconnect();
+            Socket.OnError += (sender, e) => Debug.LogError($"OrchestratorWrapper: {e}");
 
-            if (debug)
-            {
-                    Socket.OnPing += (sender, e) => {
-                    Debug.Log("OrchestratorWrapper: PING");
-                };
-
-                Socket.OnPong += (sender, e) => {
-                    Debug.Log("OrchestratorWrapper: PONG");
-                };
-
-            }
             Socket.On("MessageSent", OnMessageSentFromOrchestrator);
             Socket.On("DataReceived", OnUserDataReceived);
             Socket.On("SceneEventToMaster", OnMasterEventReceived);
@@ -85,7 +56,7 @@ namespace VRT.Orchestrator.Wrapping {
             OnSocketConnecting();
         }
 
-        public void OnSocketConnect()
+        private void OnSocketConnect()
         {
             if (ResponsesListener == null)
             {
@@ -93,10 +64,6 @@ namespace VRT.Orchestrator.Wrapping {
             }
             else
             {
-                if (debug)
-                {
-                    Debug.Log("OrchestratorWrapper: Calling OnConnect");
-                }
                 UnityThread.executeInUpdate(() => {
                   ResponsesListener.OnConnect();
                 });
@@ -104,14 +71,10 @@ namespace VRT.Orchestrator.Wrapping {
         }
 
         public void Disconnect() {
-            if (debug)
-            {
-                Debug.Log("OrchestratorWrapper: DISCONNECT called");
-            }
-            Socket.Disconnect();        
+            Socket.Disconnect();
         }
 
-        public void OnSocketDisconnect()
+        private void OnSocketDisconnect()
         {
             if (ResponsesListener == null)
             {
@@ -125,17 +88,12 @@ namespace VRT.Orchestrator.Wrapping {
             }
         }
 
-        public void OnSocketConnecting()
+        private void OnSocketConnecting()
         {
             UnityThread.executeInUpdate(() =>
             {
                 ResponsesListener?.OnConnecting();
             });
-        }
-
-        public void OnSocketError(ResponseStatus message)
-        {
-            throw new NotImplementedException();
         }
 
         #region utility requests
@@ -144,7 +102,7 @@ namespace VRT.Orchestrator.Wrapping {
             lock (this) {
                 Socket.Emit("GetOrchestratorVersion", (response) => {
                     var data = response.GetValue<OrchestratorResponse<VersionResponse>>();
-                    
+
                     UnityThread.executeInUpdate(() => {
                         ResponsesListener?.OnGetOrchestratorVersionResponse(data.ResponseStatus, data.body.orchestratorVersion);
                     });
@@ -168,7 +126,7 @@ namespace VRT.Orchestrator.Wrapping {
 
         #region login/logout
 
-        public void Login(string username, string password) {
+        public void Login(string username) {
             lock (this) {
                 Socket.Emit("Login", (response) => {
                     var data = response.GetValue<OrchestratorResponse<LoginResponse>>();
@@ -311,7 +269,7 @@ namespace VRT.Orchestrator.Wrapping {
                     var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
 
                     UnityThread.executeInUpdate(() => {
-                        ResponsesListener?.OnSendMessageResponse(data.ResponseStatus);
+                        ResponsesListener?.OnSendMessageToAllResponse(data.ResponseStatus);
                     });
                 }, new {
                     message
@@ -447,7 +405,6 @@ namespace VRT.Orchestrator.Wrapping {
                     var sceneEvent = response.GetValue<SceneEvent>();
                     string data = Encoding.ASCII.GetString(response.InComingBytes[0], 0, response.InComingBytes[0].Length);
 
-
                     UnityThread.executeInUpdate(() =>
                     {
                         UserMessagesListener.OnUserEventReceived(new UserEvent(sceneEvent.sceneEventFrom, data));
@@ -468,20 +425,14 @@ namespace VRT.Orchestrator.Wrapping {
 
                 switch (data.eventId) {
                     case "USER_JOINED_SESSION":
-                        foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
-                        {
-                            UnityThread.executeInUpdate(() => {
-                                e?.OnUserJoinedSession(data.eventData.userId, data.eventData.userData);
-                            });
-                        }
+                        UnityThread.executeInUpdate(() => {
+                            UserSessionEventsListener?.OnUserJoinedSession(data.eventData.userId, data.eventData.userData);
+                        });
                         break;
                     case "USER_LEFT_SESSION":
-                        foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
-                        {
-                            UnityThread.executeInUpdate(() => {
-                                e?.OnUserLeftSession(data.eventData.userId);
-                            });
-                        }
+                        UnityThread.executeInUpdate(() => {
+                            UserSessionEventsListener?.OnUserLeftSession(data.eventData.userId);
+                        });
                         break;
                     default:
                         break;

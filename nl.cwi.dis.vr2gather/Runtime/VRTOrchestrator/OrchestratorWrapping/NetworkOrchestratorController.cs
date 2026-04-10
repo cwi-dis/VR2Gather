@@ -102,18 +102,6 @@ namespace VRT.Orchestrator.Wrapping
         // Orchestrator DataStream Events
         public override event Action<UserDataStreamPacket> OnDataStreamReceived;
 
-        // Orchestrator Accessors
-        public override void LocalUserSessionForDevelopmentTests()
-        {
-            userIsMaster = true;
-            mySession = new Session()
-            {
-                scenarioId = "LocalDevelopmentTest",
-                sessionId = "0000"
-            };
-        }
-
-        public override bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
         public override bool UserIsLogged { get { return userIsLogged; } }
         public override bool UserIsMaster { get { return userIsMaster; } }
@@ -125,11 +113,6 @@ namespace VRT.Orchestrator.Wrapping
         #endregion
 
         #region Unity
-
-        protected override void Awake()
-        {
-            base.Awake();
-        }
 
         void Start()
         {
@@ -230,11 +213,10 @@ namespace VRT.Orchestrator.Wrapping
 
         #region Login/Logout
 
-        public override void Login(string pName, string pPassword) {
+        public override void Login(string pName) {
             SelfUser = new User();
             SelfUser.userName = pName;
-            SelfUser.userPassword = pPassword;
-            orchestratorWrapper.Login(pName, pPassword);
+            orchestratorWrapper.Login(pName);
         }
 
         public void OnLoginResponse(ResponseStatus status, string userId) {
@@ -565,19 +547,6 @@ namespace VRT.Orchestrator.Wrapping
 
         #region Users
 
-        // xxxjack can go
-        public void UpdateUserDataKey(string pKey, string pValue) {
-        }
-
-        public void OnUpdateUserDataResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("NetworkOrchestratorController: OnUpdateUserDataResponse: User data key updated.");
-        }
-
         public override void UpdateFullUserData(UserData pUserData) {
             orchestratorWrapper.UpdateUserDataJson(pUserData);
         }
@@ -704,6 +673,10 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public override void SendData(string streamType, byte[] data) {
+            // Guard against late-arriving data during session shutdown, before transport
+            // pipelines have been fully stopped. Ideally transports are torn down before
+            // the session ends and this never triggers.
+            if (!connectedToOrchestrator) return;
             orchestratorWrapper.SendData(streamType, data);
         }
 
