@@ -26,9 +26,6 @@ namespace VRT.Pilots.Common
         [Tooltip("Allow direct interaction in this scene (default: ray-based and keyboard/mouse")]
         [SerializeField] protected bool allowDirectInteractionInScene;
 
-        [Tooltip("Set for scenes that are not networked")]
-        public bool sceneIsSingleUser = false;
-
         [Tooltip("Next scene when session ends. Empty to stop playback.")]
         public string NextSceneOnSessionEnd = "VRTLoginManager";
 
