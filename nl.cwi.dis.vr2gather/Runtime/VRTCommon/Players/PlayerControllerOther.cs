@@ -5,14 +5,15 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerOther : PlayerControllerBase
     {
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.User user)
+        public override void SetUpOtherPlayerController(VRT.Orchestrator.User user)
         {
-            if (_isLocalPlayer)
-            {
-                Debug.LogError($"{Name()}: isLocalPlayer==true");
-            }
             isLocalPlayer = false;
             _SetupCommon(user);
+        }
+
+        public override void SetUpSelfPlayerController()
+        {
+            Debug.LogError($"{Name()}: SetUpSelfPlayerController() called");
         }
 
         /// <summary>

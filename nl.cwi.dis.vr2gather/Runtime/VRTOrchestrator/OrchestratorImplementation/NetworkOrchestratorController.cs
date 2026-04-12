@@ -51,7 +51,7 @@ namespace VRT.Orchestrator.Implementation
         private orchestratorConnectionStatus connectionStatus;
 
         //Users
-        private User _me; // Accessed via SelfUser
+        private User _selfUser; // Accessed via SelfUser
 
         //Session
         private Session mySession;
@@ -116,7 +116,7 @@ namespace VRT.Orchestrator.Implementation
         public override bool WarnOnUnhandledEvents => warnOnUnhandledEvents;
         public override bool UserIsLogged { get { return userIsLogged; } }
         public override bool UserIsMaster { get { return userIsMaster; } }
-        public override User SelfUser { get { return _me; } set { _me = value; } }
+        public override User SelfUser { get { return _selfUser; } set { _selfUser = value; } }
         public override Scenario CurrentScenario { get { return myScenario; } }
         public override Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public override Session CurrentSession { get { return mySession; } }
@@ -231,11 +231,25 @@ namespace VRT.Orchestrator.Implementation
         #endregion
 
         #region Login/Logout
+        public override void InitializeSelfUser()
+        {
+            var config = VRTConfig.Instance.RepresentationConfig;
+            _selfUser = new User
+            {
+                userId = "standalone-userid",
+                userName = name,
+                userData = new UserData
+                {
+                    userRepresentation = config.representation,
+                    hasVoice = !string.IsNullOrEmpty(config.microphoneName) && config.microphoneName != "None",
+                    userRepresentationTCPUrl = config.userRepresentationTCPUrl,
+                }
+            };
+        }
 
         public override void Login(string pName) {
             Trace("send", nameof(Login));
-            SelfUser = new User();
-            SelfUser.userName = pName;
+            InitializeSelfUser();
             orchestratorWrapper.Login(pName);
         }
 

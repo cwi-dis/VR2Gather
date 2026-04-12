@@ -72,7 +72,8 @@ namespace VRT.Pilots.Common
         {
         }
 
-        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.User user);
+        public abstract void SetUpSelfPlayerController();
+        public abstract void SetUpOtherPlayerController(VRT.Orchestrator.User user);
         protected void _SetupCommon(VRT.Orchestrator.User _user)
         {
             if (playerNetworkController == null)

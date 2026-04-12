@@ -18,17 +18,7 @@ namespace VRT.Login
         public override void Start()
         {
             // Do not call base.Start(), we don't want to fade in for the login scene.
-            Orchestrator.User user = new Orchestrator.User()
-            {
-                userId = "no-userid",
-                userName = "TestInteractionUser",
-                userData = new Orchestrator.UserData()
-                {
-                    hasVoice = false,
-                    userRepresentation = VRTConfig.Instance.RepresentationConfig.representation,
-                }
-            };
-            selfPlayer.SetUpPlayerController(true, user);
+            selfPlayer.SetUpSelfPlayerController();
         }
 
         IEnumerator RefreshAndLoad(string scenary)

@@ -52,7 +52,7 @@ namespace VRT.Login
                 // (for example no cameras found).
                 // This way we don't get into an error message loop.
                 playerHasBeenInitialized = true;
-                player.SetUpPlayerController(true, user);
+                player.SetUpSelfPlayerController();
             }
             player.SetRepresentation(user.userData.userRepresentation);
         }    

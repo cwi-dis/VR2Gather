@@ -206,8 +206,15 @@ namespace VRT.Pilots.Common
 				PlayerControllerBase playerController = player.GetComponent<PlayerControllerBase>();
                 PlayerNetworkControllerBase networkPlayer = player.GetComponent<PlayerNetworkControllerBase>();
 
-				playerController.SetUpPlayerController(isLocalPlayer, user);
-
+                if (isLocalPlayer)
+                {
+	                playerController.SetUpSelfPlayerController();
+                }
+                else
+                {
+	                playerController.SetUpOtherPlayerController(user);
+                }
+				
                 AllUsers.Add(networkPlayer);
 
 				var representationType = user.userData.userRepresentation;

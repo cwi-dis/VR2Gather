@@ -31,7 +31,7 @@ namespace VRT.Pilots.Common
                 return;
             }
             playerManager.gameObject.SetActive(true);
-            playerManager.SetUpPlayerController(true, user);
+            playerManager.SetUpSelfPlayerController();
         }
 
     }

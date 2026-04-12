@@ -90,9 +90,8 @@ namespace VRT.Orchestrator.Implementation
             OnConnectionEvent?.Invoke(true);
         }
 
-        public override void Login(string name)
+        public override void InitializeSelfUser()
         {
-            Trace("send", nameof(Login));
             var config = VRTConfig.Instance.RepresentationConfig;
             _selfUser = new User
             {
@@ -105,6 +104,12 @@ namespace VRT.Orchestrator.Implementation
                     userRepresentationTCPUrl = config.userRepresentationTCPUrl,
                 }
             };
+        }
+
+        public override void Login(string name)
+        {
+            Trace("send", nameof(Login));
+            InitializeSelfUser();
             Trace("recv", nameof(OnLoginEvent));
             OnLoginEvent?.Invoke(true);
         }

@@ -50,6 +50,10 @@ namespace VRT.Login
         [Tooltip("Prefab that contains the StandaloneOrchestratorController component")]
         [SerializeField] private GameObject standaloneControllerPrefab;
 
+        [Header("Scene objects")]
+        [Tooltip("Player used for this scene")]
+        public PlayerControllerSelf player;
+
         // ── Private state ───────────────────────────────────────────────────────
         private enum State { Home, Settings, Create, Join, CreateStandalone, Lobby }
         private State _state;
@@ -94,6 +98,7 @@ namespace VRT.Login
         {
             CleanupOrchestrator();
             ClearContent();
+            FixSelfRepresentation();
 
             var clone = homeDialogAsset.CloneTree();
             _contentSlot.Add(clone);
@@ -156,7 +161,7 @@ namespace VRT.Login
             _createStandaloneDialog.OnCancelClicked += ShowHome;
 
             _state = State.CreateStandalone;
-            StartStandaloneController();
+            StartStandaloneOrchestrator();
         }
 
         private void ShowLobby()
@@ -186,6 +191,21 @@ namespace VRT.Login
             _lobbyDialog = null;
         }
 
+        // ── Self representation ──────────────────────────────────────────────
+
+        private void FixSelfRepresentation()
+        {
+            if (player == null)
+            {
+                Debug.Log("OrchestratorLogin: self representation not assigned yet");
+                return;
+            }
+
+            var user = VRTOrchestratorSingleton.Login.SelfUser;
+            player.SetUpSelfPlayerController();
+            player.SetRepresentation(user.userData.userRepresentation);
+        }
+        
         // ── Orchestrator lifecycle ──────────────────────────────────────────────
 
         private void StartOrchestratorConnection()
@@ -205,7 +225,7 @@ namespace VRT.Login
             VRTOrchestratorSingleton.Login.SocketConnect(VRTConfig.Instance.orchestratorURL);
         }
 
-        private void StartStandaloneController()
+        private void StartStandaloneOrchestrator()
         {
             if (standaloneControllerPrefab == null)
             {
@@ -284,26 +304,20 @@ namespace VRT.Login
             }
 
             SetActiveDialogStatus("Logging in...");
+            VRTOrchestratorSingleton.Login.InitializeSelfUser();
             string userName = VRTConfig.Instance.RepresentationConfig.userName;
             VRTOrchestratorSingleton.Login.Login(userName);
         }
 
         private void OnLoginEvent(bool success)
         {
+            // xxxjack this is an implementation detail.
             if (!success)
             {
                 SetActiveDialogStatus("Login failed.", isError: true);
                 return;
             }
 
-            // Upload user data so other participants know our representation
-            var config = VRTConfig.Instance.RepresentationConfig;
-            VRTOrchestratorSingleton.Login.SelfUser.userData = new UserData
-            {
-                userRepresentation = config.representation,
-                userRepresentationTCPUrl = config.userRepresentationTCPUrl,
-                hasVoice = !string.IsNullOrEmpty(config.microphoneName) && config.microphoneName != "None",
-            };
             VRTOrchestratorSingleton.Login.UpdateFullUserData(
                 VRTOrchestratorSingleton.Login.SelfUser.userData);
 

@@ -43,6 +43,7 @@ namespace VRT.Orchestrator
         void Shutdown();
 
         // Login
+        void InitializeSelfUser();
         void Login(string name);
         void Logout();
 

@@ -89,6 +89,8 @@ namespace VRT.Orchestrator.Implementation
         public abstract void Abort();
         public abstract void GetVersion();
         public abstract void Shutdown();
+        public abstract void InitializeSelfUser();
+        
         public abstract void Login(string name);
         public abstract void Logout();
         public abstract void GetNTPTime();

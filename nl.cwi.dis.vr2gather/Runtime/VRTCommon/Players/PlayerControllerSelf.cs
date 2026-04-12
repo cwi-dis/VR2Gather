@@ -1,5 +1,6 @@
 using UnityEngine;
 using VRT.Core;
+using VRT.Orchestrator;
 
 namespace VRT.Pilots.Common
 {
@@ -16,14 +17,15 @@ namespace VRT.Pilots.Common
             isPreviewPlayer = previewPlayer;
         }
 
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.User user)
+        public override void SetUpOtherPlayerController(VRT.Orchestrator.User user)
         {
-            if (!_isLocalPlayer)
-            {
-                Debug.LogError($"{Name()}: isLocalPlayer==false");
-            }
+            Debug.LogError($"{Name()}: SetUpOtherPlayerController() called");
+        }
+        
+        public override void SetUpSelfPlayerController()
+        {
             isLocalPlayer = true;
-            _SetupCommon(user);
+            _SetupCommon(VRTOrchestratorSingleton.Comm.SelfUser);
             setupCamera();
             LoadCameraTransform();
         }

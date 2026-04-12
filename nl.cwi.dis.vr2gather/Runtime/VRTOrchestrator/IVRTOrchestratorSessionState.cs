@@ -19,6 +19,7 @@ namespace VRT.Orchestrator
         event Action<string> OnUserLeaveSessionEvent;
 
         // Session state
+        
         User SelfUser { get; set; }
         bool UserIsMaster { get; }
         Session CurrentSession { get; }
