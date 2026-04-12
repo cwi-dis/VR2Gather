@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
-using VRT.Orchestrator.Wrapping;
-using VRT.Orchestrator.Responses;
+using VRT.Orchestrator;
 
 namespace VRT.OrchestratorComm
 {
@@ -204,13 +203,13 @@ namespace VRT.OrchestratorComm
 
 		private static void ForwardMasterEvent(UserEvent userEvent)
 		{
-			if (VRTOrchestrator.Comm?.TraceCalls ?? false) Debug.Log($"OrchestratorCommExtensions: recv:ForwardMasterEvent");
+			if (VRTOrchestratorSingleton.Comm?.TraceCalls ?? false) Debug.Log($"OrchestratorCommExtensions: recv:ForwardMasterEvent");
 			_MessageForwarderManager.Forward(userEvent.sceneEventData);
 		}
 
 		private static void ForwardUserEvent(UserEvent userEvent)
 		{
-			if (VRTOrchestrator.Comm?.TraceCalls ?? false) Debug.Log($"OrchestratorCommExtensions: recv:ForwardUserEvent");
+			if (VRTOrchestratorSingleton.Comm?.TraceCalls ?? false) Debug.Log($"OrchestratorCommExtensions: recv:ForwardUserEvent");
 			_MessageForwarderManager.Forward(userEvent.sceneEventData);
 		}
 	}

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 
 namespace VRT.Pilots.Common
 {
@@ -29,7 +29,7 @@ namespace VRT.Pilots.Common
 			if (_Rigidbody.IsSleeping())
 			{
 			
-				if (VRTOrchestrator.Comm.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
 					if (defaultKinematic)
 					{

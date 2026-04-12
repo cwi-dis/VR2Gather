@@ -5,11 +5,9 @@ using SocketIOClient.Newtonsoft.Json;
 using UnityEngine;
 using System.Text;
 
-using VRT.Orchestrator.Responses;
-using VRT.Orchestrator.Interfaces;
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 
-namespace VRT.Orchestrator.Wrapping {
+namespace VRT.Orchestrator.Implementation {
     public class OrchestratorWrapper
     {
         private SocketIOUnity Socket;

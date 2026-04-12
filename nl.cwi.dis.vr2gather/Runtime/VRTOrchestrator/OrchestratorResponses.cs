@@ -1,4 +1,4 @@
-namespace VRT.Orchestrator.Responses
+namespace VRT.Orchestrator
 {
     // Status returned with every orchestrator response.
     public class ResponseStatus

@@ -16,7 +16,7 @@ namespace VRT.Pilots.Common
             isPreviewPlayer = previewPlayer;
         }
 
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Elements.User user)
+        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.User user)
         {
             if (!_isLocalPlayer)
             {

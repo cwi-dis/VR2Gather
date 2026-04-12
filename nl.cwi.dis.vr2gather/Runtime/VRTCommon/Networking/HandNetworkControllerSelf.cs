@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
@@ -74,13 +71,13 @@ namespace VRT.Pilots.Common
                     handState = handAppearance.state
                 };
 
-                if (VRTOrchestrator.Comm.UserIsMaster)
+                if (VRTOrchestratorSingleton.Comm.UserIsMaster)
                 {
-                    VRTOrchestrator.Comm.SendTypeEventToAll(data);
+                    VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
                 }
                 else
                 {
-                    VRTOrchestrator.Comm.SendTypeEventToMaster(data);
+                    VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
                 }
             }
         }

@@ -15,11 +15,11 @@ namespace VRT.Pilots.Common
 
         public void Start()
         {
-            Orchestrator.Elements.User user = new Orchestrator.Elements.User()
+            Orchestrator.User user = new Orchestrator.User()
             {
                 userId = "no-userid",
                 userName = "TestInteractionUser",
-                userData = new Orchestrator.Elements.UserData()
+                userData = new Orchestrator.UserData()
                 {
                     userRepresentation = userRepresentation
                 }

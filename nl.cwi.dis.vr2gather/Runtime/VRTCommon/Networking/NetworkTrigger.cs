@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
@@ -35,18 +35,18 @@ namespace VRT.Pilots.Common
 		protected override void Awake()
 		{
 			base.Awake();
-			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTriggerData));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTriggerData));
 
 		}
 		public virtual void OnEnable()
 		{
-			VRTOrchestrator.Comm.Subscribe<NetworkTriggerData>(OnNetworkTrigger);
+			VRTOrchestratorSingleton.Comm.Subscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
 
 
 		public virtual void OnDisable()
 		{
-			VRTOrchestrator.Comm?.Unsubscribe<NetworkTriggerData>(OnNetworkTrigger);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace VRT.Pilots.Common
 		/// </summary>
 		public override void Trigger()
 		{
-			if (MasterOnlyTrigger && !VRTOrchestrator.Comm.UserIsMaster)
+			if (MasterOnlyTrigger && !VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
 				Debug.Log($"{name}: Trigger ignored, masterOnly and this user is not master");
 				return;
@@ -71,17 +71,17 @@ namespace VRT.Pilots.Common
 				NetworkBehaviourId = NetworkId,
 			};
 
-			if (!VRTOrchestrator.Comm.UserIsMaster)
+			if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				VRTOrchestrator.Comm.SendTypeEventToMaster(triggerData);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(triggerData);
 			}
 			else
 			{
 				OnTrigger.Invoke();
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={VRTOrchestrator.Comm.CurrentSession.sessionId}");
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
-				VRTOrchestrator.Comm.SendTypeEventToAll(triggerData);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(triggerData);
 			}
 		}
 
@@ -90,14 +90,14 @@ namespace VRT.Pilots.Common
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={VRTOrchestrator.Comm.CurrentSession.sessionId}");
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
 
 				OnTrigger.Invoke();
 
-				if (VRTOrchestrator.Comm.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					VRTOrchestrator.Comm.SendTypeEventToAll(data);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
 				}
 			}
 		}

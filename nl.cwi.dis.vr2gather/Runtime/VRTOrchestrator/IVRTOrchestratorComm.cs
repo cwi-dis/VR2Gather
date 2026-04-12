@@ -1,7 +1,6 @@
 using System;
-using VRT.Orchestrator.Responses;
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator
 {
     /// <summary>
     /// Orchestrator interface for within-session communication: sending and

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -45,14 +45,14 @@ namespace VRT.Pilots.Common
         protected override void Awake()
 		{
 			base.Awake();
-			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
 
 		}
 		public void OnEnable()
 		{
 			VRTGrabbableManager.RegisterGrabbable(this);
 
-			VRTOrchestrator.Comm.Subscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
+			VRTOrchestratorSingleton.Comm.Subscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void OnDisable()
@@ -60,7 +60,7 @@ namespace VRT.Pilots.Common
 			
 			VRTGrabbableManager.UnregisterGrabbable(this);
 
-			VRTOrchestrator.Comm?.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void Update()
@@ -85,13 +85,13 @@ namespace VRT.Pilots.Common
 				Position = Rigidbody.transform.position,
 				Rotation = Rigidbody.transform.rotation
 			};
-			if (!VRTOrchestrator.Comm.UserIsMaster)
+			if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				VRTOrchestrator.Comm.SendTypeEventToMaster(message);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(message);
 			}
 			else
 			{
-				VRTOrchestrator.Comm.SendTypeEventToAll(message);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(message);
 			}
 		}
 
@@ -136,9 +136,9 @@ namespace VRT.Pilots.Common
 				return;
 			}
 			// If we are master we also forward the message
-			if (VRTOrchestrator.Comm.UserIsMaster)
+			if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				VRTOrchestrator.Comm.SendTypeEventToAll(rigidBodySyncMessage, true);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(rigidBodySyncMessage, true);
 			}
 			Rigidbody.Sleep();
 			Rigidbody.transform.position = rigidBodySyncMessage.Position;

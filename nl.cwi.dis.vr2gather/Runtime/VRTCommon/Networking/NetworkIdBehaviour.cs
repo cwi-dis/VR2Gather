@@ -1,10 +1,9 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 
 
 #if UNITY_EDITOR
-using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 #endif
 
@@ -62,7 +61,7 @@ namespace VRT.Pilots.Common
 #endif
 				NetworkId = System.Guid.NewGuid().ToString();
 				Debug.Log($"NetworkIdBehaviour({name}): invented {NetworkId}");
-				if (VRTOrchestrator.Comm != null && !VRTOrchestrator.Comm.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm != null && !VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
 					Debug.LogWarning($"NetworkIdBehaviour({name}): Invented NetworkID but not session master. Probably a software bug.");
 				}

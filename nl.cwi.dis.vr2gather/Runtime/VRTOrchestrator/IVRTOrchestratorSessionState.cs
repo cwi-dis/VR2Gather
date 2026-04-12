@@ -1,8 +1,6 @@
 using System;
-using VRT.Orchestrator.Elements;
-using VRT.Orchestrator.Responses;
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator
 {
     /// <summary>
     /// Session state that is relevant both during session creation/login and

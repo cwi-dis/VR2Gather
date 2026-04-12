@@ -5,7 +5,7 @@ using UnityEngine;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 using Cwipc;
 using VRT.Core;
 using VRT.Pilots.Common;

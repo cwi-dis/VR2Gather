@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using VRT.Orchestrator.Responses;
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 
-namespace VRT.Orchestrator.Interfaces
+namespace VRT.Orchestrator.Implementation
 {
     // Interface to implement to listen the user messages emitted spontaneously
     // by the orchestrator

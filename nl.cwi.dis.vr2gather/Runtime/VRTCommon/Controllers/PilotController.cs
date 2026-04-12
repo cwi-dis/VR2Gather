@@ -31,7 +31,7 @@ namespace VRT.Pilots.Common
 
         /// <summary>
         /// True once the session leave process has started. Components that use
-        /// VRTOrchestrator.Comm should check this before sending messages.
+        /// VRTOrchestratorSingleton.Comm should check this before sending messages.
         /// </summary>
         [NonSerialized] public bool IsLeavingSession = false;
 

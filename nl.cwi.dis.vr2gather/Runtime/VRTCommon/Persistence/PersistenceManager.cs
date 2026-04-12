@@ -1,10 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.IO;
 using System;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
@@ -35,17 +34,17 @@ namespace VRT.Pilots.Common
         protected override void Awake()
         {
             base.Awake();
-            VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_PersistenceManagerData, typeof(PersistenceManagerData));
+            VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_PersistenceManagerData, typeof(PersistenceManagerData));
         }
 
         public virtual void OnEnable()
         {
-            VRTOrchestrator.Comm.Subscribe<PersistenceManagerData>(OnPersistenceCall);
+            VRTOrchestratorSingleton.Comm.Subscribe<PersistenceManagerData>(OnPersistenceCall);
         }
 
         public virtual void OnDisable()
         {
-            VRTOrchestrator.Comm?.Unsubscribe<PersistenceManagerData>(OnPersistenceCall);
+            VRTOrchestratorSingleton.Comm?.Unsubscribe<PersistenceManagerData>(OnPersistenceCall);
         }
         
         // Start is called before the first frame update
@@ -77,7 +76,7 @@ namespace VRT.Pilots.Common
             {
                 doLoad = true
             };
-            if (VRTOrchestrator.Comm.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 Debug.Log("PersistenceManager: OnLoad: master, therefore loading data");
                 OnPersistenceCall(data);
@@ -85,7 +84,7 @@ namespace VRT.Pilots.Common
             else
             {
                 Debug.Log("PersistenceManager: OnLoad: forwarding to master");
-                VRTOrchestrator.Comm.SendTypeEventToMaster(data);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
             }
         }
 
@@ -98,7 +97,7 @@ namespace VRT.Pilots.Common
             {
                 doSave = true
             };
-            if (VRTOrchestrator.Comm.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 Debug.Log("PersistenceManager: OnSave: master, therefore loading data");
                 OnPersistenceCall(data);
@@ -106,13 +105,13 @@ namespace VRT.Pilots.Common
             else
             {
                 Debug.Log("PersistenceManager: OnSave: forwarding to master");
-                VRTOrchestrator.Comm.SendTypeEventToMaster(data);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
             }
         }
 
         public void OnPersistenceCall(PersistenceManagerData data)
         {
-            if (!VRTOrchestrator.Comm.UserIsMaster)
+            if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 Debug.LogError($"PersistenceManager: OnPersistenceCall but not master");
                 return;
@@ -135,7 +134,7 @@ namespace VRT.Pilots.Common
 
         private void saveAllPersistentData()
         {
-            if (masterOnly && !VRTOrchestrator.Comm.UserIsMaster)
+            if (masterOnly && !VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 Debug.Log($"PersistenceManager: saveAllPersistentData: not saving, not master");
                 return;
@@ -176,7 +175,7 @@ namespace VRT.Pilots.Common
 
         private void loadAllPersistentData()
         {
-            if (masterOnly && !VRTOrchestrator.Comm.UserIsMaster)
+            if (masterOnly && !VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 Debug.Log($"PersistenceManager: loadAllPersistentData: not loading, not master");
                 return;

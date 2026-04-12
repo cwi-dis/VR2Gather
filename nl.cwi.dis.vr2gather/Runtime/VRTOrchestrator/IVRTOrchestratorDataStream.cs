@@ -1,7 +1,6 @@
 using System;
-using VRT.Orchestrator.Responses;
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator
 {
     /// <summary>
     /// Orchestrator interface for binary data streams between participants:

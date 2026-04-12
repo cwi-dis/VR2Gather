@@ -1,6 +1,6 @@
 using System;
 using UnityEngine.UIElements;
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 
 namespace VRT.Login
 {

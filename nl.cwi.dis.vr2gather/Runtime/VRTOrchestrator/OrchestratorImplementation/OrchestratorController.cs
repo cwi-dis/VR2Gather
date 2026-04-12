@@ -1,13 +1,12 @@
 using System;
 using UnityEngine;
-using VRT.Orchestrator.Elements;
-using VRT.Orchestrator.Responses;
+using VRT.Orchestrator;
 
 #if UNITY_EDITOR
 using UnityEditor.Search;
 #endif
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator.Implementation
 {
     /// <summary>
     /// Abstract base class for orchestrator controllers. Holds the singleton Instance
@@ -20,35 +19,35 @@ namespace VRT.Orchestrator.Wrapping
     public abstract class OrchestratorController : MonoBehaviour, IVRTOrchestrator
     {
         /// <summary>
-        /// Obsolete: use VRTOrchestrator.Login, .Comm, or .Streams instead.
+        /// Obsolete: use VRTOrchestratorSingleton.Login, .Comm, or .Streams instead.
         /// </summary>
-        [Obsolete("Use VRTOrchestrator.Login, .Comm, or .Streams instead of the full interface.")]
-        public static IVRTOrchestrator Instance => VRTOrchestrator.Comm as IVRTOrchestrator;
+        [Obsolete("Use VRTOrchestratorSingleton.Login, .Comm, or .Streams instead of the full interface.")]
+        public static IVRTOrchestrator Instance => VRTOrchestratorSingleton.Comm as IVRTOrchestrator;
 
         /// <summary>
-        /// Obsolete: use VRTOrchestrator.GetClockTimestamp instead.
+        /// Obsolete: use VRTOrchestratorSingleton.GetClockTimestamp instead.
         /// </summary>
-        [Obsolete("Use VRTOrchestrator.GetClockTimestamp instead.")]
+        [Obsolete("Use VRTOrchestratorSingleton.GetClockTimestamp instead.")]
         public static double GetClockTimestamp(System.DateTime pDate)
         {
-            return VRTOrchestrator.GetClockTimestamp(pDate);
+            return VRTOrchestratorSingleton.GetClockTimestamp(pDate);
         }
 
         protected virtual void Awake()
         {
-            if (VRTOrchestrator.Comm == null)
+            if (VRTOrchestratorSingleton.Comm == null)
             {
                 DontDestroyOnLoad(gameObject);
-                VRTOrchestrator.Register(this);
+                VRTOrchestratorSingleton.Register(this);
             }
-            else if (!object.ReferenceEquals(VRTOrchestrator.Comm, this))
+            else if (!object.ReferenceEquals(VRTOrchestratorSingleton.Comm, this))
             {
 #if UNITY_EDITOR
                 string newName = SearchUtils.GetHierarchyPath(gameObject, false);
-                string oldName = SearchUtils.GetHierarchyPath((VRTOrchestrator.Comm as MonoBehaviour)?.gameObject, false);
+                string oldName = SearchUtils.GetHierarchyPath((VRTOrchestratorSingleton.Comm as MonoBehaviour)?.gameObject, false);
 #else
                 string newName = gameObject.name;
-                string oldName = (VRTOrchestrator.Comm as MonoBehaviour)?.gameObject.name ?? "unknown";
+                string oldName = (VRTOrchestratorSingleton.Comm as MonoBehaviour)?.gameObject.name ?? "unknown";
 #endif
                 Debug.LogError($"OrchestratorController: attempt to create second instance from {newName}. Keep first one, from {oldName}.");
             }
@@ -56,7 +55,7 @@ namespace VRT.Orchestrator.Wrapping
 
         protected virtual void OnDestroy()
         {
-            VRTOrchestrator.Unregister(this);
+            VRTOrchestratorSingleton.Unregister(this);
         }
 
         // ── IVRTOrchestratorSessionState ────────────────────────────────────────

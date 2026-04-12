@@ -1,10 +1,7 @@
 using UnityEngine;
-using System.Collections.Generic;
-using VRT.Core;
-using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
-using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -26,7 +23,7 @@ namespace VRT.UserRepresentation.PointCloud
         public void Awake()
         {
             if (debug) Debug.Log($"TilingConfigDistributor: Awake");
-            VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
+            VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
         }
 
         void Start()
@@ -37,12 +34,12 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void OnEnable()
         {
-            VRTOrchestrator.Comm.Subscribe<TilingConfigMessage>(OnTilingConfig);
+            VRTOrchestratorSingleton.Comm.Subscribe<TilingConfigMessage>(OnTilingConfig);
         }
 
         public void OnDisable()
         {
-            VRTOrchestrator.Comm?.Unsubscribe<TilingConfigMessage>(OnTilingConfig);
+            VRTOrchestratorSingleton.Comm?.Unsubscribe<TilingConfigMessage>(OnTilingConfig);
         }
 
         void Update()
@@ -73,16 +70,16 @@ namespace VRT.UserRepresentation.PointCloud
             if (debug) Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
             var data = new TilingConfigMessage { data = tilingConfig };
 
-            if (VRTOrchestrator.Comm.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 //I'm the master, so I can directly send to all other users
-                VRTOrchestrator.Comm.SendTypeEventToAll(data);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
             }
             else
             {
                 //I'm not the master, so unfortunately the API forces me to send via the master
                 //The master can then forward it to all. 
-                VRTOrchestrator.Comm.SendTypeEventToMaster(data);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
             }
 
         }
@@ -95,13 +92,13 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogWarning($"TilingConfigDistributor: received tiling information before Start()ed");
             }
 
-            if (VRTOrchestrator.Comm.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 Debug.Log($"TilingConfigDistributor: xxxjack forwarding because we are master");
                 //I'm the master, so besides handling the data, I should also make sure to forward it. 
                 //This is because the API, to ensure authoritative decisions, doesn't allow users to directly address others. 
                 //Same kind of call as usual, but with the extra "true" argument, which ensures we forward without overwriting the SenderId
-                VRTOrchestrator.Comm.SendTypeEventToAll(receivedData, true);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToAll(receivedData, true);
             }
             // We need to check whether we're getting our own data back (due to forwarding by master). Drop if so.
             if (receivedData.SenderId == selfUserId)

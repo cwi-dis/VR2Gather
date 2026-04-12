@@ -1,4 +1,4 @@
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator
 {
     /// <summary>
     /// Combined orchestrator interface. Extends IVRTOrchestratorLogin,

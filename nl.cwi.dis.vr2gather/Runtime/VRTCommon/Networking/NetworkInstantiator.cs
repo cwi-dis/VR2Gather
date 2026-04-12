@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
@@ -31,19 +30,19 @@ namespace VRT.Pilots.Common
 		protected override void Awake()
 		{
 			base.Awake();
-			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_NetworkInstantiatorData, typeof(NetworkInstantiatorData));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_NetworkInstantiatorData, typeof(NetworkInstantiatorData));
 			if (location == null) location = transform;
 
 		}
 		public void OnEnable()
 		{
-			VRTOrchestrator.Comm.Subscribe<NetworkInstantiatorData>(OnNetworkTrigger);
+			VRTOrchestratorSingleton.Comm.Subscribe<NetworkInstantiatorData>(OnNetworkTrigger);
 		}
 
 
 		public void OnDisable()
 		{
-			VRTOrchestrator.Comm?.Unsubscribe<NetworkInstantiatorData>(OnNetworkTrigger);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<NetworkInstantiatorData>(OnNetworkTrigger);
 		}
 
 		/// <summary>
@@ -57,14 +56,14 @@ namespace VRT.Pilots.Common
 				NetworkBehaviourId = NetworkId,
 				InstantiatedObjectId = ""
 			};
-			if (!VRTOrchestrator.Comm.UserIsMaster)
+			if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
 				// We are not the master, so we ask the master to do the actual instantiation
 
 #if VRT_WITH_STATS
 				Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=1, frommaster=0, instantiatorId={NetworkId}");
 #endif
-				VRTOrchestrator.Comm.SendTypeEventToMaster(instantiatorRequest);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(instantiatorRequest);
 				return;
 			}
 #if VRT_WITH_STATS
@@ -72,7 +71,7 @@ namespace VRT.Pilots.Common
 #endif
             var newId = InstantiateNetworkObject(null);
 			instantiatorRequest.InstantiatedObjectId = newId;
-			VRTOrchestrator.Comm.SendTypeEventToAll(instantiatorRequest);
+			VRTOrchestratorSingleton.Comm.SendTypeEventToAll(instantiatorRequest);
 
 #if VRT_WITH_STATS
             Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=1, frommaster=1, instantiatorId={NetworkId}, newId={newId}");
@@ -82,8 +81,8 @@ namespace VRT.Pilots.Common
 		void OnNetworkTrigger(NetworkInstantiatorData data)
 		{
 			if (!NeedsAction(data.NetworkBehaviourId)) return;
-			if (data.SenderId == VRTOrchestrator.Comm.SelfUser.userId) return;
-			if (VRTOrchestrator.Comm.UserIsMaster)
+			if (data.SenderId == VRTOrchestratorSingleton.Comm.SelfUser.userId) return;
+			if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
 				if (data.InstantiatedObjectId != "")
                 {
@@ -95,7 +94,7 @@ namespace VRT.Pilots.Common
 					NetworkBehaviourId = NetworkId,
 					InstantiatedObjectId = newId
 				};
-				VRTOrchestrator.Comm.SendTypeEventToAll(instantiatorRequest);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(instantiatorRequest);
 
 #if VRT_WITH_STATS
 				Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=0, frommaster=1, instantiatorId={NetworkId}, newId={newId}");

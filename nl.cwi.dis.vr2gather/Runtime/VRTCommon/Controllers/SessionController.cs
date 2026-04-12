@@ -1,12 +1,6 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using VRT.Orchestrator.Wrapping;
-using VRT.Orchestrator.Responses;
-using VRT.Pilots.Common;
+﻿using UnityEngine;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
-using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
@@ -37,13 +31,13 @@ namespace VRT.Pilots.Common
                 Debug.LogError($"{Name()}: Orchestrator already initialized");
                 return;
             }
-            VRTOrchestrator.Comm.OnLeaveSessionEvent += OnLeaveSessionHandler;
-            VRTOrchestrator.Comm.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
-            VRTOrchestrator.Comm.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
-            VRTOrchestrator.Comm.OnErrorEvent += OnErrorHandler;
-            VRTOrchestrator.Comm.OnConnectionEvent += OnConnectionEventHandler;
+            VRTOrchestratorSingleton.Comm.OnLeaveSessionEvent += OnLeaveSessionHandler;
+            VRTOrchestratorSingleton.Comm.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
+            VRTOrchestratorSingleton.Comm.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
+            VRTOrchestratorSingleton.Comm.OnErrorEvent += OnErrorHandler;
+            VRTOrchestratorSingleton.Comm.OnConnectionEvent += OnConnectionEventHandler;
 
-            VRTOrchestrator.Comm.RegisterMessageForwarder();
+            VRTOrchestratorSingleton.Comm.RegisterMessageForwarder();
             orchestratorInitialized = true;
         }
 
@@ -55,27 +49,27 @@ namespace VRT.Pilots.Common
                 return;
             }
             orchestratorInitialized = false;
-            VRTOrchestrator.Comm.OnLeaveSessionEvent -= OnLeaveSessionHandler;
-            VRTOrchestrator.Comm.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
-            VRTOrchestrator.Comm.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
-            VRTOrchestrator.Comm.OnErrorEvent -= OnErrorHandler;
-            VRTOrchestrator.Comm.OnConnectionEvent -= OnConnectionEventHandler;
-            VRTOrchestrator.Comm.UnregisterMessageForwarder();
+            VRTOrchestratorSingleton.Comm.OnLeaveSessionEvent -= OnLeaveSessionHandler;
+            VRTOrchestratorSingleton.Comm.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
+            VRTOrchestratorSingleton.Comm.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
+            VRTOrchestratorSingleton.Comm.OnErrorEvent -= OnErrorHandler;
+            VRTOrchestratorSingleton.Comm.OnConnectionEvent -= OnConnectionEventHandler;
+            VRTOrchestratorSingleton.Comm.UnregisterMessageForwarder();
         }
 
         public void LeaveSession()
         {
-            VRTOrchestrator.Comm.LeaveSession();
+            VRTOrchestratorSingleton.Comm.LeaveSession();
         }
 
         private void OnLeaveSessionHandler()
         {
 #if xxxjack_not
             // Code disabled: the session controller should handle deleting the session for the master user.
-            if (VRTOrchestrator.Comm.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 Debug.Log($"{Name()}: left session as master, deleting.");
-                VRTOrchestrator.Comm.DeleteSession(VRTOrchestrator.Comm.MySession.sessionId);
+                VRTOrchestratorSingleton.Comm.DeleteSession(VRTOrchestratorSingleton.Comm.MySession.sessionId);
             }
 #endif
             ClearOrchestratorEvents();

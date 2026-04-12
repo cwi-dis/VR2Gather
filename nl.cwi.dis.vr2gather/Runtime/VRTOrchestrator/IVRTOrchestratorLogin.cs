@@ -1,8 +1,7 @@
 using System;
-using VRT.Orchestrator.Elements;
-using VRT.Orchestrator.Responses;
+using VRT.Orchestrator;
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator
 {
     /// <summary>
     /// Orchestrator interface for session creation, joining, and introspection.

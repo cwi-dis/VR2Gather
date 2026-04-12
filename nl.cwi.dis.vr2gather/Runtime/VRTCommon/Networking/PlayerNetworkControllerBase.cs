@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.SpatialTracking;
-using VRT.Orchestrator.Wrapping;
 using VRT.Core;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
@@ -70,17 +69,17 @@ namespace VRT.Pilots.Common
 
 		protected virtual void Awake()
 		{
-			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
 		}
 
 		protected virtual void OnEnable()
 		{
-			VRTOrchestrator.Comm.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);
+			VRTOrchestratorSingleton.Comm.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 
 		protected virtual void OnDisable()
 		{
-			VRTOrchestrator.Comm?.Unsubscribe<NetworkPlayerData>(OnNetworkPlayerData);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 
 		public abstract void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId);
@@ -89,10 +88,10 @@ namespace VRT.Pilots.Common
 		{
 			if (!IsLocalPlayer && UserId == data.SenderId)
 			{
-				if (VRTOrchestrator.Comm.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
 					//We're the master, so inform the others
-					VRTOrchestrator.Comm.SendTypeEventToAll(data, true);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data, true);
 				}
 				if (data.representation != playerController.userRepresentation)
 				{

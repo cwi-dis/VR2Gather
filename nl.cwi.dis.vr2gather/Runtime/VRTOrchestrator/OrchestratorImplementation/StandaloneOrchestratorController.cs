@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
-using VRT.Orchestrator.Elements;
-using VRT.Orchestrator.Responses;
+using VRT.Orchestrator;
 
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator.Implementation
 {
     /// <summary>
     /// Standalone orchestrator controller. Does not connect to any server.

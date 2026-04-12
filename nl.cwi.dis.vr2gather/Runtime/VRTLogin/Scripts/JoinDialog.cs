@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using VRT.Core;
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 
 namespace VRT.Login
 {

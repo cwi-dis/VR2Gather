@@ -3,9 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
-using VRT.Orchestrator.Responses;
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 using VRT.Pilots.Common;
 
 namespace VRT.Login
@@ -170,8 +168,8 @@ namespace VRT.Login
             _lobbyDialog.OnStartClicked += OnStartSessionRequested;
             _lobbyDialog.OnLeaveClicked += OnLeaveSessionRequested;
 
-            _lobbyDialog.SetIsMaster(VRTOrchestrator.Login.UserIsMaster);
-            _lobbyDialog.SetSession(VRTOrchestrator.Login.CurrentSession);
+            _lobbyDialog.SetIsMaster(VRTOrchestratorSingleton.Login.UserIsMaster);
+            _lobbyDialog.SetSession(VRTOrchestratorSingleton.Login.CurrentSession);
 
             _state = State.Lobby;
             AutoStart_OnLobby();
@@ -204,7 +202,7 @@ namespace VRT.Login
             go.SetActive(true);
 
             RegisterOrchestratorEvents();
-            VRTOrchestrator.Login.SocketConnect(VRTConfig.Instance.orchestratorURL);
+            VRTOrchestratorSingleton.Login.SocketConnect(VRTConfig.Instance.orchestratorURL);
         }
 
         private void StartStandaloneController()
@@ -221,19 +219,19 @@ namespace VRT.Login
             RegisterOrchestratorEvents();
             // SocketConnect on the standalone controller fires the connection → login →
             // version → ntp chain synchronously, ending with SetReady(true) on the dialog.
-            VRTOrchestrator.Login.SocketConnect("");
+            VRTOrchestratorSingleton.Login.SocketConnect("");
         }
 
         private void CleanupOrchestrator()
         {
-            if (VRTOrchestrator.Login == null) return;
+            if (VRTOrchestratorSingleton.Login == null) return;
             UnregisterOrchestratorEvents();
-            VRTOrchestrator.Login.Shutdown();
+            VRTOrchestratorSingleton.Login.Shutdown();
         }
 
         private void RegisterOrchestratorEvents()
         {
-            var oc = VRTOrchestrator.Login;
+            var oc = VRTOrchestratorSingleton.Login;
             oc.OnConnectionEvent += OnConnectionEvent;
             oc.OnConnectingEvent += OnConnectingEvent;
             oc.OnLoginEvent += OnLoginEvent;
@@ -252,7 +250,7 @@ namespace VRT.Login
 
         private void UnregisterOrchestratorEvents()
         {
-            var oc = VRTOrchestrator.Login;
+            var oc = VRTOrchestratorSingleton.Login;
             if (oc == null) return;
             oc.OnConnectionEvent -= OnConnectionEvent;
             oc.OnConnectingEvent -= OnConnectingEvent;
@@ -287,7 +285,7 @@ namespace VRT.Login
 
             SetActiveDialogStatus("Logging in...");
             string userName = VRTConfig.Instance.RepresentationConfig.userName;
-            VRTOrchestrator.Login.Login(userName);
+            VRTOrchestratorSingleton.Login.Login(userName);
         }
 
         private void OnLoginEvent(bool success)
@@ -300,27 +298,27 @@ namespace VRT.Login
 
             // Upload user data so other participants know our representation
             var config = VRTConfig.Instance.RepresentationConfig;
-            VRTOrchestrator.Login.SelfUser.userData = new UserData
+            VRTOrchestratorSingleton.Login.SelfUser.userData = new UserData
             {
                 userRepresentation = config.representation,
                 userRepresentationTCPUrl = config.userRepresentationTCPUrl,
                 hasVoice = !string.IsNullOrEmpty(config.microphoneName) && config.microphoneName != "None",
             };
-            VRTOrchestrator.Login.UpdateFullUserData(
-                VRTOrchestrator.Login.SelfUser.userData);
+            VRTOrchestratorSingleton.Login.UpdateFullUserData(
+                VRTOrchestratorSingleton.Login.SelfUser.userData);
 
             SetActiveDialogStatus("Synchronising clocks...");
-            VRTOrchestrator.Login.GetVersion();
+            VRTOrchestratorSingleton.Login.GetVersion();
         }
 
         private void OnGetVersionEvent(string version)
         {
-            VRTOrchestrator.Login.GetNTPTime();
+            VRTOrchestratorSingleton.Login.GetNTPTime();
         }
 
         private void OnGetNTPTimeEvent(NtpClock ntpTime)
         {
-            double diff = VRTOrchestrator.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+            double diff = VRTOrchestratorSingleton.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
             if (Math.Abs(diff) >= VRTConfig.Instance.ntpSyncThreshold)
             {
                 Debug.LogWarning($"OrchestratorLogin: clock desync {diff:F2}s (threshold {VRTConfig.Instance.ntpSyncThreshold:F2}s)");
@@ -426,7 +424,7 @@ namespace VRT.Login
 
             var scenario = data.scenarioInfo.AsScenario();
             SetActiveDialogStatus("Creating session...");
-            VRTOrchestrator.Login.AddSession(
+            VRTOrchestratorSingleton.Login.AddSession(
                 data.scenarioInfo.scenarioId,
                 scenario,
                 data.sessionName,
@@ -437,7 +435,7 @@ namespace VRT.Login
         private void OnJoinSessionRequested(string sessionId)
         {
             SetActiveDialogStatus("Joining session...");
-            VRTOrchestrator.Login.JoinSession(sessionId);
+            VRTOrchestratorSingleton.Login.JoinSession(sessionId);
         }
 
         private void OnCreateStandaloneRequested(CreateSessionData data)
@@ -448,7 +446,7 @@ namespace VRT.Login
             var scenario = data.scenarioInfo.AsScenario();
             SetActiveDialogStatus("Creating standalone session...");
             // Create the session, then on OnAddSessionEvent we'll start it immediately.
-            VRTOrchestrator.Login.AddSession(
+            VRTOrchestratorSingleton.Login.AddSession(
                 data.scenarioInfo.scenarioId,
                 scenario,
                 data.sessionName,
@@ -459,22 +457,22 @@ namespace VRT.Login
         private void OnStartSessionRequested()
         {
             var cfg = SessionConfig.Instance;
-            cfg.scenarioName = VRTOrchestrator.Login.CurrentScenario?.scenarioName ?? "";
+            cfg.scenarioName = VRTOrchestratorSingleton.Login.CurrentScenario?.scenarioName ?? "";
             cfg.scenarioVariant = null;
             string message = JsonUtility.ToJson(cfg);
-            VRTOrchestrator.Login.SendMessageToAll("START_" + message);
+            VRTOrchestratorSingleton.Login.SendMessageToAll("START_" + message);
         }
 
         private void OnLeaveSessionRequested()
         {
-            VRTOrchestrator.Login.LeaveSession();
+            VRTOrchestratorSingleton.Login.LeaveSession();
             // ShowHome() will be called via OnLeaveSessionEvent
         }
 
         private void RefreshSessions()
         {
-            if (VRTOrchestrator.Login != null)
-                VRTOrchestrator.Login.GetSessions();
+            if (VRTOrchestratorSingleton.Login != null)
+                VRTOrchestratorSingleton.Login.GetSessions();
         }
 
         // ── AutoStart ───────────────────────────────────────────────────────────
@@ -613,7 +611,7 @@ namespace VRT.Login
         private void AutoStart_OnLobbyUpdated(Session session)
         {
             if (_autoStartWithUsers <= 0) return;
-            if (VRTOrchestrator.Login == null || !VRTOrchestrator.Login.UserIsMaster) return;
+            if (VRTOrchestratorSingleton.Login == null || !VRTOrchestratorSingleton.Login.UserIsMaster) return;
 
             var users = session.GetUsers();
             if (users != null && users.Length >= _autoStartWithUsers)

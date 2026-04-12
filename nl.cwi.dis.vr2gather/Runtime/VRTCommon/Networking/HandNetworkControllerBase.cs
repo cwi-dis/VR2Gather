@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
@@ -55,7 +55,7 @@ namespace VRT.Pilots.Common
 
 		protected virtual void Awake()
 		{
-			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
 		}
 
 		protected virtual void Start()
@@ -65,12 +65,12 @@ namespace VRT.Pilots.Common
 
 		protected virtual void OnEnable()
 		{
-			VRTOrchestrator.Comm.Subscribe<HandControllerData>(OnHandControllerData);
+			VRTOrchestratorSingleton.Comm.Subscribe<HandControllerData>(OnHandControllerData);
 		}
 
 		protected virtual void OnDisable()
 		{
-			VRTOrchestrator.Comm?.Unsubscribe<HandControllerData>(OnHandControllerData);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 
 		protected void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
@@ -83,9 +83,9 @@ namespace VRT.Pilots.Common
 			}
 			//If we're not master, inform the master
 			//And then execute the event locally already instead of waiting for it to return
-			if (!VRTOrchestrator.Comm.UserIsMaster)
+			if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				VRTOrchestrator.Comm.SendTypeEventToMaster(handGrabEvent);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(handGrabEvent);
 			}
 			else
 			{
@@ -126,9 +126,9 @@ namespace VRT.Pilots.Common
 			//
 			if (!_Player.IsLocalPlayer && _Player.UserId == data.SenderId)
 			{
-				if (VRTOrchestrator.Comm.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					VRTOrchestrator.Comm.SendTypeEventToAll(data, true);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data, true);
 				}
 
 				if (data.handHandedness == handHandedness)

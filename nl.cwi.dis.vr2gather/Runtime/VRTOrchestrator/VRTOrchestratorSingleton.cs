@@ -1,6 +1,6 @@
 using System;
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator
 {
     /// <summary>
     /// Static service locator for the orchestrator singleton.
@@ -13,7 +13,7 @@ namespace VRT.Orchestrator.Wrapping
     /// The full IVRTOrchestrator interface is available via Instance but is marked
     /// obsolete — prefer the narrower sub-interfaces.
     /// </summary>
-    public static class VRTOrchestrator
+    public static class VRTOrchestratorSingleton
     {
         private static IVRTOrchestrator _instance;
 
@@ -46,7 +46,7 @@ namespace VRT.Orchestrator.Wrapping
         /// <summary>
         /// Full orchestrator interface. Prefer Login, Comm, or Streams instead.
         /// </summary>
-        [Obsolete("Use VRTOrchestrator.Login, .Comm, or .Streams instead of the full interface.")]
+        [Obsolete("Use VRTOrchestratorSingleton.Login, .Comm, or .Streams instead of the full interface.")]
         public static IVRTOrchestrator Instance => _instance;
 
         /// <summary>Convert a DateTime to a Unix timestamp (seconds since epoch).</summary>

@@ -1,9 +1,9 @@
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 
 // Wire-protocol types used internally by OrchestratorWrapper to deserialize
 // orchestrator responses. These are implementation details and not part of
 // the IVRTOrchestrator contract.
-namespace VRT.Orchestrator.Responses
+namespace VRT.Orchestrator.Implementation
 {
     public interface IOrchestratorResponseBody { }
 

@@ -5,8 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 using Cwipc;
 using System.Runtime.InteropServices;
 using AOT;
@@ -247,7 +246,7 @@ namespace VRT.Transport.WebRTC
         }
 
         protected int GetClientIdFromUserId(string userId) {
-            User user = VRTOrchestrator.Comm.CurrentSession.GetUser(userId);
+            User user = VRTOrchestratorSingleton.Comm.CurrentSession.GetUser(userId);
             return user.webRTCClientId;
         }
 

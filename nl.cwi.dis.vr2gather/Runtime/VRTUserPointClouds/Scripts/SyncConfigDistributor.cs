@@ -1,9 +1,7 @@
 using UnityEngine;
-using System.Collections.Generic;
-using VRT.Core;
 using Cwipc;
-using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 
 namespace VRT.UserRepresentation.PointCloud
@@ -22,7 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void Awake()
         {
-            VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_SyncConfigMessage, typeof(SyncConfigMessage));
+            VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_SyncConfigMessage, typeof(SyncConfigMessage));
         }
 
         void Start()
@@ -32,12 +30,12 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void OnEnable()
         {
-            VRTOrchestrator.Comm.Subscribe<SyncConfigMessage>(OnSyncConfig);
+            VRTOrchestratorSingleton.Comm.Subscribe<SyncConfigMessage>(OnSyncConfig);
         }
 
         public void OnDisable()
         {
-            VRTOrchestrator.Comm?.Unsubscribe<SyncConfigMessage>(OnSyncConfig);
+            VRTOrchestratorSingleton.Comm?.Unsubscribe<SyncConfigMessage>(OnSyncConfig);
         }
 
         void Update()
@@ -63,16 +61,16 @@ namespace VRT.UserRepresentation.PointCloud
             if (debug) Debug.Log($"SyncConfigDistributor: sending sync information for user {selfUserId}");
             var data = new SyncConfigMessage { data = syncConfig };
 
-            if (VRTOrchestrator.Comm.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 //I'm the master, so I can directly send to all other users
-                VRTOrchestrator.Comm.SendTypeEventToAll(data);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
             }
             else
             {
                 //I'm not the master, so unfortunately the API forces me to send via the master
                 //The master can then forward it to all. 
-                VRTOrchestrator.Comm.SendTypeEventToMaster(data);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
             }
 
         }
@@ -80,12 +78,12 @@ namespace VRT.UserRepresentation.PointCloud
         private void OnSyncConfig(SyncConfigMessage receivedData)
         {
 
-            if (VRTOrchestrator.Comm.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 //I'm the master, so besides handling the data, I should also make sure to forward it. 
                 //This is because the API, to ensure authoritative decisions, doesn't allow users to directly address others. 
                 //Same kind of call as usual, but with the extra "true" argument, which ensures we forward without overwriting the SenderId
-                VRTOrchestrator.Comm.SendTypeEventToAll(receivedData, true);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToAll(receivedData, true);
             }
             // We need to check whether we're getting our own data back (due to forwarding by master). Drop if so.
             if (receivedData.SenderId == selfUserId) return;

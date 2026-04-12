@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
@@ -69,13 +67,13 @@ namespace VRT.Pilots.Common
 				BodySize = BodySize
 			};
 
-			if (VRTOrchestrator.Comm.UserIsMaster)
+			if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				VRTOrchestrator.Comm.SendTypeEventToAll(data);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
 			}
 			else
 			{
-				VRTOrchestrator.Comm.SendTypeEventToMaster(data);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
 			}
 			// Print a warning if it was preposterously long ago that we last sent this message
 			if (_LastSendTime > 0 && Time.realtimeSinceStartup > _LastSendTime + 10.0)

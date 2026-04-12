@@ -1,5 +1,5 @@
 using UnityEngine;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
@@ -37,7 +37,7 @@ namespace VRT.Pilots.Common
 		protected override void Awake()
 		{
 			base.Awake();
-			VRTOrchestrator.Comm.RegisterEventType(MessageTypeID.TID_RigidBodyData, typeof(RigidBodyData));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_RigidBodyData, typeof(RigidBodyData));
 		}
 
 		void Start()
@@ -49,12 +49,12 @@ namespace VRT.Pilots.Common
 
 		public void OnEnable()
 		{
-			VRTOrchestrator.Comm.Subscribe<RigidBodyData>(OnRigidBodyData);
+			VRTOrchestratorSingleton.Comm.Subscribe<RigidBodyData>(OnRigidBodyData);
 		}
 
 		public void OnDisable()
 		{
-			VRTOrchestrator.Comm?.Unsubscribe<RigidBodyData>(OnRigidBodyData);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<RigidBodyData>(OnRigidBodyData);
 		}
 
 		private void Update()
@@ -79,11 +79,11 @@ namespace VRT.Pilots.Common
 
 		public void DoSync()
 		{
-			if (VRTOrchestrator.Comm.UserIsMaster && Mode == RigidBodySyncMode.ServerOnly)
+			if (VRTOrchestratorSingleton.Comm.UserIsMaster && Mode == RigidBodySyncMode.ServerOnly)
 			{
 				_LastUpdateTime = Time.realtimeSinceStartup;
 
-				VRTOrchestrator.Comm.SendTypeEventToAll
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll
 					(
 						new RigidBodyData
 						{
@@ -104,13 +104,13 @@ namespace VRT.Pilots.Common
 					Rotation = transform.rotation
 				};
 
-				if (VRTOrchestrator.Comm.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					VRTOrchestrator.Comm.SendTypeEventToAll(data);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
 				}
 				else
 				{
-					VRTOrchestrator.Comm.SendTypeEventToMaster(data);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
 				}
 			}
 			else
@@ -121,16 +121,16 @@ namespace VRT.Pilots.Common
 
 		void OnRigidBodyData(RigidBodyData data)
 		{
-			if (data.NetworkBehaviourId == NetworkId && data.SenderId != VRTOrchestrator.Comm.SelfUser.userId)
+			if (data.NetworkBehaviourId == NetworkId && data.SenderId != VRTOrchestratorSingleton.Comm.SelfUser.userId)
 			{
 				if (SyncAutomatically && Mode == RigidBodySyncMode.Any)
 				{
 					Debug.LogWarning($"[NetworkTransformSyncBehaviour] {name} is set to sync automatically, but also receives sync data from another client! This is indicative of a bug!");
 				}
 
-				if (VRTOrchestrator.Comm.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					VRTOrchestrator.Comm.SendTypeEventToAll(data, true);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data, true);
 				}
 
 				_LastReceiveTime = Time.realtimeSinceStartup;

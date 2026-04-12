@@ -5,9 +5,7 @@ using System.Text;
 using UnityEngine;
 using VRT.Core;
 
-using VRT.Orchestrator.Responses;
-using VRT.Orchestrator.Interfaces;
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 
 #if UNITY_EDITOR
 using UnityEditor.Search;
@@ -17,7 +15,7 @@ using UnityEditor.Search;
 using Statistics = Cwipc.Statistics;
 #endif
 
-namespace VRT.Orchestrator.Wrapping
+namespace VRT.Orchestrator.Implementation
 {
     public class NetworkOrchestratorController : OrchestratorController, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {
