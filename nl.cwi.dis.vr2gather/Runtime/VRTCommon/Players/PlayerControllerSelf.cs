@@ -25,7 +25,31 @@ namespace VRT.Pilots.Common
         public override void SetUpSelfPlayerController()
         {
             isLocalPlayer = true;
-            _SetupCommon(VRTOrchestratorSingleton.Comm.SelfUser);
+            User selfUser;
+            if (VRTOrchestratorSingleton.Comm != null)
+            {
+                selfUser = VRTOrchestratorSingleton.Comm.SelfUser;
+            }
+            else
+            {
+                // xxxjack ugly workaround for user not being initialized yet because the
+                // orchestrator doesn't exist yet.
+                var config = VRTConfig.Instance.RepresentationConfig;
+                selfUser = new User
+                {
+                    userId = "standalone-userid",
+                    userName = name,
+                    userData = new UserData
+                    {
+                        userRepresentation = config.representation,
+                        hasVoice = !string.IsNullOrEmpty(config.microphoneName) && config.microphoneName != "None",
+                        userRepresentationTCPUrl = config.userRepresentationTCPUrl,
+                    }
+                };
+
+            }
+
+            _SetupCommon(selfUser);
             setupCamera();
             LoadCameraTransform();
         }
