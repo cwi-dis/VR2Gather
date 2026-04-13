@@ -58,6 +58,13 @@ namespace VRT.Login
 
         public void SetSessions(Session[] sessions)
         {
+            // Keep old selected session (if any) so we can re-select it.
+            var oldSelectedIndex = _selectedIndex;
+            string oldSelectedSessionId = null;
+            if (_sessions != null && oldSelectedIndex >= 0 && oldSelectedIndex < sessions.Length)
+            {
+                oldSelectedSessionId = _sessions[oldSelectedIndex].sessionId;
+            }
             _sessions = sessions ?? Array.Empty<Session>();
             _selectedIndex = -1;
             _sessionDescriptionLabel.text = "";
@@ -78,7 +85,13 @@ namespace VRT.Login
                 btn.style.marginRight = 0;
                 _sessionListScrollView.Add(btn);
             }
-
+            // See if we can re-select the session.
+            if (oldSelectedSessionId != null && oldSelectedIndex >= 0 && oldSelectedIndex < _sessions.Length &&
+                _sessions[oldSelectedIndex].sessionId == oldSelectedSessionId)
+            {
+                // The session hasn't changed. Re-select it.
+                SelectSession(oldSelectedIndex);
+            }
             _joinButton.SetEnabled(false);
         }
 

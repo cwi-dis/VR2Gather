@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
@@ -342,7 +343,7 @@ namespace VRT.Login
                     break;
                 case State.Join:
                     _joinDialog?.SetReady(true);
-                    RefreshSessions();
+                    StartCoroutine(RefreshSessionsWhileNeeded());
                     break;
                 case State.CreateStandalone:
                     _createStandaloneDialog?.SetReady(true);
@@ -481,7 +482,18 @@ namespace VRT.Login
         private void RefreshSessions()
         {
             if (VRTOrchestratorSingleton.Login != null)
+            {
                 VRTOrchestratorSingleton.Login.GetSessions();
+            }
+        }
+
+        private IEnumerator RefreshSessionsWhileNeeded()
+        {
+            while (VRTOrchestratorSingleton.Login != null && _state == State.Join)
+            {
+                VRTOrchestratorSingleton.Login.GetSessions();
+                yield return new WaitForSeconds(5);
+            }
         }
 
         // ── AutoStart ───────────────────────────────────────────────────────────

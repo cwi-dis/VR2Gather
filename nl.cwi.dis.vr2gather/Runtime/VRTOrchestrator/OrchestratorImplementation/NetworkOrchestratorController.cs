@@ -285,18 +285,7 @@ namespace VRT.Orchestrator.Implementation
             orchestratorWrapper.UpdateUserDataJson(SelfUser.userData);
         }
 
-        public void OnUpdateUserDataJsonResponse(ResponseStatus status, string data)
-        {
-            Trace("recv", nameof(OnUpdateUserDataJsonResponse));
-            bool ok = true;
-            if (status.Error != 0)
-            {
-                Debug.LogError($"NetworkOrchestratorController: UpdateUserDataJson error: {status}");
-                ok = false;
-            }
-
-            OnLoginEvent?.Invoke(ok);
-        }
+       
         #endregion
 
         #region NTP clock
@@ -579,12 +568,14 @@ namespace VRT.Orchestrator.Implementation
 
         
         public void OnUpdateUserDataJsonResponse(ResponseStatus status) {
+            Trace("recv", nameof(OnUpdateUserDataJsonResponse));
             if (status.Error != 0) {
                 OnErrorEvent?.Invoke(status);
                 return;
             }
 
-            if (enableLogging) Debug.Log("NetworkOrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
+            if (enableLogging) Debug.Log("NetworkOrchestratorController: OnUpdateUserDataJsonResponse: User data fully updated.");
+            OnLoginEvent?.Invoke(true);
         }
 
         #endregion
