@@ -201,10 +201,7 @@ namespace VRT.Login
                 Debug.Log("OrchestratorLogin: self representation not assigned yet");
                 return;
             }
-
-            var user = VRTOrchestratorSingleton.Login.SelfUser;
             player.SetUpSelfPlayerController();
-            player.SetRepresentation(user.userData.userRepresentation);
         }
         
         // ── Orchestrator lifecycle ──────────────────────────────────────────────
