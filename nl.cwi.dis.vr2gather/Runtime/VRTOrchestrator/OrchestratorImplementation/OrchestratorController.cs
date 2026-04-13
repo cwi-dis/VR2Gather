@@ -85,7 +85,7 @@ namespace VRT.Orchestrator.Implementation
         public abstract Scenario CurrentScenario { get; }
         public abstract bool UserIsLogged { get; }
         public abstract Session[] AvailableSessions { get; }
-        public abstract void SocketConnect(string url);
+        public abstract void Connect(string url);
         public abstract void Abort();
         public abstract void GetVersion();
         public abstract void Shutdown();

@@ -80,14 +80,17 @@ namespace VRT.Orchestrator.Implementation
         /// "Connect" to the standalone session. Fires OnConnectionEvent(true) immediately,
         /// which drives the OrchestratorLogin state machine into the login step.
         /// </summary>
-        public override void SocketConnect(string url)
+        public override void Connect(string url)
         {
-            Trace("send", nameof(SocketConnect));
+            Trace("send", nameof(Connect));
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url=standalone");
 #endif
             Trace("recv", nameof(OnConnectionEvent));
             OnConnectionEvent?.Invoke(true);
+            // We can now login automatically.
+            InitializeSelfUser();
+            Login(SelfUser.userName);
         }
 
         public override void InitializeSelfUser()

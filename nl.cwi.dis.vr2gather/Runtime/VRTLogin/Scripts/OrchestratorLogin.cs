@@ -222,7 +222,7 @@ namespace VRT.Login
             go.SetActive(true);
 
             RegisterOrchestratorEvents();
-            VRTOrchestratorSingleton.Login.SocketConnect(VRTConfig.Instance.orchestratorURL);
+            VRTOrchestratorSingleton.Login.Connect(VRTConfig.Instance.orchestratorURL);
         }
 
         private void StartStandaloneOrchestrator()
@@ -239,7 +239,7 @@ namespace VRT.Login
             RegisterOrchestratorEvents();
             // SocketConnect on the standalone controller fires the connection → login →
             // version → ntp chain synchronously, ending with SetReady(true) on the dialog.
-            VRTOrchestratorSingleton.Login.SocketConnect("");
+            VRTOrchestratorSingleton.Login.Connect("");
         }
 
         private void CleanupOrchestrator()

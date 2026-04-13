@@ -37,7 +37,7 @@ namespace VRT.Orchestrator
         Session[] AvailableSessions { get; } // Used only by Old_OrchestratorLogin (VRTDeprecated). Remove entirely when that is removed.
 
         // Connection management
-        void SocketConnect(string url);
+        void Connect(string url);
         void Abort();
         void GetVersion();
         void Shutdown();

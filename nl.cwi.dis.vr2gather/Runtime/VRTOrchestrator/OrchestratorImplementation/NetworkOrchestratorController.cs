@@ -149,8 +149,8 @@ namespace VRT.Orchestrator.Implementation
         #region Socket.io connect
 
         // Connect to the orchestrator
-        public override void SocketConnect(string pUrl) {
-            Trace("send", nameof(SocketConnect));
+        public override void Connect(string pUrl) {
+            Trace("send", nameof(Connect));
             if (enableLogging) Debug.Log($"NetworkOrchestratorController: connect to {pUrl}");
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url={pUrl}");
@@ -169,6 +169,9 @@ namespace VRT.Orchestrator.Implementation
             connectionStatus = orchestratorConnectionStatus.__CONNECTED__;
             Trace("recv", nameof(OnConnectionEvent));
             OnConnectionEvent?.Invoke(true);
+            // We can now login automatically.
+            InitializeSelfUser();
+            Login(SelfUser.userName);
         }
 
         // SockerConnecting response callback
