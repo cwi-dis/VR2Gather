@@ -55,6 +55,8 @@ namespace VRT.Login
         [Header("Scene objects")]
         [Tooltip("Player used for this scene")]
         public PlayerControllerSelf player;
+        [Tooltip("Camera used to render the preview; disabled when not in preview")]
+        [SerializeField] private Camera previewCamera;
 
         // ── Private state ───────────────────────────────────────────────────────
         private enum State { Home, Settings, Create, Join, CreateStandalone, Lobby, Preview }
@@ -72,6 +74,7 @@ namespace VRT.Login
         private CreateStandaloneDialog _createStandaloneDialog;
         private LobbyDialog _lobbyDialog;
         private PreviewDialog _previewDialog;
+        private RenderTexture _previewRenderTexture;
 
         // Pending data set by the dialog before the async orchestrator operation completes
         private CreateSessionData _pendingSessionData;
@@ -93,6 +96,12 @@ namespace VRT.Login
             _versionLabel.text = $"v{version}";
 
             ShowHome();
+        }
+
+        void Update()
+        {
+            if (_state == State.Preview)
+                _previewDialog?.MarkPreviewDirty();
         }
 
         // ── State transitions ───────────────────────────────────────────────────
@@ -160,11 +169,24 @@ namespace VRT.Login
         {
             ClearContent();
             var clone = previewDialogAsset.CloneTree();
+            clone.style.flexGrow = 1;
             _contentSlot.Add(clone);
             _previewDialog = new PreviewDialog(clone);
             _previewDialog.OnOkClicked += ShowHome;
 
             _state = State.Preview;
+
+            if (previewCamera != null)
+            {
+                _previewRenderTexture = new RenderTexture(1280, 720, 24);
+                previewCamera.targetTexture = _previewRenderTexture;
+                previewCamera.gameObject.SetActive(true);
+                _previewDialog.SetPreviewTexture(_previewRenderTexture);
+            }
+            else
+            {
+                Debug.LogWarning("OrchestratorLogin: previewCamera not assigned");
+            }
         }
 
         private void ShowCreateStandalone()
@@ -198,6 +220,17 @@ namespace VRT.Login
 
         private void ClearContent()
         {
+            if (_state == State.Preview && previewCamera != null)
+            {
+                previewCamera.gameObject.SetActive(false);
+                previewCamera.targetTexture = null;
+                if (_previewRenderTexture != null)
+                {
+                    _previewRenderTexture.Release();
+                    _previewRenderTexture = null;
+                }
+            }
+
             _contentSlot.Clear();
             _homeDialog = null;
             _settingsDialog = null;
