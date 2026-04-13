@@ -85,8 +85,7 @@ namespace VRT.Orchestrator.Implementation
 
         // Orchestrator Login Events
         public override event Action<bool> OnLoginEvent;
-        public override event Action<bool> OnLogoutEvent;
-
+      
         // Orchestrator NTP clock Events
         public override event Action<NtpClock> OnGetNTPTimeEvent;
 
@@ -240,7 +239,7 @@ namespace VRT.Orchestrator.Implementation
             _selfUser = new User
             {
                 userId = "standalone-userid",
-                userName = name,
+                userName = config.userName,
                 userData = new UserData
                 {
                     userRepresentation = config.representation,
@@ -256,76 +255,48 @@ namespace VRT.Orchestrator.Implementation
             orchestratorWrapper.Login(pName);
         }
 
-        public void OnLoginResponse(ResponseStatus status, string userId) {
+        public void OnLoginResponse(ResponseStatus status, string userId)
+        {
             bool userLoggedSucessfully = (status.Error == 0);
 
-            if (status.Error != 0) {
+            if (status.Error != 0)
+            {
                 OnErrorEvent?.Invoke(status);
                 return;
             }
 
-            if (!userIsLogged) {
-                //user was not logged before request
-                if (userLoggedSucessfully) {
-                    if (enableLogging) Debug.Log("NetworkOrchestratorController: OnLoginResponse: User logged in.");
-
-                    userIsLogged = true;
-                    SelfUser.userId = userId;
-                } else {
-                    userIsLogged = false;
-                }
-            } else {
-                //user was logged before previously
-                if (!userLoggedSucessfully) {
-                    // normal, user previopusly logged, nothing to do
-                } else {
-                    // should not occur
-                }
+            if (userIsLogged)
+            {
+                Debug.LogError(
+                    $"NetworkOrchestratorController: user logged in already? old={_selfUser.userId}, new={userId}");
+                return;
             }
 
             Trace("recv", nameof(OnLoginEvent));
-            OnLoginEvent?.Invoke(userLoggedSucessfully);
+            SelfUser.userId = userId;
+            // Now send the userData to the orchestrator.
+            UpdateUserDataJson();
+            // Note that we do _not_ emit the OnLoginEvent yet, that happens
+            // in OnUpdateUserDataJson, so it now signifies that login is complete.
+        }
+        
+        private void UpdateUserDataJson() {
+            Trace("send",  nameof(UpdateUserDataJson));
+            orchestratorWrapper.UpdateUserDataJson(SelfUser.userData);
         }
 
-
-        public override void Logout() {
-            Trace("send", nameof(Logout));
-            orchestratorWrapper.Logout();
-        }
-
-        public void OnLogoutResponse(ResponseStatus status) {
-            bool userLoggedOutSucessfully = (status.Error == 0);
-
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
+        public void OnUpdateUserDataJsonResponse(ResponseStatus status, string data)
+        {
+            Trace("recv", nameof(OnUpdateUserDataJsonResponse));
+            bool ok = true;
+            if (status.Error != 0)
+            {
+                Debug.LogError($"NetworkOrchestratorController: UpdateUserDataJson error: {status}");
+                ok = false;
             }
 
-            if (!userIsLogged) {
-                //user was not logged before request
-                if (!userLoggedOutSucessfully) {
-                    // normal, was not logged, nothing to do
-                } else {
-                    // should not occur
-                }
-            } else {
-                //user was logged before request
-                if (userLoggedOutSucessfully) {
-                    if (enableLogging) Debug.Log("NetworkOrchestratorController: OnLogoutResponse: User logout.");
-
-                    //normal
-                    SelfUser = null;
-                    userIsLogged = false;
-                } else {
-                    // problem while logout
-                    userIsLogged = true;
-                }
-            }
-
-            Trace("recv", nameof(OnLogoutEvent));
-            OnLogoutEvent?.Invoke(userLoggedOutSucessfully);
+            OnLoginEvent?.Invoke(ok);
         }
-
         #endregion
 
         #region NTP clock
@@ -606,11 +577,7 @@ namespace VRT.Orchestrator.Implementation
 
         #region Users
 
-        public override void UpdateFullUserData(UserData pUserData) {
-            Trace("send", nameof(UpdateFullUserData));
-            orchestratorWrapper.UpdateUserDataJson(pUserData);
-        }
-
+        
         public void OnUpdateUserDataJsonResponse(ResponseStatus status) {
             if (status.Error != 0) {
                 OnErrorEvent?.Invoke(status);

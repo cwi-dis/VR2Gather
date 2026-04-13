@@ -139,19 +139,7 @@ namespace VRT.Orchestrator.Implementation {
             }
         }
 
-        public void Logout() {
-            lock (this) {
-                Socket.Emit("Logout", (response) => {
-                    var data = response.GetValue<OrchestratorResponse<EmptyResponse>>();
-                    myUserID = "";
-
-                    UnityThread.executeInUpdate(() => {
-                        ResponsesListener?.OnLogoutResponse(data.ResponseStatus);
-                    });
-                }, new { });
-            }
-        }
-
+        
         #endregion
 
         #region session management

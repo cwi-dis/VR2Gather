@@ -73,7 +73,6 @@ namespace VRT.Orchestrator.Implementation
         public abstract event Action OnConnectingEvent;
         public abstract event Action<string> OnGetOrchestratorVersionEvent;
         public abstract event Action<bool> OnLoginEvent;
-        public abstract event Action<bool> OnLogoutEvent;
         public abstract event Action<NtpClock> OnGetNTPTimeEvent;
         public abstract event Action<Session[]> OnSessionsEvent;
         public abstract event Action<Session> OnSessionInfoEvent;
@@ -92,14 +91,12 @@ namespace VRT.Orchestrator.Implementation
         public abstract void InitializeSelfUser();
         
         public abstract void Login(string name);
-        public abstract void Logout();
         public abstract void GetNTPTime();
         public abstract void GetSessions();
         public abstract void AddSession(string scenarioId, Scenario scenario, string name, string description, string protocol);
         public abstract void JoinSession(string sessionId);
         public abstract void DeleteSession(string sessionId);
         public abstract void GetSessionInfo();
-        public abstract void UpdateFullUserData(UserData userData);
         public abstract void SendMessageToAll(string message);
 
         // ── IVRTOrchestratorComm ────────────────────────────────────────────────

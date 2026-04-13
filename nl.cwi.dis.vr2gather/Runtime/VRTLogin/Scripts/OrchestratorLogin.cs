@@ -303,10 +303,7 @@ namespace VRT.Login
                 return;
             }
 
-            SetActiveDialogStatus("Logging in...");
-            VRTOrchestratorSingleton.Login.InitializeSelfUser();
-            string userName = VRTConfig.Instance.RepresentationConfig.userName;
-            VRTOrchestratorSingleton.Login.Login(userName);
+            SetActiveDialogStatus("Connected to orchestrator.");
         }
 
         private void OnLoginEvent(bool success)
@@ -317,10 +314,8 @@ namespace VRT.Login
                 SetActiveDialogStatus("Login failed.", isError: true);
                 return;
             }
-
-            VRTOrchestratorSingleton.Login.UpdateFullUserData(
-                VRTOrchestratorSingleton.Login.SelfUser.userData);
-
+            SetActiveDialogStatus("Logged in to orchestrator");
+            
             SetActiveDialogStatus("Synchronising clocks...");
             VRTOrchestratorSingleton.Login.GetVersion();
         }

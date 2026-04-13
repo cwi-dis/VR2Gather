@@ -15,8 +15,7 @@ namespace VRT.Orchestrator
 
         // Login events
         event Action<bool> OnLoginEvent;
-        event Action<bool> OnLogoutEvent;
-
+        
         // NTP event
         event Action<NtpClock> OnGetNTPTimeEvent;
 
@@ -33,9 +32,7 @@ namespace VRT.Orchestrator
 
         // Session state visible to login
         Scenario CurrentScenario { get; } // Used only by OrchestratorLogin and Old_OrchestratorLogin. Once Old_OrchestratorLogin is removed, consider moving the implementation into OrchestratorLogin rather than keeping it on the interface.
-        bool UserIsLogged { get; } // Used only by Old_OrchestratorLogin (VRTDeprecated). Remove when that is removed.
-        Session[] AvailableSessions { get; } // Used only by Old_OrchestratorLogin (VRTDeprecated). Remove entirely when that is removed.
-
+        
         // Connection management
         void Connect(string url);
         void Abort();
@@ -44,9 +41,6 @@ namespace VRT.Orchestrator
 
         // Login
         void InitializeSelfUser();
-        void Login(string name);
-        void Logout();
-
         // NTP
         void GetNTPTime();
 
@@ -57,9 +51,7 @@ namespace VRT.Orchestrator
         void DeleteSession(string sessionId);
         void GetSessionInfo();
 
-        // User data
-        void UpdateFullUserData(UserData userData);
-
+       
         // Send to all (used by login to broadcast START_* for now)
         void SendMessageToAll(string message);
 

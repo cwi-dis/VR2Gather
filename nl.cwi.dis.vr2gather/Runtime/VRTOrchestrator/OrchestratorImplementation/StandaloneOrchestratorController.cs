@@ -31,7 +31,6 @@ namespace VRT.Orchestrator.Implementation
         public override event Action OnConnectingEvent;
         public override event Action<string> OnGetOrchestratorVersionEvent;
         public override event Action<bool> OnLoginEvent;
-        public override event Action<bool> OnLogoutEvent;
         public override event Action<NtpClock> OnGetNTPTimeEvent;
         public override event Action<Session[]> OnSessionsEvent;
         public override event Action<Session> OnSessionInfoEvent;
@@ -213,15 +212,8 @@ namespace VRT.Orchestrator.Implementation
             Destroy(gameObject);
         }
 
-        public override void UpdateFullUserData(UserData userData)
-        {
-            Trace("send", nameof(UpdateFullUserData));
-            if (_selfUser != null)
-                _selfUser.userData = userData;
-        }
-
+        
         public override void Abort() { Trace("send", nameof(Abort)); }
-        public override void Logout() { Trace("send", nameof(Logout)); Trace("recv", nameof(OnLogoutEvent)); OnLogoutEvent?.Invoke(true); }
         public override void GetSessions() { Trace("send", nameof(GetSessions)); Trace("recv", nameof(OnSessionsEvent)); OnSessionsEvent?.Invoke(new Session[0]); }
         public override void JoinSession(string sessionId) { Trace("send", nameof(JoinSession)); }
         public override void DeleteSession(string sessionId) { Trace("send", nameof(DeleteSession)); }

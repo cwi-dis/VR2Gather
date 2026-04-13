@@ -32,8 +32,7 @@ namespace VRT.Orchestrator.Implementation
         void OnDisconnect();
 
         void OnLoginResponse(ResponseStatus status, string userId);
-        void OnLogoutResponse(ResponseStatus status);
-
+        
         void OnGetNTPTimeResponse(ResponseStatus status, NtpClock ntpTime);
 
         void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions);
