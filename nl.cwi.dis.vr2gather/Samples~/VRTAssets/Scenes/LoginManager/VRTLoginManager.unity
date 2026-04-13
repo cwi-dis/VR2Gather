@@ -941,7 +941,7 @@ GameObject:
   - component: {fileID: 1897768792}
   - component: {fileID: 1897768791}
   - component: {fileID: 1897768790}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PreviewCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -995,7 +995,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 805306647
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1016,7 +1016,7 @@ Transform:
   m_GameObject: {fileID: 1897768789}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
-  m_LocalPosition: {x: 0, y: 1.6, z: 2.03}
+  m_LocalPosition: {x: 0, y: 1.6, z: 2.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1034,6 +1034,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tool_OrchestratorLogin
+      objectReference: {fileID: 0}
+    - target: {fileID: 3533688918433949681, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5658332295402922780, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
         type: 3}
@@ -1084,6 +1089,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6443343308208655020, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7944887033556344929, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8533478792926882479, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
         type: 3}
