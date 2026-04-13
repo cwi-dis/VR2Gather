@@ -44,6 +44,7 @@ namespace VRT.Login
         [SerializeField] private VisualTreeAsset joinDialogAsset;
         [SerializeField] private VisualTreeAsset createStandaloneDialogAsset;
         [SerializeField] private VisualTreeAsset lobbyDialogAsset;
+        [SerializeField] private VisualTreeAsset previewDialogAsset;
 
         [Header("Orchestrator")]
         [Tooltip("Prefab that contains the NetworkOrchestratorController component")]
@@ -56,7 +57,7 @@ namespace VRT.Login
         public PlayerControllerSelf player;
 
         // ── Private state ───────────────────────────────────────────────────────
-        private enum State { Home, Settings, Create, Join, CreateStandalone, Lobby }
+        private enum State { Home, Settings, Create, Join, CreateStandalone, Lobby, Preview }
         private State _state;
 
         private UIDocument _uiDocument;
@@ -70,6 +71,7 @@ namespace VRT.Login
         private JoinDialog _joinDialog;
         private CreateStandaloneDialog _createStandaloneDialog;
         private LobbyDialog _lobbyDialog;
+        private PreviewDialog _previewDialog;
 
         // Pending data set by the dialog before the async orchestrator operation completes
         private CreateSessionData _pendingSessionData;
@@ -108,6 +110,8 @@ namespace VRT.Login
             _homeDialog.OnJoinSessionClicked += ShowJoin;
             _homeDialog.OnCreateStandaloneClicked += ShowCreateStandalone;
             _homeDialog.OnSettingsClicked += ShowSettings;
+            _homeDialog.OnPreviewClicked += ShowPreview;
+            _homeDialog.OnQuitClicked += OnQuitClicked;
 
             _state = State.Home;
             AutoStart_OnHome();
@@ -152,6 +156,17 @@ namespace VRT.Login
             StartOrchestratorConnection();
         }
 
+        private void ShowPreview()
+        {
+            ClearContent();
+            var clone = previewDialogAsset.CloneTree();
+            _contentSlot.Add(clone);
+            _previewDialog = new PreviewDialog(clone);
+            _previewDialog.OnOkClicked += ShowHome;
+
+            _state = State.Preview;
+        }
+
         private void ShowCreateStandalone()
         {
             ClearContent();
@@ -190,6 +205,7 @@ namespace VRT.Login
             _joinDialog = null;
             _createStandaloneDialog = null;
             _lobbyDialog = null;
+            _previewDialog = null;
         }
 
         // ── Self representation ──────────────────────────────────────────────
@@ -468,6 +484,11 @@ namespace VRT.Login
             cfg.scenarioVariant = null;
             string message = JsonUtility.ToJson(cfg);
             VRTOrchestratorSingleton.Login.SendMessageToAll("START_" + message);
+        }
+
+        private void OnQuitClicked()
+        {
+            PilotController.Instance.OnUserCommand("exit");
         }
 
         private void OnLeaveSessionRequested()

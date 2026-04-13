@@ -15,6 +15,8 @@ namespace VRT.Login
         public event Action OnJoinSessionClicked;
         public event Action OnCreateStandaloneClicked;
         public event Action OnSettingsClicked;
+        public event Action OnPreviewClicked;
+        public event Action OnQuitClicked;
 
         private readonly Label _welcomeLabel;
 
@@ -26,6 +28,8 @@ namespace VRT.Login
             root.Q<Button>("JoinSessionButton").clicked += () => OnJoinSessionClicked?.Invoke();
             root.Q<Button>("CreateStandaloneButton").clicked += () => OnCreateStandaloneClicked?.Invoke();
             root.Q<Button>("SettingsButton").clicked += () => OnSettingsClicked?.Invoke();
+            root.Q<Button>("PreviewButton").clicked += () => OnPreviewClicked?.Invoke();
+            root.Q<Button>("QuitButton").clicked += () => OnQuitClicked?.Invoke();
 
             string userName = VRTConfig.Instance.RepresentationConfig.userName;
             if (!string.IsNullOrEmpty(userName))

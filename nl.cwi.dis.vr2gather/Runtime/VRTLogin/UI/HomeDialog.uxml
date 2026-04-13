@@ -6,6 +6,9 @@
         <ui:Button name="CreateSessionButton" text="Create Session" class="vrt-button-important" style="width: 500px;"/>
         <ui:Button name="JoinSessionButton" text="Join Session" class="vrt-button-important" style="width: 500px;"/>
         <ui:Button name="CreateStandaloneButton" text="Create Standalone Session" class="vrt-button-important" style="width: 500px;"/>
+        <ui:VisualElement style="height: 40px;"/>
         <ui:Button name="SettingsButton" text="Settings" style="width: 500px;"/>
+        <ui:Button name="PreviewButton" text="Preview" style="width: 500px;"/>
+        <ui:Button name="QuitButton" text="Quit" style="width: 500px;"/>
     </ui:VisualElement>
 </ui:UXML>
