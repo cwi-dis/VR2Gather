@@ -74,6 +74,32 @@ Slider .unity-base-slider__tracker {
     border-bottom-color: rgb(0, 0, 0);
 }
 
+TextField {
+    min-height: 60px;
+}
+
+TextField .unity-base-field__input {
+    background-color: rgb(210, 230, 255);
+    color: rgb(0, 0, 0);
+    -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_reg.otf?fileID=12800000&guid=cf35ed982f2ccf44aad17e3439b067c5&type=3#Brandon_reg");
+    font-size: 24px;
+    -unity-text-align: middle-left;
+    padding-left: 12px;
+    padding-right: 8px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(10, 60, 110);
+    border-right-color: rgb(10, 60, 110);
+    border-top-color: rgb(10, 60, 110);
+    border-bottom-color: rgb(10, 60, 110);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
 DropdownField {
     min-height: 60px;
 }

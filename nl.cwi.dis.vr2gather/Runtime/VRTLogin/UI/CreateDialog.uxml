@@ -3,12 +3,25 @@
     <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_Dialog.uss?fileID=7433441132597879392&amp;guid=ccade230efe254913ba526093cc7263e&amp;type=3#VRT_Dialog"/>
     <ui:VisualElement style="flex-grow: 1;">
         <ui:Label name="StatusLabel" text="Connecting to orchestrator..." style="color: rgb(255, 200, 0); font-size: 20px; margin-bottom: 12px;"/>
-        <ui:TextField name="SessionNameField" label="Session Name" style="margin-bottom: 8px;"/>
-        <ui:DropdownField name="ScenarioDropdown" label="Scenario" style="margin-bottom: 4px;"/>
-        <ui:Label name="ScenarioDescriptionLabel" text="" style="color: rgba(255, 255, 255, 0.7); font-size: 20px; margin-bottom: 12px; margin-left: 8px;"/>
-        <ui:DropdownField name="ProtocolDropdown" label="Transport Protocol" style="margin-bottom: 8px;"/>
-        <ui:Toggle name="UncompressedPointcloudsToggle" label="Uncompressed Pointclouds" class="vrt-checkbox" style="margin-bottom: 4px;"/>
-        <ui:Toggle name="UncompressedAudioToggle" label="Uncompressed Audio" class="vrt-checkbox" style="margin-bottom: 8px;"/>
+        <ui:VisualElement class="vrt-form__row">
+            <ui:Label text="Session Name" class="vrt-form__label"/>
+            <ui:TextField name="SessionNameField" label="" class="vrt-form__field"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="vrt-form__row">
+            <ui:Label text="Scenario" class="vrt-form__label"/>
+            <ui:VisualElement class="vrt-form__field">
+                <ui:DropdownField name="ScenarioDropdown" label=""/>
+                <ui:Label name="ScenarioDescriptionLabel" text="" style="color: rgba(255, 255, 255, 0.7); font-size: 20px; margin-top: 4px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="vrt-form__row">
+            <ui:Label text="Transport Protocol" class="vrt-form__label"/>
+            <ui:VisualElement class="vrt-form__field">
+                <ui:DropdownField name="ProtocolDropdown" label=""/>
+                <ui:Toggle name="UncompressedPointcloudsToggle" label="Uncompressed Pointclouds" class="vrt-checkbox" style="margin-top: 4px;"/>
+                <ui:Toggle name="UncompressedAudioToggle" label="Uncompressed Audio" class="vrt-checkbox" style="margin-top: 4px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
         <ui:VisualElement style="flex-grow: 1;"/>
         <ui:VisualElement style="flex-direction: row; justify-content: flex-end; margin-top: 16px;">
             <ui:Button name="CancelButton" text="Cancel"/>

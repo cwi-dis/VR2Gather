@@ -99,6 +99,26 @@
     border-bottom-color: rgba(0, 0, 0, 0);
 }
 
+/* Two-column form layout */
+.vrt-form__row {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.vrt-form__label {
+    width: 300px;
+    min-width: 300px;
+    -unity-text-align: middle-right;
+    padding-right: 16px;
+    padding-top: 18px;
+}
+
+.vrt-form__field {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
 /* Toolbar row inside a tab panel or dialog body */
 .vrt-toolbar {
     flex-direction: row;
