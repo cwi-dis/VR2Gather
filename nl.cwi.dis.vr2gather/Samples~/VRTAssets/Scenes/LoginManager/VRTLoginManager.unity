@@ -1040,6 +1040,21 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 3533688918433949681, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4038672995462153646, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4038672995462153646, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: m_WorldSpaceSizeMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5658332295402922780, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
         type: 3}
       propertyPath: m_LocalPosition.x

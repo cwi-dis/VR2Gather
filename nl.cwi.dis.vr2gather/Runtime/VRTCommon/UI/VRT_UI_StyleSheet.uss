@@ -1,3 +1,8 @@
+/* Override default theme root background so world-space panels are transparent */
+:root {
+    background-color: rgba(0, 0, 0, 0);
+}
+
 Button {
     -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_med.otf?fileID=12800000&guid=c9341f42abb2afc4da693e636dc67272&type=3#Brandon_med");
     background-color: rgb(14, 82, 142);
