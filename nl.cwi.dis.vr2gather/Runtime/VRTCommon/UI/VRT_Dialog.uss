@@ -31,9 +31,9 @@
 
 .vrt-dialog__title {
     flex-grow: 1;
+    -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_bld.otf?fileID=12800000&guid=b30c1f4e6a7dd054d9c16454a93655f7&type=3#Brandon_bld");
     color: rgb(255, 255, 255);
     font-size: 32px;
-    -unity-font-style: bold;
     -unity-text-align: middle-left;
 }
 

@@ -1,4 +1,5 @@
 Button {
+    -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_med.otf?fileID=12800000&guid=c9341f42abb2afc4da693e636dc67272&type=3#Brandon_med");
     background-color: rgb(14, 82, 142);
     color: rgb(255, 255, 255);
     min-height: 60px;
@@ -24,6 +25,7 @@ Button {
 
 Button:hover {
     background-color: rgb(32, 150, 243);
+    scale: 1.1 1.1 1.1;
 }
 
 Button:active {
@@ -32,6 +34,7 @@ Button:active {
 }
 
 Label {
+    -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_reg.otf?fileID=12800000&guid=cf35ed982f2ccf44aad17e3439b067c5&type=3#Brandon_reg");
     color: rgb(255, 255, 255);
     font-size: 24px;
 }
@@ -166,6 +169,16 @@ Button.vrt-button-important {
     min-height: 90px;
 }
 
+/* Prominent home-screen button — large text, very rounded */
+Button.vrt-button-prominent {
+    -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_bld.otf?fileID=12800000&guid=b30c1f4e6a7dd054d9c16454a93655f7&type=3#Brandon_bld");
+    font-size: 36px;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
 /* Compact button for use in toolbars */
 Button.vrt-small-button {
     min-width: 80px;
@@ -188,30 +201,34 @@ Toggle.vrt-checkbox #unity-checkmark {
     border-bottom-width: 2px;
     border-left-width: 2px;
     border-right-width: 2px;
-    border-left-color: rgb(180, 180, 180);
-    border-right-color: rgb(180, 180, 180);
-    border-top-color: rgb(180, 180, 180);
-    border-bottom-color: rgb(180, 180, 180);
+    border-left-color: rgb(10, 60, 110);
+    border-right-color: rgb(10, 60, 110);
+    border-top-color: rgb(10, 60, 110);
+    border-bottom-color: rgb(10, 60, 110);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
-    background-color: rgb(46, 46, 46);
+    background-color: rgb(14, 82, 142);
 }
 
 Toggle.vrt-checkbox:hover #unity-checkmark {
     background-image: none;
-    background-color: rgb(60, 60, 60);
-}
-
-Toggle.vrt-checkbox:checked #unity-checkmark {
-    background-image: none;
     background-color: rgb(32, 150, 243);
 }
 
+Toggle.vrt-checkbox:checked #unity-checkmark {
+    background-image: url("project://database/Assets/Samples/XR%20Interaction%20Toolkit/3.3.1/Starter%20Assets/DemoSceneAssets/Sprites/Checkmark.png?fileID=2800000&guid=db3e7b7c8db355e499429545071a0321&type=3#Checkmark");
+    background-color: rgb(88, 176, 246);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
 Toggle.vrt-checkbox:checked:hover #unity-checkmark {
-    background-image: none;
-    background-color: rgb(24, 112, 182);
+    background-image: url("project://database/Assets/Samples/XR%20Interaction%20Toolkit/3.3.1/Starter%20Assets/DemoSceneAssets/Sprites/Checkmark.png?fileID=2800000&guid=db3e7b7c8db355e499429545071a0321&type=3#Checkmark");
+    background-color: rgb(130, 200, 255);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 Toggle.vrt-checkbox .unity-toggle__text {
