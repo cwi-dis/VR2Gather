@@ -113,6 +113,7 @@ namespace VRT.Login
             FixSelfRepresentation();
 
             var clone = homeDialogAsset.CloneTree();
+            clone.style.flexGrow = 1;
             _contentSlot.Add(clone);
             _homeDialog = new HomeDialog(clone);
             _homeDialog.OnCreateSessionClicked += ShowCreate;
@@ -130,6 +131,7 @@ namespace VRT.Login
         {
             ClearContent();
             var clone = settingsDialogAsset.CloneTree();
+            clone.style.flexGrow = 1;
             _contentSlot.Add(clone);
             _settingsDialog = new SettingsDialog(clone);
             _settingsDialog.OnSaveClicked += ShowHome;
@@ -142,6 +144,7 @@ namespace VRT.Login
         {
             ClearContent();
             var clone = createDialogAsset.CloneTree();
+            clone.style.flexGrow = 1;
             _contentSlot.Add(clone);
             _createDialog = new CreateDialog(clone);
             _createDialog.OnCreateClicked += OnCreateSessionRequested;
@@ -155,6 +158,7 @@ namespace VRT.Login
         {
             ClearContent();
             var clone = joinDialogAsset.CloneTree();
+            clone.style.flexGrow = 1;
             _contentSlot.Add(clone);
             _joinDialog = new JoinDialog(clone);
             _joinDialog.OnJoinClicked += OnJoinSessionRequested;
@@ -193,6 +197,7 @@ namespace VRT.Login
         {
             ClearContent();
             var clone = createStandaloneDialogAsset.CloneTree();
+            clone.style.flexGrow = 1;
             _contentSlot.Add(clone);
             _createStandaloneDialog = new CreateStandaloneDialog(clone);
             _createStandaloneDialog.OnStartClicked += OnCreateStandaloneRequested;
@@ -206,6 +211,7 @@ namespace VRT.Login
         {
             ClearContent();
             var clone = lobbyDialogAsset.CloneTree();
+            clone.style.flexGrow = 1;
             _contentSlot.Add(clone);
             _lobbyDialog = new LobbyDialog(clone);
             _lobbyDialog.OnStartClicked += OnStartSessionRequested;
