@@ -42,15 +42,16 @@
     min-width: 60px;
     min-height: 44px;
     width: 60px;
-    background-color: rgb(24, 112, 182);
-}
-
-.vrt-dialog__close-button:hover {
     background-color: rgb(14, 82, 142);
 }
 
+.vrt-dialog__close-button:hover {
+    background-color: rgb(32, 150, 243);
+}
+
 .vrt-dialog__close-button:active {
-    background-color: rgb(88, 176, 246);
+    background-color: rgb(130, 200, 255);
+    color: rgb(0, 0, 0);
 }
 
 /* Body: scrollable content area */
@@ -60,26 +61,42 @@
     padding-bottom: 16px;
     padding-left: 16px;
     padding-right: 16px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(10, 60, 110);
+    border-right-color: rgb(10, 60, 110);
+    border-top-color: rgb(10, 60, 110);
+    border-bottom-color: rgb(10, 60, 110);
 }
 
 /* Tab buttons in the header */
 .vrt-tab-button {
     min-width: 120px;
     min-height: 44px;
-    background-color: rgb(24, 112, 182);
+    background-color: rgb(14, 82, 142);
     margin-right: 4px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .vrt-tab-button:hover {
-    background-color: rgb(14, 82, 142);
+    background-color: rgb(32, 150, 243);
 }
 
 .vrt-tab-button--active {
-    background-color: rgb(46, 46, 46);
+    background-color: rgba(10, 30, 60, 0.9);
+    color: rgb(255, 255, 255);
+    border-bottom-color: rgba(0, 0, 0, 0);
 }
 
 .vrt-tab-button--active:hover {
-    background-color: rgb(46, 46, 46);
+    background-color: rgba(10, 30, 60, 0.9);
+    color: rgb(255, 255, 255);
+    border-bottom-color: rgba(0, 0, 0, 0);
 }
 
 /* Toolbar row inside a tab panel or dialog body */
