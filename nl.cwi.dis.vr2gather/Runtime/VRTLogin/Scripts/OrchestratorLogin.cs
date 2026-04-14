@@ -106,122 +106,160 @@ namespace VRT.Login
 
         // ── State transitions ───────────────────────────────────────────────────
 
+        private const int TransitionFadeMs = 150;
+
+        /// <summary>
+        /// Fades the content slot out, runs doTransition (which should call ClearContent
+        /// and set up the new dialog), then fades back in. On the very first call
+        /// (no existing content) skips the fade-out and only fades in.
+        /// </summary>
+        private void TransitionTo(System.Action doTransition)
+        {
+            if (_contentSlot.childCount == 0)
+            {
+                doTransition();
+                _contentSlot.style.opacity = 0;
+                _contentSlot.schedule.Execute(() => _contentSlot.style.opacity = 1).StartingIn(16);
+                return;
+            }
+            _contentSlot.style.opacity = 0;
+            _contentSlot.schedule.Execute(() =>
+            {
+                doTransition();
+                _contentSlot.style.opacity = 1;
+            }).StartingIn(TransitionFadeMs);
+        }
+
         private void ShowHome()
         {
-            CleanupOrchestrator();
-            ClearContent();
-            FixSelfRepresentation();
+            TransitionTo(() => {
+                CleanupOrchestrator();
+                ClearContent();
+                FixSelfRepresentation();
 
-            var clone = homeDialogAsset.CloneTree();
-            clone.style.flexGrow = 1;
-            _contentSlot.Add(clone);
-            _homeDialog = new HomeDialog(clone);
-            _homeDialog.OnCreateSessionClicked += ShowCreate;
-            _homeDialog.OnJoinSessionClicked += ShowJoin;
-            _homeDialog.OnCreateStandaloneClicked += ShowCreateStandalone;
-            _homeDialog.OnSettingsClicked += ShowSettings;
-            _homeDialog.OnPreviewClicked += ShowPreview;
-            _homeDialog.OnQuitClicked += OnQuitClicked;
+                var clone = homeDialogAsset.CloneTree();
+                clone.style.flexGrow = 1;
+                _contentSlot.Add(clone);
+                _homeDialog = new HomeDialog(clone);
+                _homeDialog.OnCreateSessionClicked += ShowCreate;
+                _homeDialog.OnJoinSessionClicked += ShowJoin;
+                _homeDialog.OnCreateStandaloneClicked += ShowCreateStandalone;
+                _homeDialog.OnSettingsClicked += ShowSettings;
+                _homeDialog.OnPreviewClicked += ShowPreview;
+                _homeDialog.OnQuitClicked += OnQuitClicked;
 
-            _state = State.Home;
-            AutoStart_OnHome();
+                _state = State.Home;
+                AutoStart_OnHome();
+            });
         }
 
         private void ShowSettings()
         {
-            ClearContent();
-            var clone = settingsDialogAsset.CloneTree();
-            clone.style.flexGrow = 1;
-            _contentSlot.Add(clone);
-            _settingsDialog = new SettingsDialog(clone);
-            _settingsDialog.OnSaveClicked += ShowHome;
-            _settingsDialog.OnCancelClicked += ShowHome;
+            TransitionTo(() => {
+                ClearContent();
+                var clone = settingsDialogAsset.CloneTree();
+                clone.style.flexGrow = 1;
+                _contentSlot.Add(clone);
+                _settingsDialog = new SettingsDialog(clone);
+                _settingsDialog.OnSaveClicked += ShowHome;
+                _settingsDialog.OnCancelClicked += ShowHome;
 
-            _state = State.Settings;
+                _state = State.Settings;
+            });
         }
 
         private void ShowCreate()
         {
-            ClearContent();
-            var clone = createDialogAsset.CloneTree();
-            clone.style.flexGrow = 1;
-            _contentSlot.Add(clone);
-            _createDialog = new CreateDialog(clone);
-            _createDialog.OnCreateClicked += OnCreateSessionRequested;
-            _createDialog.OnCancelClicked += ShowHome;
+            TransitionTo(() => {
+                ClearContent();
+                var clone = createDialogAsset.CloneTree();
+                clone.style.flexGrow = 1;
+                _contentSlot.Add(clone);
+                _createDialog = new CreateDialog(clone);
+                _createDialog.OnCreateClicked += OnCreateSessionRequested;
+                _createDialog.OnCancelClicked += ShowHome;
 
-            _state = State.Create;
-            StartOrchestratorConnection();
+                _state = State.Create;
+                StartOrchestratorConnection();
+            });
         }
 
         private void ShowJoin()
         {
-            ClearContent();
-            var clone = joinDialogAsset.CloneTree();
-            clone.style.flexGrow = 1;
-            _contentSlot.Add(clone);
-            _joinDialog = new JoinDialog(clone);
-            _joinDialog.OnJoinClicked += OnJoinSessionRequested;
-            _joinDialog.OnCancelClicked += ShowHome;
-            _joinDialog.OnRefreshClicked += RefreshSessions;
+            TransitionTo(() => {
+                ClearContent();
+                var clone = joinDialogAsset.CloneTree();
+                clone.style.flexGrow = 1;
+                _contentSlot.Add(clone);
+                _joinDialog = new JoinDialog(clone);
+                _joinDialog.OnJoinClicked += OnJoinSessionRequested;
+                _joinDialog.OnCancelClicked += ShowHome;
+                _joinDialog.OnRefreshClicked += RefreshSessions;
 
-            _state = State.Join;
-            StartOrchestratorConnection();
+                _state = State.Join;
+                StartOrchestratorConnection();
+            });
         }
 
         private void ShowPreview()
         {
-            ClearContent();
-            var clone = previewDialogAsset.CloneTree();
-            clone.style.flexGrow = 1;
-            _contentSlot.Add(clone);
-            _previewDialog = new PreviewDialog(clone);
-            _previewDialog.OnOkClicked += ShowHome;
+            TransitionTo(() => {
+                ClearContent();
+                var clone = previewDialogAsset.CloneTree();
+                clone.style.flexGrow = 1;
+                _contentSlot.Add(clone);
+                _previewDialog = new PreviewDialog(clone);
+                _previewDialog.OnOkClicked += ShowHome;
 
-            _state = State.Preview;
+                _state = State.Preview;
 
-            if (previewCamera != null)
-            {
-                _previewRenderTexture = new RenderTexture(1280, 720, 24);
-                previewCamera.targetTexture = _previewRenderTexture;
-                previewCamera.gameObject.SetActive(true);
-                _previewDialog.SetPreviewTexture(_previewRenderTexture);
-            }
-            else
-            {
-                Debug.LogWarning("OrchestratorLogin: previewCamera not assigned");
-            }
+                if (previewCamera != null)
+                {
+                    _previewRenderTexture = new RenderTexture(1280, 720, 24);
+                    previewCamera.targetTexture = _previewRenderTexture;
+                    previewCamera.gameObject.SetActive(true);
+                    _previewDialog.SetPreviewTexture(_previewRenderTexture);
+                }
+                else
+                {
+                    Debug.LogWarning("OrchestratorLogin: previewCamera not assigned");
+                }
+            });
         }
 
         private void ShowCreateStandalone()
         {
-            ClearContent();
-            var clone = createStandaloneDialogAsset.CloneTree();
-            clone.style.flexGrow = 1;
-            _contentSlot.Add(clone);
-            _createStandaloneDialog = new CreateStandaloneDialog(clone);
-            _createStandaloneDialog.OnStartClicked += OnCreateStandaloneRequested;
-            _createStandaloneDialog.OnCancelClicked += ShowHome;
+            TransitionTo(() => {
+                ClearContent();
+                var clone = createStandaloneDialogAsset.CloneTree();
+                clone.style.flexGrow = 1;
+                _contentSlot.Add(clone);
+                _createStandaloneDialog = new CreateStandaloneDialog(clone);
+                _createStandaloneDialog.OnStartClicked += OnCreateStandaloneRequested;
+                _createStandaloneDialog.OnCancelClicked += ShowHome;
 
-            _state = State.CreateStandalone;
-            StartStandaloneOrchestrator();
+                _state = State.CreateStandalone;
+                StartStandaloneOrchestrator();
+            });
         }
 
         private void ShowLobby()
         {
-            ClearContent();
-            var clone = lobbyDialogAsset.CloneTree();
-            clone.style.flexGrow = 1;
-            _contentSlot.Add(clone);
-            _lobbyDialog = new LobbyDialog(clone);
-            _lobbyDialog.OnStartClicked += OnStartSessionRequested;
-            _lobbyDialog.OnLeaveClicked += OnLeaveSessionRequested;
+            TransitionTo(() => {
+                ClearContent();
+                var clone = lobbyDialogAsset.CloneTree();
+                clone.style.flexGrow = 1;
+                _contentSlot.Add(clone);
+                _lobbyDialog = new LobbyDialog(clone);
+                _lobbyDialog.OnStartClicked += OnStartSessionRequested;
+                _lobbyDialog.OnLeaveClicked += OnLeaveSessionRequested;
 
-            _lobbyDialog.SetIsMaster(VRTOrchestratorSingleton.Login.UserIsMaster);
-            _lobbyDialog.SetSession(VRTOrchestratorSingleton.Login.CurrentSession);
+                _lobbyDialog.SetIsMaster(VRTOrchestratorSingleton.Login.UserIsMaster);
+                _lobbyDialog.SetSession(VRTOrchestratorSingleton.Login.CurrentSession);
 
-            _state = State.Lobby;
-            AutoStart_OnLobby();
+                _state = State.Lobby;
+                AutoStart_OnLobby();
+            });
         }
 
         private void ClearContent()

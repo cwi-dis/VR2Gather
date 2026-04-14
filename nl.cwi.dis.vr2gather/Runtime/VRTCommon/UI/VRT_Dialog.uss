@@ -1,3 +1,10 @@
+/* Fade transition on the main content slot and settings form */
+#Content, #FormScrollView {
+    transition-property: opacity;
+    transition-duration: 0.15s;
+    transition-timing-function: ease-in-out;
+}
+
 /* Outer panel */
 .vrt-dialog {
     flex-grow: 1;

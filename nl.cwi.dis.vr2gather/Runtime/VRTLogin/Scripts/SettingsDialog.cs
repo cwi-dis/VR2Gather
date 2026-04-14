@@ -16,6 +16,9 @@ namespace VRT.Login
         public event Action OnSaveClicked;
         public event Action OnCancelClicked;
 
+        private const int TransitionFadeMs = 150;
+        private readonly ScrollView _formScrollView;
+
         // Always-visible fields
         private readonly TextField _userNameField;
         private readonly DropdownField _representationDropdown;
@@ -46,6 +49,7 @@ namespace VRT.Login
 
         public SettingsDialog(VisualElement root)
         {
+            _formScrollView = root.Q<ScrollView>("FormScrollView");
             _userNameField = root.Q<TextField>("UserNameField");
             _representationDropdown = root.Q<DropdownField>("RepresentationDropdown");
             _webcamDropdown = root.Q<DropdownField>("WebcamDropdown");
@@ -76,8 +80,18 @@ namespace VRT.Login
 
             PopulateFromConfig();
 
-            _representationDropdown.RegisterValueChangedCallback(_ => UpdateVisibility());
-            _pointcloudVariantDropdown.RegisterValueChangedCallback(_ => UpdateVisibility());
+            _representationDropdown.RegisterValueChangedCallback(_ => FadeAndUpdateVisibility());
+            _pointcloudVariantDropdown.RegisterValueChangedCallback(_ => FadeAndUpdateVisibility());
+        }
+
+        private void FadeAndUpdateVisibility()
+        {
+            _formScrollView.style.opacity = 0;
+            _formScrollView.schedule.Execute(() =>
+            {
+                UpdateVisibility();
+                _formScrollView.style.opacity = 1;
+            }).StartingIn(TransitionFadeMs);
         }
 
         private static void SetVisible(VisualElement el, bool visible)
