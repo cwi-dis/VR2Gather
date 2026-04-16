@@ -22,17 +22,17 @@
     },
     "AutoStartConfig": {
         "autoCreate": false,
-        "autoCreateStandalone": true,
+        "autoCreateStandalone": false,
         "autoJoin": false,
-        "autoCreateForUser": "",
-        "sessionName": "local-test",
+        "autoCreateForUser": "sap",
+        "sessionName": "autostart-test",
         "sessionScenario": "Empty",
         "sessionTransportProtocol": "",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": -1,
-        "autoLeaveAfter": 0.0,
-        "autoStopAfterLeave": false,
+        "autoStartWith": 2,
+        "autoLeaveAfter": 15.0,
+        "autoStopAfterLeave": true,
         "autoDelay": 0.1
     },
     "TransportDashConfig": {

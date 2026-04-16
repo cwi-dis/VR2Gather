@@ -258,6 +258,11 @@ namespace VRT.Login
                 _lobbyDialog.SetIsMaster(VRTOrchestratorSingleton.Login.UserIsMaster);
                 _lobbyDialog.SetSession(VRTOrchestratorSingleton.Login.CurrentSession);
 
+                int autoStartWith = VRTConfig.Instance.AutoStartConfig.autoStartWith;
+                if (autoStartWith > 0)
+                    _lobbyDialog.SetAutoStartInfo($"AutoStart: waiting for {autoStartWith} participant{(autoStartWith == 1 ? "" : "s")}");
+
+
                 _state = State.Lobby;
                 AutoStart_OnLobby();
             });
@@ -729,6 +734,7 @@ namespace VRT.Login
         {
             var config = VRTConfig.Instance.AutoStartConfig;
             if (!_pendingAutoJoin || string.IsNullOrEmpty(config.sessionName)) return;
+            _joinDialog?.SetStatus($"AutoJoin: waiting for session \"{config.sessionName}\"");
             Invoke(nameof(AutoStart_TriggerJoin), config.autoDelay);
         }
 
@@ -739,7 +745,10 @@ namespace VRT.Login
 
         private void AutoStart_OnLobby()
         {
-            // Nothing extra; lobby checks user count on each update.
+            // Check immediately in case we're already at the required user count.
+            var session = VRTOrchestratorSingleton.Login?.CurrentSession;
+            if (session != null)
+                AutoStart_OnLobbyUpdated(session);
         }
 
         private void AutoStart_OnLobbyUpdated(Session session)

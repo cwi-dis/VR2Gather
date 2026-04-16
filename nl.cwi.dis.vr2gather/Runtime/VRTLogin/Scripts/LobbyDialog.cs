@@ -18,6 +18,7 @@ namespace VRT.Login
         private readonly Label _sessionDescriptionLabel;
         private readonly Label _scenarioLabel;
         private readonly Label _userCountLabel;
+        private readonly Label _autoStartLabel;
         private readonly ScrollView _userListScrollView;
         private readonly Button _startButton;
 
@@ -27,6 +28,7 @@ namespace VRT.Login
             _sessionDescriptionLabel = root.Q<Label>("SessionDescriptionLabel");
             _scenarioLabel = root.Q<Label>("ScenarioLabel");
             _userCountLabel = root.Q<Label>("UserCountLabel");
+            _autoStartLabel = root.Q<Label>("AutoStartLabel");
             _userListScrollView = root.Q<ScrollView>("UserListScrollView");
             _startButton = root.Q<Button>("StartButton");
 
@@ -35,6 +37,11 @@ namespace VRT.Login
 
             // Start hidden until we know if user is master
             _startButton.style.display = DisplayStyle.None;
+        }
+
+        public void SetAutoStartInfo(string message)
+        {
+            _autoStartLabel.text = message;
         }
 
         public void SetIsMaster(bool isMaster)
