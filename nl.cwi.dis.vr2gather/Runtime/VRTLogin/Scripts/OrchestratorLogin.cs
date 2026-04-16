@@ -80,8 +80,9 @@ namespace VRT.Login
         private CreateSessionData _pendingSessionData;
         private bool _pendingAutoCreate;
         private bool _pendingAutoJoin;
-        private string _pendingAutoJoinName;
-        private int _autoStartWithUsers = -1;
+        private bool _pendingAutoCreateStandalone;
+        private bool _autoStartDone;
+        private bool _autoStartAlreadyStarted;
 
         // ── Unity lifecycle ─────────────────────────────────────────────────────
 
@@ -596,34 +597,52 @@ namespace VRT.Login
         private void AutoStart_OnHome()
         {
             var config = VRTConfig.Instance.AutoStartConfig;
-            if (config == null || !config.autoLogin) return;
-            if (Keyboard.current != null && Keyboard.current.shiftKey.isPressed)
-            {
-                Debug.Log("OrchestratorLogin: AutoStart suppressed (Shift held)");
-                return;
-            }
-
+            if (config == null || _autoStartDone) return;
             string userName = VRTConfig.Instance.RepresentationConfig.userName;
-            // If autoCreateForUser is set, create for that user and join for all others.
             if (!string.IsNullOrEmpty(config.autoCreateForUser))
             {
                 bool isCreateUser = config.autoCreateForUser.Equals(userName, StringComparison.OrdinalIgnoreCase);
                 _pendingAutoCreate = isCreateUser;
                 _pendingAutoJoin = !isCreateUser;
+                _pendingAutoCreateStandalone = false;
             }
             else
             {
                 _pendingAutoCreate = config.autoCreate;
                 _pendingAutoJoin = config.autoJoin;
+                _pendingAutoCreateStandalone = config.autoCreateStandalone;
             }
 
-            _pendingAutoJoinName = config.sessionName;
-            _autoStartWithUsers = config.autoStartWith;
+            if (!_pendingAutoCreate && !_pendingAutoJoin && !_pendingAutoCreateStandalone) return;
+
+            int count = (_pendingAutoCreate ? 1 : 0) + (_pendingAutoJoin ? 1 : 0) + (_pendingAutoCreateStandalone ? 1 : 0);
+            if (count > 1)
+            {
+                Debug.LogError("OrchestratorLogin: AutoStart config error — multiple auto-actions requested. Suppressing auto-start.");
+                _pendingAutoCreate = _pendingAutoJoin = _pendingAutoCreateStandalone = false;
+                return;
+            }
+
+            _autoStartAlreadyStarted = false;
+            _autoStartDone = true;
+            // Defer the actual trigger so the user has autoDelay seconds to press CapsLock.
+            Invoke(nameof(AutoStart_Fire), config.autoDelay);
+        }
+
+        private void AutoStart_Fire()
+        {
+            if (Keyboard.current != null && Keyboard.current.capsLockKey.isPressed)
+            {
+                Debug.Log("OrchestratorLogin: AutoStart suppressed (CapsLock held)");
+                return;
+            }
 
             if (_pendingAutoCreate)
-                Invoke(nameof(ShowCreate), config.autoDelay);
+                ShowCreate();
             else if (_pendingAutoJoin)
-                Invoke(nameof(ShowJoin), config.autoDelay);
+                ShowJoin();
+            else
+                ShowCreateStandalone();
         }
 
         private void AutoStart_OnCreate()
@@ -674,8 +693,7 @@ namespace VRT.Login
 
         private void AutoStart_OnCreateStandalone()
         {
-            // Same as Create autostart path but for standalone.
-            if (!_pendingAutoCreate) return;
+            if (!_pendingAutoCreateStandalone) return;
             var config = VRTConfig.Instance.AutoStartConfig;
             _createStandaloneDialog?.AutoFill(config);
             Invoke(nameof(AutoStart_TriggerCreateStandalone), config.autoDelay);
@@ -709,14 +727,14 @@ namespace VRT.Login
 
         private void AutoStart_OnSessionsLoaded(Session[] sessions)
         {
-            if (!_pendingAutoJoin || string.IsNullOrEmpty(_pendingAutoJoinName)) return;
             var config = VRTConfig.Instance.AutoStartConfig;
+            if (!_pendingAutoJoin || string.IsNullOrEmpty(config.sessionName)) return;
             Invoke(nameof(AutoStart_TriggerJoin), config.autoDelay);
         }
 
         private void AutoStart_TriggerJoin()
         {
-            _joinDialog?.AutoJoin(_pendingAutoJoinName);
+            _joinDialog?.AutoJoin(VRTConfig.Instance.AutoStartConfig.sessionName);
         }
 
         private void AutoStart_OnLobby()
@@ -726,14 +744,14 @@ namespace VRT.Login
 
         private void AutoStart_OnLobbyUpdated(Session session)
         {
-            if (_autoStartWithUsers <= 0) return;
+            var config = VRTConfig.Instance.AutoStartConfig;
+            if (config.autoStartWith <= 0 || _autoStartAlreadyStarted) return;
             if (VRTOrchestratorSingleton.Login == null || !VRTOrchestratorSingleton.Login.UserIsMaster) return;
 
             var users = session.GetUsers();
-            if (users != null && users.Length >= _autoStartWithUsers)
+            if (users != null && users.Length >= config.autoStartWith)
             {
-                var config = VRTConfig.Instance.AutoStartConfig;
-                _autoStartWithUsers = -1;  // prevent re-triggering
+                _autoStartAlreadyStarted = true;
                 Invoke(nameof(OnStartSessionRequested), config.autoDelay);
             }
         }

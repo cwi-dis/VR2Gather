@@ -80,14 +80,12 @@ namespace VRT.Core
             // - automatically create a session with a given name and parameters
             // - automatically join a session of a given name
             // - automatically start a session when enough people have joined
-            [Tooltip("Ignore autoStart settings when in developer mode")]
-            public bool ignoreAutoStartForDeveloper = false;
-            [Tooltip("Automatically login with predefined credentials")]
-            public bool autoLogin = false;
-            [Tooltip("Automatically create a session")]
+            [Tooltip("Automatically create a networked session")]
             public bool autoCreate = false;
+            [Tooltip("Automatically create a standalone (local) session")]
+            public bool autoCreateStandalone = false;
             [Tooltip("Automatically join a session")]
-            public bool autoJoin = true;
+            public bool autoJoin = false;
             [Tooltip("If not empty: autoCreate for this user, autoJoin for all others")]
             public string autoCreateForUser = "";
             [Tooltip("AutoCreate and AutoJoin:Session name")]
