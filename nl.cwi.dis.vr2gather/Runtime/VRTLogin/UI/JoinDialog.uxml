@@ -1,0 +1,16 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_UI_StyleSheet.uss?fileID=7433441132597879392&amp;guid=01f34e88dae28498bac043b07f25038f&amp;type=3#VRT_UI_StyleSheet"/>
+    <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_Dialog.uss?fileID=7433441132597879392&amp;guid=ccade230efe254913ba526093cc7263e&amp;type=3#VRT_Dialog"/>
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:Label name="StatusLabel" text="Connecting to orchestrator..." style="color: rgb(255, 200, 0); font-size: 20px; margin-bottom: 12px;"/>
+        <!-- Session list: each entry is a Button for click-to-select -->
+        <ui:ScrollView name="SessionListScrollView" mode="Vertical" vertical-scroller-visibility="AlwaysVisible" style="flex-grow: 1; min-height: 250px; background-color: rgba(0, 0, 0, 0.3); margin-bottom: 8px;"/>
+        <ui:Label name="SessionDescriptionLabel" text="" style="color: rgba(255, 255, 255, 0.7); font-size: 20px; min-height: 60px; margin-bottom: 8px;"/>
+        <ui:VisualElement style="flex-direction: row; align-items: center; margin-top: 8px;">
+            <ui:Button name="RefreshButton" text="Refresh" class="vrt-small-button"/>
+            <ui:VisualElement style="flex-grow: 1;"/>
+            <ui:Button name="CancelButton" text="Cancel"/>
+            <ui:Button name="JoinButton" text="Join Session"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

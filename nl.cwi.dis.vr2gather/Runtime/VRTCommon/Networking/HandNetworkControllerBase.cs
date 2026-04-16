@@ -1,7 +1,8 @@
 ﻿using System;
 using UnityEngine;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
+using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {
@@ -52,22 +53,24 @@ namespace VRT.Pilots.Common
 
 		protected PlayerNetworkControllerBase _Player;
 
-		bool subscribed = false;
+		protected virtual void Awake()
+		{
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
+		}
 
 		protected virtual void Start()
 		{
 			_Player = GetComponentInParent<PlayerNetworkControllerBase>();
-
-            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
-            OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
-			subscribed = true;
 		}
 
-		private void OnDestroy()
+		protected virtual void OnEnable()
 		{
-			if (!subscribed) return;
-			subscribed = false;
-			OrchestratorController.Instance.Unsubscribe<HandControllerData>(OnHandControllerData);
+			VRTOrchestratorSingleton.Comm.Subscribe<HandControllerData>(OnHandControllerData);
+		}
+
+		protected virtual void OnDisable()
+		{
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 
 		protected void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
@@ -80,9 +83,9 @@ namespace VRT.Pilots.Common
 			}
 			//If we're not master, inform the master
 			//And then execute the event locally already instead of waiting for it to return
-			if (!OrchestratorController.Instance.UserIsMaster)
+			if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(handGrabEvent);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(handGrabEvent);
 			}
 			else
 			{
@@ -123,9 +126,9 @@ namespace VRT.Pilots.Common
 			//
 			if (!_Player.IsLocalPlayer && _Player.UserId == data.SenderId)
 			{
-				if (OrchestratorController.Instance.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					OrchestratorController.Instance.SendTypeEventToAll(data, true);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data, true);
 				}
 
 				if (data.handHandedness == handHandedness)

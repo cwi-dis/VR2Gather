@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
+using VRT.OrchestratorComm;
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace VRT.Pilots.Common
@@ -44,14 +45,14 @@ namespace VRT.Pilots.Common
         protected override void Awake()
 		{
 			base.Awake();
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
 
 		}
 		public void OnEnable()
 		{
 			VRTGrabbableManager.RegisterGrabbable(this);
 
-			OrchestratorController.Instance.Subscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
+			VRTOrchestratorSingleton.Comm.Subscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void OnDisable()
@@ -59,11 +60,12 @@ namespace VRT.Pilots.Common
 			
 			VRTGrabbableManager.UnregisterGrabbable(this);
 
-			OrchestratorController.Instance.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void Update()
 		{
+			if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
 			// If the local user is not grabbing this grabble we have nothing to do.
 			if (!isGrabbed) return;
 			// xxxjack bail out if sending too many updates
@@ -83,13 +85,13 @@ namespace VRT.Pilots.Common
 				Position = Rigidbody.transform.position,
 				Rotation = Rigidbody.transform.rotation
 			};
-			if (!OrchestratorController.Instance.UserIsMaster)
+			if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(message);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(message);
 			}
 			else
 			{
-				OrchestratorController.Instance.SendTypeEventToAll(message);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(message);
 			}
 		}
 
@@ -134,9 +136,9 @@ namespace VRT.Pilots.Common
 				return;
 			}
 			// If we are master we also forward the message
-			if (OrchestratorController.Instance.UserIsMaster)
+			if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToAll(rigidBodySyncMessage, true);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(rigidBodySyncMessage, true);
 			}
 			Rigidbody.Sleep();
 			Rigidbody.transform.position = rigidBodySyncMessage.Position;

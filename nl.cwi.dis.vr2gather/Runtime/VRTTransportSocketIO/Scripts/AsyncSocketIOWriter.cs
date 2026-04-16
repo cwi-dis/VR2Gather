@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS
@@ -40,7 +40,7 @@ namespace VRT.Transport.SocketIO
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
-                OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
+                VRTOrchestratorSingleton.Streams.DeclareDataStream(streams[i].name);
             }
             try
             {
@@ -75,13 +75,19 @@ namespace VRT.Transport.SocketIO
                     streams[i].inQueue.Close();
                 }
             }
-            OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
+            if (streams != null)
+            {
+                for (int i = 0; i < streams.Length; ++i)
+                {
+                    VRTOrchestratorSingleton.Streams?.RemoveDataStream(streams[i].name);
+                }
+            }
             base.AsyncOnStop();
         }
 
         protected override void AsyncUpdate()
         {
-            if (OrchestratorWrapper.instance != null && OrchestratorController.Instance.ConnectedToOrchestrator)
+            if (VRTOrchestratorSingleton.Streams != null)
             {
                 for (int i = 0; i < streams.Length; ++i)
                 {
@@ -98,7 +104,7 @@ namespace VRT.Transport.SocketIO
                     var buf = new byte[chk.length+sizeof(long)];
                     Array.Copy(hdr_timestamp, buf, sizeof(long));
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
-                    OrchestratorWrapper.instance.SendData(streams[i].name, buf);
+                    VRTOrchestratorSingleton.Streams.SendData(streams[i].name, buf);
 #if VRT_WITH_STATS
                     stats.statsUpdate(chk.length, i);
 #endif

@@ -1,5 +1,6 @@
 using UnityEngine;
 using VRT.Core;
+using VRT.Orchestrator;
 
 namespace VRT.Pilots.Common
 {
@@ -16,14 +17,39 @@ namespace VRT.Pilots.Common
             isPreviewPlayer = previewPlayer;
         }
 
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Elements.User user)
+        public override void SetUpOtherPlayerController(VRT.Orchestrator.User user)
         {
-            if (!_isLocalPlayer)
-            {
-                Debug.LogError($"{Name()}: isLocalPlayer==false");
-            }
+            Debug.LogError($"{Name()}: SetUpOtherPlayerController() called");
+        }
+        
+        public override void SetUpSelfPlayerController()
+        {
             isLocalPlayer = true;
-            _SetupCommon(user);
+            User selfUser;
+            if (VRTOrchestratorSingleton.Comm != null)
+            {
+                selfUser = VRTOrchestratorSingleton.Comm.SelfUser;
+            }
+            else
+            {
+                // xxxjack ugly workaround for user not being initialized yet because the
+                // orchestrator doesn't exist yet.
+                var config = VRTConfig.Instance.RepresentationConfig;
+                selfUser = new User
+                {
+                    userId = "standalone-userid",
+                    userName = name,
+                    userData = new UserData
+                    {
+                        userRepresentation = config.representation,
+                        hasVoice = !string.IsNullOrEmpty(config.microphoneName) && config.microphoneName != "None",
+                        userRepresentationTCPUrl = config.userRepresentationTCPUrl,
+                    }
+                };
+
+            }
+
+            _SetupCommon(selfUser);
             setupCamera();
             LoadCameraTransform();
         }

@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
+using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {
@@ -32,6 +31,7 @@ namespace VRT.Pilots.Common
 		}
 		void SendPlayerData()
 		{
+			if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
 			if (playerController == null)
 			{
 				Debug.LogError($"{Name()}: SendPlayerData with no playerController. Probably SetupPlayerNetworkController was not called.");
@@ -67,13 +67,13 @@ namespace VRT.Pilots.Common
 				BodySize = BodySize
 			};
 
-			if (OrchestratorController.Instance.UserIsMaster)
+			if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToAll(data);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
 			}
 			else
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(data);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
 			}
 			// Print a warning if it was preposterously long ago that we last sent this message
 			if (_LastSendTime > 0 && Time.realtimeSinceStartup > _LastSendTime + 10.0)

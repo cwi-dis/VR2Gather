@@ -26,11 +26,14 @@ namespace VRT.Pilots.Common
         [Tooltip("Allow direct interaction in this scene (default: ray-based and keyboard/mouse")]
         [SerializeField] protected bool allowDirectInteractionInScene;
 
-        [Tooltip("Set for scenes that are not networked")]
-        public bool sceneIsSingleUser = false;
-
         [Tooltip("Next scene when session ends. Empty to stop playback.")]
         public string NextSceneOnSessionEnd = "VRTLoginManager";
+
+        /// <summary>
+        /// True once the session leave process has started. Components that use
+        /// VRTOrchestratorSingleton.Comm should check this before sending messages.
+        /// </summary>
+        [NonSerialized] public bool IsLeavingSession = false;
 
         [Tooltip("Direct interaction disabled now because of UI visible (introspection/debug)")]
         [DisableEditing] [SerializeField] protected bool m_directInteractionDisabled;
@@ -55,15 +58,33 @@ namespace VRT.Pilots.Common
             Debug.Log($"{Name()}: Awake.");
         }
 
+        /// <summary>
+        /// Call when the session is ending (button press, session creator leaving, etc.).
+        /// Sets IsLeavingSession and triggers the scene transition.
+        /// If sessionAlreadyLeft is false (default), asks the SessionController to leave
+        /// the session first; the scene load happens when the leave is confirmed via
+        /// OnLeaveSessionHandler. If sessionAlreadyLeft is true (e.g. forced out because
+        /// the master left), skips the leave step and loads the new scene immediately.
+        /// </summary>
+        public void TerminateScene(bool sessionAlreadyLeft = false)
+        {
+            IsLeavingSession = true;
+            if (!sessionAlreadyLeft)
+            {
+                SessionController ctrl = GetComponent<SessionController>();
+                if (ctrl != null)
+                {
+                    ctrl.LeaveSession();
+                    return; // LoadNewScene called from OnLeaveSessionHandler
+                }
+            }
+            LoadNewScene();
+        }
+
         private void OnApplicationQuit()
         {
-            SessionController ctrl = GetComponent<SessionController>();
-            if (ctrl != null)
-            {
-                Debug.Log($"{Name()}: OnApplicationQuit: Leaving session.");
-
-                ctrl.LeaveSession();
-            }
+            Debug.Log($"{Name()}: OnApplicationQuit: Leaving session.");
+            TerminateScene();
         }
 
         /// <summary>
@@ -142,15 +163,7 @@ namespace VRT.Pilots.Common
         {
             if (command == "leave")
             {
-                SessionController ctrl = GetComponent<SessionController>();
-                if (ctrl != null)
-                {
-                    ctrl.LeaveSession();
-                }
-                else
-                {
-                    LoadNewScene();
-                }
+                TerminateScene();
                 return true;
             }
             if (command == "exit")

@@ -176,6 +176,12 @@ namespace VRT.Pilots.Common
 
         public void FillError(string title, string message)
         {
+            // First we filter out some messages that are not interesting to the end user.
+            if (message.Contains("Hand Tracking Subsystem not found or not running",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
             string newMessage = $"{title}: {message}";
             if (filterDuplicates)
             {

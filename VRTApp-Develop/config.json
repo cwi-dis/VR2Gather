@@ -21,20 +21,19 @@
         "filenameTemplate": "Frame{framenum}.png"
     },
     "AutoStartConfig": {
-        "ignoreAutoStartForDeveloper": false,
-        "autoLogin": false,
         "autoCreate": false,
-        "autoJoin": true,
-        "autoCreateForUser": "",
-        "sessionName": "",
-        "sessionScenario": "",
+        "autoCreateStandalone": false,
+        "autoJoin": false,
+        "autoCreateForUser": "sap",
+        "sessionName": "autostart-test",
+        "sessionScenario": "Empty",
         "sessionTransportProtocol": "",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": -1,
-        "autoLeaveAfter": 0.0,
-        "autoStopAfterLeave": false,
-        "autoDelay": 0.20000000298023225
+        "autoStartWith": 2,
+        "autoLeaveAfter": 15.0,
+        "autoStopAfterLeave": true,
+        "autoDelay": 0.1
     },
     "TransportDashConfig": {
         "segmentSize": 4000,
