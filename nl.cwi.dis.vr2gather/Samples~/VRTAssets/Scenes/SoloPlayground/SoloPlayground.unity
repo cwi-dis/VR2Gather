@@ -1063,9 +1063,8 @@ MonoBehaviour:
     preDeleteTargetDirectory: 1
     filenameTemplate: Frame{framenum}.png
   AutoStartConfig:
-    ignoreAutoStartForDeveloper: 0
-    autoLogin: 0
     autoCreate: 0
+    autoCreateStandalone: 0
     autoJoin: 1
     autoCreateForUser: 
     sessionName: 
@@ -1229,6 +1228,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008644666887661629, guid: 59713b3d4e69349238a95c35e9f8994b,
+        type: 3}
+      propertyPath: traceCalls
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9008644666887661629, guid: 59713b3d4e69349238a95c35e9f8994b,
+        type: 3}
+      propertyPath: autoCreateSession
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2760,7 +2769,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1820810855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3701,6 +3710,16 @@ PrefabInstance:
     - target: {fileID: 2454423965594524020, guid: e4a2ad980cb30454eab747ddbac46ff6,
         type: 3}
       propertyPath: startFadedOut
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3243726772900871907, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: NetworkId
+      value: c848ee35-833d-4853-871b-2601c9b4cd20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3243726772900871907, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7957250788412427322, guid: e4a2ad980cb30454eab747ddbac46ff6,
