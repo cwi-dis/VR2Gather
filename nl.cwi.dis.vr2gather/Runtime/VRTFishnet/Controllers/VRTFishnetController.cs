@@ -78,14 +78,14 @@ namespace VRT.Fishnet {
 
         public virtual void OnEnable()
         {
-            OrchestratorController.Instance.Subscribe<FishnetStartupData>(StartFishnetClient);
-            OrchestratorController.Instance.Subscribe<FishnetMessage>(FishnetMessageReceived);
+            VRTOrchestratorSingleton.Comm.Subscribe<FishnetStartupData>(StartFishnetClient);
+            VRTOrchestratorSingleton.Comm.Subscribe<FishnetMessage>(FishnetMessageReceived);
         }
 
 
         public virtual void OnDisable()
         {
-            OrchestratorController.Instance.Unsubscribe<FishnetStartupData>(StartFishnetClient);
+            VRTOrchestratorSingleton.Comm.Unsubscribe<FishnetStartupData>(StartFishnetClient);
             if (_clientState != LocalConnectionState.Stopped) {
                 if (debug) Debug.Log($"{Name()}: Stopping client");
                 _networkManager.ClientManager.StopConnection();
@@ -101,7 +101,7 @@ namespace VRT.Fishnet {
         {
             if (debug) Debug.Log($"{Name()}: Starting VRTFishnetController");
 
-            if (OrchestratorController.Instance.UserIsMaster) {
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster) {
                 if (debug) Debug.Log($"{Name()}: Firing Startup Coroutine");
 
                 StartCoroutine("FishnetStartup");
@@ -135,7 +135,7 @@ namespace VRT.Fishnet {
             // xxxjack This will only be run on the master. Use a VR2Gather Orchestrator message to have all session participants call StartFishnetClient.
             // xxxjack maybe we ourselves (the master) have to call it also, need to check.
             FishnetStartupData serverData = new();
-            OrchestratorController.Instance.SendTypeEventToAll(serverData);
+            VRTOrchestratorSingleton.Comm.SendTypeEventToAll(serverData);
             // We don't start the fishnet client yet, we do that later, after we have told
             // the fishnet server about this connection.
             // StartFishnetClient(serverData);
@@ -170,7 +170,7 @@ namespace VRT.Fishnet {
         void FishnetMessageReceived(FishnetMessage message) 
         {
             string senderId = message.SenderId;
-            string connectionOwnerId = OrchestratorController.Instance.CurrentSession.GetUserByIndex(message.connectionId).userId;
+            string connectionOwnerId = VRTOrchestratorSingleton.Comm.CurrentSession.GetUserByIndex(message.connectionId).userId;
             if (senderId != connectionOwnerId) {
                 Debug.LogWarning($"{Name()}: FishnetMessageReceived: connectionId {message.connectionId} is owned by {connectionOwnerId} but got message from {senderId}");
             }
@@ -183,8 +183,8 @@ namespace VRT.Fishnet {
 
         public void SendToServer(byte channelId, ArraySegment<byte> segment)
         {
-            string userId = OrchestratorController.Instance.SelfUser.userId;
-            int connectionId = OrchestratorController.Instance.CurrentSession.GetUserIndex(userId);
+            string userId = VRTOrchestratorSingleton.Comm.SelfUser.userId;
+            int connectionId = VRTOrchestratorSingleton.Comm.CurrentSession.GetUserIndex(userId);
             FishnetMessage message = new() {
                 toServer = true,
                 connectionId = connectionId,
@@ -194,20 +194,20 @@ namespace VRT.Fishnet {
             if (debug) Debug.Log($"{Name()}: SendToServer(connectionId={connectionId}, channelId={channelId}, {message.fishnetPayload.Length} bytes)");
             // The orchestrator receiver code filters out messages coming from self.
             // So we short-circuit that here.
-            if (OrchestratorController.Instance.UserIsMaster) {
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster) {
                 if (debug) Debug.Log($"{Name()}: SendToServer: Short-circuit message to self, we are master.");
                 message.SenderId = userId;
                 FishnetMessageReceived(message);
             }
             else
             {
-                OrchestratorController.Instance.SendTypeEventToMaster<FishnetMessage>(message);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToMaster<FishnetMessage>(message);
             }        
         }
         
         public void SendToClient(byte channelId, ArraySegment<byte> segment, int connectionId)
         {
-            User user = OrchestratorController.Instance.CurrentSession.GetUserByIndex(connectionId);
+            User user = VRTOrchestratorSingleton.Comm.CurrentSession.GetUserByIndex(connectionId);
             string userId = user.userId;
             FishnetMessage message = new() {
                 toServer = false,
@@ -218,14 +218,14 @@ namespace VRT.Fishnet {
             if (debug) Debug.Log($"{Name()}: SendToClient(channelId={channelId}, {message.fishnetPayload.Length} bytes, connectionId={connectionId}) -> {userId}");
             // The orchestrator receiver code filters out messages coming from self.
             // So we short-circuit that here.
-            if (userId == OrchestratorController.Instance.SelfUser.userId) {
+            if (userId == VRTOrchestratorSingleton.Comm.SelfUser.userId) {
                 if (debug) Debug.Log($"{Name()}: SendToClient: Short-circuit message to self.");
                 message.SenderId = userId;
                 FishnetMessageReceived(message);
             }
             else
             {
-                OrchestratorController.Instance.SendTypeEventToUser<FishnetMessage>(userId, message);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToUser<FishnetMessage>(userId, message);
             }
         }
 
@@ -234,7 +234,7 @@ namespace VRT.Fishnet {
             if (!didForwardConnectionRequests && transport.VRTIsConnected(true)) {
                 if (debug) Debug.Log($"{Name()}: IterateIncoming: forward new connections to {transport.Name()}");
                 
-                for (int connectionId = 0; connectionId < OrchestratorController.Instance.CurrentSession.GetUserCount(); connectionId++) {
+                for (int connectionId = 0; connectionId < VRTOrchestratorSingleton.Comm.CurrentSession.GetUserCount(); connectionId++) {
                     transport.VRTHandleConnectedViaOrchestrator(connectionId);
                 }
                 
@@ -255,7 +255,7 @@ namespace VRT.Fishnet {
         }
 
         public string GetConnectionAddress(int connectionId) {
-            User user = OrchestratorController.Instance.CurrentSession.GetUserByIndex(connectionId);
+            User user = VRTOrchestratorSingleton.Comm.CurrentSession.GetUserByIndex(connectionId);
             return user.userId;
         }
     }
