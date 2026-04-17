@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
+using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {
@@ -62,6 +60,7 @@ namespace VRT.Pilots.Common
 
         private void Update()
         {
+            if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
             if (oldState != handAppearance.state)
             {
                 oldState = handAppearance.state;
@@ -72,13 +71,13 @@ namespace VRT.Pilots.Common
                     handState = handAppearance.state
                 };
 
-                if (OrchestratorController.Instance.UserIsMaster)
+                if (VRTOrchestratorSingleton.Comm.UserIsMaster)
                 {
-                    OrchestratorController.Instance.SendTypeEventToAll(data);
+                    VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
                 }
                 else
                 {
-                    OrchestratorController.Instance.SendTypeEventToMaster(data);
+                    VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
                 }
             }
         }

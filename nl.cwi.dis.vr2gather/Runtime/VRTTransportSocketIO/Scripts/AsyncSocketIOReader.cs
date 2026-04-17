@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator.Implementation;
 using VRT.Core;
 using Cwipc;
-using VRT.Orchestrator.Responses;
+using VRT.Orchestrator;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -46,10 +46,10 @@ namespace VRT.Transport.SocketIO
                 {
                     this.descriptors[i].name = $"{userId}.{streamName}#{i}";
                     Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name} from {userId}");
-                    OrchestratorWrapper.instance.RegisterForDataStream(userId, this.descriptors[i].name);
+                    VRTOrchestratorSingleton.Streams.RegisterForDataStream(userId, this.descriptors[i].name);
                 }
 
-                OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
+                VRTOrchestratorSingleton.Streams.OnDataStreamReceived += OnDataPacketReceived;
 #if VRT_WITH_STATS
                 stats = new Stats(Name());
 #endif
@@ -90,8 +90,8 @@ namespace VRT.Transport.SocketIO
             for (int i = 0; i < descriptors.Length; ++i)
             {
                 descriptors[i].outQueue?.Close();
-                if (OrchestratorWrapper.instance != null && OrchestratorController.Instance.SelfUser != null)
-                    OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
+                if (VRTOrchestratorSingleton.Streams != null && VRTOrchestratorSingleton.Streams.SelfUser != null)
+                    VRTOrchestratorSingleton.Streams.UnregisterFromDataStream(VRTOrchestratorSingleton.Streams.SelfUser.userId, descriptors[i].name);
             }
         }
 

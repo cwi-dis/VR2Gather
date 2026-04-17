@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3392800643553741113}
   - component: {fileID: 226628461160567614}
   - component: {fileID: 6045866883838921279}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: P_HeadsUpDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -232,4 +232,4 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
     parent: {fileID: 6045866883838921279}
-  debug: 1
+  debug: 0

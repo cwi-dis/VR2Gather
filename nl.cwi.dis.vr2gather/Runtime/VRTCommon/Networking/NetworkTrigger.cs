@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
+using VRT.OrchestratorComm;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -35,18 +36,18 @@ namespace VRT.Pilots.Common
 		{
 			Debug.LogError($"{gameObject.name}: VR2Gather NetworkTrigger objects should not be used in VR2Gather-Fishnet");
 			base.Awake();
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTriggerData));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTriggerData));
 
 		}
 		public virtual void OnEnable()
 		{
-			OrchestratorController.Instance.Subscribe<NetworkTriggerData>(OnNetworkTrigger);
+			VRTOrchestratorSingleton.Comm.Subscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
 
 
 		public virtual void OnDisable()
 		{
-			OrchestratorController.Instance.Unsubscribe<NetworkTriggerData>(OnNetworkTrigger);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
 
 		/// <summary>
@@ -55,7 +56,7 @@ namespace VRT.Pilots.Common
 		/// </summary>
 		public override void Trigger()
 		{
-			if (MasterOnlyTrigger && !OrchestratorController.Instance.UserIsMaster)
+			if (MasterOnlyTrigger && !VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
 				Debug.Log($"{name}: Trigger ignored, masterOnly and this user is not master");
 				return;
@@ -71,17 +72,17 @@ namespace VRT.Pilots.Common
 				NetworkBehaviourId = NetworkId,
 			};
 
-			if (!OrchestratorController.Instance.UserIsMaster)
+			if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(triggerData);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(triggerData);
 			}
 			else
 			{
 				OnTrigger.Invoke();
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.CurrentSession.sessionId}");
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
-				OrchestratorController.Instance.SendTypeEventToAll(triggerData);
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(triggerData);
 			}
 		}
 
@@ -90,14 +91,14 @@ namespace VRT.Pilots.Common
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.CurrentSession.sessionId}");
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
 
 				OnTrigger.Invoke();
 
-				if (OrchestratorController.Instance.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					OrchestratorController.Instance.SendTypeEventToAll(data);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
 				}
 			}
 		}

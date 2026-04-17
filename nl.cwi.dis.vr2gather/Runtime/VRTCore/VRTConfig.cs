@@ -80,14 +80,12 @@ namespace VRT.Core
             // - automatically create a session with a given name and parameters
             // - automatically join a session of a given name
             // - automatically start a session when enough people have joined
-            [Tooltip("Ignore autoStart settings when in developer mode")]
-            public bool ignoreAutoStartForDeveloper = false;
-            [Tooltip("Automatically login with predefined credentials")]
-            public bool autoLogin = false;
-            [Tooltip("Automatically create a session")]
+            [Tooltip("Automatically create a networked session")]
             public bool autoCreate = false;
+            [Tooltip("Automatically create a standalone (local) session")]
+            public bool autoCreateStandalone = false;
             [Tooltip("Automatically join a session")]
-            public bool autoJoin = true;
+            public bool autoJoin = false;
             [Tooltip("If not empty: autoCreate for this user, autoJoin for all others")]
             public string autoCreateForUser = "";
             [Tooltip("AutoCreate and AutoJoin:Session name")]
@@ -237,6 +235,8 @@ namespace VRT.Core
         [Serializable]
         public class RepresentationConfigType
         {
+            [Tooltip("Username for this user (used when connecting to orchestrator)")]
+            public string userName = "";
             [SerializeField]
             [Tooltip("Representation of this user")]
             public UserRepresentationType representation = UserRepresentationType.SimpleAvatar;
@@ -460,15 +460,18 @@ namespace VRT.Core
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
             if (autoInventUsername) {
-                if (!PlayerPrefs.HasKey("userNameLoginIF")) {
-                    string userName = System.Environment.MachineName;
-                    userName = userName.ToLower();
-                    if (userName.Length > 20) {
-                        userName = userName.Substring(0, 20);
+                if (string.IsNullOrEmpty(RepresentationConfig.userName)) {
+                    // Migrate from PlayerPrefs if available, otherwise invent from machine name
+                    if (PlayerPrefs.HasKey("userNameLoginIF") && !string.IsNullOrEmpty(PlayerPrefs.GetString("userNameLoginIF"))) {
+                        RepresentationConfig.userName = PlayerPrefs.GetString("userNameLoginIF");
+                        Debug.Log($"VRTConfig: Migrated username from PlayerPrefs: {RepresentationConfig.userName}");
+                    } else {
+                        string invented = System.Environment.MachineName.ToLower();
+                        if (invented.Length > 20) invented = invented.Substring(0, 20);
+                        RepresentationConfig.userName = invented;
+                        Debug.Log($"VRTConfig: Invented username: {RepresentationConfig.userName}");
                     }
-                    Debug.Log($"VRTConfig: Invented username {userName}");
-                    PlayerPrefs.SetString("userNameLoginIF", userName);
-                    PlayerPrefs.Save();
+                    SaveUserConfig();
                 }
             }
         }

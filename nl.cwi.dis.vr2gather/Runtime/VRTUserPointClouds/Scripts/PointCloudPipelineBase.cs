@@ -5,7 +5,7 @@ using UnityEngine;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
-using VRT.Orchestrator.Elements;
+using VRT.Orchestrator;
 using Cwipc;
 using VRT.Core;
 using VRT.Pilots.Common;
@@ -50,7 +50,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         protected void SetupConfigDistributors()
         {
-            if (PilotController.Instance.sceneIsSingleUser) return;
             BaseConfigDistributor[] configDistributors = FindObjectsByType<BaseConfigDistributor>(FindObjectsSortMode.None);
             if (configDistributors != null)
             {

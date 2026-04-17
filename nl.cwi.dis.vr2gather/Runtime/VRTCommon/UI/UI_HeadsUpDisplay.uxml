@@ -25,15 +25,15 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="MessagesPanel" class="vrt-tab-panel vrt-tab-panel--active">
+                <ui:ScrollView name="MessagesScrollView" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="AlwaysVisible" mode="VerticalAndHorizontal" class="vrt-log-view">
+                    <ui:Label name="MessagesContent" text="Log output will show up here,&#10;And here."/>
+                </ui:ScrollView>
                 <ui:VisualElement name="MessagesToolbar" class="vrt-toolbar">
                     <ui:Toggle name="AutoShowMessagesToggle" label="Auto-show on new messages" value="true" class="vrt-checkbox"/>
                     <ui:Toggle name="FilterDuplicatesToggle" label="Filter duplicates" value="true" class="vrt-checkbox"/>
                     <ui:VisualElement style="flex-grow: 1;"/>
                     <ui:Button text="Clear" name="ClearMessagesButton" class="vrt-small-button"/>
                 </ui:VisualElement>
-                <ui:ScrollView name="MessagesScrollView" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="AlwaysVisible" mode="VerticalAndHorizontal" class="vrt-log-view">
-                    <ui:Label name="MessagesContent" text="Log output will show up here,&#10;And here."/>
-                </ui:ScrollView>
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

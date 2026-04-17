@@ -1,5 +1,6 @@
 using UnityEngine;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
+using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {
@@ -37,7 +38,7 @@ namespace VRT.Pilots.Common
 		{
 			Debug.LogError($"{gameObject.name}: VR2Gather RigidBodyNetworkController objects should not be used in VR2Gather-Fishnet");
 			base.Awake();
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidBodyData, typeof(RigidBodyData));
+			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_RigidBodyData, typeof(RigidBodyData));
 		}
 
 		void Start()
@@ -49,16 +50,17 @@ namespace VRT.Pilots.Common
 
 		public void OnEnable()
 		{
-			OrchestratorController.Instance.Subscribe<RigidBodyData>(OnRigidBodyData);
+			VRTOrchestratorSingleton.Comm.Subscribe<RigidBodyData>(OnRigidBodyData);
 		}
 
 		public void OnDisable()
 		{
-			OrchestratorController.Instance.Unsubscribe<RigidBodyData>(OnRigidBodyData);
+			VRTOrchestratorSingleton.Comm?.Unsubscribe<RigidBodyData>(OnRigidBodyData);
 		}
 
 		private void Update()
 		{
+			if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
 			float updateDelta = 1.0f / UpdateFrequency;
 			if (SyncAutomatically)
 			{
@@ -78,11 +80,11 @@ namespace VRT.Pilots.Common
 
 		public void DoSync()
 		{
-			if (OrchestratorController.Instance.UserIsMaster && Mode == RigidBodySyncMode.ServerOnly)
+			if (VRTOrchestratorSingleton.Comm.UserIsMaster && Mode == RigidBodySyncMode.ServerOnly)
 			{
 				_LastUpdateTime = Time.realtimeSinceStartup;
 
-				OrchestratorController.Instance.SendTypeEventToAll
+				VRTOrchestratorSingleton.Comm.SendTypeEventToAll
 					(
 						new RigidBodyData
 						{
@@ -103,13 +105,13 @@ namespace VRT.Pilots.Common
 					Rotation = transform.rotation
 				};
 
-				if (OrchestratorController.Instance.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					OrchestratorController.Instance.SendTypeEventToAll(data);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
 				}
 				else
 				{
-					OrchestratorController.Instance.SendTypeEventToMaster(data);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
 				}
 			}
 			else
@@ -120,16 +122,16 @@ namespace VRT.Pilots.Common
 
 		void OnRigidBodyData(RigidBodyData data)
 		{
-			if (data.NetworkBehaviourId == NetworkId && data.SenderId != OrchestratorController.Instance.SelfUser.userId)
+			if (data.NetworkBehaviourId == NetworkId && data.SenderId != VRTOrchestratorSingleton.Comm.SelfUser.userId)
 			{
 				if (SyncAutomatically && Mode == RigidBodySyncMode.Any)
 				{
 					Debug.LogWarning($"[NetworkTransformSyncBehaviour] {name} is set to sync automatically, but also receives sync data from another client! This is indicative of a bug!");
 				}
 
-				if (OrchestratorController.Instance.UserIsMaster)
+				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					OrchestratorController.Instance.SendTypeEventToAll(data, true);
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data, true);
 				}
 
 				_LastReceiveTime = Time.realtimeSinceStartup;

@@ -1,9 +1,8 @@
 using UnityEngine;
-using System.Collections.Generic;
-using VRT.Core;
 using Cwipc;
-using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
+using VRT.Orchestrator;
+using VRT.OrchestratorComm;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -21,24 +20,27 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void Awake()
         {
-            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_SyncConfigMessage, typeof(SyncConfigMessage));
+            VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_SyncConfigMessage, typeof(SyncConfigMessage));
         }
 
-         void Start()
+        void Start()
         {
             if (debug) Debug.Log($"SyncConfigDistributor: Started");
-            //Subscribe to incoming data of the type we're interested in. 
-            OrchestratorController.Instance.Subscribe<SyncConfigMessage>(OnSyncConfig);
         }
 
-        private void OnDestroy()
+        public void OnEnable()
         {
-            //If we no longer exist, we should unsubscribe. 
-            OrchestratorController.Instance.Unsubscribe<SyncConfigMessage>(OnSyncConfig);
+            VRTOrchestratorSingleton.Comm.Subscribe<SyncConfigMessage>(OnSyncConfig);
+        }
+
+        public void OnDisable()
+        {
+            VRTOrchestratorSingleton.Comm?.Unsubscribe<SyncConfigMessage>(OnSyncConfig);
         }
 
         void Update()
         {
+            if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
             // If we haven't been inited yet return.
             if (selfUserId == null || !pipelines.ContainsKey(selfUserId)) return;
             // Quick return if interval hasn't expired since last transmission.
@@ -59,16 +61,16 @@ namespace VRT.UserRepresentation.PointCloud
             if (debug) Debug.Log($"SyncConfigDistributor: sending sync information for user {selfUserId}");
             var data = new SyncConfigMessage { data = syncConfig };
 
-            if (OrchestratorController.Instance.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 //I'm the master, so I can directly send to all other users
-                OrchestratorController.Instance.SendTypeEventToAll(data);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
             }
             else
             {
                 //I'm not the master, so unfortunately the API forces me to send via the master
                 //The master can then forward it to all. 
-                OrchestratorController.Instance.SendTypeEventToMaster(data);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(data);
             }
 
         }
@@ -76,12 +78,12 @@ namespace VRT.UserRepresentation.PointCloud
         private void OnSyncConfig(SyncConfigMessage receivedData)
         {
 
-            if (OrchestratorController.Instance.UserIsMaster)
+            if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
                 //I'm the master, so besides handling the data, I should also make sure to forward it. 
                 //This is because the API, to ensure authoritative decisions, doesn't allow users to directly address others. 
                 //Same kind of call as usual, but with the extra "true" argument, which ensures we forward without overwriting the SenderId
-                OrchestratorController.Instance.SendTypeEventToAll(receivedData, true);
+                VRTOrchestratorSingleton.Comm.SendTypeEventToAll(receivedData, true);
             }
             // We need to check whether we're getting our own data back (due to forwarding by master). Drop if so.
             if (receivedData.SenderId == selfUserId) return;
