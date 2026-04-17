@@ -15,7 +15,7 @@ namespace VRT.Pilots.Common
     public class FixInteractables : MonoBehaviour
     {
         public XRInteractionManager interactionManager;
-        public TeleportationProvider teleportationProvider;
+        public UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationProvider teleportationProvider;
         public bool debug = false;
 
         // Start is called before the first frame update
@@ -23,7 +23,7 @@ namespace VRT.Pilots.Common
         {
             if (interactionManager == null)
             {
-                interactionManager = FindObjectOfType<XRInteractionManager>();
+                interactionManager = FindAnyObjectByType<XRInteractionManager>();
                 if (interactionManager == null)
                 {
                     Debug.Log("FixInteractables: Creating interaction manager");
@@ -31,11 +31,13 @@ namespace VRT.Pilots.Common
                     interactionManager = interactionManagerGO.GetComponent<XRInteractionManager>();
                 }
             }
-            if (teleportationProvider == null) teleportationProvider = GetComponent<TeleportationProvider>();
+            if (teleportationProvider == null) teleportationProvider = GetComponent<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationProvider>();
             if (teleportationProvider != null)
             {
                 if (debug) Debug.Log($"FixInteractables: installing teleportation");
-                var allTeleportations = FindObjectsOfType<BaseTeleportationInteractable>(true);
+                var allTeleportations =
+                    FindObjectsByType<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.
+                        BaseTeleportationInteractable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 foreach (var ta in allTeleportations)
                 {
                     ta.teleportationProvider = teleportationProvider;
@@ -45,7 +47,7 @@ namespace VRT.Pilots.Common
             if (interactionManager != null)
             {
                 if (debug) Debug.Log($"FixInteractables: installing interactables");
-                var allInteractables = FindObjectsOfType<XRBaseInteractable>(true);
+                var allInteractables = FindObjectsByType<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 foreach(var go in allInteractables)
                 {
                     go.interactionManager = interactionManager;

@@ -19,8 +19,8 @@ namespace VRT.Pilots.Common
         private void OnTriggerEnter(Collider other)
         {
             var otherGO = other.gameObject;
-            IXRActivateInteractor source = null;
-            IXRActivateInteractable target = otherGO.GetComponent<IXRActivateInteractable>(); // (IXRActivateInteractable)args.interactableObject;
+            UnityEngine.XR.Interaction.Toolkit.Interactors.IXRActivateInteractor source = null;
+            UnityEngine.XR.Interaction.Toolkit.Interactables.IXRActivateInteractable target = otherGO.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.IXRActivateInteractable>(); // (IXRActivateInteractable)args.interactableObject;
             if (target == null)
             {
                 return;

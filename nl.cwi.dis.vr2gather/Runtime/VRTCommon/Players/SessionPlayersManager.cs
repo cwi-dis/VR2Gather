@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
+using VRT.Transport.WebRTC;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Orchestrator.Wrapping;
-using VRT.Transport.WebRTC;
 using VRT.Orchestrator.Elements;
 
 namespace VRT.Pilots.Common
@@ -75,7 +75,7 @@ namespace VRT.Pilots.Common
 			{
 				if (_Instance == null)
 				{
-					_Instance = FindObjectOfType<SessionPlayersManager>();
+					_Instance = FindAnyObjectByType<SessionPlayersManager>();
 				}
 				return _Instance;
 			}
@@ -91,7 +91,10 @@ namespace VRT.Pilots.Common
 			_LocationToPlayerId = new Dictionary<PlayerLocation, string>();
 
 			Spectators = new Dictionary<string, PlayerNetworkControllerBase>();
-			
+			if (OrchestratorController.Instance == null)
+			{
+				return;
+			}
 			OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeft;
 
 			OrchestratorController.Instance.Subscribe<PlayerLocationData>(OnPlayerLocationData);
@@ -122,7 +125,8 @@ namespace VRT.Pilots.Common
 		public void SetupConfigDistributors()
 		{
             if (debug) Debug.Log($"SessionPlayersManager: SetupConfigDistributors");
-            var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
+            // xxxjack or do we need them sorted?
+            var configDistributors = FindObjectsByType<BaseConfigDistributor>(FindObjectsSortMode.None);
             if (configDistributors == null || configDistributors.Length == 0)
             {
                 Debug.LogWarning("No BaseConfigDistributor found");
@@ -136,6 +140,7 @@ namespace VRT.Pilots.Common
         public void InstantiatePlayers()
 		{
 			var me = OrchestratorController.Instance.SelfUser;
+#if !VRT_WITHOUT_WEBRTC
             // Initialize WebRTC clientId small integers.
             if (SessionConfig.Instance.protocolType == "webrtc")
             {
@@ -164,6 +169,7 @@ namespace VRT.Pilots.Common
                     indexWithinCurrentSession++;
                 }
             }
+#endif
             
 
 			SetupConfigDistributors();
@@ -236,7 +242,8 @@ namespace VRT.Pilots.Common
 			// For WebRTC transport protocol there is some special handling required.
 			// We need to communicate our WebRTC client ID (index within the session) and we need
 			// to state that all incoming and outgoing connections have been specified (so the peer can be started)
-			//
+				//
+#if !VRT_WITHOUT_WEBRTC
             // Initialize WebRTC and pass our clientId.
             if (SessionConfig.Instance.protocolType == "webrtc")
             {
@@ -250,6 +257,7 @@ namespace VRT.Pilots.Common
                 
                 webRTC.AllConnectionsDone();
             }
+#endif
         }
 
         private void OnUserLeft(string userId)

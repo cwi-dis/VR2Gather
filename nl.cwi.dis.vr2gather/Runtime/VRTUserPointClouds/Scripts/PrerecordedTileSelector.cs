@@ -9,7 +9,6 @@ using VRT.Core;
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using System;
 using System.Linq;

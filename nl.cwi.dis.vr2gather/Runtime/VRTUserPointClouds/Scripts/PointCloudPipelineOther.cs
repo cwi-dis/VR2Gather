@@ -5,9 +5,13 @@ using VRT.Core;
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.UserRepresentation.Voice;
+#if !VRT_WITHOUT_DASH
 using VRT.Transport.Dash;
+#endif
 using VRT.Transport.TCP;
+#if !VRT_WITHOUT_WEBRTC
 using VRT.Transport.WebRTC;
+#endif
 using VRT.Orchestrator.Elements;
 using Cwipc;
 using VRT.Pilots.Common;
@@ -275,6 +279,7 @@ namespace VRT.UserRepresentation.PointCloud
                 _prreader.SelectTileQualities(tileQualities);
                 return;
             }
+#if !VRT_WITHOUT_DASH
             AsyncDashReader_Tiled _subreader = reader as AsyncDashReader_Tiled;
             if (_subreader != null)
             {
@@ -286,6 +291,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 return;
             }
+#endif
             AsyncTCPDirectReader_Tiled _tcpreader = reader as AsyncTCPDirectReader_Tiled;
             if (_tcpreader != null)
             {
@@ -297,6 +303,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 return;
             }
+#if !VRT_WITHOUT_DASH
             AsyncWebRTCReader_Tiled _webrtcreader = reader as AsyncWebRTCReader_Tiled;
             if (_webrtcreader != null)
             {
@@ -304,6 +311,7 @@ namespace VRT.UserRepresentation.PointCloud
                 _webrtcreader.setTileQualities(tileQualities);
                 return;
             }
+#endif
             Debug.LogError($"{Name()}: SelectTileQualities not implemented for reader {reader.Name()}");
         }
 

@@ -17,7 +17,7 @@ namespace VRT.Pilots.Common
 			{
 				if (_Instance == null)
 				{
-					_Instance = FindObjectOfType<VRTGrabbableManager>();
+					_Instance = FindAnyObjectByType<VRTGrabbableManager>();
 					if (_Instance == null)
 					{
 						_Instance = new GameObject("VRTGrabbableManager").AddComponent<VRTGrabbableManager>();
