@@ -748,10 +748,9 @@ MonoBehaviour:
     preDeleteTargetDirectory: 1
     filenameTemplate: Frame{framenum}.png
   AutoStartConfig:
-    ignoreAutoStartForDeveloper: 0
-    autoLogin: 0
     autoCreate: 0
-    autoJoin: 1
+    autoCreateStandalone: 0
+    autoJoin: 0
     autoCreateForUser: 
     sessionName: 
     sessionScenario: 
