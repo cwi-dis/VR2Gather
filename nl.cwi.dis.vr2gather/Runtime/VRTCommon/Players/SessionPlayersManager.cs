@@ -203,7 +203,7 @@ namespace VRT.Pilots.Common
 
                 AllUsers.Add(networkPlayer);
 
-				var representationType = user.userData.userRepresentationType;
+				var representationType = user.userData.userRepresentation;
 				switch(representationType)
 				{
 					case UserRepresentationType.NoRepresentation:

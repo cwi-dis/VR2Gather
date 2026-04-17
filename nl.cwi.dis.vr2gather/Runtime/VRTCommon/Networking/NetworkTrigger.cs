@@ -57,6 +57,7 @@ namespace VRT.Pilots.Common
 		{
 			if (MasterOnlyTrigger && !OrchestratorController.Instance.UserIsMaster)
 			{
+				Debug.Log($"{name}: Trigger ignored, masterOnly and this user is not master");
 				return;
 			}
 			if (NetworkId == null || NetworkId == "")

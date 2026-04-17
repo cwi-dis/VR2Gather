@@ -49,7 +49,7 @@ namespace VRT.UserRepresentation.PointCloud
         new public void Start()
         {
             base.Start();
-            var settings = VRTConfig.Instance.TileSelector;
+            var settings = VRTConfig.Instance.TileSelectorConfig;
             if (settings.bitrateBudget != 0) {
                 bitRatebudget = settings.bitrateBudget;
             }

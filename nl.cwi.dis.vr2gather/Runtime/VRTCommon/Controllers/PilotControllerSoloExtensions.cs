@@ -22,8 +22,7 @@ namespace VRT.Pilots.Common
                 userName = "TestInteractionUser",
                 userData = new Orchestrator.Elements.UserData()
                 {
-                    microphoneName = "None",
-                    userRepresentationType = userRepresentation
+                    userRepresentation = userRepresentation
                 }
             };
            

@@ -2,9 +2,8 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags:
-  - Teleportable
+  serializedVersion: 3
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -20,7 +19,6 @@ TagManager:
   - 
   - 
   - 
-  - VRT-TeleportableArea
   - 
   - 
   - 
@@ -34,11 +32,14 @@ TagManager:
   - 
   - 
   - 
-  - VRT-TouchableObject
-  - VRT-GrabbableObject
   - 
-  - Teleport
+  - OLD-VRT-TouchableObject
+  - OLD-VRT-GrabbableObject
+  - 
+  - 
   m_SortingLayers:
   - name: Default
     uniqueID: 0
     locked: 0
+  m_RenderingLayers:
+  - Default

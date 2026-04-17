@@ -51,7 +51,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
         // Start is called before the first frame update
-        public void Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview, GameObject playerGO)
+        public void Init(bool isLocalPlayer, object _user, VRTConfig.RepresentationConfigType cfg, bool preview, GameObject playerGO)
         //public void Init(User user, string _streamName, int _streamNumber)
         {
             User user = (User)_user;
@@ -76,7 +76,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 Debug.LogWarning($"{Name()}: No synchronizer for user {user.GetId()}");
             }
-            VoiceDspController.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
+            VoiceDspController.PrepareDSP(VRTConfig.Instance.VoiceConfig.AudioSampleRate, 0);
             if (audioSource == null)
             {
                 audioSource = gameObject.GetComponent<AudioSource>();
@@ -103,8 +103,8 @@ namespace VRT.UserRepresentation.Voice
             bool audioIsEncoded = audioCodec == "VR2A";
             string proto = SessionConfig.Instance.protocolType;
 
-            if (VRTConfig.Instance.Voice.preparerQueueSize > 0) {
-                preparerQueueSize = VRTConfig.Instance.Voice.preparerQueueSize;
+            if (VRTConfig.Instance.VoiceConfig.preparerQueueSize > 0) {
+                preparerQueueSize = VRTConfig.Instance.VoiceConfig.preparerQueueSize;
 #if VRT_WITH_STATS
                 Statistics.Output(Name(), $"preparer_queue_size={preparerQueueSize}");
 #endif
@@ -122,7 +122,7 @@ namespace VRT.UserRepresentation.Voice
             switch(proto)
             {
                 case "tcp":
-                    url = user.userData.userAudioUrl;
+                    url = user.userData.userRepresentationTCPUrl;
                     break;
             }
             reader = TransportProtocol.NewReader(proto).Init(url, user.userId, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
@@ -137,7 +137,7 @@ namespace VRT.UserRepresentation.Voice
             if (synchronizer != null && synchronizer.isEnabled())
             {
                 preparer.SetSynchronizer(synchronizer);
-                if (!VRTConfig.Instance.Voice.ignoreSynchronizer)
+                if (!VRTConfig.Instance.VoiceConfig.ignoreSynchronizer)
                 {
                     synchronizerName = synchronizer.Name();
                 }

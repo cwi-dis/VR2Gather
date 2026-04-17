@@ -167,6 +167,36 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.render-pipelines.core": {
+      "version": "17.3.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.burst": "1.8.14",
+        "com.unity.mathematics": "1.3.2",
+        "com.unity.ugui": "2.0.0",
+        "com.unity.collections": "2.4.3",
+        "com.unity.modules.physics": "1.0.0",
+        "com.unity.modules.terrain": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      }
+    },
+    "com.unity.searcher": {
+      "version": "4.9.4",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.shadergraph": {
+      "version": "17.3.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.render-pipelines.core": "17.3.0",
+        "com.unity.searcher": "4.9.3"
+      }
+    },
     "com.unity.test-framework": {
       "version": "1.6.0",
       "depth": 1,
@@ -222,6 +252,19 @@
       "source": "registry",
       "dependencies": {
         "com.unity.modules.xr": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.xr.hands": {
+      "version": "1.7.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.xr": "1.0.0",
+        "com.unity.inputsystem": "1.3.0",
+        "com.unity.mathematics": "1.2.6",
+        "com.unity.xr.core-utils": "2.2.0",
+        "com.unity.xr.management": "4.0.1"
       },
       "url": "https://packages.unity.com"
     },
@@ -291,7 +334,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "1e6633521127499a3fabccdef0cd95520394156d"
+      "hash": "8f376776610e9298747f34cb6fd4b45a3219030c"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",
@@ -302,14 +345,14 @@
         "nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.6",
         "nl.cwi.dis.cwipc": "8.0.0",
         "com.itisnajim.socketiounity": "1.1.4",
-        "com.unity.animation.rigging": "1.2.1",
-        "com.unity.recorder": "4.0.3",
-        "com.unity.textmeshpro": "3.0.9",
-        "com.unity.xr.interaction.toolkit": "2.6.5",
+        "com.unity.animation.rigging": "1.4.1",
+        "com.unity.recorder": "5.1.5",
+        "com.unity.textmeshpro": "5.0.0",
+        "com.unity.xr.interaction.toolkit": "3.3.1",
         "com.unity.xr.management": "4.5.4",
         "com.unity.xr.oculus": "4.5.4",
-        "com.unity.xr.openxr": "1.14.3",
-        "com.unity.nuget.newtonsoft-json": "3.2.1"
+        "com.unity.xr.openxr": "1.16.1",
+        "com.unity.nuget.newtonsoft-json": "3.2.2"
       }
     },
     "nl.cwi.dis.vr2gather.nativelibraries": {

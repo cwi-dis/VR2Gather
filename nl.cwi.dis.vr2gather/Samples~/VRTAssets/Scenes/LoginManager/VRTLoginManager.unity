@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 10
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -42,8 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
-  m_GIWorkflowMode: 1
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -66,9 +66,6 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
-    m_FinalGather: 0
-    m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -196,6 +193,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f39eb6158b5e82f449ae38845b9ae7cf, type: 3}
+--- !u!20 &338882284 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 6276917319328131032, guid: f39eb6158b5e82f449ae38845b9ae7cf,
+    type: 3}
+  m_PrefabInstance: {fileID: 338882283}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &372768216
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,6 +273,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -291,9 +299,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &372768220
 MeshFilter:
@@ -328,15 +338,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 487357375}
   m_Enabled: 1
-  serializedVersion: 10
+  serializedVersion: 12
   m_Type: 1
-  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 0
     m_Resolution: -1
@@ -380,8 +389,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!4 &487357377
 Transform:
   m_ObjectHideFlags: 0
@@ -535,6 +548,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -556,9 +574,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1181093244
 MeshFilter:
@@ -582,9 +602,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_InteractionManager: {fileID: 0}
   m_Colliders: []
-  m_InteractionLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_InteractionLayers:
     m_Bits: 8
   m_DistanceCalculationMode: 1
@@ -643,33 +660,8 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  m_OnFirstHoverEntered:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnLastHoverExited:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnHoverEntered:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnHoverExited:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSelectEntered:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSelectExited:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSelectCanceled:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnActivate:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnDeactivate:
-    m_PersistentCalls:
-      m_Calls: []
+  m_AutoFindParentInteractableInHierarchy: 0
+  m_ParentInteractableObject: {fileID: 0}
   m_TeleportationProvider: {fileID: 0}
   m_MatchOrientation: 0
   m_MatchDirectionalInput: 0
@@ -679,12 +671,6 @@ MonoBehaviour:
   m_Teleporting:
     m_PersistentCalls:
       m_Calls: []
---- !u!20 &1272965839 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 4627791344939139398, guid: f39eb6158b5e82f449ae38845b9ae7cf,
-    type: 3}
-  m_PrefabInstance: {fileID: 338882283}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1288591987
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,25 +776,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f5d4564cc5748f44a078ede34cbd4e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  configVersion: 20260311
   orchestratorURL: http://virtnuc-dis.spin-off.cwi.nl:8090/
+  userConfigFilename: 
+  configOverrideFilename: 
   targetFrameRate: -1
+  disableVR: 0
   ntpSyncThreshold: 0.1
-  statsInterval: 10
-  statsOutputFile: 
-  statsOutputFileAppend: 0
   ffmpegDLLDir: ../ffmpeg/x64
   autoInventUsername: 1
-  ScreenshotTool:
+  StatisticsConfig:
+    interval: 10
+    outputFile: 
+    outputFileAppend: 1
+  ScreenshotConfig:
     takeScreenshot: 0
     fps: 0
     screenshotTargetDirectory: 
     preDeleteTargetDirectory: 1
     filenameTemplate: Frame{framenum}.png
-  AutoStart:
-    ignoreAutoStartForDeveloper: 1
-    autoLogin: 1
+  AutoStartConfig:
+    ignoreAutoStartForDeveloper: 0
+    autoLogin: 0
     autoCreate: 0
-    autoJoin: 0
+    autoJoin: 1
     autoCreateForUser: 
     sessionName: 
     sessionScenario: 
@@ -818,13 +809,13 @@ MonoBehaviour:
     autoStartWith: -1
     autoLeaveAfter: 0
     autoStopAfterLeave: 0
-    autoDelay: 1
-  TransportDash:
+    autoDelay: 0.2
+  TransportDashConfig:
     segmentSize: 4000
     segmentLife: 15000
-    logLevel: 1
+    logLevel: 0
     nativeLibraryPath: 
-  TransportWebRTC:
+  TransportWebRTCConfig:
     peerExecutablePath: 
     peerInWindow: 0
     peerWindowDontClose: 0
@@ -832,11 +823,12 @@ MonoBehaviour:
     peerIPAddress: 127.0.0.1
     logFileDirectory: 
     debugLevel: 0
-  PCs:
+  CwipcConfig:
     logLevel: 2
+    overrideNativeLoadPath: 
     Codec: cwi1
-    defaultCellSize: 0.002
-    cellSizeFactor: 1
+    defaultCellSize: 0
+    cellSizeFactor: 0
     debugColorize: 0
     timeoutBeforeGhosting: 5
     decoderQueueSizeOverride: 0
@@ -844,53 +836,54 @@ MonoBehaviour:
     encoderParallelism: 0
     decoderParallelism: 0
     preparerQueueSize: 0
-  Voice:
+  VoiceConfig:
     audioFps: 50
-    maxPlayoutLatency: 0.066
+    maxPlayoutLatency: 0.3
     maxPlayoutAhead: 0.066
     preparerQueueSize: 0
-    ignoreSynchronizer: 1
-  Synchronizer:
+    ignoreSynchronizer: 0
+  SynchronizerConfig:
     debugSynchronizer: 0
     debugJitterBuffer: 0
-    minLatency: 100
-    maxLatency: 5000
+    minLatency: 0
+    maxLatency: 0
     latencyMaxDecrease: 1
     latencyMaxIncrease: 33
     acceptDesyncOnDataUnavailable: 0
-  TileSelector:
+  PointCloudTransmissionConfig:
+    tiled: 0
+    EncoderConfigs: []
+  TileSelectorConfig:
     algorithm: 
     debugDecisions: 0
     bitrateBudget: 0
-  VQEGLatencies: []
-  temp: 0
-  LocalUser:
-    orchestratorConfigFilename: config-user.json
-    PCSelfConfig:
-      capturerType: 4
-      capturerTypeName: 
-      CameraReaderConfig:
+  PositionTrackerConfig:
+    outputFile: 
+    outputIntervalOverride: 0
+    inputFile: 
+  RepresentationConfig:
+    representation: 1
+    representation_str: 
+    webcamName: 
+    microphoneName: 
+    userRepresentationTCPUrl: 
+    RepresentationPointcloudConfig:
+      variant: 0
+      variant_str: 
+      CameraConfig:
         configFilename: 
-      RemoteCameraReaderConfig:
+      RemoteConfig:
         url: 
         isCompressed: 0
-      ProxyReaderConfig:
+      ProxyConfig:
         localIP: 
-        port: 9335
-      SynthReaderConfig:
-        nPoints: 16000
-      PrerecordedReaderConfig:
-        folder: ../cwipc_test/Samples/loot-150K-4tiles
+        port: 0
+      SyntheticConfig:
+        nPoints: 0
+      PrerecordedConfig:
+        folder: 
       voxelSize: 0
-      frameRate: 15
-      tiled: 0
-      Encoders:
-      - octreeBits: 9
-    PositionTracker:
-      outputFile: 
-      outputIntervalOverride: 0
-      inputFile: 
-  configOverrideFilename: 
+      frameRate: 0
 --- !u!114 &1542001137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -924,8 +917,7 @@ LightingSettings:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Settings.lighting
-  serializedVersion: 6
-  m_GIWorkflowMode: 1
+  serializedVersion: 10
   m_EnableBakedLightmaps: 1
   m_EnableRealtimeLightmaps: 0
   m_RealtimeEnvironmentLighting: 1
@@ -935,9 +927,17 @@ LightingSettings:
   m_UsingShadowmask: 1
   m_BakeBackend: 1
   m_LightmapMaxSize: 512
+  m_LightmapSizeFixed: 0
+  m_UseMipmapLimits: 1
   m_BakeResolution: 10
   m_Padding: 2
   m_LightmapCompression: 3
+  m_LightmapPackingMode: 1
+  m_LightmapPackingMethod: 0
+  m_XAtlasPackingAttempts: 16384
+  m_XAtlasBruteForce: 0
+  m_XAtlasBlockAlign: 0
+  m_XAtlasRepackUnderutilizedLightmaps: 1
   m_AO: 0
   m_AOMaxDistance: 1
   m_CompAOExponent: 1
@@ -948,13 +948,11 @@ LightingSettings:
   m_FilterMode: 1
   m_LightmapParameters: {fileID: 15204, guid: 0000000000000000f000000000000000, type: 0}
   m_ExportTrainingData: 0
+  m_EnableWorkerProcessBaking: 1
   m_TrainingDataDestination: TrainingData
   m_RealtimeResolution: 2
   m_ForceWhiteAlbedo: 0
   m_ForceUpdates: 0
-  m_FinalGather: 0
-  m_FinalGatherRayCount: 256
-  m_FinalGatherFiltering: 1
   m_PVRCulling: 1
   m_PVRSampling: 1
   m_PVRDirectSampleCount: 32
@@ -978,8 +976,6 @@ LightingSettings:
   m_PVRFilteringAtrousPositionSigmaDirect: 0.5
   m_PVRFilteringAtrousPositionSigmaIndirect: 2
   m_PVRFilteringAtrousPositionSigmaAO: 1
-  m_PVRTiledBaking: 0
-  m_NumRaysToShootPerTexel: -1
   m_RespectSceneVisibilityWhenBakingGI: 0
 --- !u!1001 &1110161537352404607
 PrefabInstance:
@@ -1172,116 +1168,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1685828838444248956, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: developerMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1685828838444248956, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: debugAutoStart
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3485524114794234763, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.30727804
-      objectReference: {fileID: 0}
-    - target: {fileID: 3485524114794234763, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 3485524114794234763, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.066666655
-      objectReference: {fileID: 0}
-    - target: {fileID: 4418181162290682712, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 4418181162290682712, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.30727804
-      objectReference: {fileID: 0}
-    - target: {fileID: 4418181162290682712, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 4418181162290682712, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.066666655
-      objectReference: {fileID: 0}
-    - target: {fileID: 5472630372440047248, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5546505954573061395, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5707680166055793319, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 1151372263}
-    - target: {fileID: 6457971032172637050, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032172637050, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.30727804
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032172637050, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032172637050, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.066666655
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032172637052, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032356984460, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032356984460, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.30727804
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032356984460, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032356984460, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.066666655
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971032356984462, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6457971032522044961, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1386,241 +1277,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 1272965839}
+      objectReference: {fileID: 338882284}
     - target: {fileID: 6457971032522044966, guid: 50281900da061ff41b77e212fa1ab6f1,
         type: 3}
       propertyPath: m_Name
       value: Tool_OrchestratorLogin
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033183718165, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033183718165, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.30727804
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033183718165, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033183718165, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.066666655
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033183718167, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033769258983, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033769258983, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.30727804
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033769258983, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033769258983, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.066666655
-      objectReference: {fileID: 0}
-    - target: {fileID: 6457971033769258985, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955477282492, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955477282492, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -17
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955564973376, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955564973376, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955639173321, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955639173321, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955752019959, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955752019959, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955771357401, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955979595412, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007955979595412, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -17
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956180591099, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956180591099, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956489862667, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956605084035, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956605084035, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956605084035, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956628570785, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956628570785, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956628570785, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956628570785, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956803774172, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007956803774172, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007957313098965, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007957313098965, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007957313098965, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -17
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963007957313098965, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -17
-      objectReference: {fileID: 0}
-    - target: {fileID: 7971333119567475808, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 7971333119567475808, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.30727804
-      objectReference: {fileID: 0}
-    - target: {fileID: 7971333119567475808, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 7971333119567475808, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.066666655
-      objectReference: {fileID: 0}
-    - target: {fileID: 8798074575742713247, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107966962242048834, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107966962242048834, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.30727804
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107966962242048834, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107966962242048834, guid: 50281900da061ff41b77e212fa1ab6f1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.066666655
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1638,7 +1299,7 @@ PrefabInstance:
     - target: {fileID: 1428028439696384793, guid: f235c89f17e78fe43928308c1e3ac4d1,
         type: 3}
       propertyPath: enableLogging
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1428028439696384793, guid: f235c89f17e78fe43928308c1e3ac4d1,
         type: 3}

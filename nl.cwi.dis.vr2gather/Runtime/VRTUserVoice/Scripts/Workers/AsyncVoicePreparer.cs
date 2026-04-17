@@ -51,9 +51,9 @@ namespace VRT.UserRepresentation.Voice
         public AsyncVoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
             NoUpdateCallsNeeded();
-            if (VRTConfig.Instance.Voice.maxPlayoutAhead != 0)
+            if (VRTConfig.Instance.VoiceConfig.maxPlayoutAhead != 0)
             {
-                audioMaxAheadMs = (Timedelta)(VRTConfig.Instance.Voice.maxPlayoutAhead * 1000);
+                audioMaxAheadMs = (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutAhead * 1000);
             }
 #if VRT_WITH_STATS
             stats = new Stats(Name());
@@ -64,7 +64,7 @@ namespace VRT.UserRepresentation.Voice
 
         public override void SetSynchronizer(ISynchronizer _synchronizer)
         {
-            if (_synchronizer != null && VRTConfig.Instance.Voice.ignoreSynchronizer)
+            if (_synchronizer != null && VRTConfig.Instance.VoiceConfig.ignoreSynchronizer)
             {
 #if VRT_WITH_STATS
                 Statistics.Output(base.Name(), "unsynchronized=1");
@@ -124,18 +124,18 @@ namespace VRT.UserRepresentation.Voice
                 else
                 {
                     // For voice, we do an extra step: we optionally set an upper limit to the latency.
-                    if (VRTConfig.Instance.Voice.maxPlayoutLatency > 0)
+                    if (VRTConfig.Instance.VoiceConfig.maxPlayoutLatency > 0)
                     {
                         if (bestTimestamp == 0)
                         {
                             bestTimestamp = currentTimestamp;
                         }
                         Timestamp latestTimestampInqueue = InQueue.LatestTimestamp();
-                        if (latestTimestampInqueue > currentTimestamp + (Timedelta)(VRTConfig.Instance.Voice.maxPlayoutLatency * 1000))
+                        if (latestTimestampInqueue > currentTimestamp + (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutLatency * 1000))
                         {
 #pragma warning disable CS0162
-                            if (debugBuffering) Debug.Log($"{Name()}: LatchFrame: skip forward {latestTimestampInqueue - (Timedelta)(VRTConfig.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
-                            bestTimestamp = latestTimestampInqueue - (Timedelta)(VRTConfig.Instance.Voice.maxPlayoutLatency * 1000);
+                            if (debugBuffering) Debug.Log($"{Name()}: LatchFrame: skip forward {latestTimestampInqueue - (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
+                            bestTimestamp = latestTimestampInqueue - (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutLatency * 1000);
                         }
                     }
                 }
@@ -225,7 +225,7 @@ namespace VRT.UserRepresentation.Voice
             float[] leftOver = new float[remaining];
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
             audioBuffer = leftOver;
-            audioBufferHeadTimestamp += (Timedelta)(1000 * len / VRTConfig.Instance.audioSampleRate);
+            audioBufferHeadTimestamp += (Timedelta)(1000 * len / VRTConfig.Instance.VoiceConfig.AudioSampleRate);
 #pragma warning disable CS0162
             if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
@@ -276,7 +276,7 @@ namespace VRT.UserRepresentation.Voice
                 _fillIntoAudioBuffer(true);
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
-                nextGetAudioBufferExpected = now + (len * 1000 / VRTConfig.Instance.audioSampleRate);
+                nextGetAudioBufferExpected = now + (len * 1000 / VRTConfig.Instance.VoiceConfig.AudioSampleRate);
                 if (audioBufferHeadTimestamp > 0)
                 {
                     sysClockToAudioClock = audioBufferHeadTimestamp - now;

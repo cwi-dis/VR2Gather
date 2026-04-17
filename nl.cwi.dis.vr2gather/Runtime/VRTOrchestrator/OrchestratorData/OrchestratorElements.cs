@@ -56,15 +56,21 @@ namespace VRT.Orchestrator.Elements
 
     public class UserData: OrchestratorElement
     {
+        /// <summary>
+        /// The self-representation of this user.
+        /// </summary>
+        public UserRepresentationType userRepresentation = UserRepresentationType.SimpleAvatar;
+        /// <summary>
+        /// True if the user has voice (microphonne)
+        /// </summary>
+        public bool hasVoice = false; 
+        /// <summary>
+        /// If needed this contains the base URL on which this user streams their representation.
+        /// (Whether it is needed or not depends on the transport protocol used in the session)
+        /// </summary>
+        public string userRepresentationTCPUrl = "";
 
-        public string userAudioUrl = "";
-
-        public string webcamName = "";
-        public string microphoneName = "";
-
-        public UserRepresentationType userRepresentationType = UserRepresentationType.SimpleAvatar;
-
-        // empty constructor callled by the JsonData parser
+        // empty constructor called by the JsonData parser
         public UserData() { }
     }
 

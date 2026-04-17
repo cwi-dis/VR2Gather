@@ -255,7 +255,7 @@ namespace VRT.Video
             {
                 swrCtx = ffmpeg.swr_alloc();
                 int src_nb_samples = 1024;
-                int dst_rate = VRTConfig.Instance.audioSampleRate;
+                int dst_rate = VRTConfig.Instance.VoiceConfig.AudioSampleRate;
 
                 ffmpeg.av_opt_set_int(swrCtx, "in_channel_layout", (long)audioFrame->channel_layout, 0);          // Source layout
                 ffmpeg.av_opt_set_int(swrCtx, "in_sample_rate", audioFrame->sample_rate, 0);                // Source sample rate.

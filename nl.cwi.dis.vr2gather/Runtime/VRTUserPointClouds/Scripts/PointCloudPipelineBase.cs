@@ -16,7 +16,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.VRTConfig._User;
+    using static VRT.Core.VRTConfig.RepresentationConfigType;
 
     public abstract class PointCloudPipelineBase : BasePipeline
     {
@@ -69,10 +69,10 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
         {
             CwipcConfig PCs = CwipcConfig.Instance;
-            if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
-            if (VRTConfig.Instance.PCs.preparerQueueSize > 0)
+            if (PCs == null) throw new System.Exception($"{Name()}: missing CwipcConfig config");
+            if (VRTConfig.Instance.CwipcConfig.preparerQueueSize > 0)
             {
-                pcPreparerQueueSize = VRTConfig.Instance.PCs.preparerQueueSize;
+                pcPreparerQueueSize = VRTConfig.Instance.CwipcConfig.preparerQueueSize;
 #if VRT_WITH_STATS                
                 Statistics.Output(Name(), $"preparer_queue_size={pcPreparerQueueSize}");
 #endif

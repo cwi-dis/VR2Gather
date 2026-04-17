@@ -14,7 +14,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.VRTConfig._User;
+    using static VRT.Core.VRTConfig.RepresentationConfigType;
 
     public class PointCloudPipelineSelf : PointCloudPipelineBase, IPointCloudPositionProvider
     {
@@ -39,8 +39,9 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false, GameObject playerGO = null)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, bool preview = false, GameObject playerGO = null)
         {
+            VRTConfig.RepresentationConfigType cfg;
             if (!isLocalPlayer)
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==false");
@@ -77,15 +78,16 @@ namespace VRT.UserRepresentation.PointCloud
             int selfness = preview ? -1 : 1;
             string proto = "";
             if (!preview) proto = $", proto={SessionConfig.Instance.protocolType}";
-            Statistics.Output(Name(), $"self={selfness}, userid={user.userId}, representation={(int)user.userData.userRepresentationType}{proto}");
+            Statistics.Output(Name(), $"self={selfness}, userid={user.userId}, representation={VRTConfig.Instance.RepresentationConfig.representation}{proto}");
 #endif
-            _InitForSelfUser(cfg.PCSelfConfig, preview);
+            _InitForSelfUser(preview);
             
             return this;
         }
 
-        protected void _InitForSelfUser(VRTConfig._User._PCSelfConfig PCSelfConfig, bool preview)
+        protected void _InitForSelfUser(bool preview)
         {
+            var config = VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig;
             isSource = true;
             if (synchronizer != null)
             {
@@ -126,7 +128,7 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Create reader
             //
-            reader = PointCloudCapturerFactory.Create(PCSelfConfig, selfPreparerQueue, encoderQueue);
+            reader = PointCloudCapturerFactory.Create(config, selfPreparerQueue, encoderQueue);
 
             
             if (!preview)
@@ -139,7 +141,7 @@ namespace VRT.UserRepresentation.PointCloud
                 // Determine tiles to transmit
                 //
                 Cwipc.PointCloudTileDescription[] tilesToTransmit = null;
-                if (PCSelfConfig.tiled)
+                if (VRTConfig.Instance.PointCloudTransmissionConfig.tiled)
                 {
                     tilesToTransmit = reader.getTiles();
                     if (tilesToTransmit != null && tilesToTransmit.Length > 1)
@@ -171,7 +173,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // allocate and initialize per-stream outgoing stream datastructures
                 //
-                _CreateDescriptionsForOutgoing(tilesToTransmit, PCSelfConfig.Encoders, leakyQueues);
+                _CreateDescriptionsForOutgoing(tilesToTransmit, VRTConfig.Instance.PointCloudTransmissionConfig.EncoderConfigs, leakyQueues);
 
 
                 //
@@ -198,14 +200,14 @@ namespace VRT.UserRepresentation.PointCloud
                 switch (proto)
                 {
                     case "tcp":
-                        url = user.userData.userAudioUrl;
+                        url = VRTConfig.Instance.RepresentationConfig.userRepresentationTCPUrl;
                         break;
                 }
                 writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                
 
 #if VRT_WITH_STATS
-                Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={tilesToTransmit.Length}, nquality={PCSelfConfig.Encoders.Length}, nStream={outgoingStreamDescriptions.Length}");
+                Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={tilesToTransmit.Length}, nquality={VRTConfig.Instance.PointCloudTransmissionConfig.EncoderConfigs.Length}, nStream={outgoingStreamDescriptions.Length}");
 #endif
             }
         }
@@ -220,7 +222,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
 
-        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig._User._PCSelfConfig._Encoder[] Encoders, bool leakyQueues)
+        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig.PointCloudTransmissionConfigType.EncoderConfigType[] Encoders, bool leakyQueues)
         {
             int[] octreeBitsArray = new int[Encoders.Length];
             for (int i = 0; i < Encoders.Length; i++)

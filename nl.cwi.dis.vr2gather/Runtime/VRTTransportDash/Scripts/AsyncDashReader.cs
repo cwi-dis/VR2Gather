@@ -212,7 +212,7 @@ namespace VRT.Transport.Dash
 
         protected void _Init(string _url, string _streamName)
         {
-            lldplay.LogLevel = VRTConfig.Instance.TransportDash.logLevel;
+            lldplay.LogLevel = VRTConfig.Instance.TransportDashConfig.logLevel;
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, true);
             lock (this)
             {

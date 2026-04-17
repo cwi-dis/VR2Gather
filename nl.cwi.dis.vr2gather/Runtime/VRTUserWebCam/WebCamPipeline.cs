@@ -55,7 +55,7 @@ namespace VRT.UserRepresentation.WebCam
         /// <param name="cfg"> Config file json </param>
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false, GameObject playerGO = null)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, bool preview = false, GameObject playerGO = null)
         {
             User user = (User)_user;
             if (user == null || user.userData == null)
@@ -74,7 +74,7 @@ namespace VRT.UserRepresentation.WebCam
                 Debug.LogError($"WebCamPipeline: unknown codec: {SessionConfig.Instance.videoCodec}");
             }
             isSource = isLocalPlayer;
-            if (user.userData.webcamName == "None") return this;
+            if (user.userData.userRepresentation != UserRepresentationType.VideoAvatar) return this;
             if (isLocalPlayer)
             {
                 //
@@ -84,7 +84,7 @@ namespace VRT.UserRepresentation.WebCam
                 //
                 // Create reader
                 //
-                webReader = new AsyncWebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
+                webReader = new AsyncWebCamReader(VRTConfig.Instance.RepresentationConfig.webcamName, width, height, fps, this, encoderQueue);
                 webCamTexture = webReader.webcamTexture;
                 if (!preview)
                 {
@@ -118,7 +118,7 @@ namespace VRT.UserRepresentation.WebCam
                         switch (proto)
                         {
                             case "tcp":
-                                url = user.userData.userAudioUrl;
+                                url = VRTConfig.Instance.RepresentationConfig.userRepresentationTCPUrl;
                                 break;
                         }
                         writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "webcam", "wcwc", dashStreamDescriptions);
@@ -156,7 +156,7 @@ namespace VRT.UserRepresentation.WebCam
                 switch (proto)
                 {
                     case "tcp":
-                        url = user.userData.userAudioUrl;
+                        url = user.userData.userRepresentationTCPUrl;
                         break;
                 }
                 reader = TransportProtocol.NewReader(proto).Init(url, user.userId, "webcam", 0, "wcwc", videoCodecQueue);

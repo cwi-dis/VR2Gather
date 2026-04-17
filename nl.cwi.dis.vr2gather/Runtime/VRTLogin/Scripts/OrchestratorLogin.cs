@@ -70,9 +70,9 @@ namespace VRT.Login
 
         [Header("SettingsPanel")]
         [SerializeField] private GameObject settingsPanel = null;
-        [SerializeField] private GameObject SettingsPanelWebcamInfoGO = null;
         [SerializeField] private InputField SettingsPanelTCPURLField = null;
         [SerializeField] private Dropdown SettingsPanelRepresentationDropdown = null;
+        [SerializeField] private Dropdown SettingsPanelPointcloudVariantDropdown = null;
         [SerializeField] private Dropdown SettingsPanelWebcamDropdown = null;
         [SerializeField] private Dropdown SettingsPanelMicrophoneDropdown = null;
         [SerializeField] private RectTransform SettingsPanelVUMeter = null;
@@ -191,6 +191,10 @@ namespace VRT.Login
                 SettingsPanel_UpdateAfterRepresentationChange();
                 // xxxjack AllPanels_UpdateAfterStateChange();
             });
+            SettingsPanelPointcloudVariantDropdown.onValueChanged.AddListener(delegate
+            {
+                SettingsPanel_UpdateAfterRepresentationChange();
+            });
             SettingsPanelWebcamDropdown.onValueChanged.AddListener(delegate {
                 SettingsPanel_UpdateAfterRepresentationChange();
                 // xxxjack AllPanels_UpdateAfterStateChange();
@@ -278,7 +282,7 @@ namespace VRT.Login
         private void AutoStart_StateUpdate()
         {
             // We do a quick exit if we don't have an autostart config, or if shift is pressed.
-            VRTConfig._AutoStart config = VRTConfig.Instance.AutoStart;
+            VRTConfig.AutoStartConfigType config = VRTConfig.Instance.AutoStartConfig;
             if (config == null) return;
             if (Keyboard.current.shiftKey.isPressed) {
                 Debug.Log($"OrchestratorLogin: AutoStart: shift pressed, disabling autostart");
@@ -289,7 +293,7 @@ namespace VRT.Login
                 Debug.Log($"OrchestratorLogin: AutoStart: developer mode, disabling autostart");
                 autoState = AutoState.Done;
             }
-            if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart.autoLogin)
+            if (autoState == AutoState.DidNone && VRTConfig.Instance.AutoStartConfig.autoLogin)
             {
                 if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
                 if (Login())
@@ -298,16 +302,16 @@ namespace VRT.Login
                 }
                 else
                 {
-                    VRTConfig.Instance.AutoStart.autoLogin = false;
+                    VRTConfig.Instance.AutoStartConfig.autoLogin = false;
                 }
                 return;
             }
-            if (autoState == AutoState.DidLogIn && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin))
+            if (autoState == AutoState.DidLogIn && (VRTConfig.Instance.AutoStartConfig.autoCreate || VRTConfig.Instance.AutoStartConfig.autoJoin))
             {
-                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
+                if (debugAutoStart) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStartConfig.autoCreate} autoJoin {VRTConfig.Instance.AutoStartConfig.autoJoin}");
                 autoState = AutoState.DidPlay;
                 ChangeState(State.Play);
-                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStartConfig.autoDelay);
                 return;
             }
             if (state == State.Play && autoState == AutoState.DidPlay)
@@ -408,29 +412,19 @@ namespace VRT.Login
 
         private void SaveUserData()
         {
-            // And also save a local copy, if wanted
-            if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
-            {
-                Debug.LogError("OrchestratorLogin.SaveUserData: orchestratorConfigFilename is empty");
-                return;
-            }
-            var configData = OrchestratorController.Instance.SelfUser.userData.AsJsonString();
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename, label:"User config");
-            Debug.Log("Full config filename: " + fullName);
-            System.IO.File.WriteAllText(fullName, configData);
-            Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
+            VRTConfig.Instance.SaveUserConfig();
         }
 
         private void LoadUserData()
         {
             // Load locally save user data
-            if (String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            if (String.IsNullOrEmpty(VRTConfig.Instance.userConfigFilename))
             {
-                Debug.LogError("OrchestratorLogin.LoadUserData: LocalUser.orchestratorConfigFilename is empty");
+                Debug.LogError("OrchestratorLogin.LoadUserData: userConfigFilename is empty");
                 OrchestratorController.Instance.SelfUser.userData = new UserData();
                 return;
             }
-            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename, label:"User config");
+            var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.userConfigFilename, label:"User config");
             if (!System.IO.File.Exists(fullName))
             {
                 Debug.LogWarning($"OrchestratorLogin.LoadUserData: Cannot open {fullName}");
@@ -604,12 +598,12 @@ namespace VRT.Login
         {
             Dropdown dd = SettingsPanelRepresentationDropdown;
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
-            // xxxjack this has the huge disadvantage that they are numerically sorted.
-            // xxxjack and the order is difficult to change currently, because the values
-            // xxxjack are stored by the orchestrator in the user record, in numerical form...
             dd.ClearOptions();
             dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
-
+            // And fill point cloud variants
+            dd = SettingsPanelPointcloudVariantDropdown;
+            dd.ClearOptions();
+            dd.AddOptions(new List<string>(Enum.GetNames(typeof(RepresentationPointcloudVariant))));
         }
 
         private void SettingsPanel_UpdateWebcams()
@@ -676,35 +670,34 @@ namespace VRT.Login
 
         private void SettingsPanel_ExtractUserData()
         {
+            VRTConfig.RepresentationConfigType config = VRTConfig.Instance.RepresentationConfig;
+            config.representation = (UserRepresentationType)SettingsPanelRepresentationDropdown.value;
+            config.RepresentationPointcloudConfig.variant = (RepresentationPointcloudVariant)SettingsPanelPointcloudVariantDropdown.value;
+            config.webcamName = SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text;
+            config.microphoneName = SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text;
+            config.userRepresentationTCPUrl = SettingsPanelTCPURLField.text;
             // UserData info in Config
             UserData lUserData = new UserData
             {
-                userAudioUrl = SettingsPanelTCPURLField.text,
-                userRepresentationType = (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
-                webcamName = (SettingsPanelWebcamDropdown.options.Count <= 0) ? "None" : SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
-                microphoneName = (SettingsPanelMicrophoneDropdown.options.Count <= 0) ? "None" : SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
+                userRepresentationTCPUrl = config.userRepresentationTCPUrl,
+                userRepresentation = config.representation,
+                hasVoice = (config.microphoneName != "" && config.microphoneName != "None"),
             };
             OrchestratorController.Instance.SelfUser.userData = lUserData;
         }
 
         public void SettingsPanel_UpdateUserData()
         {
-            User user = OrchestratorController.Instance.SelfUser;
+            VRTConfig.RepresentationConfigType config = VRTConfig.Instance.RepresentationConfig;
 
-            // Config Info
-            if (user.userData == null)
-            {
-                user.userData = new UserData();
-            }
-            UserData userData = user.userData;
-
-            SettingsPanelTCPURLField.text = userData.userAudioUrl;
-            SettingsPanelRepresentationDropdown.value = (int)userData.userRepresentationType;
+            SettingsPanelTCPURLField.text = config.userRepresentationTCPUrl;
+            SettingsPanelRepresentationDropdown.value = (int)config.representation;
+            SettingsPanelPointcloudVariantDropdown.value = (int)config.RepresentationPointcloudConfig.variant;
             SettingsPanelWebcamDropdown.value = 0;
 
             for (int i = 0; i < SettingsPanelWebcamDropdown.options.Count; ++i)
             {
-                if (SettingsPanelWebcamDropdown.options[i].text == userData.webcamName)
+                if (SettingsPanelWebcamDropdown.options[i].text == config.webcamName)
                 {
                     SettingsPanelWebcamDropdown.value = i;
                     break;
@@ -713,7 +706,7 @@ namespace VRT.Login
             SettingsPanelMicrophoneDropdown.value = 0;
             for (int i = 0; i < SettingsPanelMicrophoneDropdown.options.Count; ++i)
             {
-                if (SettingsPanelMicrophoneDropdown.options[i].text == userData.microphoneName)
+                if (SettingsPanelMicrophoneDropdown.options[i].text == config.microphoneName)
                 {
                     SettingsPanelMicrophoneDropdown.value = i;
                     break;
@@ -723,21 +716,14 @@ namespace VRT.Login
 
         public void SettingsPanel_UpdateAfterRepresentationChange()
         {
-            // Dropdown Logic
-            SettingsPanelWebcamInfoGO.SetActive(false);
-
-
-            if ((UserRepresentationType)SettingsPanelRepresentationDropdown.value == UserRepresentationType.VideoAvatar)
-            {
-                SettingsPanelWebcamInfoGO.SetActive(true);
-            }
+            // xxxjack hack: we actually set the point cloud variant right away in the user settings.
+            // There is no easy way to pass the parameter otherwise.
+            VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant = (RepresentationPointcloudVariant)SettingsPanelPointcloudVariantDropdown.value;
             // Preview
             SettingsPanel_SetRepresentation((UserRepresentationType)SettingsPanelRepresentationDropdown.value);
             SelfRepresentationPreview.ChangeRepresentation(
                 (UserRepresentationType)SettingsPanelRepresentationDropdown.value,
-                SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text
-                );
-            SelfRepresentationPreview.ChangeMicrophone(
+                SettingsPanelWebcamDropdown.options[SettingsPanelWebcamDropdown.value].text,
                 SettingsPanelMicrophoneDropdown.options[SettingsPanelMicrophoneDropdown.value].text
                 );
         }
@@ -965,8 +951,8 @@ namespace VRT.Login
             LobbyPanelSessionNumUsers.text = sessionUsers.Length.ToString() /*+ "/" + "4"*/;
             Debug.Log($"xxxjack OrchestratorLogin: UpdateUsersSession: {sessionUsers.Length} users in session");
             // We may be able to continue auto-starting
-            if (VRTConfig.Instance.AutoStart != null)
-                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+            if (VRTConfig.Instance.AutoStartConfig != null)
+                Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStartConfig.autoDelay);
         }
 
         // xxxjack is not currently called...
@@ -1084,7 +1070,7 @@ namespace VRT.Login
             rectImage.localScale = Vector3.one;
             // IMAGE
 
-            switch (user.userData.userRepresentationType)
+            switch (VRTConfig.Instance.RepresentationConfig.representation)
             {
                 case UserRepresentationType.NoRepresentation:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
@@ -1119,7 +1105,7 @@ namespace VRT.Login
                     textItem.text += " - (AppDefined 2)";
                     break;
                 default:
-                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {user.userData.userRepresentationType}");
+                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {VRTConfig.Instance.RepresentationConfig.representation}");
                     break;
             }
         }
@@ -1344,19 +1330,19 @@ namespace VRT.Login
             var userName = LoginPanelUserName.text;
             if (userName == "")
             {
-                if (!VRTConfig.Instance.AutoStart.autoLogin)
+                if (!VRTConfig.Instance.AutoStartConfig.autoLogin)
                 {
                     Debug.LogError("Cannot login if no username specified");
                 }
                 return false;
             }
             // If we want to autoCreate or autoStart depending on username set the right config flags.
-            if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
+            if (VRTConfig.Instance.AutoStartConfig != null && VRTConfig.Instance.AutoStartConfig.autoCreateForUser != "")
             {
-                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser.ToLower() == LoginPanelUserName.text.ToLower();
-                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={LoginPanelUserName.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
-                VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
-                VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
+                bool isThisUser = VRTConfig.Instance.AutoStartConfig.autoCreateForUser.ToLower() == LoginPanelUserName.text.ToLower();
+                if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: user={LoginPanelUserName.text} autoCreateForUser={VRTConfig.Instance.AutoStartConfig.autoCreateForUser} isThisUser={isThisUser}");
+                VRTConfig.Instance.AutoStartConfig.autoCreate = isThisUser;
+                VRTConfig.Instance.AutoStartConfig.autoJoin = !isThisUser;
             }
             OrchestratorController.Instance.Login(userName, "");
             return true;
@@ -1439,8 +1425,8 @@ namespace VRT.Login
                 // update the list of available sessions
                 JoinPanel_UpdateSessions();
                 // We may be able to advance auto-connection
-                if (VRTConfig.Instance.AutoStart != null)
-                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                if (VRTConfig.Instance.AutoStartConfig != null)
+                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStartConfig.autoDelay);
             }
         }
 
@@ -1475,8 +1461,8 @@ namespace VRT.Login
                 state = State.Lobby;
                 AllPanels_UpdateAfterStateChange();
                 // We may be able to advance auto-connection
-                if (VRTConfig.Instance.AutoStart != null)
-                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStart.autoDelay);
+                if (VRTConfig.Instance.AutoStartConfig != null)
+                    Invoke(nameof(AutoStart_StateUpdate), VRTConfig.Instance.AutoStartConfig.autoDelay);
             }
             else
             {

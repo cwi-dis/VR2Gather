@@ -129,7 +129,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected void Start()
         {
             // Initialize from config.json, if there are overrides
-            var settings = VRTConfig.Instance.TileSelector;
+            var settings = VRTConfig.Instance.TileSelectorConfig;
             if (settings != null) {
                 if (!string.IsNullOrEmpty(settings.algorithm)) {
                     if (!Enum.TryParse<SelectionAlgorithm>(settings.algorithm, out algorithm))
