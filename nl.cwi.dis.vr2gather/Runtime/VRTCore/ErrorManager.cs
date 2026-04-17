@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -96,15 +97,16 @@ namespace VRT.Core
         private void Application_logMessageReceived(string condition, string stackTrace, LogType type)
         {
             string[] error = { "", "" };
+            error[0] = type.ToString();
             error[1] = condition;
-            if (type == LogType.Exception)
+            if (type <=  LogType.Warning)
             {
-                error[0] = "Exception";
                 lock (thisLock)
                 {
                     queue.Add(error);
                 }
             }
+#if OLD_CODE
             else if (type == LogType.Error)
             {
                 error[0] = "Error";
@@ -117,6 +119,7 @@ namespace VRT.Core
                     queue.Add(error);
                 }
             }
+#endif
         }
 
         public void EnqueueOrchestratorError(int code, string message)

@@ -1,0 +1,126 @@
+/* Outer panel */
+.vrt-dialog {
+    flex-grow: 1;
+    background-color: rgba(10, 30, 60, 0.9);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+}
+
+/* Header bar: title on the left, close button on the right */
+.vrt-dialog__head {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(10, 30, 60, 0.9);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 16px;
+    padding-right: 8px;
+}
+
+.vrt-dialog__title {
+    flex-grow: 1;
+    color: rgb(255, 255, 255);
+    font-size: 32px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+}
+
+/* Close button: compact, sits in the header */
+.vrt-dialog__close-button {
+    min-width: 60px;
+    min-height: 44px;
+    width: 60px;
+    background-color: rgb(24, 112, 182);
+}
+
+.vrt-dialog__close-button:hover {
+    background-color: rgb(14, 82, 142);
+}
+
+.vrt-dialog__close-button:active {
+    background-color: rgb(88, 176, 246);
+}
+
+/* Body: scrollable content area */
+.vrt-dialog__body {
+    flex-grow: 1;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+/* Tab buttons in the header */
+.vrt-tab-button {
+    min-width: 120px;
+    min-height: 44px;
+    background-color: rgb(24, 112, 182);
+    margin-right: 4px;
+}
+
+.vrt-tab-button:hover {
+    background-color: rgb(14, 82, 142);
+}
+
+.vrt-tab-button--active {
+    background-color: rgb(46, 46, 46);
+}
+
+.vrt-tab-button--active:hover {
+    background-color: rgb(46, 46, 46);
+}
+
+/* Toolbar row inside a tab panel or dialog body */
+.vrt-toolbar {
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+/* Three-column grid for Commands tab */
+.vrt-commands-grid {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.vrt-commands-column {
+    flex-direction: column;
+    flex: 1;
+    padding: 4px;
+}
+
+/* Scrollable log/text area */
+.vrt-log-view {
+    flex-grow: 1;
+    background-color: rgba(10, 30, 60, 0.9);
+}
+
+.vrt-log-view Label {
+    align-self: flex-start;
+    min-width: 100%;
+    color: rgb(255, 255, 255);
+    font-size: 28px;
+    white-space: nowrap;
+}
+
+/* Tab panels */
+.vrt-tab-panel {
+    display: none;
+    flex-grow: 1;
+}
+
+.vrt-tab-panel--active {
+    display: flex;
+}

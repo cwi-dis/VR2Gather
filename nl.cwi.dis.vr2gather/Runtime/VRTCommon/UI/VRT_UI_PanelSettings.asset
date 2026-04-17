@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: WorldSpacePanel
-  m_EditorClassIdentifier: 
-  themeUss: {fileID: -4733365628477956816, guid: 511976cd788ea5442a20b479849b0cef,
+  m_Name: VRT_UI_PanelSettings
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.PanelSettings
+  themeUss: {fileID: -4733365628477956816, guid: 31a60adb7a56b3d4cb70b40a5709d899,
     type: 3}
   m_DisableNoThemeWarning: 0
   m_TargetTexture: {fileID: 0}
   m_RenderMode: 1
-  m_ColliderUpdateMode: 1
+  m_ColliderUpdateMode: 0
   m_ColliderIsTrigger: 1
   m_ScaleMode: 1
-  m_ReferenceSpritePixelsPerUnit: 100
-  m_PixelsPerUnit: 100
+  m_ReferenceSpritePixelsPerUnit: 10
+  m_PixelsPerUnit: 10
   m_Scale: 1
   m_ReferenceDpi: 96
   m_FallbackDpi: 96
@@ -30,7 +30,7 @@ MonoBehaviour:
   m_Match: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
-  m_BindingLogLevel: 2
+  m_BindingLogLevel: 0
   m_ClearDepthStencil: 1
   m_ClearColor: 0
   m_ColorClearValue: {r: 0, g: 0, b: 0, a: 0}

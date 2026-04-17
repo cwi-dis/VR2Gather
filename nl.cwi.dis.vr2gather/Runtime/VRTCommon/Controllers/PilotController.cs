@@ -161,6 +161,15 @@ namespace VRT.Pilots.Common
             return false;
         }
 
+        public virtual void OnUserCommand_ext(string command)
+        {
+            bool ok = OnUserCommand(command);
+            if (!ok)
+            {
+                Debug.LogWarning($"{Name()}: OnUserCommand_ext: unexpected command: {command}");
+            }
+        }
+
         public void StopApplication() {
 #if UNITY_EDITOR
             // Application.Quit() does not work in the editor so
