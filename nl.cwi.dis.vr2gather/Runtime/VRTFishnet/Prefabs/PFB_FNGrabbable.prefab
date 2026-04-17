@@ -45,10 +45,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6886076587129330562}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -101,11 +101,8 @@ MonoBehaviour:
   m_InteractionManager: {fileID: 0}
   m_Colliders:
   - {fileID: 6886076587129330567}
-  m_InteractionLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_InteractionLayers:
-    m_Bits: 2
+    m_Bits: 1
   m_DistanceCalculationMode: 1
   m_SelectMode: 0
   m_FocusMode: 1
@@ -186,33 +183,8 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  m_OnFirstHoverEntered:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnLastHoverExited:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnHoverEntered:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnHoverExited:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSelectEntered:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSelectExited:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSelectCanceled:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnActivate:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnDeactivate:
-    m_PersistentCalls:
-      m_Calls: []
+  m_AutoFindParentInteractableInHierarchy: 0
+  m_ParentInteractableObject: {fileID: 0}
   m_AttachTransform: {fileID: 6886076587886348912}
   m_SecondaryAttachTransform: {fileID: 0}
   m_UseDynamicAttach: 0
@@ -222,6 +194,7 @@ MonoBehaviour:
   m_ReinitializeDynamicAttachEverySingleGrab: 1
   m_AttachEaseInTime: 0.15
   m_MovementType: 2
+  m_PredictedVisualsTransform: {fileID: 0}
   m_VelocityDamping: 1
   m_VelocityScale: 1
   m_AngularVelocityDamping: 1
@@ -259,10 +232,14 @@ MonoBehaviour:
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
   m_RetainTransformParent: 1
-  m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
+  m_FarAttachMode: 0
+  m_LimitLinearVelocity: 0
+  m_LimitAngularVelocity: 0
+  m_MaxLinearVelocityDelta: 10
+  m_MaxAngularVelocityDelta: 20
 --- !u!114 &919225142772594258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,6 +273,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
+  WasActiveDuringEdit: 0
+  WasActiveDuringEdit_Set1: 1
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
@@ -312,9 +291,11 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
+  _initializedTimestamp: 0
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
+  _localReconcileCorrectionType: 2
   _graphicalObject: {fileID: 0}
   _detachGraphicalObject: 0
   _enableStateForwarding: 1
@@ -328,12 +309,13 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 1
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 13747644418934503961
-  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 9119130726774611910
+  SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
+    Scale: {x: 0, y: 0, z: 0}
+    IsValid: 0
 --- !u!114 &6087706724517169577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,6 +337,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
+  _useScaledTime: 1
   _interpolation: 2
   _extrapolation: 2
   _enableTeleport: 1
@@ -363,6 +346,7 @@ MonoBehaviour:
   _sendToOwner: 1
   _interval: 1
   _synchronizePosition: 1
+  _positionSensitivity: 0.001
   _positionSnapping:
     X: 0
     Y: 0
@@ -373,6 +357,7 @@ MonoBehaviour:
     Y: 0
     Z: 0
   _synchronizeScale: 1
+  _scaleSensitivity: 0.001
   _scaleSnapping:
     X: 0
     Y: 0
