@@ -43,6 +43,8 @@ namespace VRT.Orchestrator.Implementation
         public override event Action<UserEvent> OnUserEventReceivedEvent;
         public override event Action<UserDataStreamPacket> OnDataStreamReceived;
 
+        [Tooltip("Auto-create a single-user session")]
+        public bool autoCreateSession = false;
         // ── Tracing ──────────────────────────────────────────────────────────────
         [Tooltip("Log all orchestrator calls and events to the console")]
         public bool traceCalls = false;
@@ -75,6 +77,13 @@ namespace VRT.Orchestrator.Implementation
         public override bool UserIsLogged => _selfUser != null;
         public override Session[] AvailableSessions => new Session[0];
 
+        void Start()
+        {
+            if (autoCreateSession)
+            {
+                Connect("standalone-orchestrator");
+            }
+        }
         /// <summary>
         /// "Connect" to the standalone session. Fires OnConnectionEvent(true) immediately,
         /// which drives the OrchestratorLogin state machine into the login step.
@@ -114,6 +123,16 @@ namespace VRT.Orchestrator.Implementation
             InitializeSelfUser();
             Trace("recv", nameof(OnLoginEvent));
             OnLoginEvent?.Invoke(true);
+            if (autoCreateSession)
+            {
+                Scenario standaloneScenario = new Scenario()
+                {
+                    scenarioName = "standalone-scenario",
+                    scenarioDescription = "",
+                    scenarioId = "standalone-scenarioid",
+                };
+                AddSession("standalone-sessionid", standaloneScenario, "", "", "");
+            }
         }
 
         public override void GetVersion()
