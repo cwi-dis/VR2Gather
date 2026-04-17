@@ -20,7 +20,7 @@
         "preDeleteTargetDirectory": true,
         "filenameTemplate": "Frame{framenum}.png"
     },
-    "AutoStartConfig": {
+    "_AutoStartConfig": {
         "autoCreate": false,
         "autoCreateStandalone": false,
         "autoJoin": false,
