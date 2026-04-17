@@ -73,7 +73,7 @@ MonoBehaviour:
   _dontDestroyOnLoad: 0
   _objectPool: {fileID: 0}
   _persistence: 0
-  _logging: {fileID: 11400000, guid: 725701f5e78cf42299f2446b378657f7, type: 2}
+  _logging: {fileID: 11400000, guid: dda78ba0ede59443eb8b40687433cc73, type: 2}
   _spawnablePrefabs: {fileID: 11400000, guid: a394507876f6d483c8645f1433167a6f, type: 2}
 --- !u!114 &3491258514033625235
 MonoBehaviour:
