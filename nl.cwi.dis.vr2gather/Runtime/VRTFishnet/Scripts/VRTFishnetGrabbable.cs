@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
 using UnityEngine.XR.Interaction.Toolkit;
 using FishNet.Object;
 using FishNet.Connection;

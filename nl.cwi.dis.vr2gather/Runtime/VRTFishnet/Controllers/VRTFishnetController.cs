@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Managing;
 using FishNet.Transporting;
-using VRT.Orchestrator.Wrapping;
+using VRT.Orchestrator;
+using VRT.OrchestratorComm;
 using VRT.Pilots.Common;
 using System;
-using VRT.Orchestrator.Elements;
 
 namespace VRT.Fishnet {
     public class VRTFishnetController : NetworkIdBehaviour
@@ -52,8 +52,8 @@ namespace VRT.Fishnet {
         protected override void Awake()
         {
             base.Awake();
-            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_FishnetStartupData, typeof(FishnetStartupData));
-            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_FishnetMessage, typeof(FishnetMessage));
+            VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_FishnetStartupData, typeof(FishnetStartupData));
+            VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_FishnetMessage, typeof(FishnetMessage));
             if (_networkManager == null) {
                 _networkManager = FindObjectOfType<NetworkManager>();
             }
