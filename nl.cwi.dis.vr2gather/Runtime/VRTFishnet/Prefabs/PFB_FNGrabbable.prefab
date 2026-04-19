@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 919225142772594258}
   - component: {fileID: 1954768422725111540}
   - component: {fileID: 6087706724517169577}
-  m_Layer: 29
+  m_Layer: 0
   m_Name: PFB_FNGrabbable
   m_TagString: Untagged
   m_Icon: {fileID: 0}

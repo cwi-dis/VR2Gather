@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 607547520380288696}
   - component: {fileID: 804744029634388579}
+  - component: {fileID: 3395347940794028334}
   m_Layer: 0
   m_Name: FNOBJ_SnowballGenerator
   m_TagString: Untagged
@@ -49,10 +50,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
+  WasActiveDuringEdit: 0
+  WasActiveDuringEdit_Set1: 1
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
-  NetworkBehaviours: []
+  NetworkBehaviours:
+  - {fileID: 3395347940794028334}
+  - {fileID: 2841939553583149237}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
@@ -63,9 +68,11 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
+  _initializedTimestamp: -8584249724781592407
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
+  _localReconcileCorrectionType: 2
   _graphicalObject: {fileID: 0}
   _detachGraphicalObject: 0
   _enableStateForwarding: 1
@@ -80,11 +87,27 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 11861288167797045940
-  <SceneId>k__BackingField: 0
+  SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 1.086, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
+    Scale: {x: 1, y: 1, z: 1}
+    IsValid: 1
+--- !u!114 &3395347940794028334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527036051351007061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a6a39c46bf52104ba8efe3100bce3f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FishNet.Runtime::FishNet.Object.EmptyNetworkBehaviour
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 804744029634388579}
+  _networkObjectCache: {fileID: 804744029634388579}
 --- !u!1 &684847298172888335
 GameObject:
   m_ObjectHideFlags: 0
@@ -129,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6769a9820c4c89943b35eaaffc6b451e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: 804744029634388579}
   _networkObjectCache: {fileID: 804744029634388579}
   _prefab: {fileID: 5201834997571227505, guid: 0b94e5c4329994276aec2959ceeca88e, type: 3}
@@ -193,6 +216,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -214,9 +242,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7263737895181983596
 BoxCollider:
@@ -364,7 +394,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2841939553583149237}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnSpawnTrigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: VRT.Fishnet.VRTFishnetSpawn, VRTFishnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: VRT.Fishnet.VRTFishnetSpawn, VRTFishnet
       objectReference: {fileID: 0}
     - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
@@ -372,9 +417,14 @@ PrefabInstance:
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 6314331141898039440, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_PokeConfiguration.m_ConstantValue.m_PokeDirection
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6546110161108735391, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 30cc6f306c5d73145a684ac0f2f4e724, type: 2}
     - target: {fileID: 7893439252189855620, guid: df7e71082a6fe476b877542a2ac16e26,
