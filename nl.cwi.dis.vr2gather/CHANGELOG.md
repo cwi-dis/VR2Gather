@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compatible with Unity 6000.3
 - Compatible with XRI Toolkit 3.3 (#260)
+- Completely new login scene (#259)
+- Completely new orchestrator interface, plus single-user local sessions (#265)
+
 
 ## [1.3.0] - 2026-03-09
 
