@@ -37,7 +37,7 @@ namespace VRT.UserRepresentation.Voice
             int minBufferSize = 0;
             if (microphoneName == "None" || microphoneName == "")
             {
-                Debug.LogError($"{Name()}: no microphone, other participants will not hear you");
+                Debug.Log($"{Name()}: no microphone, other participants will not hear you");
                 return;
             }
 
