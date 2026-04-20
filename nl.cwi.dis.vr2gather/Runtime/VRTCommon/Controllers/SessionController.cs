@@ -4,6 +4,12 @@ using VRT.OrchestratorComm;
 
 namespace VRT.Pilots.Common
 {
+    /// <summary>
+    /// Handle session events coming from the orchestrator.
+    /// In reality this script doesn't do much, at the moment: really only stopping
+    /// if the orchestrator drops the connection, or if the session has been closed
+    /// by the remote end.
+    /// </summary>
     public class SessionController : MonoBehaviour
     {
         private bool orchestratorInitialized = false;
@@ -13,7 +19,7 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
-        void Awake()
+        void Start()
         {
             InitialiseOrchestratorEvents();
         }
@@ -89,7 +95,6 @@ namespace VRT.Pilots.Common
 
         private void OnConnectionEventHandler(bool connected)
         {
-            Debug.LogWarning($"{Name()}: Unexpected Connection event, connected={connected}");
             if (!connected)
             {
                 // We should handle this more gracefully, by letting the user continue is disconnected mode or something...

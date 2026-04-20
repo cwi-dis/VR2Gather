@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compatible with XRI Toolkit 3.3 (#260)
 - Completely new login scene (#259)
 - Completely new orchestrator interface, plus single-user local sessions (#265)
-
+- Pilot scenes are now playable in the editor, using the standalone orchestrator! (#269)
 
 ## [1.3.0] - 2026-03-09
 
