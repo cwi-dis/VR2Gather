@@ -81,14 +81,14 @@ namespace VRT.Pilots.Common
                 Debug.LogError($"{Name()}: cannot play scene, missing configuration or orchestrator prefab");
             }
             // First instantiate the VRTConfig
-            var config = Instantiate(configurationPrefab, gameObject.transform.root);
+            var config = Instantiate(configurationPrefab);
             // Ensure that that worked.
             if (VRTConfig.Instance == null)
             {
                 Debug.LogError($"{Name()}: could not create config, VRTConfig.Instance is null");
                 return;
             }
-            var orch = Instantiate(orchestratorPrefab, gameObject.transform.root);
+            var orch = Instantiate(orchestratorPrefab);
             var orchController  = orch.GetComponent<StandaloneOrchestratorController>();
             orchController.autoCreateSession = true;
         }
