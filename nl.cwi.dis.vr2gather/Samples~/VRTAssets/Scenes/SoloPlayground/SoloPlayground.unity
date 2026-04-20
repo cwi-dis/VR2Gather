@@ -904,172 +904,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a18fb8b87fbabd4e92f7c78ac723017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &328854235
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 328854238}
-  - component: {fileID: 328854237}
-  - component: {fileID: 328854236}
-  m_Layer: 0
-  m_Name: VRTInitializer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &328854236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 328854235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7a9f2923802a8043892898c9dc3519d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &328854237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 328854235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f5d4564cc5748f44a078ede34cbd4e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  configVersion: 20260311
-  orchestratorURL: http://192.16.197.145:8080/socket.io/
-  userConfigFilename: 
-  configOverrideFilename: 
-  targetFrameRate: -1
-  disableVR: 0
-  ntpSyncThreshold: 0.1
-  ffmpegDLLDir: ../ffmpeg/x64
-  autoInventUsername: 1
-  StatisticsConfig:
-    interval: 10
-    outputFile: 
-    outputFileAppend: 1
-  ScreenshotConfig:
-    takeScreenshot: 0
-    fps: 0
-    screenshotTargetDirectory: 
-    preDeleteTargetDirectory: 1
-    filenameTemplate: Frame{framenum}.png
-  AutoStartConfig:
-    ignoreAutoStartForDeveloper: 0
-    autoLogin: 0
-    autoCreate: 0
-    autoJoin: 1
-    autoCreateForUser: 
-    sessionName: 
-    sessionScenario: 
-    sessionTransportProtocol: 
-    sessionUncompressed: 0
-    sessionUncompressedAudio: 0
-    autoStartWith: -1
-    autoLeaveAfter: 0
-    autoStopAfterLeave: 0
-    autoDelay: 0.2
-  TransportDashConfig:
-    segmentSize: 4000
-    segmentLife: 15000
-    logLevel: 0
-    nativeLibraryPath: 
-  TransportWebRTCConfig:
-    peerExecutablePath: 
-    peerInWindow: 0
-    peerWindowDontClose: 0
-    peerUDPPort: 8000
-    peerIPAddress: 127.0.0.1
-    logFileDirectory: 
-    debugLevel: 0
-  CwipcConfig:
-    logLevel: 2
-    overrideNativeLoadPath: 
-    Codec: cwi1
-    defaultCellSize: 0
-    cellSizeFactor: 0
-    debugColorize: 0
-    timeoutBeforeGhosting: 5
-    decoderQueueSizeOverride: 0
-    preparerQueueSizeOverride: 0
-    encoderParallelism: 0
-    decoderParallelism: 0
-    preparerQueueSize: 0
-  VoiceConfig:
-    audioFps: 50
-    maxPlayoutLatency: 0.3
-    maxPlayoutAhead: 0.066
-    preparerQueueSize: 0
-    ignoreSynchronizer: 0
-  SynchronizerConfig:
-    debugSynchronizer: 0
-    debugJitterBuffer: 0
-    minLatency: 0
-    maxLatency: 0
-    latencyMaxDecrease: 1
-    latencyMaxIncrease: 33
-    acceptDesyncOnDataUnavailable: 0
-  PointCloudTransmissionConfig:
-    tiled: 0
-    EncoderConfigs: []
-  TileSelectorConfig:
-    algorithm: 
-    debugDecisions: 0
-    bitrateBudget: 0
-  PositionTrackerConfig:
-    outputFile: 
-    outputIntervalOverride: 0
-    inputFile: 
-  RepresentationConfig:
-    userName: 
-    representation: 1
-    representation_str: 
-    webcamName: 
-    microphoneName: 
-    userRepresentationTCPUrl: 
-    RepresentationPointcloudConfig:
-      variant: 0
-      variant_str: 
-      CameraConfig:
-        configFilename: 
-      RemoteConfig:
-        url: 
-        isCompressed: 0
-      ProxyConfig:
-        localIP: 
-        port: 0
-      SyntheticConfig:
-        nPoints: 0
-      PrerecordedConfig:
-        folder: 
-      voxelSize: 0
-      frameRate: 0
---- !u!4 &328854238
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 328854235}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &366351087
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3430,11 +3264,79 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: e4a2ad980cb30454eab747ddbac46ff6, type: 3}
+--- !u!1001 &8992028564902492837
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5444392893246487867, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194004708595785846, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
+      propertyPath: m_Name
+      value: Tool_VRTInitializer
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e71ab000118fc4644924cc8a8d34888b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 328854238}
+  - {fileID: 8992028564902492837}
   - {fileID: 366351087}
   - {fileID: 7957250787338241242}
   - {fileID: 1820810856}

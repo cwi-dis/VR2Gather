@@ -1,0 +1,167 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8194004708595785846
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5444392893246487867}
+  - component: {fileID: 7345373832657106701}
+  - component: {fileID: 7835478821063665968}
+  m_Layer: 0
+  m_Name: Tool_VRTInitializer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5444392893246487867
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8194004708595785846}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7345373832657106701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8194004708595785846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f5d4564cc5748f44a078ede34cbd4e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  configVersion: 20260311
+  orchestratorURL: http://192.16.197.145:8080/socket.io/
+  userConfigFilename: 
+  configOverrideFilename: 
+  targetFrameRate: -1
+  disableVR: 0
+  ntpSyncThreshold: 0.1
+  ffmpegDLLDir: ../ffmpeg/x64
+  autoInventUsername: 1
+  StatisticsConfig:
+    interval: 10
+    outputFile: 
+    outputFileAppend: 1
+  ScreenshotConfig:
+    takeScreenshot: 0
+    fps: 0
+    screenshotTargetDirectory: 
+    preDeleteTargetDirectory: 1
+    filenameTemplate: Frame{framenum}.png
+  AutoStartConfig:
+    autoCreate: 0
+    autoCreateStandalone: 0
+    autoJoin: 0
+    autoCreateForUser: 
+    sessionName: 
+    sessionScenario: 
+    sessionTransportProtocol: 
+    sessionUncompressed: 0
+    sessionUncompressedAudio: 0
+    autoStartWith: -1
+    autoLeaveAfter: 0
+    autoStopAfterLeave: 0
+    autoDelay: 0.2
+  TransportDashConfig:
+    segmentSize: 4000
+    segmentLife: 15000
+    logLevel: 0
+    nativeLibraryPath: 
+  TransportWebRTCConfig:
+    peerExecutablePath: 
+    peerInWindow: 0
+    peerWindowDontClose: 0
+    peerUDPPort: 8000
+    peerIPAddress: 127.0.0.1
+    logFileDirectory: 
+    debugLevel: 0
+  CwipcConfig:
+    logLevel: 2
+    overrideNativeLoadPath: 
+    Codec: cwi1
+    defaultCellSize: 0
+    cellSizeFactor: 0
+    debugColorize: 0
+    timeoutBeforeGhosting: 5
+    decoderQueueSizeOverride: 0
+    preparerQueueSizeOverride: 0
+    encoderParallelism: 0
+    decoderParallelism: 0
+    preparerQueueSize: 0
+  VoiceConfig:
+    audioFps: 50
+    maxPlayoutLatency: 0.3
+    maxPlayoutAhead: 0.066
+    preparerQueueSize: 0
+    ignoreSynchronizer: 0
+  SynchronizerConfig:
+    debugSynchronizer: 0
+    debugJitterBuffer: 0
+    minLatency: 0
+    maxLatency: 0
+    latencyMaxDecrease: 1
+    latencyMaxIncrease: 33
+    acceptDesyncOnDataUnavailable: 0
+  PointCloudTransmissionConfig:
+    tiled: 0
+    EncoderConfigs: []
+  TileSelectorConfig:
+    algorithm: 
+    debugDecisions: 0
+    bitrateBudget: 0
+  PositionTrackerConfig:
+    outputFile: 
+    outputIntervalOverride: 0
+    inputFile: 
+  RepresentationConfig:
+    userName: 
+    representation: 1
+    representation_str: 
+    webcamName: 
+    microphoneName: 
+    userRepresentationTCPUrl: 
+    RepresentationPointcloudConfig:
+      variant: 0
+      variant_str: 
+      CameraConfig:
+        configFilename: 
+      RemoteConfig:
+        url: 
+        isCompressed: 0
+      ProxyConfig:
+        localIP: 
+        port: 0
+      SyntheticConfig:
+        nPoints: 0
+      PrerecordedConfig:
+        folder: 
+      voxelSize: 0
+      frameRate: 0
+--- !u!114 &7835478821063665968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8194004708595785846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a9f2923802a8043892898c9dc3519d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
