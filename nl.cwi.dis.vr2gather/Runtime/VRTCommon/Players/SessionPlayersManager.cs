@@ -61,7 +61,7 @@ namespace VRT.Pilots.Common
 		[Tooltip("Verbose logging")]
 		[SerializeField] private bool debug = true;
 
-		public Dictionary<string, PlayerNetworkControllerBase> Players;
+		private Dictionary<string, PlayerNetworkControllerBase> _playerDict;
 		private Dictionary<string, PlayerLocation> _PlayerIdToLocation;
 		private Dictionary<PlayerLocation, string> _LocationToPlayerId;
 
@@ -86,7 +86,7 @@ namespace VRT.Pilots.Common
 			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_PlayerLocationData, typeof(PlayerLocationData));
 			VRTOrchestratorSingleton.Comm.RegisterEventType(MessageTypeID.TID_PlayerLocationDataRequest, typeof(PlayerLocationDataRequest));
 			AllUsers = new List<PlayerNetworkControllerBase>();
-			Players = new Dictionary<string, PlayerNetworkControllerBase>();
+			_playerDict = new Dictionary<string, PlayerNetworkControllerBase>();
 			_PlayerIdToLocation = new Dictionary<string, PlayerLocation>();
 			_LocationToPlayerId = new Dictionary<PlayerLocation, string>();
 
@@ -129,6 +129,15 @@ namespace VRT.Pilots.Common
 			InstantiatePlayers();
 		}
 
+		public PlayerNetworkControllerBase GetPlayerById(string playerId)
+		{
+			if (_playerDict.ContainsKey(playerId))
+			{
+				return _playerDict[playerId];
+			}
+
+			return null;
+		}
 		public void SetupConfigDistributors()
 		{
             if (debug) Debug.Log($"SessionPlayersManager: SetupConfigDistributors");
@@ -278,7 +287,7 @@ namespace VRT.Pilots.Common
 		{
             if (debug) Debug.Log($"SessionPlayersManager: OnUserLeft({userId})");
 
-            if (Players.TryGetValue(userId, out PlayerNetworkControllerBase playerToRemove))
+            if (_playerDict.TryGetValue(userId, out PlayerNetworkControllerBase playerToRemove))
 			{
 				RemovePlayer(playerToRemove);
 			} else
@@ -293,7 +302,7 @@ namespace VRT.Pilots.Common
 
 		private void AddPlayer(PlayerNetworkControllerBase player)
 		{
-			Players.Add(player.UserId, player);
+			_playerDict.Add(player.UserId, player);
 
 			if (VRTOrchestratorSingleton.Comm.UserIsMaster && AutoSpawnOnLocation)
 			{
@@ -323,7 +332,7 @@ namespace VRT.Pilots.Common
 
         private void RemovePlayer(PlayerNetworkControllerBase player)
 		{
-			Players.Remove(player.UserId);
+			_playerDict.Remove(player.UserId);
 
 			if (_PlayerIdToLocation.TryGetValue(player.UserId, out PlayerLocation location))
 			{
@@ -348,7 +357,7 @@ namespace VRT.Pilots.Common
 #region Player Locations
 		private void SendPlayerLocationData(string userId = null)
 		{
-			PlayerLocationData data = new PlayerLocationData(Players.Count);
+			PlayerLocationData data = new PlayerLocationData(_playerDict.Count);
 			int dataIndex = 0;
 			for (int i = 0; i < PlayerLocations.Count; ++i)
 			{
@@ -397,10 +406,10 @@ namespace VRT.Pilots.Common
             for (int i = 0; i < playerLocationData.PlayerIds.Length; ++i)
 			{
 				string playerId = playerLocationData.PlayerIds[i];
-				if (Players.ContainsKey(playerId))
+				if (_playerDict.ContainsKey(playerId))
 				{
 					if (debug) Debug.Log($"SessionsPlayerManager: OnPlayerLocationData: set player {playerId} to location {i}");
-                    PlayerNetworkControllerBase player = Players[playerId];
+                    PlayerNetworkControllerBase player = _playerDict[playerId];
 					PlayerLocation location = PlayerLocations[playerLocationData.LocationIds[i]];
 
 					SetPlayerToLocation(player, location);
