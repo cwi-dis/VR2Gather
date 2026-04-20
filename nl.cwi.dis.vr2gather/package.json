@@ -23,7 +23,7 @@
 	"samples" : [
 		{
 			"displayName": "VRT Essential Assets",
-			"description": "A set of assets that are essential when using VR2Gather\n\nWhen _updating_ the assets from an older version it is best to remember any changes you have made, update the samples, exit Unity, remove the Library cache, start Unity again, apply your changes again.",
+			"description": "A set of assets that are essential when using VR2Gather\n\nWhen _updating_ the assets from an older version it is best to remember any changes you have made, update the samples, exit Unity, remove the Library cache, start Unity again, apply your changes again.\n\nNOTE: from XR Interaction Toolkit you need the Starter Assets, World Space UI and Hands Interaction Demo.\n\nFrom XR Hands you need the HandVisualizer.",
 			"path": "Samples~/VRTAssets"
 		}
 	]
