@@ -2066,6 +2066,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2108755284289232089, guid: 9908dcf284aef0e4a8ba245dc5f0f080,
+        type: 3}
+      propertyPath: orchestratorPrefab
+      value: 
+      objectReference: {fileID: 3991120480309365947, guid: 59713b3d4e69349238a95c35e9f8994b,
+        type: 3}
+    - target: {fileID: 2108755284289232089, guid: 9908dcf284aef0e4a8ba245dc5f0f080,
+        type: 3}
+      propertyPath: configurationPrefab
+      value: 
+      objectReference: {fileID: 8194004708595785846, guid: e71ab000118fc4644924cc8a8d34888b,
+        type: 3}
     - target: {fileID: 2108755285251549802, guid: 9908dcf284aef0e4a8ba245dc5f0f080,
         type: 3}
       propertyPath: m_RootOrder

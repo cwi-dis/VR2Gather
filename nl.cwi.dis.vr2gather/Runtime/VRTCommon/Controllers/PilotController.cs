@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine.Video;
 using VRT.Core;
 using System;
+using VRT.Orchestrator.Implementation;
 
 namespace VRT.Pilots.Common
 {
@@ -16,7 +17,7 @@ namespace VRT.Pilots.Common
     /// </summary>
     abstract public class PilotController : MonoBehaviour
     {
-
+        [Header("Pilot settings")]
         [Tooltip("Fade in at start of scene (default only fadeout)")]
         [SerializeField] public bool startFadedOut = false;
 
@@ -29,12 +30,22 @@ namespace VRT.Pilots.Common
         [Tooltip("Next scene when session ends. Empty to stop playback.")]
         public string NextSceneOnSessionEnd = "VRTLoginManager";
 
+        [Header("Developer settings")]
+        [SerializeField]
+        [Tooltip("Allow scene to be playable in the editor")]
+        protected bool playableInEditor = true;
+        [Tooltip("Prefab for configuration")]
+        [SerializeField]
+        protected GameObject configurationPrefab;
+        [Tooltip("Prefab for orchestrator")]
+        [SerializeField]
+        protected GameObject orchestratorPrefab;
         /// <summary>
         /// True once the session leave process has started. Components that use
         /// VRTOrchestratorSingleton.Comm should check this before sending messages.
         /// </summary>
         [NonSerialized] public bool IsLeavingSession = false;
-
+        [Header("Introspection")]
         [Tooltip("Direct interaction disabled now because of UI visible (introspection/debug)")]
         [DisableEditing] [SerializeField] protected bool m_directInteractionDisabled;
         /// <summary>
@@ -56,8 +67,32 @@ namespace VRT.Pilots.Common
             }
             Instance = this;
             Debug.Log($"{Name()}: Awake.");
+            if (playableInEditor && !VRTConfig.InstanceExists())
+            {
+                Debug.LogWarning($"{Name()}: scene started in isolation. Creating config and orchestrator");
+                CreatePlayableEditorScene();
+            }
         }
 
+        void CreatePlayableEditorScene()
+        {
+            if (configurationPrefab == null || orchestratorPrefab == null)
+            {
+                Debug.LogError($"{Name()}: cannot play scene, missing configuration or orchestrator prefab");
+            }
+            // First instantiate the VRTConfig
+            var config = Instantiate(configurationPrefab, gameObject.transform.root);
+            // Ensure that that worked.
+            if (VRTConfig.Instance == null)
+            {
+                Debug.LogError($"{Name()}: could not create config, VRTConfig.Instance is null");
+                return;
+            }
+            var orch = Instantiate(orchestratorPrefab, gameObject.transform.root);
+            var orchController  = orch.GetComponent<StandaloneOrchestratorController>();
+            orchController.autoCreateSession = true;
+        }
+        
         /// <summary>
         /// Call when the session is ending (button press, session creator leaving, etc.).
         /// Sets IsLeavingSession and triggers the scene transition.

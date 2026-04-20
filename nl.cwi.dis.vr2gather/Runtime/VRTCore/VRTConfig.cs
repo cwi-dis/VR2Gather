@@ -368,7 +368,11 @@ namespace VRT.Core
                 }
                 return _Instance;
             }
-            
+        }
+
+        public static bool InstanceExists()
+        {
+            return _Instance != null;
         }
 
         private void Awake()
