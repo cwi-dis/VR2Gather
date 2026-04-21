@@ -432,6 +432,9 @@ MonoBehaviour:
   fadeOutText: 
   allowDirectInteractionInScene: 0
   NextSceneOnSessionEnd: VRTLoginManager
+  playableInEditor: 1
+  configurationPrefab: {fileID: 0}
+  orchestratorPrefab: {fileID: 0}
   m_directInteractionDisabled: 0
   selfPlayer: {fileID: 1179825888}
 --- !u!4 &772475570
@@ -814,7 +817,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1897768792}
   - component: {fileID: 1897768791}
-  - component: {fileID: 1897768790}
   m_Layer: 6
   m_Name: PreviewCamera
   m_TagString: Untagged
@@ -822,14 +824,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!81 &1897768790
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1897768789}
-  m_Enabled: 1
 --- !u!20 &1897768791
 Camera:
   m_ObjectHideFlags: 0
