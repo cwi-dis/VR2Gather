@@ -42,6 +42,33 @@
     -unity-text-align: middle-left;
 }
 
+.vrt-status-check-bg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Icons/UI_Toggle_background.png?fileID=2800000&guid=0556ad3059b18e54dab25efcc8b914c9&type=3#UI_Toggle_background");
+}
+
+.vrt-status-checkmark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Icons/UI_Toggle_checkmark.png?fileID=2800000&guid=56b4691ca338d18458307ef1c03fc6ed&type=3#UI_Toggle_checkmark");
+}
+
+.vrt-dialog__logo {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTMedia/Logos/VRT_Logo.png?fileID=2800000&guid=66f20aa4bf4c52740954d55e7d00009c&type=3#VRT_Logo");
+}
+
 .vrt-dialog__close-button {
     min-width: 60px;
     min-height: 44px;

@@ -5,10 +5,19 @@
     <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 20, 0.95); justify-content: center; align-items: center;">
         <!-- Centered dialog frame -->
         <ui:VisualElement class="vrt-dialog" style="width: 1000px; min-height: 700px; max-height: 900px;">
-            <!-- Persistent header: title + version info -->
+            <!-- Persistent header: status lines + logo -->
             <ui:VisualElement class="vrt-dialog__head">
-                <ui:Label name="TitleLabel" text="VR2Gather" class="vrt-dialog__title"/>
-                <ui:Label name="VersionLabel" text="" style="color: rgba(255, 255, 255, 0.5); font-size: 18px; -unity-text-align: middle-right;"/>
+                <ui:VisualElement class="vrt-dialog__logo"/>
+                <ui:VisualElement style="flex-grow: 1; flex-direction: column; justify-content: center; margin-left: 16px;">
+                    <ui:Label name="TitleVersionLabel" text="VR2Gather" class="vrt-dialog__title" style="flex-grow: 0;"/>
+                    <ui:VisualElement style="flex-direction: row; align-items: center;">
+                        <ui:VisualElement class="vrt-status-check-bg">
+                            <ui:VisualElement name="OrchestratorCheckmark" class="vrt-status-checkmark" style="display: none;"/>
+                        </ui:VisualElement>
+                        <ui:Label name="OrchestratorVersionLabel" text="" style="color: rgba(255, 255, 255, 0.6); font-size: 18px;"/>
+                    </ui:VisualElement>
+                    <ui:Label name="AutoStatusLabel" text="" style="color: rgba(255, 255, 255, 0.6); font-size: 18px;"/>
+                </ui:VisualElement>
             </ui:VisualElement>
             <!-- Content slot: swapped out per dialog -->
             <ui:VisualElement name="Content" class="vrt-dialog__body" style="flex-grow: 1;"/>

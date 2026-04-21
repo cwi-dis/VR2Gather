@@ -64,7 +64,10 @@ namespace VRT.Login
 
         private UIDocument _uiDocument;
         private VisualElement _contentSlot;
-        private Label _versionLabel;
+        private Label _titleVersionLabel;
+        private VisualElement _orchestratorCheckmark;
+        private Label _orchestratorVersionLabel;
+        private Label _autoStatusLabel;
 
         // Active dialog instances (only one non-null at a time)
         private HomeDialog _homeDialog;
@@ -91,10 +94,13 @@ namespace VRT.Login
             _uiDocument = GetComponent<UIDocument>();
             var root = _uiDocument.rootVisualElement;
             _contentSlot = root.Q<VisualElement>("Content");
-            _versionLabel = root.Q<Label>("VersionLabel");
+            _titleVersionLabel = root.Q<Label>("TitleVersionLabel");
+            _orchestratorCheckmark = root.Q<VisualElement>("OrchestratorCheckmark");
+            _orchestratorVersionLabel = root.Q<Label>("OrchestratorVersionLabel");
+            _autoStatusLabel = root.Q<Label>("AutoStatusLabel");
 
-            string version = Application.version;
-            _versionLabel.text = $"v{version}";
+            _titleVersionLabel.text = $"VR2Gather v{Application.version}";
+            UpdateHeaderOrchestratorStatus(false, "Orchestrator: Not connected");
 
             ShowHome();
         }
@@ -344,6 +350,18 @@ namespace VRT.Login
             if (VRTOrchestratorSingleton.Login == null) return;
             UnregisterOrchestratorEvents();
             VRTOrchestratorSingleton.Login.Shutdown();
+            UpdateHeaderOrchestratorStatus(false, "Orchestrator: Not connected");
+        }
+
+        private void UpdateAutoStatus(string text)
+        {
+            _autoStatusLabel.text = text;
+        }
+
+        private void UpdateHeaderOrchestratorStatus(bool connected, string statusText)
+        {
+            _orchestratorCheckmark.style.display = connected ? DisplayStyle.Flex : DisplayStyle.None;
+            _orchestratorVersionLabel.text = statusText;
         }
 
         private void RegisterOrchestratorEvents()
@@ -390,6 +408,7 @@ namespace VRT.Login
         private void OnConnectingEvent()
         {
             SetActiveDialogStatus("Connecting to orchestrator...");
+            UpdateHeaderOrchestratorStatus(false, "Orchestrator: Connecting...");
         }
 
         private void OnConnectionEvent(bool connected)
@@ -397,10 +416,12 @@ namespace VRT.Login
             if (!connected)
             {
                 SetActiveDialogStatus("Disconnected from orchestrator.", isError: true);
+                UpdateHeaderOrchestratorStatus(false, "Orchestrator: Not connected");
                 return;
             }
 
             SetActiveDialogStatus("Connected to orchestrator.");
+            UpdateHeaderOrchestratorStatus(true, "Orchestrator: Getting version...");
         }
 
         private void OnLoginEvent(bool success)
@@ -419,6 +440,7 @@ namespace VRT.Login
 
         private void OnGetVersionEvent(string version)
         {
+            UpdateHeaderOrchestratorStatus(true, $"Orchestrator: {version}");
             VRTOrchestratorSingleton.Login.GetNTPTime();
         }
 
@@ -630,6 +652,8 @@ namespace VRT.Login
 
             _autoStartAlreadyStarted = false;
             _autoStartDone = true;
+
+            UpdateAutoStatus("AutoStart: CapsLock to cancel");
             // Defer the actual trigger so the user has autoDelay seconds to press CapsLock.
             Invoke(nameof(AutoStart_Fire), config.autoDelay);
         }
@@ -639,6 +663,7 @@ namespace VRT.Login
             if (Keyboard.current != null && Keyboard.current.capsLockKey.isPressed)
             {
                 Debug.Log("OrchestratorLogin: AutoStart suppressed (CapsLock held)");
+                UpdateAutoStatus("AutoStart: cancelled");
                 return;
             }
 
@@ -655,6 +680,7 @@ namespace VRT.Login
             if (!_pendingAutoCreate) return;
             var config = VRTConfig.Instance.AutoStartConfig;
             _createDialog?.AutoFill(config);
+            UpdateAutoStatus($"AutoStart: Creating session \"{config.sessionName}\"...");
             // The dialog's Create button click is triggered programmatically after a delay.
             Invoke(nameof(AutoStart_TriggerCreate), config.autoDelay);
         }
@@ -701,6 +727,7 @@ namespace VRT.Login
             if (!_pendingAutoCreateStandalone) return;
             var config = VRTConfig.Instance.AutoStartConfig;
             _createStandaloneDialog?.AutoFill(config);
+            UpdateAutoStatus($"AutoStart: Creating standalone session \"{config.sessionName}\"...");
             Invoke(nameof(AutoStart_TriggerCreateStandalone), config.autoDelay);
         }
 
@@ -735,11 +762,13 @@ namespace VRT.Login
             var config = VRTConfig.Instance.AutoStartConfig;
             if (!_pendingAutoJoin || string.IsNullOrEmpty(config.sessionName)) return;
             _joinDialog?.SetStatus($"AutoJoin: waiting for session \"{config.sessionName}\"");
+            UpdateAutoStatus($"AutoStart: Waiting for session \"{config.sessionName}\"...");
             Invoke(nameof(AutoStart_TriggerJoin), config.autoDelay);
         }
 
         private void AutoStart_TriggerJoin()
         {
+            UpdateAutoStatus($"AutoStart: Joining session \"{VRTConfig.Instance.AutoStartConfig.sessionName}\"...");
             _joinDialog?.AutoJoin(VRTConfig.Instance.AutoStartConfig.sessionName);
         }
 
@@ -758,9 +787,12 @@ namespace VRT.Login
             if (VRTOrchestratorSingleton.Login == null || !VRTOrchestratorSingleton.Login.UserIsMaster) return;
 
             var users = session.GetUsers();
-            if (users != null && users.Length >= config.autoStartWith)
+            if (users == null) return;
+            UpdateAutoStatus($"AutoStart: Waiting for participants ({users.Length}/{config.autoStartWith})...");
+            if (users.Length >= config.autoStartWith)
             {
                 _autoStartAlreadyStarted = true;
+                UpdateAutoStatus("AutoStart: Starting session...");
                 Invoke(nameof(OnStartSessionRequested), config.autoDelay);
             }
         }
