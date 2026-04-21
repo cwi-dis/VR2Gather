@@ -4630,11 +4630,6 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: -3941016355960383524, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
-  distance: 1
-  height: 0
-  velocity: 0.01
-  maxOffset: 1
-  maxAngle: 1
   interceptErrors: 1
   autoShowMessages: 1
   filterDuplicates: 1

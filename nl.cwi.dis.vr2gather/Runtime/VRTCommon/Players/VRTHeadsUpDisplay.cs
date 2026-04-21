@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 using UnityEngine.UIElements;
 using VRT.Core;
 
@@ -15,16 +16,6 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("The Input System Action that will show/hide the HUD")]
         [SerializeField] InputActionProperty m_ShowHideAction;
-        [Tooltip("How far away is the HMD from the users eyes?")]
-        public float distance = 1;
-        [Tooltip("How far up/down from the center is the HMD?")]
-        public float height = 0;
-        [Tooltip("How fast should it move when the user changes position/orientation?")]
-        public float velocity = 0.01f;
-        [Tooltip("How far away from its preferred position can it be before we start moving it?")]
-        public float maxOffset = 1;
-        [Tooltip("How far away from its preferred orientation can it be before we start moving it?")]
-        public float maxAngle = 1;
         [Tooltip("Should this HUD intercept and display error messages?")]
         [SerializeField] bool interceptErrors = true;
         [Tooltip("Auto-show messages")]
@@ -36,8 +27,6 @@ namespace VRT.Pilots.Common
 
         [Tooltip("Player controller (found dynamically)")]
         [DisableEditing] [SerializeField] PlayerControllerSelf playerController;
-        [Tooltip("Dialog needs to move")]
-        [DisableEditing][SerializeField] bool shouldChange;
 
         private List<string> currentMessageList  = new List<string>();
         private string currentMessageString = null;
@@ -65,6 +54,11 @@ namespace VRT.Pilots.Common
         void Start()
         {
             if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
+            var lazyFollow = gameObject.AddComponent<LazyFollow>();
+            lazyFollow.rotationFollowMode = LazyFollow.RotationFollowMode.LookAtWithWorldUp;
+            lazyFollow.targetOffset = new Vector3(0f, 0f, 1f);
+            lazyFollow.snapOnEnable = true;
+            lazyFollow.maxAngleAllowed = 20f;
             if (interceptErrors)
             {
                 Hide();
@@ -112,37 +106,6 @@ namespace VRT.Pilots.Common
                 GetRoot().Q<Label>("MessagesContent").text = currentMessageString;
                 currentMessageString = null;
             }
-        }
-
-        void LateUpdate()
-        {
-            if (Camera.main == null)
-            {
-                // Self player has not initialized yet.
-                return;
-            }
-            Vector3 forward = Camera.main.transform.forward;
-            forward.y = height;
-            forward = forward.normalized;
-
-            Vector3 position = Camera.main.transform.position + forward * distance;
-            Quaternion rotation = Quaternion.LookRotation(forward);
-            if (Vector3.Distance(transform.position, position) > maxOffset ||
-                Quaternion.Angle(transform.rotation, rotation) > maxAngle)
-            {
-                shouldChange = true;
-            }
-            if (shouldChange)
-            {
-                transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
-                transform.position = Vector3.Lerp(transform.position, position, velocity);
-                //transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
-                if (Vector3.Distance(transform.position, position) < maxOffset / 10 &&
-                   Quaternion.Angle(transform.rotation, rotation) < maxAngle / 10)
-                {
-                    shouldChange = false;
-                }
-             }
         }
 
         void SetActiveTab(string activePanelName)

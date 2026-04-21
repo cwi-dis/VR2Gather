@@ -17,7 +17,7 @@ MonoBehaviour:
   m_TargetTexture: {fileID: 0}
   m_RenderMode: 1
   m_WorldSpaceLayer: 0
-  m_ColliderUpdateMode: 2
+  m_ColliderUpdateMode: 0
   m_ColliderIsTrigger: 1
   m_ScaleMode: 1
   m_ReferenceSpritePixelsPerUnit: 100
@@ -32,7 +32,7 @@ MonoBehaviour:
   m_TargetDisplay: 0
   m_BindingLogLevel: 0
   m_ClearDepthStencil: 1
-  m_ClearColor: 0
+  m_ClearColor: 1
   m_ColorClearValue: {r: 0, g: 0, b: 0, a: 0}
   m_VertexBudget: 0
   m_DynamicAtlasSettings:
