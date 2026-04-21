@@ -1,3 +1,75 @@
+/* ── HUD / user-attached theme (green tint) ─────────────────────────────── */
+
+.vrt-dialog.vrt-theme-hud {
+    background-color: rgba(80, 220, 130, 0.2);
+    border-left-color: rgb(80, 220, 130);
+    border-right-color: rgb(80, 220, 130);
+    border-top-color: rgb(80, 220, 130);
+    border-bottom-color: rgb(80, 220, 130);
+}
+
+.vrt-theme-hud .vrt-dialog__head {
+    background-color: rgba(80, 220, 130, 0.25);
+}
+
+.vrt-theme-hud .vrt-dialog__body {
+    background-color: rgba(80, 220, 130, 0.15);
+    border-left-color: rgb(80, 220, 130);
+    border-right-color: rgb(80, 220, 130);
+    border-top-color: rgb(80, 220, 130);
+    border-bottom-color: rgb(80, 220, 130);
+}
+
+.vrt-theme-hud .vrt-tab-button {
+    background-color: rgba(40, 140, 80, 0.8);
+}
+
+.vrt-theme-hud .vrt-tab-button:hover {
+    background-color: rgb(80, 220, 130);
+}
+
+.vrt-theme-hud .vrt-tab-button--active {
+    background-color: rgba(80, 220, 130, 0.25);
+}
+
+.vrt-theme-hud .vrt-tab-button--active:hover {
+    background-color: rgba(80, 220, 130, 0.25);
+}
+
+.vrt-theme-hud Button {
+    background-color: rgb(20, 110, 60);
+    border-left-color: rgb(15, 80, 45);
+    border-right-color: rgb(15, 80, 45);
+    border-top-color: rgb(15, 80, 45);
+    border-bottom-color: rgb(15, 80, 45);
+}
+
+.vrt-theme-hud Button:hover {
+    background-color: rgb(80, 220, 130);
+}
+
+.vrt-theme-hud Button:active {
+    background-color: rgb(150, 240, 180);
+}
+
+.vrt-theme-hud Toggle.vrt-checkbox #unity-checkmark {
+    background-color: rgb(20, 110, 60);
+    border-left-color: rgb(15, 80, 45);
+    border-right-color: rgb(15, 80, 45);
+    border-top-color: rgb(15, 80, 45);
+    border-bottom-color: rgb(15, 80, 45);
+}
+
+.vrt-theme-hud Toggle.vrt-checkbox:hover #unity-checkmark {
+    background-color: rgb(80, 220, 130);
+}
+
+.vrt-theme-hud Toggle.vrt-checkbox:checked #unity-checkmark {
+    background-color: rgb(80, 200, 120);
+}
+
+/* ── Transitions ─────────────────────────────────────────────────────────── */
+
 #Content,
 #FormScrollView {
     transition-property: opacity;
