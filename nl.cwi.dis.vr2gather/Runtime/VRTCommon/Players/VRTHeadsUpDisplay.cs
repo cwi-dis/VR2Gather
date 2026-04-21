@@ -63,6 +63,7 @@ namespace VRT.Pilots.Common
             lazyFollow.targetOffset = new Vector3(0f, 0f, hudDistance);
             lazyFollow.snapOnEnable = true;
             lazyFollow.maxAngleAllowed = 20f;
+            gameObject.AddComponent<BoxCollider>();
             if (interceptErrors)
             {
                 Hide();
