@@ -2309,7 +2309,7 @@ MonoBehaviour:
   m_InteractionManager: {fileID: 0}
   m_Colliders: []
   m_InteractionLayers:
-    m_Bits: 8
+    m_Bits: 2147483648
   m_DistanceCalculationMode: 1
   m_SelectMode: 1
   m_FocusMode: 1
@@ -2678,8 +2678,10 @@ MonoBehaviour:
   startFadedOut: 1
   fadeOutText: 
   allowDirectInteractionInScene: 1
-  sceneIsSingleUser: 0
   NextSceneOnSessionEnd: VRTLoginManager
+  playableInEditor: 1
+  configurationPrefab: {fileID: 0}
+  orchestratorPrefab: {fileID: 0}
   m_directInteractionDisabled: 0
 --- !u!1001 &1542717513
 PrefabInstance:
