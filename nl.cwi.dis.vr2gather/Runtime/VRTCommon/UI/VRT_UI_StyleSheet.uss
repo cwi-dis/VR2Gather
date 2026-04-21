@@ -35,8 +35,10 @@ Button:active {
 
 Label {
     -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_reg.otf?fileID=12800000&guid=cf35ed982f2ccf44aad17e3439b067c5&type=3#Brandon_reg");
-    color: rgb(255, 255, 255);
+    color: rgb(15, 25, 50);
     font-size: 24px;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(255, 255, 255, 0.6);
 }
 
 Slider {
@@ -265,8 +267,10 @@ Toggle.vrt-checkbox .unity-toggle__text {
     max-height: 60px;
     -unity-text-align: middle-left;
     padding-left: 8px;
-    color: rgb(255, 255, 255);
+    color: rgb(15, 25, 50);
     font-size: 24px;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(255, 255, 255, 0.6);
 }
 
 ScrollView #unity-dragger {

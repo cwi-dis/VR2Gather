@@ -7,27 +7,27 @@
 
 .vrt-dialog {
     flex-grow: 1;
-    background-color: rgba(12, 10, 60, 0.78);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-left-color: rgb(0, 0, 0);
-    border-right-color: rgb(0, 0, 0);
-    border-top-color: rgb(0, 0, 0);
-    border-bottom-color: rgb(0, 0, 0);
+    background-color: rgba(80, 170, 230, 0.2);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+    border-left-color: rgb(80, 170, 230);
+    border-right-color: rgb(80, 170, 230);
+    border-top-color: rgb(80, 170, 230);
+    border-bottom-color: rgb(80, 170, 230);
 }
 
 .vrt-dialog__head {
     flex-direction: row;
     align-items: center;
-    background-color: rgba(10, 30, 60, 0.9);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    background-color: rgba(80, 170, 230, 0.25);
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 16px;
@@ -37,9 +37,11 @@
 .vrt-dialog__title {
     flex-grow: 1;
     -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_bld.otf?fileID=12800000&guid=b30c1f4e6a7dd054d9c16454a93655f7&type=3#Brandon_bld");
-    color: rgb(255, 255, 255);
+    color: rgb(15, 25, 50);
     font-size: 32px;
     -unity-text-align: middle-left;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(255, 255, 255, 0.6);
 }
 
 .vrt-status-check-bg {
@@ -95,10 +97,13 @@
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
-    border-left-color: rgb(10, 60, 110);
-    border-right-color: rgb(10, 60, 110);
-    border-top-color: rgb(10, 60, 110);
-    border-bottom-color: rgb(10, 60, 110);
+    border-left-color: rgb(80, 170, 230);
+    border-right-color: rgb(80, 170, 230);
+    border-top-color: rgb(80, 170, 230);
+    border-bottom-color: rgb(80, 170, 230);
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    background-color: rgba(80, 170, 230, 0.15);
 }
 
 .vrt-tab-button {

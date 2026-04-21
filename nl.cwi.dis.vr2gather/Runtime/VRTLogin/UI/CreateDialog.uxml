@@ -11,7 +11,7 @@
             <ui:Label text="Scenario" class="vrt-form__label"/>
             <ui:VisualElement class="vrt-form__field">
                 <ui:DropdownField name="ScenarioDropdown" label=""/>
-                <ui:Label name="ScenarioDescriptionLabel" text="" style="color: rgba(255, 255, 255, 0.7); font-size: 20px; margin-top: 4px;"/>
+                <ui:Label name="ScenarioDescriptionLabel" text="" style="font-size: 20px; margin-top: 0; padding: 4px 8px; border-left-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-color: rgb(80, 170, 230); border-right-color: rgb(80, 170, 230); border-bottom-color: rgb(80, 170, 230); border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;"/>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="vrt-form__row">

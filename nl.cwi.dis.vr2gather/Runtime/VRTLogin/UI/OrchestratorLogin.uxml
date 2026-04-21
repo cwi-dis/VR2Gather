@@ -2,7 +2,7 @@
     <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_UI_StyleSheet.uss?fileID=7433441132597879392&amp;guid=01f34e88dae28498bac043b07f25038f&amp;type=3#VRT_UI_StyleSheet"/>
     <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_Dialog.uss?fileID=7433441132597879392&amp;guid=ccade230efe254913ba526093cc7263e&amp;type=3#VRT_Dialog"/>
     <!-- Full-screen background -->
-    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 20, 0.95); justify-content: center; align-items: center;">
+    <ui:VisualElement style="flex-grow: 1; justify-content: center; align-items: center;">
         <!-- Centered dialog frame -->
         <ui:VisualElement class="vrt-dialog" style="width: 1000px; min-height: 700px; max-height: 900px;">
             <!-- Persistent header: status lines + logo -->
@@ -14,9 +14,9 @@
                         <ui:VisualElement class="vrt-status-check-bg">
                             <ui:VisualElement name="OrchestratorCheckmark" class="vrt-status-checkmark" style="display: none;"/>
                         </ui:VisualElement>
-                        <ui:Label name="OrchestratorVersionLabel" text="" style="color: rgba(255, 255, 255, 0.6); font-size: 18px;"/>
+                        <ui:Label name="OrchestratorVersionLabel" text="" style="font-size: 18px;"/>
                     </ui:VisualElement>
-                    <ui:Label name="AutoStatusLabel" text="" style="color: rgba(255, 255, 255, 0.6); font-size: 18px;"/>
+                    <ui:Label name="AutoStatusLabel" text="" style="font-size: 18px;"/>
                 </ui:VisualElement>
             </ui:VisualElement>
             <!-- Content slot: swapped out per dialog -->
