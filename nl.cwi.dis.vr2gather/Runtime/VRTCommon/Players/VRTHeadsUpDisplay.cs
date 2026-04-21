@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
 using UnityEngine.XR.Interaction.Toolkit.UI;
@@ -16,6 +17,8 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("The Input System Action that will show/hide the HUD")]
         [SerializeField] InputActionProperty m_ShowHideAction;
+        [Tooltip("HUD distance (metres) when not in VR — tune to control how much of the screen it fills")]
+        [SerializeField] float nonVRDistance = 2f;
         [Tooltip("Should this HUD intercept and display error messages?")]
         [SerializeField] bool interceptErrors = true;
         [Tooltip("Auto-show messages")]
@@ -56,7 +59,8 @@ namespace VRT.Pilots.Common
             if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
             var lazyFollow = gameObject.AddComponent<LazyFollow>();
             lazyFollow.rotationFollowMode = LazyFollow.RotationFollowMode.LookAtWithWorldUp;
-            lazyFollow.targetOffset = new Vector3(0f, 0f, 1f);
+            float hudDistance = XRSettings.isDeviceActive ? 1f : nonVRDistance;
+            lazyFollow.targetOffset = new Vector3(0f, 0f, hudDistance);
             lazyFollow.snapOnEnable = true;
             lazyFollow.maxAngleAllowed = 20f;
             if (interceptErrors)
