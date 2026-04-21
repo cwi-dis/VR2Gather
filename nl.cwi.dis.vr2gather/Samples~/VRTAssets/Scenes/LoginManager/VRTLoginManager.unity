@@ -432,7 +432,7 @@ MonoBehaviour:
   fadeOutText: 
   allowDirectInteractionInScene: 0
   NextSceneOnSessionEnd: VRTLoginManager
-  playableInEditor: 1
+  playableInEditor: 0
   configurationPrefab: {fileID: 0}
   orchestratorPrefab: {fileID: 0}
   m_directInteractionDisabled: 0
