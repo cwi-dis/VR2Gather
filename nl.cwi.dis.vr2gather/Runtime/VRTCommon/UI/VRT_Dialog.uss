@@ -1,75 +1,77 @@
+@import url("VRT_UI_ColorScheme.uss");
+
 /* ── HUD / user-attached theme (green tint) ─────────────────────────────── */
 
 .vrt-dialog.vrt-theme-hud {
-    background-color: rgba(80, 220, 130, 0.2);
-    border-left-color: rgb(80, 220, 130);
-    border-right-color: rgb(80, 220, 130);
-    border-top-color: rgb(80, 220, 130);
-    border-bottom-color: rgb(80, 220, 130);
+    background-color: var(--color-hud-dialog-bg);
+    border-left-color: var(--color-hud-accent);
+    border-right-color: var(--color-hud-accent);
+    border-top-color: var(--color-hud-accent);
+    border-bottom-color: var(--color-hud-accent);
 }
 
 .vrt-theme-hud .vrt-dialog__head {
-    background-color: rgba(80, 220, 130, 0.25);
+    background-color: var(--color-hud-dialog-head-bg);
 }
 
 .vrt-theme-hud .vrt-dialog__body {
-    background-color: rgba(80, 220, 130, 0.15);
-    border-left-color: rgb(80, 220, 130);
-    border-right-color: rgb(80, 220, 130);
-    border-top-color: rgb(80, 220, 130);
-    border-bottom-color: rgb(80, 220, 130);
+    background-color: var(--color-hud-dialog-body-bg);
+    border-left-color: var(--color-hud-accent);
+    border-right-color: var(--color-hud-accent);
+    border-top-color: var(--color-hud-accent);
+    border-bottom-color: var(--color-hud-accent);
 }
 
 .vrt-theme-hud .vrt-tab-button {
-    background-color: rgba(40, 140, 80, 0.8);
+    background-color: var(--color-hud-tab-bg);
 }
 
 .vrt-theme-hud .vrt-tab-button:hover {
-    background-color: rgb(80, 220, 130);
+    background-color: var(--color-hud-accent);
 }
 
 .vrt-theme-hud .vrt-tab-button--active {
-    background-color: rgba(80, 220, 130, 0.25);
+    background-color: var(--color-hud-dialog-head-bg);
 }
 
 .vrt-theme-hud .vrt-tab-button--active:hover {
-    background-color: rgba(80, 220, 130, 0.25);
+    background-color: var(--color-hud-dialog-head-bg);
 }
 
 .vrt-theme-hud Button {
-    background-color: rgb(20, 110, 60);
-    border-left-color: rgb(15, 80, 45);
-    border-right-color: rgb(15, 80, 45);
-    border-top-color: rgb(15, 80, 45);
-    border-bottom-color: rgb(15, 80, 45);
+    background-color: var(--color-hud-btn-bg);
+    border-left-color: var(--color-hud-btn-border);
+    border-right-color: var(--color-hud-btn-border);
+    border-top-color: var(--color-hud-btn-border);
+    border-bottom-color: var(--color-hud-btn-border);
 }
 
 .vrt-theme-hud Button:hover {
-    background-color: rgb(80, 220, 130);
+    background-color: var(--color-hud-accent);
 }
 
 .vrt-theme-hud Button:active {
-    background-color: rgb(150, 240, 180);
+    background-color: var(--color-hud-btn-active);
 }
 
 .vrt-theme-hud Toggle.vrt-checkbox #unity-checkmark {
-    background-color: rgb(20, 110, 60);
-    border-left-color: rgb(15, 80, 45);
-    border-right-color: rgb(15, 80, 45);
-    border-top-color: rgb(15, 80, 45);
-    border-bottom-color: rgb(15, 80, 45);
+    background-color: var(--color-hud-btn-bg);
+    border-left-color: var(--color-hud-btn-border);
+    border-right-color: var(--color-hud-btn-border);
+    border-top-color: var(--color-hud-btn-border);
+    border-bottom-color: var(--color-hud-btn-border);
 }
 
 .vrt-theme-hud Toggle.vrt-checkbox:hover #unity-checkmark {
-    background-color: rgb(80, 220, 130);
+    background-color: var(--color-hud-accent);
 }
 
 .vrt-theme-hud Toggle.vrt-checkbox:checked #unity-checkmark {
-    background-color: rgb(80, 200, 120);
+    background-color: var(--color-hud-checkbox-checked);
 }
 
 .vrt-theme-hud .vrt-log-view {
-    background-color: rgba(10, 40, 20, 0.9);
+    background-color: var(--color-hud-log-bg);
 }
 
 /* ── Transitions ─────────────────────────────────────────────────────────── */
@@ -83,7 +85,7 @@
 
 .vrt-dialog {
     flex-grow: 1;
-    background-color: rgba(80, 170, 230, 0.2);
+    background-color: var(--color-dialog-bg);
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -92,16 +94,16 @@
     border-right-width: 4px;
     border-bottom-width: 4px;
     border-left-width: 4px;
-    border-left-color: rgb(80, 170, 230);
-    border-right-color: rgb(80, 170, 230);
-    border-top-color: rgb(80, 170, 230);
-    border-bottom-color: rgb(80, 170, 230);
+    border-left-color: var(--color-accent);
+    border-right-color: var(--color-accent);
+    border-top-color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
 }
 
 .vrt-dialog__head {
     flex-direction: row;
     align-items: center;
-    background-color: rgba(80, 170, 230, 0.25);
+    background-color: var(--color-dialog-head-bg);
     border-top-left-radius: 18px;
     border-top-right-radius: 18px;
     padding-top: 8px;
@@ -113,7 +115,7 @@
 .vrt-dialog__title {
     flex-grow: 1;
     -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_bld.otf?fileID=12800000&guid=b30c1f4e6a7dd054d9c16454a93655f7&type=3#Brandon_bld");
-    color: rgb(15, 25, 50);
+    color: var(--color-label);
     font-size: 32px;
     -unity-text-align: middle-left;
     -unity-text-outline-width: 1px;
@@ -151,15 +153,15 @@
     min-width: 60px;
     min-height: 44px;
     width: 60px;
-    background-color: rgb(14, 82, 142);
+    background-color: var(--color-btn-bg);
 }
 
 .vrt-dialog__close-button:hover {
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
 }
 
 .vrt-dialog__close-button:active {
-    background-color: rgb(130, 200, 255);
+    background-color: var(--color-btn-active);
     color: rgb(0, 0, 0);
 }
 
@@ -173,19 +175,19 @@
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
-    border-left-color: rgb(80, 170, 230);
-    border-right-color: rgb(80, 170, 230);
-    border-top-color: rgb(80, 170, 230);
-    border-bottom-color: rgb(80, 170, 230);
+    border-left-color: var(--color-accent);
+    border-right-color: var(--color-accent);
+    border-top-color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
     border-bottom-left-radius: 18px;
     border-bottom-right-radius: 18px;
-    background-color: rgba(80, 170, 230, 0.15);
+    background-color: var(--color-dialog-body-bg);
 }
 
 .vrt-tab-button {
     min-width: 120px;
     min-height: 44px;
-    background-color: rgb(14, 82, 142);
+    background-color: var(--color-btn-bg);
     margin-right: 4px;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
@@ -194,17 +196,17 @@
 }
 
 .vrt-tab-button:hover {
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
 }
 
 .vrt-tab-button--active {
-    background-color: rgba(10, 30, 60, 0.9);
+    background-color: var(--color-popup-bg-dark);
     color: rgb(255, 255, 255);
     border-bottom-color: rgba(0, 0, 0, 0);
 }
 
 .vrt-tab-button--active:hover {
-    background-color: rgba(10, 30, 60, 0.9);
+    background-color: var(--color-popup-bg-dark);
     color: rgb(255, 255, 255);
     border-bottom-color: rgba(0, 0, 0, 0);
 }
@@ -247,7 +249,7 @@
 
 .vrt-log-view {
     flex-grow: 1;
-    background-color: rgba(10, 30, 60, 0.9);
+    background-color: var(--color-popup-bg-dark);
 }
 
 .vrt-log-view Label {

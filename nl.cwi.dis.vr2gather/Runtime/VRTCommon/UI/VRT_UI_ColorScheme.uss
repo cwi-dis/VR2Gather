@@ -1,0 +1,28 @@
+:root {
+    /* ── Blue (default) scheme ─────────────────────────────────────────────── */
+    --color-accent:               rgb(80, 170, 230);
+    --color-btn-bg:               rgb(14, 82, 142);
+    --color-btn-hover:            rgb(32, 150, 243);
+    --color-btn-active:           rgb(130, 200, 255);
+    --color-btn-border:           rgb(10, 60, 110);
+    --color-label:                rgb(15, 25, 50);
+    --color-popup-bg:             rgb(10, 30, 60);
+    --color-popup-bg-dark:        rgba(10, 30, 60, 0.9);
+    --color-dialog-bg:            rgba(80, 170, 230, 0.20);
+    --color-dialog-head-bg:       rgba(80, 170, 230, 0.25);
+    --color-dialog-body-bg:       rgba(80, 170, 230, 0.15);
+    --color-checkbox-checked:     rgb(88, 176, 246);
+    --color-textfield-bg:         rgb(210, 230, 255);
+
+    /* ── HUD green scheme ──────────────────────────────────────────────────── */
+    --color-hud-accent:           rgb(80, 220, 130);
+    --color-hud-btn-bg:           rgb(20, 110, 60);
+    --color-hud-btn-border:       rgb(15, 80, 45);
+    --color-hud-btn-active:       rgb(150, 240, 180);
+    --color-hud-checkbox-checked: rgb(80, 200, 120);
+    --color-hud-dialog-bg:        rgba(80, 220, 130, 0.20);
+    --color-hud-dialog-head-bg:   rgba(80, 220, 130, 0.25);
+    --color-hud-dialog-body-bg:   rgba(80, 220, 130, 0.15);
+    --color-hud-tab-bg:           rgba(40, 140, 80, 0.8);
+    --color-hud-log-bg:           rgba(10, 40, 20, 0.9);
+}

@@ -1,13 +1,15 @@
+@import url("VRT_UI_ColorScheme.uss");
+
 Button {
     -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_med.otf?fileID=12800000&guid=c9341f42abb2afc4da693e636dc67272&type=3#Brandon_med");
-    background-color: rgb(14, 82, 142);
+    background-color: var(--color-btn-bg);
     color: rgb(255, 255, 255);
     min-height: 60px;
     min-width: 180px;
-    border-left-color: rgb(10, 60, 110);
-    border-right-color: rgb(10, 60, 110);
-    border-top-color: rgb(10, 60, 110);
-    border-bottom-color: rgb(10, 60, 110);
+    border-left-color: var(--color-btn-border);
+    border-right-color: var(--color-btn-border);
+    border-top-color: var(--color-btn-border);
+    border-bottom-color: var(--color-btn-border);
     border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -24,18 +26,18 @@ Button {
 }
 
 Button:hover {
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
     scale: 1.1 1.1 1.1;
 }
 
 Button:active {
-    background-color: rgb(130, 200, 255);
+    background-color: var(--color-btn-active);
     color: rgb(0, 0, 0);
 }
 
 Label {
     -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_reg.otf?fileID=12800000&guid=cf35ed982f2ccf44aad17e3439b067c5&type=3#Brandon_reg");
-    color: rgb(15, 25, 50);
+    color: var(--color-label);
     font-size: 24px;
     -unity-text-outline-width: 1px;
     -unity-text-outline-color: rgba(255, 255, 255, 0.6);
@@ -46,11 +48,11 @@ Slider {
 }
 
 Slider:hover .unity-base-slider__fill {
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
 }
 
 Slider #unity-drag-container:active .unity-base-slider__fill {
-    background-color: rgb(130, 200, 255);
+    background-color: var(--color-btn-active);
 }
 
 Slider .unity-base-slider__dragger {
@@ -58,7 +60,7 @@ Slider .unity-base-slider__dragger {
 }
 
 Slider .unity-base-slider__fill {
-    background-color: rgb(14, 82, 142);
+    background-color: var(--color-btn-bg);
 }
 
 Slider .unity-base-slider__tracker {
@@ -81,7 +83,7 @@ TextField {
 }
 
 TextField .unity-base-field__input {
-    background-color: rgb(210, 230, 255);
+    background-color: var(--color-textfield-bg);
     color: rgb(0, 0, 0);
     -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_reg.otf?fileID=12800000&guid=cf35ed982f2ccf44aad17e3439b067c5&type=3#Brandon_reg");
     font-size: 24px;
@@ -92,10 +94,10 @@ TextField .unity-base-field__input {
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
-    border-left-color: rgb(10, 60, 110);
-    border-right-color: rgb(10, 60, 110);
-    border-top-color: rgb(10, 60, 110);
-    border-bottom-color: rgb(10, 60, 110);
+    border-left-color: var(--color-btn-border);
+    border-right-color: var(--color-btn-border);
+    border-top-color: var(--color-btn-border);
+    border-bottom-color: var(--color-btn-border);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom-left-radius: 4px;
@@ -116,7 +118,7 @@ DropdownField .unity-base-popup-field__input {
     margin-right: 0;
     margin-bottom: 0;
     margin-left: 0;
-    background-color: rgb(14, 82, 142);
+    background-color: var(--color-btn-bg);
     border-left-color: rgb(0, 0, 0);
     border-right-color: rgb(0, 0, 0);
     border-top-color: rgb(0, 0, 0);
@@ -132,16 +134,16 @@ DropdownField .unity-base-popup-field__arrow {
 }
 
 DropdownField:hover .unity-base-popup-field__input {
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
 }
 
 .unity-base-dropdown .unity-scroll-view {
-    background-color: rgb(10, 30, 60);
+    background-color: var(--color-popup-bg);
     color: rgb(255, 255, 255);
-    border-left-color: rgb(80, 170, 230);
-    border-right-color: rgb(80, 170, 230);
-    border-top-color: rgb(80, 170, 230);
-    border-bottom-color: rgb(80, 170, 230);
+    border-left-color: var(--color-accent);
+    border-right-color: var(--color-accent);
+    border-top-color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
     border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -149,7 +151,7 @@ DropdownField:hover .unity-base-popup-field__input {
 }
 
 .unity-base-dropdown__item {
-    background-color: rgb(14, 82, 142);
+    background-color: var(--color-btn-bg);
     color: rgb(255, 255, 255);
     padding-top: 6px;
     padding-bottom: 6px;
@@ -158,7 +160,7 @@ DropdownField:hover .unity-base-popup-field__input {
 }
 
 .unity-base-dropdown__item:hover {
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
 }
 
 .unity-base-dropdown__item Label {
@@ -197,17 +199,17 @@ Toggle .unity-toggle__text {
 
 Toggle:hover #unity-checkmark {
     background-image: none;
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
 }
 
 Toggle:checked #unity-checkmark {
     background-image: none;
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
 }
 
 Toggle:active #unity-checkmark {
     background-image: none;
-    background-color: rgb(130, 200, 255);
+    background-color: var(--color-btn-active);
 }
 
 /* Important/prominent button — slightly taller than standard */
@@ -247,32 +249,32 @@ Toggle.vrt-checkbox #unity-checkmark {
     border-bottom-width: 2px;
     border-left-width: 2px;
     border-right-width: 2px;
-    border-left-color: rgb(10, 60, 110);
-    border-right-color: rgb(10, 60, 110);
-    border-top-color: rgb(10, 60, 110);
-    border-bottom-color: rgb(10, 60, 110);
+    border-left-color: var(--color-btn-border);
+    border-right-color: var(--color-btn-border);
+    border-top-color: var(--color-btn-border);
+    border-bottom-color: var(--color-btn-border);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
-    background-color: rgb(14, 82, 142);
+    background-color: var(--color-btn-bg);
 }
 
 Toggle.vrt-checkbox:hover #unity-checkmark {
     background-image: none;
-    background-color: rgb(32, 150, 243);
+    background-color: var(--color-btn-hover);
 }
 
 Toggle.vrt-checkbox:checked #unity-checkmark {
     background-image: url("project://database/Assets/Samples/XR%20Interaction%20Toolkit/3.3.1/Starter%20Assets/DemoSceneAssets/Sprites/Checkmark.png?fileID=2800000&guid=db3e7b7c8db355e499429545071a0321&type=3#Checkmark");
-    background-color: rgb(88, 176, 246);
+    background-color: var(--color-checkbox-checked);
     -unity-background-image-tint-color: rgb(255, 255, 255);
     -unity-background-scale-mode: scale-to-fit;
 }
 
 Toggle.vrt-checkbox:checked:hover #unity-checkmark {
     background-image: url("project://database/Assets/Samples/XR%20Interaction%20Toolkit/3.3.1/Starter%20Assets/DemoSceneAssets/Sprites/Checkmark.png?fileID=2800000&guid=db3e7b7c8db355e499429545071a0321&type=3#Checkmark");
-    background-color: rgb(130, 200, 255);
+    background-color: var(--color-btn-active);
     -unity-background-image-tint-color: rgb(255, 255, 255);
     -unity-background-scale-mode: scale-to-fit;
 }
@@ -285,7 +287,7 @@ Toggle.vrt-checkbox .unity-toggle__text {
     max-height: 60px;
     -unity-text-align: middle-left;
     padding-left: 8px;
-    color: rgb(15, 25, 50);
+    color: var(--color-label);
     font-size: 24px;
     -unity-text-outline-width: 1px;
     -unity-text-outline-color: rgba(255, 255, 255, 0.6);
@@ -344,6 +346,6 @@ ScrollView .unity-scroll-view__horizontal-scroller #unity-dragger {
 /* Session list item in JoinDialog — highlighted when selected */
 Button.vrt-list-item--selected {
     background-color: rgb(46, 46, 46);
-    border-left-color: rgb(32, 150, 243);
+    border-left-color: var(--color-btn-hover);
     border-left-width: 4px;
 }
