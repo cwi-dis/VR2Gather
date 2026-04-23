@@ -782,28 +782,6 @@
                 },
                 {
                     "name": "",
-                    "id": "788b78ad-95dc-4533-bcd0-913175adcdfc",
-                    "path": "<ViveController>{LeftHand}/menu",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Vive-OpenXR",
-                    "action": "ShowHide",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "eb54851c-974e-468f-9122-718cc723ba84",
-                    "path": "<ViveController>{RightHand}/menu",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Vive-OpenXR",
-                    "action": "ShowHide",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "79a12ef0-d345-43ae-9d38-25beea9b3465",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
