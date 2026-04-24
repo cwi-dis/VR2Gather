@@ -2,6 +2,7 @@
 
 using System.ComponentModel;
 using System.IO;
+using UnityEditor.Recorder.Encoder;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Recorder;
@@ -40,13 +41,16 @@ namespace VRT.Core
             m_Settings.name = "My Video Recorder";
             m_Settings.Enabled = true;
 
-            // This example performs an MP4 recording
-            m_Settings.OutputFormat = MovieRecorderSettings.VideoRecorderOutputFormat.MP4;
-            m_Settings.VideoBitRateMode = VideoBitrateMode.Medium;
+            // Perform an MP4 recording with medium quality
+            m_Settings.EncoderSettings = new CoreEncoderSettings
+            {
+                Codec = CoreEncoderSettings.OutputCodec.MP4,
+                EncodingQuality = CoreEncoderSettings.VideoEncodingQuality.Medium
+            };
 
             m_Settings.ImageInputSettings = new Camera360InputSettings {
-                OutputWidth = 4096,
-                OutputHeight = 2160,
+                OutputWidth = 8192,
+                OutputHeight = 1024,
                 MapSize = 1024,
                 CameraTag = "MainCamera",
                 RenderStereo = false

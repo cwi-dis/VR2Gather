@@ -126,6 +126,7 @@ namespace VRT.Pilots.Common
             switch (userRepresentation)
             {
                 case UserRepresentationType.NoRepresentation:
+                case UserRepresentationType.NoRepresentationCamera:
                     // disable character controller.
                     if (charControl != null)
                     {
@@ -182,6 +183,7 @@ namespace VRT.Pilots.Common
             switch (userRepresentation)
             {
                 case UserRepresentationType.NoRepresentation:
+                case UserRepresentationType.NoRepresentationCamera:
                     return null;
                 case UserRepresentationType.VideoAvatar:
                     return webcam;
