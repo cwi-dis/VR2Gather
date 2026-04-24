@@ -645,6 +645,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Joystick-Move
       objectReference: {fileID: 0}
+    - target: {fileID: 7832280826085514330, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7957250788412427322, guid: e4a2ad980cb30454eab747ddbac46ff6,
         type: 3}
       propertyPath: m_Name
