@@ -71,7 +71,7 @@ namespace InspectorGadgets
             if (Event.current == null)
                 return false;
 
-            var shortcut = EditorUtility.InstanceIDToObject(instanceID) as Shortcut;
+            var shortcut = EditorUtility.EntityIdToObject(instanceID) as Shortcut;
             if (shortcut != null)
             {
                 shortcut.GoToTarget();
