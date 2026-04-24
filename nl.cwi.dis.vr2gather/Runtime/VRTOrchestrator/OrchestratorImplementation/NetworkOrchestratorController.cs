@@ -294,8 +294,8 @@ namespace VRT.Orchestrator.Implementation
 
         public override void GetNTPTime() {
             Trace("send", nameof(GetNTPTime));
-            if (enableLogging) Debug.Log("NetworkOrchestratorController: GetNTPTime: DateTimeNow: " + GetClockTimestamp(DateTime.Now));
-            if (enableLogging) Debug.Log("NetworkOrchestratorController: GetNTPTime: DateTimeUTC: " + GetClockTimestamp(DateTime.UtcNow));
+            if (enableLogging) Debug.Log("NetworkOrchestratorController: GetNTPTime: DateTimeNow: " + _GetClockTimestamp(DateTime.Now));
+            if (enableLogging) Debug.Log("NetworkOrchestratorController: GetNTPTime: DateTimeUTC: " + _GetClockTimestamp(DateTime.UtcNow));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             timeOfGetNTPTimeRequest = (long)sinceEpoch.TotalMilliseconds;
             orchestratorWrapper.GetNTPTime();
@@ -308,8 +308,8 @@ namespace VRT.Orchestrator.Implementation
             }
 
             if (enableLogging) Debug.Log("NetworkOrchestratorController: OnGetNTPTimeResponse: NtpTime: " + ntpTime.Timestamp);
-            if (enableLogging) Debug.Log("NetworkOrchestratorController: OnGetNTPTimeResponse: DateTimeUTC: " + GetClockTimestamp(DateTime.UtcNow));
-            if (enableLogging) Debug.Log("[NetworkOrchestratorController: OnGetNTPTimeResponse: DateTimeNow: " + GetClockTimestamp(DateTime.Now));
+            if (enableLogging) Debug.Log("NetworkOrchestratorController: OnGetNTPTimeResponse: DateTimeUTC: " + _GetClockTimestamp(DateTime.UtcNow));
+            if (enableLogging) Debug.Log("[NetworkOrchestratorController: OnGetNTPTimeResponse: DateTimeNow: " + _GetClockTimestamp(DateTime.Now));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
             long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;

@@ -22,8 +22,7 @@ namespace VRT.Transport.SocketIO
         }
 
         OutgoingStreamDescription[] streams;
-        bool initialized = false;
-
+        
         public ITransportProtocolWriter Init(string url, string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
         {
             if (streams == null)
@@ -52,7 +51,6 @@ namespace VRT.Transport.SocketIO
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw;
             }
-            initialized = true;
             return this;
         }
 

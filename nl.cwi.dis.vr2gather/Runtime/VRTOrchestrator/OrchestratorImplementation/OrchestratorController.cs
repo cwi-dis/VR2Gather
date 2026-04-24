@@ -24,11 +24,7 @@ namespace VRT.Orchestrator.Implementation
         [Obsolete("Use VRTOrchestratorSingleton.Login, .Comm, or .Streams instead of the full interface.")]
         public static IVRTOrchestrator Instance => VRTOrchestratorSingleton.Comm as IVRTOrchestrator;
 
-        /// <summary>
-        /// Obsolete: use VRTOrchestratorSingleton.GetClockTimestamp instead.
-        /// </summary>
-        [Obsolete("Use VRTOrchestratorSingleton.GetClockTimestamp instead.")]
-        public static double GetClockTimestamp(System.DateTime pDate)
+        protected static double _GetClockTimestamp(System.DateTime pDate)
         {
             return VRTOrchestratorSingleton.GetClockTimestamp(pDate);
         }

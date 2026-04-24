@@ -29,8 +29,7 @@ namespace VRT.Transport.SocketIO
         }
 
         IncomingTileDescription[] descriptors;
-        bool initialized = false;
-
+        
         
         public ITransportProtocolReader_Tiled Init(string remoteUrl, string userId, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
@@ -61,7 +60,6 @@ namespace VRT.Transport.SocketIO
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw;
             }
-            initialized = true;
             return this;
         }
 
@@ -80,7 +78,6 @@ namespace VRT.Transport.SocketIO
                     }
                 }
             );
-            initialized = true;
             return this;   
         }
 

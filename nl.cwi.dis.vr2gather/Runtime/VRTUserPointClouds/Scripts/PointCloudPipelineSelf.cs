@@ -41,7 +41,6 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
         public override BasePipeline Init(bool isLocalPlayer, object _user, bool preview = false, GameObject playerGO = null)
         {
-            VRTConfig.RepresentationConfigType cfg;
             if (!isLocalPlayer)
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==false");

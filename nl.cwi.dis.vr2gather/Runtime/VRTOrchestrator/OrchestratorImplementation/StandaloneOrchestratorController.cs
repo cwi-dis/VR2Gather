@@ -1,3 +1,4 @@
+#define WITH_UNUSED_EVENTS
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ using VRT.Orchestrator;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
+
 
 namespace VRT.Orchestrator.Implementation
 {
@@ -23,26 +25,30 @@ namespace VRT.Orchestrator.Implementation
     public class StandaloneOrchestratorController : OrchestratorController
     {
         // ── Events ──────────────────────────────────────────────────────────────
-        public override event Action<ResponseStatus> OnErrorEvent;
         public override event Action<bool> OnConnectionEvent;
         public override event Action OnLeaveSessionEvent;
-        public override event Action<string> OnUserJoinSessionEvent;
-        public override event Action<string> OnUserLeaveSessionEvent;
-        public override event Action OnConnectingEvent;
         public override event Action<string> OnGetOrchestratorVersionEvent;
         public override event Action<bool> OnLoginEvent;
         public override event Action<NtpClock> OnGetNTPTimeEvent;
         public override event Action<Session[]> OnSessionsEvent;
-        public override event Action<Session> OnSessionInfoEvent;
         public override event Action<Session> OnAddSessionEvent;
-        public override event Action<Session> OnJoinSessionEvent;
-        public override event Action OnSessionJoinedEvent;
-        public override event Action OnDeleteSessionEvent;
         public override event Action<UserMessage> OnUserMessageReceivedEvent;
-        public override event Action<UserEvent> OnMasterEventReceivedEvent;
+        
+#if WITH_UNUSED_EVENTS
+#pragma warning disable CS0067
+        public override event Action<ResponseStatus> OnErrorEvent;
+        public override event Action<Session> OnJoinSessionEvent;
+        public override event Action<Session> OnSessionInfoEvent;
         public override event Action<UserEvent> OnUserEventReceivedEvent;
+        public override event Action<string> OnUserLeaveSessionEvent;
+        public override event Action OnSessionJoinedEvent;
+        public override event Action<UserEvent> OnMasterEventReceivedEvent;
+        public override event Action OnDeleteSessionEvent;
+        public override event Action<string> OnUserJoinSessionEvent;
         public override event Action<UserDataStreamPacket> OnDataStreamReceived;
-
+        public override event Action OnConnectingEvent;
+#pragma warning restore CS0067
+#endif
         [Tooltip("Auto-create a single-user session")]
         public bool autoCreateSession = false;
         // ── Tracing ──────────────────────────────────────────────────────────────
