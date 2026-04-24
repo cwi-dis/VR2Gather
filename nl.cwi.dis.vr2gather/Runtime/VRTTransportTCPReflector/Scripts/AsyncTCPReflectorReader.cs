@@ -49,7 +49,6 @@ namespace VRT.Transport.TCPReflector
         }
 
         IncomingTileDescription[] descriptors;
-        bool initialized = false;
         private TransportProtocolTCPReflector connection;
         
         static int instanceCounter = 0;
@@ -82,7 +81,6 @@ namespace VRT.Transport.TCPReflector
             Start();
             Debug.Log($"{Name()}: Started {remoteUrl}/{userId}/{streamName}");
            
-            initialized = true;
             return this;
         }
 
@@ -101,7 +99,6 @@ namespace VRT.Transport.TCPReflector
                     }
                 }
             );
-            initialized = true;
             return this;   
         }
 

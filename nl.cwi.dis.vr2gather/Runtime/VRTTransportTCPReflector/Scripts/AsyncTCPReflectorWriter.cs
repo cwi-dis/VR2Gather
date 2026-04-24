@@ -24,7 +24,6 @@ namespace VRT.Transport.TCPReflector
         }
 
         OutgoingStreamDescription[] streams;
-        bool initialized = false;
         private TransportProtocolTCPReflector connection;
 
         public ITransportProtocolWriter Init(string url, string userId, string streamName, string fourcc, OutgoingStreamDescription[] streams)
@@ -56,7 +55,6 @@ namespace VRT.Transport.TCPReflector
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw;
             }
-            initialized = true;
             return this;
         }
 

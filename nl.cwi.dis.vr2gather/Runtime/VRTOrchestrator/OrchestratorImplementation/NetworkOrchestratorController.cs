@@ -26,7 +26,7 @@ namespace VRT.Orchestrator.Implementation
         [Tooltip("Warn when an event is received but no handler is registered")]
         public bool warnOnUnhandledEvents = true;
         // Set to true in source to also trace high-frequency calls (SendEvent*, SendData)
-        private const bool traceHighFrequency = false;
+        private static readonly bool traceHighFrequency = false;
 
         private void Trace(string direction, string name)
         {

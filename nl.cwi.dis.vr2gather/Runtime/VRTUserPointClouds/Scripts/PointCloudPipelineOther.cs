@@ -191,8 +191,8 @@ namespace VRT.UserRepresentation.PointCloud
             // all hell would break out anyway).
             //
             networkTileDescription = config;
-            const bool mirrorX = true;
-            const bool mirrorZ = false;
+            bool mirrorX = true;
+            bool mirrorZ = false;
             for(int i = 0; i < networkTileDescription.tiles.Length; i++)
             {
                 if (mirrorX)
