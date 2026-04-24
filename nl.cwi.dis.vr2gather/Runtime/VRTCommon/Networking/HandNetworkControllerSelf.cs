@@ -9,7 +9,6 @@ namespace VRT.Pilots.Common
 
     public class HandNetworkControllerSelf : HandNetworkControllerBase
     {
-        protected ActionBasedController controller;
         HandState oldState = HandState.Idle;
 
         public override IVRTGrabbable HeldGrabbable
@@ -50,13 +49,6 @@ namespace VRT.Pilots.Common
             }
             get => m_HeldGrabbable;
         }
-
-        protected override void Start()
-        {
-            base.Start();
-            controller = GetComponent<ActionBasedController>();
-        }
-
 
         private void Update()
         {
