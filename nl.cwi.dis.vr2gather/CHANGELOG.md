@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compatible with Unity 6000.3
 - Compatible with XRI Toolkit 3.3 (#260)
-- Completely new login scene (#259)
+- Completely new login scene, heads-up display (#259, #270, #274)
 - Completely new orchestrator interface, plus single-user local sessions (#265)
 - Pilot scenes are now playable in the editor, using the standalone orchestrator! (#269)
+- VR Controllers are now self-documenting if the user looks at them. (#276)
+- Removed a lot of now deprecated prefabs and scripts. (#272, #277)
 
 ## [1.3.0] - 2026-03-09
 
