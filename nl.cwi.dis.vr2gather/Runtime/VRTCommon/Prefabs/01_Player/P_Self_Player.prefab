@@ -7649,6 +7649,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 6607737404774288819, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: RendererToDisable
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6941960621944965175, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_RootOrder
@@ -7668,6 +7673,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7482356757334494965, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: RendererToDisable
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 9024012130725533088, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
