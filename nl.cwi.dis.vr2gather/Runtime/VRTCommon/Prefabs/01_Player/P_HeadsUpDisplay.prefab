@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3392800643553741113}
   - component: {fileID: 226628461160567614}
   - component: {fileID: 6045866883838921279}
+  - component: {fileID: 1213829657686915833}
   m_Layer: 6
   m_Name: P_HeadsUpDisplay
   m_TagString: Untagged
@@ -233,3 +234,23 @@ MonoBehaviour:
           m_CallState: 2
     parent: {fileID: 6045866883838921279}
   debug: 0
+--- !u!114 &1213829657686915833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5323772767183190917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffc107b6fef941cf9e395ce6687fd0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VRT.Pilots.Common::VRT.Pilots.Common.UIInputBlocker
+  m_ActionAsset: {fileID: 0}
+  m_BlockOnTextFieldFocus: 0
+  m_TextFieldActionMaps:
+  - Handsfree Locomotion
+  - ViewPosition
+  m_BlockOnScrollWheelOverUI: 1
+  m_ScrollActionMaps:
+  - ViewPosition

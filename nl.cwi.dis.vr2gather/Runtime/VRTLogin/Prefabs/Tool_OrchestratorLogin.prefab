@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5658332295402922780}
   - component: {fileID: 4038672995462153646}
   - component: {fileID: 8610429764865867248}
+  - component: {fileID: 2258932776120431250}
   m_Layer: 0
   m_Name: Tool_OrchestratorLogin
   m_TagString: Untagged
@@ -83,8 +84,31 @@ MonoBehaviour:
     type: 3}
   lobbyDialogAsset: {fileID: 9197481963319205126, guid: 3a05480af68da436c9adeb42aca0ae49,
     type: 3}
+  previewDialogAsset: {fileID: 0}
   networkControllerPrefab: {fileID: 7944887033556344929}
   standaloneControllerPrefab: {fileID: 6443343308208655020}
+  player: {fileID: 0}
+  previewCamera: {fileID: 0}
+--- !u!114 &2258932776120431250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3533688918433949681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffc107b6fef941cf9e395ce6687fd0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VRT.Pilots.Common::VRT.Pilots.Common.UIInputBlocker
+  m_ActionAsset: {fileID: 0}
+  m_BlockOnTextFieldFocus: 1
+  m_TextFieldActionMaps:
+  - Handsfree Locomotion
+  - ViewPosition
+  m_BlockOnScrollWheelOverUI: 1
+  m_ScrollActionMaps:
+  - ViewPosition
 --- !u!1001 &6422878844924718298
 PrefabInstance:
   m_ObjectHideFlags: 0
