@@ -4054,6 +4054,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4505417928630297685}
+  - {fileID: 5520760884137883945}
   m_Father: {fileID: 1935332283100515012}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5728827349483033660
@@ -4084,6 +4085,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fa7b4195685c3846be746c74f0ab2f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Locomotion.LocomotionMediator
+--- !u!1 &8370097309738332669
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5520760884137883945}
+  - component: {fileID: 3209206517145047078}
+  m_Layer: 2
+  m_Name: Gravity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5520760884137883945
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8370097309738332669}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2577357887735165856}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3209206517145047078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8370097309738332669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b46d3c2f9f9a9849840e47b9ddef1b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Mediator: {fileID: 2157673434729709944}
+  m_TransformationPriority: 10
+  m_UseGravity: 1
+  m_UseLocalSpaceGravity: 1
+  m_TerminalVelocity: 90
+  m_GravityAccelerationModifier: 1
+  m_UpdateCharacterControllerCenterEachFrame: 1
+  m_SphereCastRadius: 0.09
+  m_SphereCastDistanceBuffer: -0.05
+  m_SphereCastLayerMask:
+    serializedVersion: 2
+    m_Bits: 51
+  m_SphereCastTriggerInteraction: 1
+  m_OnGravityLockChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnGroundedChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &9191289148711254881
 GameObject:
   m_ObjectHideFlags: 0
@@ -4950,6 +5014,7 @@ MonoBehaviour:
   filterDuplicates: 1
   errorPrefab: {fileID: 0}
   playerController: {fileID: 0}
+  lazyFollow: {fileID: 0}
 --- !u!1001 &795391453705155307
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7497,6 +7562,11 @@ PrefabInstance:
       propertyPath: m_hmdTrackingAction.m_UseReference
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 836216858472498182, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 838640197280356751, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_IsActive
@@ -7536,6 +7606,11 @@ PrefabInstance:
         type: 3}
       propertyPath: rightHand.vrTarget
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061404200936111561, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3076079762117982612, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
@@ -7707,6 +7782,11 @@ PrefabInstance:
         type: 3}
       propertyPath: rightHand.vrTarget
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9029027720558573524, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4, type: 3}
