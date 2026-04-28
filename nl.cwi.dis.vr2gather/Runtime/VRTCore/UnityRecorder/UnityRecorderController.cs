@@ -2,11 +2,11 @@
 
 using System.ComponentModel;
 using System.IO;
-using UnityEditor.Recorder.Encoder;
-#if UNITY_EDITOR
+#if VRT_WITH_RECORDER
 using UnityEditor;
 using UnityEditor.Recorder;
 using UnityEditor.Recorder.Input;
+using UnityEditor.Recorder.Encoder;
 #endif
 using UnityEngine;
 
@@ -14,7 +14,7 @@ namespace VRT.Core
 {
     public class UnityRecorderController : MonoBehaviour
     {
-#if UNITY_EDITOR
+#if VRT_WITH_RECORDER
         RecorderController m_RecorderController;
         public bool m_RecordAudio = true;
         internal MovieRecorderSettings m_Settings = null;
