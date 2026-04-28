@@ -1260,7 +1260,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27684a8c81f24544b99836da3340a93c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RecordAudio: 1
 --- !u!1 &1798390426976994059
 GameObject:
   m_ObjectHideFlags: 0
@@ -4181,6 +4180,11 @@ PrefabInstance:
       propertyPath: m_FarAttachMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2442306273320644280, guid: 3df3e1220f2164f448701a6de8084f92,
+        type: 3}
+      propertyPath: m_AllowHoveredActivate
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4804964734930210078, guid: 3df3e1220f2164f448701a6de8084f92,
         type: 3}
       propertyPath: m_Name
@@ -5018,6 +5022,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_FarAttachMode
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4808866746549998793, guid: b200f6587d118224eba8467281481800,
+        type: 3}
+      propertyPath: m_AllowHoveredActivate
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8229381180640938747, guid: b200f6587d118224eba8467281481800,
         type: 3}

@@ -10,6 +10,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Unexpected obstacles**: When hitting something unexpected (a file is gitignored, a tool is missing, a path doesn't exist, a permission is denied), stop and ask Jack rather than working around it silently. The unexpected thing is often a symptom of a misconfiguration that Jack would want to fix at the source.
 
+**Imported samples — never edit directly**: Assets under `VRTApp-Develop/Assets/Samples/` are imported from Unity packages (XRIT, etc.) and are **not** part of the VR2Gather package that end users import. Changes there are invisible to downstream users and get wiped on re-import. When a sample asset (prefab, script, scriptable object) needs a different value, override it from within the VR2Gather package — typically via a prefab override in a player prefab (`P_Self_Player`, etc.) or a subclass/wrapper script in `nl.cwi.dis.vr2gather/Runtime/`.
+
 ## Project Overview
 
 VR2Gather is a Unity package (`nl.cwi.dis.vr2gather`) for collaborative networked social VR with live volumetric video (point clouds). Participants appear as real-time 3D reconstructions in shared virtual spaces. Built for Unity 6000.3+.
