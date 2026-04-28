@@ -13,6 +13,7 @@
     --color-dialog-body-bg:       rgba(80, 170, 230, 0.15);
     --color-checkbox-checked:     rgb(88, 176, 246);
     --color-textfield-bg:         rgb(210, 230, 255);
+    --color-dialog-focus-border:  rgb(255, 255, 255);   /* TODO: pick final hover-ring color */
 
     /* ── HUD green scheme ──────────────────────────────────────────────────── */
     --color-hud-accent:           rgb(80, 220, 130);
@@ -25,4 +26,5 @@
     --color-hud-dialog-body-bg:   rgba(80, 220, 130, 0.15);
     --color-hud-tab-bg:           rgba(40, 140, 80, 0.8);
     --color-hud-log-bg:           rgba(10, 40, 20, 0.9);
+    --color-hud-dialog-focus-border: rgb(255, 255, 255);   /* TODO: pick final hover-ring color */
 }

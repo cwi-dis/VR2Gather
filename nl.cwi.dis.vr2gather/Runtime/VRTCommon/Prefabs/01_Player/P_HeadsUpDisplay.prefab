@@ -245,12 +245,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ffc107b6fef941cf9e395ce6687fd0b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: VRT.Pilots.Common::VRT.Pilots.Common.UIInputBlocker
-  m_ActionAsset: {fileID: 0}
+  m_EditorClassIdentifier: VRT.Pilots.Common::VRT.Pilots.Common.VRTPanelInputGuard
+  m_ActionAssets:
+  - {fileID: -944628639613478452, guid: 721820db5472c4cdb9e2c49de50d8533, type: 3}
+  - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   m_BlockOnTextFieldFocus: 0
   m_TextFieldActionMaps:
-  - Handsfree Locomotion
+  - Desktop Locomotion
   - ViewPosition
-  m_BlockOnScrollWheelOverUI: 1
-  m_ScrollActionMaps:
+  m_BlockOnPanelHover: 1
+  m_HoverActionMaps:
+  - Desktop Locomotion
   - ViewPosition
+  - XRI Left Locomotion
+  - XRI Right Locomotion
