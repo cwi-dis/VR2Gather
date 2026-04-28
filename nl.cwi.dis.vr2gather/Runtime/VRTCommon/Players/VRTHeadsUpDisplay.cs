@@ -30,6 +30,8 @@ namespace VRT.Pilots.Common
 
         [Tooltip("Player controller (found dynamically)")]
         [DisableEditing] [SerializeField] PlayerControllerSelf playerController;
+        [Tooltip("LazyFollow (default: found or created")]
+        [SerializeField] LazyFollow lazyFollow;
 
         private List<string> currentMessageList  = new List<string>();
         private string currentMessageString = null;
@@ -57,13 +59,20 @@ namespace VRT.Pilots.Common
         void Start()
         {
             if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
-            var lazyFollow = gameObject.AddComponent<LazyFollow>();
-            lazyFollow.rotationFollowMode = LazyFollow.RotationFollowMode.LookAtWithWorldUp;
-            float hudDistance = XRSettings.isDeviceActive ? 1f : nonVRDistance;
-            lazyFollow.targetOffset = new Vector3(0f, 0f, hudDistance);
-            lazyFollow.snapOnEnable = true;
-            lazyFollow.maxAngleAllowed = 20f;
-            gameObject.AddComponent<BoxCollider>();
+            if (lazyFollow == null)
+            {
+                lazyFollow = GetComponent<LazyFollow>();
+            }
+            if (lazyFollow == null)
+            {
+                lazyFollow = gameObject.AddComponent<LazyFollow>();
+                lazyFollow.rotationFollowMode = LazyFollow.RotationFollowMode.LookAtWithWorldUp;
+                float hudDistance = XRSettings.isDeviceActive ? 1f : nonVRDistance;
+                lazyFollow.targetOffset = new Vector3(0f, 0f, hudDistance);
+                lazyFollow.snapOnEnable = true;
+                lazyFollow.maxAngleAllowed = 20f;
+                gameObject.AddComponent<BoxCollider>();
+            }
             if (interceptErrors)
             {
                 Hide();
