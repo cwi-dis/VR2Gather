@@ -710,6 +710,11 @@ PrefabInstance:
       propertyPath: NetworkId
       value: a8583c7a-0776-4446-bc33-b6a5d33139db
       objectReference: {fileID: 0}
+    - target: {fileID: 8410044713637561585, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8545861760838847809, guid: e4a2ad980cb30454eab747ddbac46ff6,
         type: 3}
       propertyPath: m_IsActive
