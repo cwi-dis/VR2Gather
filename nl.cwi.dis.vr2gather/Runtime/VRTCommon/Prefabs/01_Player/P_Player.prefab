@@ -1896,6 +1896,16 @@ PrefabInstance:
       propertyPath: neck.vrTarget
       value: 
       objectReference: {fileID: 3382176271600897024}
+    - target: {fileID: 8337406300393679913, guid: 66f26d0ca28284407ac0857d0fc08dcb,
+        type: 3}
+      propertyPath: leftHand.vrTarget
+      value: 
+      objectReference: {fileID: 185783477414110935}
+    - target: {fileID: 8337406300393679913, guid: 66f26d0ca28284407ac0857d0fc08dcb,
+        type: 3}
+      propertyPath: rightHand.vrTarget
+      value: 
+      objectReference: {fileID: 1141726126990644482}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2011,6 +2021,16 @@ PrefabInstance:
       propertyPath: playerTransform
       value: 
       objectReference: {fileID: 5131421326051842284}
+    - target: {fileID: 8337406300393679913, guid: 641a517337c3b4b3b8e9e4a50d4501a6,
+        type: 3}
+      propertyPath: leftHand.vrTarget
+      value: 
+      objectReference: {fileID: 185783477414110935}
+    - target: {fileID: 8337406300393679913, guid: 641a517337c3b4b3b8e9e4a50d4501a6,
+        type: 3}
+      propertyPath: rightHand.vrTarget
+      value: 
+      objectReference: {fileID: 1141726126990644482}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

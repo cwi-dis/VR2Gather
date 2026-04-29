@@ -20,20 +20,20 @@
         "preDeleteTargetDirectory": true,
         "filenameTemplate": "Frame{framenum}.png"
     },
-    "_AutoStartConfig": {
+    "AutoStartConfig": {
         "autoCreate": false,
         "autoCreateStandalone": false,
         "autoJoin": false,
-        "autoCreateForUser": "sap",
-        "sessionName": "autostart-test",
-        "sessionScenario": "Empty",
+        "autoCreateForUser": "",
+        "sessionName": "",
+        "sessionScenario": "",
         "sessionTransportProtocol": "",
         "sessionUncompressed": false,
         "sessionUncompressedAudio": false,
-        "autoStartWith": 2,
-        "autoLeaveAfter": 15.0,
-        "autoStopAfterLeave": true,
-        "autoDelay": 0.1
+        "autoStartWith": -1,
+        "autoLeaveAfter": 0.0,
+        "autoStopAfterLeave": false,
+        "autoDelay": 0.20000000298023225
     },
     "TransportDashConfig": {
         "segmentSize": 4000,
@@ -95,6 +95,7 @@
         "inputFile": ""
     },
     "RepresentationConfig": {
+        "userName": "",
         "representation": 1,
         "representation_str": "SimpleAvatar",
         "webcamName": "",
