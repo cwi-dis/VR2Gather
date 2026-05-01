@@ -808,7 +808,7 @@
                     "path": "<MetaAimHand>{LeftHand}/ringPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";VR Hands",
                     "action": "ShowHide",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -819,7 +819,7 @@
                     "path": "<MetaAimHand>{RightHand}/ringPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";VR Hands",
                     "action": "ShowHide",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -831,7 +831,7 @@
             "id": "f0ad9fc2-313b-4b2b-9235-3ae60066399c",
             "actions": [
                 {
-                    "name": "Teleport",
+                    "name": "Teleport Mode Toggle",
                     "type": "Button",
                     "id": "546f05b4-4bc1-4645-8213-49843c2b9b83",
                     "expectedControlType": "",
@@ -847,8 +847,8 @@
                     "path": "<MetaAimHand>/middlePressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "Teleport",
+                    "groups": ";VR Hands",
+                    "action": "Teleport Mode Toggle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -910,6 +910,17 @@
             "devices": [
                 {
                     "devicePath": "<Joystick>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "VR Hands",
+            "bindingGroup": "VR Hands",
+            "devices": [
+                {
+                    "devicePath": "<MetaAimHand>",
                     "isOptional": false,
                     "isOR": false
                 }
