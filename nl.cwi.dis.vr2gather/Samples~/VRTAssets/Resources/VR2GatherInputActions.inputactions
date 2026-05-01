@@ -801,6 +801,56 @@
                     "action": "ShowHide",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "370d2d84-ae62-46b4-b0c6-b088b6eb0740",
+                    "path": "<MetaAimHand>{LeftHand}/ringPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShowHide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d4450052-d478-4303-822c-c9aa0c2e24c7",
+                    "path": "<MetaAimHand>{RightHand}/ringPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShowHide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Hand Locomotion",
+            "id": "f0ad9fc2-313b-4b2b-9235-3ae60066399c",
+            "actions": [
+                {
+                    "name": "Teleport",
+                    "type": "Button",
+                    "id": "546f05b4-4bc1-4645-8213-49843c2b9b83",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c27371cb-a363-4ffb-b8a7-f1fe5ac1dce8",
+                    "path": "<MetaAimHand>/middlePressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Teleport",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
