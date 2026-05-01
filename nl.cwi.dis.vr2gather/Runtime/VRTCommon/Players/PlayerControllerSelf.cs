@@ -164,7 +164,18 @@ namespace VRT.Pilots.Common
                 gazeForwardDirection = forward
             };
         }
-        
+
+        public override void SetRepresentation(UserRepresentationType type)
+        {
+            base.SetRepresentation(type);
+            bool needsGravity = type != UserRepresentationType.NoRepresentation &&
+                                type != UserRepresentationType.NoRepresentationCamera;
+            if (charControl != null)
+            {
+                charControl.enabled = needsGravity;
+            }
+        }
+
         // Update is called once per frame
         System.DateTime lastUpdateTime;
         

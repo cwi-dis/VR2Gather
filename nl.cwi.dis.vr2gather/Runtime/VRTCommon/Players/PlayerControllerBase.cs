@@ -122,16 +122,10 @@ namespace VRT.Pilots.Common
             if (altRepOne != null) altRepOne.SetActive(false);
             if (altRepTwo != null) altRepTwo.SetActive(false);
             // Enable and initialize the correct representation
-            if (charControl != null) charControl.enabled = true;
             switch (userRepresentation)
             {
                 case UserRepresentationType.NoRepresentation:
                 case UserRepresentationType.NoRepresentationCamera:
-                    // disable character controller.
-                    if (charControl != null)
-                    {
-                        charControl.enabled = false;
-                    }
                     break;
                 case UserRepresentationType.VideoAvatar:
                     isVisible = true;
