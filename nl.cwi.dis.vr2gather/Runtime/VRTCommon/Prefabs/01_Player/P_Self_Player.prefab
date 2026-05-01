@@ -8254,12 +8254,14 @@ MonoBehaviour:
   altRepOne: {fileID: 8437315033426740478}
   altRepTwo: {fileID: 1593128668264537743}
   voice: {fileID: 7656253769967137944}
-  charControl: {fileID: 8601234040758807484}
   userNameText: {fileID: 1730563041212197564}
   isLocalPlayer: 1
   _isVisible: 0
   debugTiling: 0
   previewPlayer: 0
+  gravityProviders:
+  - {fileID: 6835093188929361802}
+  - {fileID: 3209206517145047078}
   debugTransform: 0
 --- !u!114 &4177976052428464234
 MonoBehaviour:
@@ -8459,12 +8461,6 @@ MonoBehaviour:
 --- !u!1 &8437315033426740478 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2952826054765745878, guid: 21abad33e8196954b8f19e6b888a67a4,
-    type: 3}
-  m_PrefabInstance: {fileID: 6768302171833389608}
-  m_PrefabAsset: {fileID: 0}
---- !u!143 &8601234040758807484 stripped
-CharacterController:
-  m_CorrespondingSourceObject: {fileID: 3076079762117982612, guid: 21abad33e8196954b8f19e6b888a67a4,
     type: 3}
   m_PrefabInstance: {fileID: 6768302171833389608}
   m_PrefabAsset: {fileID: 0}

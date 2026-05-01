@@ -31,8 +31,6 @@ namespace VRT.Pilots.Common
         [SerializeField] protected GameObject altRepTwo;
         [Tooltip("Audio representation of this user")]
         [SerializeField] protected GameObject voice;
-        [Tooltip("Charachter controller, will be disabled for no-representation users")]
-        [SerializeField] protected CharacterController charControl;
         [Tooltip("User name is filled into this TMPro field")]
         [SerializeField] protected TextMeshProUGUI userNameText; 
         [Tooltip("True if this is the local player (debug/introspection only)")]
