@@ -8262,6 +8262,9 @@ MonoBehaviour:
   gravityProviders:
   - {fileID: 6835093188929361802}
   - {fileID: 3209206517145047078}
+  moveProviders:
+  - {fileID: 6512509871397838808}
+  - {fileID: 3609637156620435950}
   debugTransform: 0
 --- !u!114 &4177976052428464234
 MonoBehaviour:

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Gravity;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Movement;
 using VRT.Core;
 using VRT.Orchestrator;
 
@@ -12,8 +13,11 @@ namespace VRT.Pilots.Common
         [Tooltip("Disable transmitters for this self-player")]
         public bool previewPlayer = false;
 
-        [Tooltip("Gravity controllers to disable if this player is not affected by gravity")]
+        [Tooltip("Gravity controllers (to indicate when this player is not affected by gravity)")]
         public List<GravityProvider> gravityProviders;
+
+        [Tooltip("Move Providers (to indicate when this player can fly)")]
+        public List<ContinuousMoveProvider> moveProviders;
         public bool debugTransform = false;
 
         void Awake()
@@ -174,9 +178,15 @@ namespace VRT.Pilots.Common
             base.SetRepresentation(type);
             bool needsGravity = type != UserRepresentationType.NoRepresentation &&
                                 type != UserRepresentationType.NoRepresentationCamera;
+            bool canFly = !needsGravity;
             foreach(GravityProvider gp in gravityProviders)
             {
                 gp.useGravity = needsGravity;
+            }
+
+            foreach (ContinuousMoveProvider mp in moveProviders)
+            {
+                mp.enableFly = canFly;
             }
         }
 
