@@ -55,6 +55,11 @@ namespace VRT.Pilots.Common
                 return;
             }
             orchestratorInitialized = false;
+            if (VRTOrchestratorSingleton.Comm == null)
+            {
+                Debug.LogWarning($"{Name()}: ClearOrchestratorEvents: Orchestrator apparently already cleaned up.");
+                return;
+            }
             VRTOrchestratorSingleton.Comm.OnLeaveSessionEvent -= OnLeaveSessionHandler;
             VRTOrchestratorSingleton.Comm.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
             VRTOrchestratorSingleton.Comm.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
