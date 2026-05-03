@@ -165,6 +165,11 @@ MonoBehaviour:
   fadeOutText: 
   allowDirectInteractionInScene: 1
   NextSceneOnSessionEnd: VRTLoginManager
+  playableInEditor: 1
+  configurationPrefab: {fileID: 8194004708595785846, guid: e71ab000118fc4644924cc8a8d34888b,
+    type: 3}
+  orchestratorPrefab: {fileID: 3991120480309365947, guid: 59713b3d4e69349238a95c35e9f8994b,
+    type: 3}
   m_directInteractionDisabled: 0
 --- !u!1 &2108755284350789988
 GameObject:
