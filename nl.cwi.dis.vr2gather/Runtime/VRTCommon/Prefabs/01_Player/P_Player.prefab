@@ -1046,7 +1046,6 @@ MonoBehaviour:
   altRepOne: {fileID: 2952826054765745878}
   altRepTwo: {fileID: 5473624942002326695}
   voice: {fileID: 4012052827202430640}
-  charControl: {fileID: 3076079762117982612}
   userNameText: {fileID: 5037811773562763412}
   isLocalPlayer: 0
   _isVisible: 0
@@ -1205,7 +1204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceTransform: {fileID: 395634977143772616}
-  RendererToDisable: {fileID: 0}
+  RendererToDisable: {fileID: 1991810227100634364}
   TimeOut: 1
 --- !u!114 &6013669080474819502
 MonoBehaviour:
@@ -1297,7 +1296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferenceTransform: {fileID: 326265371718444427}
-  RendererToDisable: {fileID: 0}
+  RendererToDisable: {fileID: 4442462743895401883}
   TimeOut: 1
 --- !u!114 &8142691952778287237
 MonoBehaviour:
@@ -1729,6 +1728,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 368926196837826876}
   m_PrefabAsset: {fileID: 0}
+--- !u!137 &1991810227100634364 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7009038412992213568, guid: bf7151579c38e2a44be94ba8773876c1,
+    type: 3}
+  m_PrefabInstance: {fileID: 368926196837826876}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &599683127101764329
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1800,6 +1805,12 @@ PrefabInstance:
 --- !u!4 &1141726126990644482 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 56186ccf27ad7864681108ed88349071,
+    type: 3}
+  m_PrefabInstance: {fileID: 599683127101764329}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &4442462743895401883 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5335555045901936782, guid: 56186ccf27ad7864681108ed88349071,
     type: 3}
   m_PrefabInstance: {fileID: 599683127101764329}
   m_PrefabAsset: {fileID: 0}
