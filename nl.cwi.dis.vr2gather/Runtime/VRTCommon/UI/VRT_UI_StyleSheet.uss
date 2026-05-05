@@ -154,8 +154,8 @@ DropdownField:hover .unity-base-popup-field__input {
 .unity-base-dropdown__item {
     background-color: var(--color-btn-bg);
     color: rgb(255, 255, 255);
-    padding-top: 6px;
-    padding-bottom: 6px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     padding-left: 12px;
     padding-right: 12px;
 }
