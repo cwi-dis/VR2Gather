@@ -72,7 +72,7 @@ namespace VRT.UserRepresentation.Voice
             OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1];
             b2dStreams[0].inQueue = senderQueue;
             // We need some backward-compatibility hacks, depending on protocol type.
-            string url = user.sfuData.url_gen;
+            string url = user.sfuData?.url_gen;
             switch (proto)
             {
                 case "tcp":
