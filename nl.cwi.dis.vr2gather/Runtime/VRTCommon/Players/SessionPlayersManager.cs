@@ -59,6 +59,8 @@ namespace VRT.Pilots.Common
 		[DisableEditing] public GameObject localPlayer;
 		[Tooltip("All players")]
 		[DisableEditing] public List<PlayerNetworkControllerBase> AllUsers;
+		[Tooltip("All players initialized")]
+		[DisableEditing] public bool allPlayersInitialized = false;
 
 		[Tooltip("Verbose logging")]
 		[SerializeField] private bool debug = true;
@@ -251,7 +253,8 @@ namespace VRT.Pilots.Common
 				}
 			}
 
-
+			allPlayersInitialized = true;
+			
             if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
 				if (debug) Debug.Log($"SessionPlayersManager: sending playerLocationData to all");
@@ -396,15 +399,20 @@ namespace VRT.Pilots.Common
 		{
             if (playerLocationData == null)
             {
-				Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationData: playerLocationData is null");
+				Debug.LogError($"SessionPlayersManager: OnPlayerLocationData: playerLocationData is null");
                 return;
             }
             if (VRTOrchestratorSingleton.Comm.UserIsMaster)
             {
-                Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationData: we are not master");
+                Debug.LogError($"SessionPlayersManager: OnPlayerLocationData: we are master but got OnPlayerLocationData");
                 return;
             }
-		
+
+            if (!allPlayersInitialized)
+            {
+	            Debug.Log("SessionPlayersManager: ignoring OnPlayerLocationData, not all players initialized yet");
+	            return;
+            }
             for (int i = 0; i < playerLocationData.PlayerIds.Length; ++i)
 			{
 				string playerId = playerLocationData.PlayerIds[i];
@@ -425,15 +433,20 @@ namespace VRT.Pilots.Common
 
 		private void OnPlayerLocationDataRequest(PlayerLocationDataRequest request)
 		{
-			if (VRTOrchestratorSingleton.Comm.UserIsMaster)
+			if (!VRTOrchestratorSingleton.Comm.UserIsMaster)
 			{
-				Debug.Log($"SessionPlayersManager: OnPlayerLocationDataRequest: reply to {request.SenderId}");
-				SendPlayerLocationData(request.SenderId);
+                Debug.LogError($"SessionPlayersManager: OnPlayerLocationDataRequest: we are not master");
+                return;
 			}
-			else
+
+			if (!allPlayersInitialized)
 			{
-                Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationDataRequest: we are not master");
-            }
+				Debug.Log("SessionsPlayersManager: ignoring OnPlayerLocationDataRequest, not all players initialized yet");
+				return;
+			}
+
+			Debug.Log($"SessionPlayersManager: OnPlayerLocationDataRequest: reply to {request.SenderId}");
+			SendPlayerLocationData(request.SenderId);
         }
 		
 		private void SetPlayerToLocation(PlayerNetworkControllerBase player, PlayerLocation location)
