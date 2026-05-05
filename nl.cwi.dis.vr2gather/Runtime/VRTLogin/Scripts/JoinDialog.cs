@@ -79,10 +79,7 @@ namespace VRT.Login
                     text = session.GetGuiRepresentation(),
                     name = $"Session_{i}"
                 };
-                btn.AddToClassList("vrt-small-button");
-                btn.style.width = Length.Percent(100);
-                btn.style.marginLeft = 0;
-                btn.style.marginRight = 0;
+                btn.AddToClassList("vrt-list-item");
                 _sessionListScrollView.Add(btn);
             }
             // See if we can re-select the session.
@@ -91,8 +88,12 @@ namespace VRT.Login
             {
                 // The session hasn't changed. Re-select it.
                 SelectSession(oldSelectedIndex);
+                _joinButton.SetEnabled(true);
             }
-            _joinButton.SetEnabled(false);
+            else
+            {
+                _joinButton.SetEnabled(false);
+            }
         }
 
         /// <summary>After sessions are loaded, auto-join the one matching sessionName.</summary>

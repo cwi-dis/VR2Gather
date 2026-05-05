@@ -113,6 +113,7 @@ DropdownField:hover .unity-base-popup-field__input {
 
 .unity-base-dropdown__checkmark {
     align-self: center;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 
 Toggle #unity-checkmark {

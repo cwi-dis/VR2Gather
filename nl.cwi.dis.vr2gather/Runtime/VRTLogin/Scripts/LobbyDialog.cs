@@ -73,10 +73,8 @@ namespace VRT.Login
             if (users == null) return;
             foreach (var user in users)
             {
-                var label = new Label(user.userName)
-                {
-                    style = { fontSize = 22, color = new UnityEngine.Color(1, 1, 1) }
-                };
+                var label = new Label(user.userName);
+                label.AddToClassList("vrt-list-item");
                 _userListScrollView.Add(label);
             }
         }

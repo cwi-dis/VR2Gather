@@ -170,6 +170,7 @@ DropdownField:hover .unity-base-popup-field__input {
 
 .unity-base-dropdown__checkmark {
     align-self: center;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 
 Toggle #unity-checkmark {
@@ -343,9 +344,43 @@ ScrollView .unity-scroll-view__horizontal-scroller #unity-dragger {
     max-height: 6px;
 }
 
-/* Session list item in JoinDialog — highlighted when selected */
-Button.vrt-list-item--selected {
-    background-color: rgb(46, 46, 46);
-    border-left-color: var(--color-btn-hover);
+/* List item — flat, full-width, styled like a dropdown item; works on Button and Label */
+.vrt-list-item {
+    -unity-text-align: middle-left;
+    min-width: 0;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-left: 16px;
+    color: rgb(255, 255, 255);
+    background-color: var(--color-btn-bg);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
     border-left-width: 4px;
+    border-left-color: transparent;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-btn-border);
+}
+
+Button.vrt-list-item:hover {
+    scale: 1 1 1;
+    background-color: var(--color-btn-hover);
+}
+
+Button.vrt-list-item--selected {
+    background-color: var(--color-btn-hover);
+    border-left-color: var(--color-accent);
+}
+
+Button.vrt-list-item--selected:hover {
+    scale: 1 1 1;
+    background-color: var(--color-btn-active);
+    color: rgb(0, 0, 0);
 }
