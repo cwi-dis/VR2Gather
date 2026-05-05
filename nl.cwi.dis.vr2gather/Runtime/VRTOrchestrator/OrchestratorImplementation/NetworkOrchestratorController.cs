@@ -24,7 +24,7 @@ namespace VRT.Orchestrator.Implementation
         [Tooltip("Log all orchestrator calls and events to the console")]
         public bool traceCalls = false;
         [Tooltip("Warn when an event is received but no handler is registered")]
-        public bool warnOnUnhandledEvents = true;
+        public bool warnOnUnhandledEvents = false;
         // Set to true in source to also trace high-frequency calls (SendEvent*, SendData)
         private static readonly bool traceHighFrequency = false;
 

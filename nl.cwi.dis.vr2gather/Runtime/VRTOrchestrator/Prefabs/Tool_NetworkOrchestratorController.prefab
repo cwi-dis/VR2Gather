@@ -45,3 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: VRT.OrchestratorImplementation::VRT.Orchestrator.Wrapping.NetworkOrchestratorController
   enableLogging: 1
+  traceCalls: 0
+  warnOnUnhandledEvents: 0

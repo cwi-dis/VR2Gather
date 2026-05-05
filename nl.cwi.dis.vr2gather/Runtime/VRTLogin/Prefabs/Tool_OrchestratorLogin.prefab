@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4038672995462153646}
   - component: {fileID: 8610429764865867248}
   - component: {fileID: 2258932776120431250}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Tool_OrchestratorLogin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54,7 +54,7 @@ MonoBehaviour:
     type: 3}
   m_SortingOrder: 0
   m_Position: 0
-  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceSizeMode: 0
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
   m_PivotReferenceSize: 0
@@ -84,7 +84,8 @@ MonoBehaviour:
     type: 3}
   lobbyDialogAsset: {fileID: 9197481963319205126, guid: 3a05480af68da436c9adeb42aca0ae49,
     type: 3}
-  previewDialogAsset: {fileID: 0}
+  previewDialogAsset: {fileID: 9197481963319205126, guid: 6be7dbf5ad4a14dca9177a3374d6b491,
+    type: 3}
   networkControllerPrefab: {fileID: 7944887033556344929}
   standaloneControllerPrefab: {fileID: 6443343308208655020}
   player: {fileID: 0}
