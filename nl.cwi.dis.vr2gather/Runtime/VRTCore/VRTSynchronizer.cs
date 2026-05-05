@@ -88,10 +88,14 @@ namespace VRT.Core
 
         public void SetAudioTimestampRangeForCurrentFrame(string caller, Timestamp earliestFrameTimestamp, Timestamp latestFrameTimestamp)
         {
+#if xxxjack_wrong
+            // It actually happens often that we get multiple calls here, because voice frames are shorter
+            // that point cloud or video frames.
             if (audioTimestampRange != null)
             {
-                Debug.Log($"{Name()}: {caller}: Duplicate SetAudioTimestampRangeForCurrentFrame call, was {audioTimestampRange} now {earliestFrameTimestamp}..{latestFrameTimestamp}");
+                Debug.Log($"{Name()}: {caller}: Duplicate SetAudioTimestampRangeForCurrentFrame call, was {audioTimestampRange.earliestFrameTimestamp}..{audioTimestampRange.latestFrameTimestamp} now {earliestFrameTimestamp}..{latestFrameTimestamp}");
             }
+#endif
             audioTimestampRange = new TimestampRange()
             {
                 caller = caller,
