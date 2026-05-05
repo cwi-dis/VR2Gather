@@ -19,6 +19,8 @@ namespace VRT.Pilots.Common
         [SerializeField] InputActionProperty m_ShowHideAction;
         [Tooltip("HUD distance (metres) when not in VR — tune to control how much of the screen it fills")]
         [SerializeField] float nonVRDistance = 2f;
+        [Tooltip("HUD distance (metres) when in VR")]
+        [SerializeField] float vrDistance = 1.5f;
         [Tooltip("Should this HUD intercept and display error messages?")]
         [SerializeField] bool interceptErrors = true;
         [Tooltip("Auto-show messages")]
@@ -67,7 +69,7 @@ namespace VRT.Pilots.Common
             {
                 lazyFollow = gameObject.AddComponent<LazyFollow>();
                 lazyFollow.rotationFollowMode = LazyFollow.RotationFollowMode.LookAtWithWorldUp;
-                float hudDistance = XRSettings.isDeviceActive ? 1f : nonVRDistance;
+                float hudDistance = XRSettings.isDeviceActive ? vrDistance : nonVRDistance;
                 lazyFollow.targetOffset = new Vector3(0f, 0f, hudDistance);
                 lazyFollow.snapOnEnable = true;
                 lazyFollow.maxAngleAllowed = 20f;
