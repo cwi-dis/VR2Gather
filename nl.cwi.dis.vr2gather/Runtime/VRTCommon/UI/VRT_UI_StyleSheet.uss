@@ -148,6 +148,7 @@ DropdownField:hover .unity-base-popup-field__input {
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
+    max-height: 800px;
 }
 
 .unity-base-dropdown__item {
