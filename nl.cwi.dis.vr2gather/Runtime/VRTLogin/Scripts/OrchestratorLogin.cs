@@ -102,10 +102,6 @@ namespace VRT.Login
             _titleVersionLabel.text = $"VR2Gather v{Application.version}";
             UpdateHeaderOrchestratorStatus(false, "Orchestrator: Not connected");
 
-            // Global dropdown keyboard/gamepad navigation fixes (covers all DropdownFields in this UI).
-            root.RegisterCallback<PointerDownEvent>(OnDropdownPointerDown, TrickleDown.TrickleDown);
-            root.RegisterCallback<FocusInEvent>(OnDropdownItemFocused, TrickleDown.TrickleDown);
-
             ShowHome();
         }
 
@@ -799,49 +795,6 @@ namespace VRT.Login
                 UpdateAutoStatus("AutoStart: Starting session...");
                 Invoke(nameof(OnStartSessionRequested), config.autoDelay);
             }
-        }
-
-        // ── Dropdown navigation ─────────────────────────────────────────────────
-
-        // When a DropdownField is clicked, wait for the popup to appear then focus
-        // the item matching the current value so arrow keys work immediately.
-        private void OnDropdownPointerDown(PointerDownEvent evt)
-        {
-            var target = evt.target as VisualElement;
-            var dropdown = target as DropdownField ?? target?.GetFirstAncestorOfType<DropdownField>();
-            if (dropdown == null) return;
-
-            var root = _uiDocument.rootVisualElement;
-            root.schedule.Execute(() =>
-            {
-                // The popup is added to the panel root (above the UIDocument root).
-                var panelRoot = root;
-                while (panelRoot.parent != null) panelRoot = panelRoot.parent;
-
-                var popup = panelRoot.Q(className: "unity-base-dropdown");
-                if (popup == null) return;
-
-                // Find the item whose label matches the current value; fall back to first.
-                VisualElement match = null;
-                popup.Query(className: "unity-base-dropdown__item").ForEach(item =>
-                {
-                    if (match == null && item.Q<Label>()?.text == dropdown.value)
-                        match = item;
-                });
-                match ??= popup.Q(className: "unity-base-dropdown__item");
-                if (match == null) return;
-
-                match.Focus();
-                match.GetFirstAncestorOfType<ScrollView>()?.ScrollTo(match);
-            }).StartingIn(100);
-        }
-
-        // When a dropdown item gains focus (e.g. via arrow keys), scroll it into view.
-        private void OnDropdownItemFocused(FocusInEvent evt)
-        {
-            var target = evt.target as VisualElement;
-            if (target == null || !target.ClassListContains("unity-base-dropdown__item")) return;
-            target.GetFirstAncestorOfType<ScrollView>()?.ScrollTo(target);
         }
 
         // ── Helpers ─────────────────────────────────────────────────────────────

@@ -344,13 +344,6 @@ ScrollView .unity-scroll-view__horizontal-scroller #unity-dragger {
     max-height: 6px;
 }
 
-/* xxxclaude: temporary focus debug — red left border when ScrollView (or its content container) has focus */
-ScrollView:focus,
-ScrollView #unity-content-container:focus {
-    border-left-color: rgb(255, 0, 0);
-    border-left-width: 3px;
-}
-
 /* List item — flat, full-width, styled like a dropdown item; works on Button and Label */
 .vrt-list-item {
     -unity-text-align: middle-left;

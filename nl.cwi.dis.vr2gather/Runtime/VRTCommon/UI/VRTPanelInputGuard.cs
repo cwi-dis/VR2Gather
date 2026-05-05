@@ -167,27 +167,43 @@ namespace VRT.Pilots.Common
 
         private void OnFocusIn(FocusInEvent evt)
         {
-            if (m_TextFieldFocused || !IsInsideTextField(evt.target as VisualElement)) return;
+            if (m_TextFieldFocused || !IsInsideInteractiveField(evt.target as VisualElement)) return;
             m_TextFieldFocused = true;
             SetMapsEnabled(m_TextFieldMaps, false);
         }
 
         private void OnFocusOut(FocusOutEvent evt)
         {
-            if (!m_TextFieldFocused || !IsInsideTextField(evt.target as VisualElement)) return;
-            if (IsInsideTextField(evt.relatedTarget as VisualElement)) return;
+            if (!m_TextFieldFocused || !IsInsideInteractiveField(evt.target as VisualElement)) return;
+            // Keep suppressed if focus moved into the dropdown popup overlay.
+            if (IsInsideDropdownPopup(evt.relatedTarget as VisualElement)) return;
+            if (IsInsideInteractiveField(evt.relatedTarget as VisualElement)) return;
             m_TextFieldFocused = false;
             SetMapsEnabled(m_TextFieldMaps, true);
         }
 
         // ── Helpers ──────────────────────────────────────────────────────────────
 
-        private static bool IsInsideTextField(VisualElement element)
+        // Returns true for elements that require keyboard input (TextField, DropdownField).
+        private static bool IsInsideInteractiveField(VisualElement element)
         {
             var current = element;
             while (current != null)
             {
                 if (current is TextField) return true;
+                if (current is DropdownField) return true;
+                current = current.parent;
+            }
+            return false;
+        }
+
+        // Returns true when the element is inside a DropdownField popup overlay.
+        private static bool IsInsideDropdownPopup(VisualElement element)
+        {
+            var current = element;
+            while (current != null)
+            {
+                if (current.ClassListContains("unity-base-dropdown")) return true;
                 current = current.parent;
             }
             return false;
