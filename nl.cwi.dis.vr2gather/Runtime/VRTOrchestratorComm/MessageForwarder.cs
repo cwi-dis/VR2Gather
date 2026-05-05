@@ -40,7 +40,7 @@ namespace VRT.OrchestratorComm
 
 		public Dictionary<Type, IMessageForwarder> MessageForwarders = new Dictionary<Type, IMessageForwarder>();
 
-		public bool WarnOnUnhandled = true;
+		public bool WarnOnUnhandled = false;
 
 		public MessageForwarderManager()
 		{
@@ -106,7 +106,7 @@ namespace VRT.OrchestratorComm
 			TypedMessage message = JsonUtility.FromJson<TypedMessage>(jsonMessage);
 			if (!TypeFromId.TryGetValue(message.TypeId, out Type messageType))
 			{
-				Debug.LogWarning($"MessageForwarder: Forward() for unkown message type {message.TypeId}");
+				Debug.LogWarning($"MessageForwarder: Forward() for unknown message type {message.TypeId}");
 				return;
 			}
 
