@@ -4,7 +4,7 @@
     <!-- Full-screen background -->
     <ui:VisualElement style="flex-grow: 1; justify-content: center; align-items: center;">
         <!-- Centered dialog frame -->
-        <ui:VisualElement class="vrt-dialog" style="width: 1000px; min-height: 700px; max-height: 900px;">
+        <ui:VisualElement class="vrt-dialog" style="width: 1000px; min-height: 700px; max-height: 1100px;">
             <!-- Persistent header: status lines + logo -->
             <ui:VisualElement class="vrt-dialog__head">
                 <ui:VisualElement class="vrt-dialog__logo"/>
