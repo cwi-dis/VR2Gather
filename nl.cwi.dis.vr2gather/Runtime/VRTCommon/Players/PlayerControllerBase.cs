@@ -196,7 +196,7 @@ namespace VRT.Pilots.Common
         public void LoadVoicePipeline(VRT.Orchestrator.User user)
         {
             if (isPreviewPlayer) return;
-            if (user.userData.hasVoice)
+            if (!user.userData.hasVoice)
             {
                 if (isLocalPlayer)
                 {
