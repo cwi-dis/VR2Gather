@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pilot scenes are now playable in the editor, using the standalone orchestrator! (#269)
 - VR Controllers are now self-documenting if the user looks at them. (#276)
 - Removed a lot of now deprecated prefabs and scripts. (#272, #277)
+- Limited support for hand tracking (in stead of VR controllers) (#262)
 
 ## [1.3.0] - 2026-03-09
 
