@@ -4971,12 +4971,12 @@ PrefabInstance:
     - target: {fileID: 3392800643553741113, guid: b05c3133eb43f471c8493c21d2ec1191,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.343
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 3392800643553741113, guid: b05c3133eb43f471c8493c21d2ec1191,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 3392800643553741113, guid: b05c3133eb43f471c8493c21d2ec1191,
         type: 3}
@@ -5110,6 +5110,7 @@ MonoBehaviour:
     m_Reference: {fileID: -3941016355960383524, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   nonVRDistance: 2
+  vrDistance: 1.5
   interceptErrors: 1
   autoShowMessages: 1
   filterDuplicates: 1
