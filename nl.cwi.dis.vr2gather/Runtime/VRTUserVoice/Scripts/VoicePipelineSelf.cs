@@ -14,6 +14,16 @@ namespace VRT.UserRepresentation.Voice
 
     public class VoicePipelineSelf : MonoBehaviour
     {
+        [Tooltip("Current input level")]
+        public float MicrophoneLevel
+        {
+            get
+            {
+                if (reader != null) return reader.MicrophoneLevel;
+                return 0;
+            }
+        }
+
         AsyncVoiceReader reader;
         AsyncVoiceEncoder codec;
         ITransportProtocolWriter writer;
@@ -69,6 +79,10 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogWarning($"{Name()}: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
+            if (preview)
+            {
+                return;
+            }
             OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1];
             b2dStreams[0].inQueue = senderQueue;
             // We need some backward-compatibility hacks, depending on protocol type.

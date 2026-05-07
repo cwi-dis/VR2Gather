@@ -21,6 +21,7 @@ namespace VRT.UserRepresentation.Voice
         const float extraWaitTime = 0.005f; // Schedule the next enumerator call 5ms after we expect the next audio frame to be available.
         Coroutine coroutine;
         QueueThreadSafe outQueue;
+        public float MicrophoneLevel { get; private set; }
 
         public AsyncVoiceReader(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
@@ -178,7 +179,7 @@ namespace VRT.UserRepresentation.Voice
                                 timeRemainingInBuffer = (float)available / wantedSampleRate;
                                 bool ok = outQueue.Enqueue(mc);
 #if VRT_WITH_STATS
-                                stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration());
+                                stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration(), MicrophoneLevel);
 #endif
                             }
                         }
@@ -193,10 +194,25 @@ namespace VRT.UserRepresentation.Voice
 
                 void _copyTo(float[] inBuffer, float[] outBuffer)
                 {
+                    double rms = 0;
                     for (int i = 0; i < nSamplesPerPacket; i++)
                     {
-                        outBuffer[i] = inBuffer[i];
+                        float sample = inBuffer[i];
+                        outBuffer[i] = sample;
+                        rms += (sample * sample);
                     }
+
+                    if (rms != 0)
+                    {
+                        Debug.Log($"xxxjack rms**2={rms}, n={nSamplesPerPacket}");
+                    }
+                    else
+                    {
+                        Debug.Log("xxxjack rms=0");
+                    }
+
+                    rms = Math.Sqrt(rms / nSamplesPerPacket);
+                    MicrophoneLevel = (float)rms;
                 }
             }
             else
@@ -213,25 +229,31 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalTimeInInputBuffer;
             double statsTotalQueuedDuration;
             double statsDrops;
+            private double statsMaxLevel;
 
-            public void statsUpdate(double timeInInputBuffer, int sampleCount, bool dropped, Timedelta queuedDuration)
+            public void statsUpdate(double timeInInputBuffer, int sampleCount, bool dropped, Timedelta queuedDuration, float level)
             {
 
                 statsTotalUpdates += 1;
                 statsTotalSamples += sampleCount;
                 statsTotalTimeInInputBuffer += timeInInputBuffer;
                 statsTotalQueuedDuration += queuedDuration;
+                if (level > statsMaxLevel)
+                {
+                    statsMaxLevel = level;
+                }
                 if (dropped) statsDrops++;
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, output_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}, samples_per_frame={(int)(statsTotalSamples/statsTotalUpdates)}");
+                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, output_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}, samples_per_frame={(int)(statsTotalSamples/statsTotalUpdates)}, level={statsMaxLevel}");
                     Clear();
                     statsTotalUpdates = 0;
                     statsTotalSamples = 0;
                     statsTotalTimeInInputBuffer = 0;
                     statsTotalQueuedDuration = 0;
                     statsDrops = 0;
+                    statsMaxLevel = 0;
                 }
             }
         }
