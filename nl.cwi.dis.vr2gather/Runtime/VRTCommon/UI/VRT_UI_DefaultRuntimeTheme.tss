@@ -1,17 +1,1 @@
 @import url("unity-theme://default");
-
-/* Wide vertical scrollbar for VR usability — must be here (not in VRT_UI_StyleSheet.uss)
-   to reach GenericDropdownMenu overlay panels, which only see the theme. */
-.unity-scroll-view__vertical-scroller {
-    width: 48px;
-    min-width: 48px;
-}
-
-.unity-scroll-view__vertical-scroller #unity-drag-container {
-    width: 100%;
-}
-
-.unity-scroll-view__vertical-scroller #unity-dragger {
-    min-width: 44px;
-    max-width: 44px;
-}
