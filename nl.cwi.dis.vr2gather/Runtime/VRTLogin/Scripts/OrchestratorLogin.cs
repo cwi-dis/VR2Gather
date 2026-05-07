@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using VRT.Core;
 using VRT.Orchestrator;
 using VRT.Pilots.Common;
+using VRT.UserRepresentation.Voice;
 
 namespace VRT.Login
 {
@@ -57,6 +58,8 @@ namespace VRT.Login
         public PlayerControllerSelf player;
         [Tooltip("Camera used to render the preview; disabled when not in preview")]
         [SerializeField] private Camera previewCamera;
+        [Tooltip("VoicePipelineSelf used to read the microphone level for the preview dialog")]
+        [SerializeField] private VoicePipelineSelf voicePipeline;
 
         // ── Private state ───────────────────────────────────────────────────────
         private enum State { Home, Settings, Create, Join, CreateStandalone, Lobby, Preview }
@@ -108,7 +111,11 @@ namespace VRT.Login
         void Update()
         {
             if (_state == State.Preview)
+            {
                 _previewDialog?.MarkPreviewDirty();
+                if (voicePipeline != null && voicePipeline.isActiveAndEnabled)
+                    _previewDialog?.SetVoiceLevel(voicePipeline.MicrophoneLevel);
+            }
         }
 
         // ── State transitions ───────────────────────────────────────────────────
@@ -217,6 +224,7 @@ namespace VRT.Login
                 _contentSlot.Add(clone);
                 _previewDialog = new PreviewDialog(clone);
                 _previewDialog.OnOkClicked += ShowHome;
+                _previewDialog.SetMicrophoneActive(voicePipeline != null && voicePipeline.isActiveAndEnabled);
 
                 _state = State.Preview;
 

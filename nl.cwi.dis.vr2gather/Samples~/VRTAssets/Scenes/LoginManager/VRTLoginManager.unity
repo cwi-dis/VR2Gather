@@ -1085,6 +1085,18 @@ MonoBehaviour:
   m_Teleporting:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1278039656 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8723572796741829187, guid: e4a2ad980cb30454eab747ddbac46ff6,
+    type: 3}
+  m_PrefabInstance: {fileID: 1179825886}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c50fe54248b68447b66a37aa104904d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!850595691 &1673771068
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -1258,16 +1270,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4038672995462153646, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4038672995462153646, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
-        type: 3}
-      propertyPath: m_WorldSpaceSizeMode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5658332295402922780, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1343,6 +1345,11 @@ PrefabInstance:
       propertyPath: previewCamera
       value: 
       objectReference: {fileID: 1897768791}
+    - target: {fileID: 8610429764865867248, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
+        type: 3}
+      propertyPath: voicePipeline
+      value: 
+      objectReference: {fileID: 1278039656}
     - target: {fileID: 8610429764865867248, guid: d0d5b32c8cbc24b10821d852a2cd21f3,
         type: 3}
       propertyPath: previewDialogAsset

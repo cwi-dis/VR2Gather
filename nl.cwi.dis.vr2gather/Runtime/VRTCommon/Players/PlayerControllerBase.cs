@@ -202,8 +202,10 @@ namespace VRT.Pilots.Common
                 {
                     Debug.LogWarning($"SessionPlayersManager: You have no microphone, skipping voice transmission.");
                 }
+                voice.SetActive(false);
                 return;
             }
+            voice.SetActive(true);
             if (isLocalPlayer)
             { // Sender
                 var userCfg = VRTConfig.Instance.RepresentationConfig;

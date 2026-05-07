@@ -202,7 +202,9 @@ namespace VRT.UserRepresentation.Voice
                         rms += (sample * sample);
                     }
                     rms = Math.Sqrt(rms / nSamplesPerPacket);
-                    MicrophoneLevel = (float)rms;
+                    // Map -60..0 dBFS to 0..1
+                    double dbfs = 20.0 * Math.Log10(Math.Max(rms, 1e-6));
+                    MicrophoneLevel = (float)Math.Clamp((dbfs + 60.0) / 60.0, 0.0, 1.0);
                 }
             }
             else

@@ -90,6 +90,7 @@ MonoBehaviour:
   standaloneControllerPrefab: {fileID: 6443343308208655020}
   player: {fileID: 0}
   previewCamera: {fileID: 0}
+  voicePipeline: {fileID: 0}
 --- !u!114 &2258932776120431250
 MonoBehaviour:
   m_ObjectHideFlags: 0

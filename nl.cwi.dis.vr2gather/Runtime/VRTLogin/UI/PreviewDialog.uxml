@@ -3,6 +3,13 @@
     <Style src="project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/VRT_Dialog.uss?fileID=7433441132597879392&amp;guid=ccade230efe254913ba526093cc7263e&amp;type=3#VRT_Dialog"/>
     <ui:VisualElement style="flex-grow: 1;">
         <ui:VisualElement name="PreviewImage" style="flex-grow: 1; background-color: black; -unity-background-scale-mode: scale-to-fit;"/>
+        <ui:Label name="NoMicLabel" text="No microphone configured" style="margin-top: 8px; -unity-text-align: middle-center;"/>
+        <ui:VisualElement name="VoiceLevelRow" class="vrt-form__row" style="margin-top: 8px; align-items: center;">
+            <ui:Label text="Voice level:" class="vrt-form__label" style="padding-top: 0;"/>
+            <ui:VisualElement name="VoiceLevelTrack" class="vrt-form__field" style="height: 20px; background-color: rgba(0,0,0,0.3); border-radius: 3px;">
+                <ui:VisualElement name="VoiceLevelBar" style="width: 0%; height: 100%; background-color: rgb(0,200,0); border-radius: 3px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; justify-content: flex-end; margin-top: 16px;">
             <ui:Button name="OkButton" text="OK" parse-escape-sequences="true"/>
         </ui:VisualElement>

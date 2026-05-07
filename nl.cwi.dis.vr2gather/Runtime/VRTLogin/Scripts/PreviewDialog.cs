@@ -13,11 +13,18 @@ namespace VRT.Login
         public event Action OnOkClicked;
 
         private readonly VisualElement _previewImage;
+        private readonly Label _noMicLabel;
+        private readonly VisualElement _voiceLevelRow;
+        private readonly VisualElement _voiceLevelBar;
 
         public PreviewDialog(VisualElement root)
         {
             _previewImage = root.Q<VisualElement>("PreviewImage");
+            _noMicLabel = root.Q<Label>("NoMicLabel");
+            _voiceLevelRow = root.Q<VisualElement>("VoiceLevelRow");
+            _voiceLevelBar = root.Q<VisualElement>("VoiceLevelBar");
             root.Q<Button>("OkButton").clicked += () => OnOkClicked?.Invoke();
+            SetMicrophoneActive(false);
         }
 
         public void SetPreviewTexture(RenderTexture rt)
@@ -28,6 +35,17 @@ namespace VRT.Login
         public void MarkPreviewDirty()
         {
             _previewImage.MarkDirtyRepaint();
+        }
+
+        public void SetMicrophoneActive(bool active)
+        {
+            _noMicLabel.style.display = active ? DisplayStyle.None : DisplayStyle.Flex;
+            _voiceLevelRow.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        public void SetVoiceLevel(float level)
+        {
+            _voiceLevelBar.style.width = Length.Percent(Mathf.Clamp01(level) * 100f);
         }
     }
 }
