@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.IO;
 using UnityEngine;
 using VRT.Core;
 using Cwipc;
@@ -23,9 +24,13 @@ namespace VRT.UserRepresentation.Voice
         QueueThreadSafe outQueue;
         public float MicrophoneLevel { get; private set; }
 
+        BinaryWriter _wavWriter;
+        int _wavSampleCount;
+
         public AsyncVoiceReader(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
             NoUpdateCallsNeeded();
+            wantedSampleRate = sampleRate;
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif
@@ -39,6 +44,51 @@ namespace VRT.UserRepresentation.Voice
         public int getBufferSize()
         {
             return nSamplesPerPacket;
+        }
+
+        public void StartRecording(string filename)
+        {
+            StopRecording();
+            var stream = new FileStream(filename, FileMode.Create);
+            _wavWriter = new BinaryWriter(stream);
+            _wavSampleCount = 0;
+            WriteWavHeader(_wavWriter, wantedSampleRate);
+            Debug.Log($"{Name()}: Started recording to {filename}");
+        }
+
+        public void StopRecording()
+        {
+            if (_wavWriter == null) return;
+            FinalizeWavFile(_wavWriter, _wavSampleCount);
+            _wavWriter.Close();
+            _wavWriter = null;
+            Debug.Log($"{Name()}: Stopped recording ({_wavSampleCount} samples)");
+        }
+
+        static void WriteWavHeader(BinaryWriter w, int sampleRate)
+        {
+            w.Write(new byte[] { (byte)'R', (byte)'I', (byte)'F', (byte)'F' });
+            w.Write(0);                         // placeholder: file size - 8
+            w.Write(new byte[] { (byte)'W', (byte)'A', (byte)'V', (byte)'E' });
+            w.Write(new byte[] { (byte)'f', (byte)'m', (byte)'t', (byte)' ' });
+            w.Write(16);                        // PCM chunk size
+            w.Write((short)1);                  // PCM format
+            w.Write((short)1);                  // mono
+            w.Write(sampleRate);
+            w.Write(sampleRate * 2);            // byte rate (mono 16-bit)
+            w.Write((short)2);                  // block align
+            w.Write((short)16);                 // bits per sample
+            w.Write(new byte[] { (byte)'d', (byte)'a', (byte)'t', (byte)'a' });
+            w.Write(0);                         // placeholder: data size
+        }
+
+        static void FinalizeWavFile(BinaryWriter w, int sampleCount)
+        {
+            int dataSize = sampleCount * 2;     // 2 bytes per 16-bit sample
+            w.Seek(4, SeekOrigin.Begin);
+            w.Write(dataSize + 36);             // RIFF chunk size
+            w.Seek(40, SeekOrigin.Begin);
+            w.Write(dataSize);
         }
 
         Timestamp sampleTimestamp(int nSamplesInInputBuffer)
@@ -55,6 +105,7 @@ namespace VRT.UserRepresentation.Voice
 
         public override void AsyncOnStop()
         {
+            StopRecording();
             outQueue.Close();
             base.AsyncOnStop();
         }
@@ -205,6 +256,15 @@ namespace VRT.UserRepresentation.Voice
                     // Map -60..0 dBFS to 0..1
                     double dbfs = 20.0 * Math.Log10(Math.Max(rms, 1e-6));
                     MicrophoneLevel = (float)Math.Clamp((dbfs + 60.0) / 60.0, 0.0, 1.0);
+                    if (_wavWriter != null)
+                    {
+                        for (int i = 0; i < nSamplesPerPacket; i++)
+                        {
+                            short s = (short)Math.Clamp(outBuffer[i] * 32767f, -32768f, 32767f);
+                            _wavWriter.Write(s);
+                        }
+                        _wavSampleCount += nSamplesPerPacket;
+                    }
                 }
             }
             else
