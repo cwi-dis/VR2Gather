@@ -1,5 +1,3 @@
-@import url("VRT_UI_ColorScheme.uss");
-
 Button {
     -unity-font: url("project://database/Packages/nl.cwi.dis.vr2gather/Runtime/VRTCommon/UI/Fonts/BrandonGrotesque/Brandon_med.otf?fileID=12800000&guid=c9341f42abb2afc4da693e636dc67272&type=3#Brandon_med");
     background-color: var(--color-btn-bg);
@@ -325,25 +323,6 @@ ScrollView #unity-high-button {
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 
-ScrollView .unity-scroll-view__vertical-scroller #unity-drag-container {
-    min-width: 50%;
-    align-self: center;
-}
-
-ScrollView .unity-scroll-view__horizontal-scroller #unity-drag-container {
-    align-self: center;
-    min-height: 50%;
-}
-
-ScrollView .unity-scroll-view__vertical-scroller #unity-dragger {
-    min-width: 6px;
-    max-width: 6px;
-}
-
-ScrollView .unity-scroll-view__horizontal-scroller #unity-dragger {
-    min-height: 6px;
-    max-height: 6px;
-}
 
 /* List item — flat, full-width, styled like a dropdown item; works on Button and Label */
 .vrt-list-item {
