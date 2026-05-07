@@ -201,16 +201,6 @@ namespace VRT.UserRepresentation.Voice
                         outBuffer[i] = sample;
                         rms += (sample * sample);
                     }
-
-                    if (rms != 0)
-                    {
-                        Debug.Log($"xxxjack rms**2={rms}, n={nSamplesPerPacket}");
-                    }
-                    else
-                    {
-                        Debug.Log("xxxjack rms=0");
-                    }
-
                     rms = Math.Sqrt(rms / nSamplesPerPacket);
                     MicrophoneLevel = (float)rms;
                 }
