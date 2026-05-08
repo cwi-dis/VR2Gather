@@ -93,6 +93,10 @@ Configurable via `config-user.json`:
 - `RigidBodyNetworkController` — physics state sync
 - NTP-based time synchronization via `VRTSynchronizer`
 
+### Interaction system
+
+Two primary user actions: **pressing a button** (`PFB_Trigger` / `OBJ_NetworkButton`) and **holding an object** (`PFB_Grabbable`). Four interactable object categories: grabbable, static button, grabbable+button, and factory (`NetworkInstantiator`). Input modes: XR near (NearFarInteractor + PokeInteractor), XR far (NearFarInteractor ray), hand tracking, desktop keyboard+mouse (`P_Handsfree`), gamepad (non-functional skeleton). See `Documentation/100-interaction.md` for the full breakdown.
+
 ### Configuration
 
 Two JSON files in `VRTApp-Develop/`:
