@@ -8245,6 +8245,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 6695701840291593632}
+    - targetCorrespondingSourceObject: {fileID: 5131421326051842195, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1838982925145587368}
     - targetCorrespondingSourceObject: {fileID: 4012052827202430640, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       insertIndex: -1
@@ -8454,6 +8458,21 @@ MonoBehaviour:
   - {fileID: 4597498108816244299}
   - {fileID: 8161494120550157094}
   - {fileID: 5909875234162523454}
+--- !u!114 &1838982925145587368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1935332283100515003}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b24bf54d1b7f14c19810b8431e2d67f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VRT.Pilots.Common::VRT.Pilots.Common.RecordUserVoice
+  autoStartRecord: 0
+  voicePipeline: {fileID: 0}
+  outputFilename: voicerecording-{scene}-{time}.wav
 --- !u!4 &1935332283100515012 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5131421326051842284, guid: 21abad33e8196954b8f19e6b888a67a4,

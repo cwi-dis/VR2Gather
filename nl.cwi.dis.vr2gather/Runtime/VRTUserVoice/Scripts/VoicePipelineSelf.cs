@@ -2,6 +2,7 @@
 using VRT.Orchestrator;
 using VRT.Core;
 using Cwipc;
+using UnityEngine.Windows.WebCam;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -125,6 +126,26 @@ namespace VRT.UserRepresentation.Voice
         {
             if (writer == null) return new SyncConfig.ClockCorrespondence();
             return writer.GetSyncInfo();
+        }
+
+        public void StartRecording(string filename)
+        {
+            if (reader == null)
+            {
+                Debug.LogError($"{Name()}: StartRecording: no voice reader");
+                return;
+            }
+            if (string.IsNullOrEmpty(filename)) {
+                Debug.LogError($"{Name()}: StartRecording: filename is empty");
+                return;
+            }
+            reader.StartRecording(filename);
+        }
+
+        public void StopRecording()
+        {
+            if (reader == null) return;
+            reader.StopRecording();
         }
     }
 }
