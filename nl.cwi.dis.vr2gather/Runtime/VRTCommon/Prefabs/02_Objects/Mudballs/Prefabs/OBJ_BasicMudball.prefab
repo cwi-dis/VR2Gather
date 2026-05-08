@@ -156,7 +156,7 @@ PrefabInstance:
     - target: {fileID: 571290128676701024, guid: 4e3b1a94af82ce145b1ca88d98b8a428,
         type: 3}
       propertyPath: m_Name
-      value: OBJ_Mudball
+      value: OBJ_BasicMudball
       objectReference: {fileID: 0}
     - target: {fileID: 571290128676701025, guid: 4e3b1a94af82ce145b1ca88d98b8a428,
         type: 3}
