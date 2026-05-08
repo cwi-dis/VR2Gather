@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Limited support for hand tracking (in stead of VR controllers) (#262)
 - Allow recording the users voice (#306)
 - Allow disabling user movement (#305)
+- Allow keyboard/mouse teleport, with alt-shift and right-click (#303)
 
 ## [1.3.0] - 2026-03-09
 
