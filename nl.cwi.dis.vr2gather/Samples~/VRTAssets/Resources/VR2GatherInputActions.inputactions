@@ -109,7 +109,7 @@
                     "name": "Enable Mouse Ray",
                     "type": "Button",
                     "id": "cee6d43b-66a8-4d6e-b6fd-481984e1242d",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -294,9 +294,9 @@
                 },
                 {
                     "name": "Teleport Mode Activate",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "1e0c9365-bce0-485b-8078-a81e3b91e6e9",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -305,7 +305,7 @@
                     "name": "Teleport Mode Cancel",
                     "type": "Button",
                     "id": "80d9d74a-ac85-446b-a84d-2e11b104821e",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -558,6 +558,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Turn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1feea380-a1d8-4757-bda0-0e48a06b6694",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Teleport Mode Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "28c621ba-2750-49bd-a0bd-b62da7cac997",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Teleport Mode Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
