@@ -82,12 +82,15 @@ namespace VRT.Pilots.Common
                     Collider col = _interactable != null ? _interactable.GetComponent<Collider>() : null;
                     if (col == null && _interactable != null)
                         col = _interactable.GetComponentInChildren<Collider>();
-                    if (col != null)
+                    float boundsSize = col != null ? col.bounds.size.magnitude : 0f;
+                    if (boundsSize > 0.001f)
                     {
-                        float worldSize = col.bounds.size.magnitude * iconScaleFactor;
+                        float worldSize = boundsSize * iconScaleFactor;
                         float parentScale = transform.parent != null ? transform.parent.lossyScale.x : 1f;
                         transform.localScale = Vector3.one * (worldSize / parentScale);
                     }
+                    // If bounds are zero (physics not yet initialized) or no collider found,
+                    // leave the prefab scale unchanged rather than zeroing it out.
                 }
             }
         }
