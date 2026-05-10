@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2295918947356842513}
   - component: {fileID: 2851013362825086282}
   - component: {fileID: 2027428294155580331}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: VRTAffordance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -149,9 +149,10 @@ MonoBehaviour:
   selectEnterClip: {fileID: 0}
   selectExitClip: {fileID: 0}
   iconRenderer: {fileID: 0}
-  grabSprite: {fileID: 21300000, guid: d91a147291ed941ffa4a2c9ef830f999, type: 3}
-  pressSprite: {fileID: 21300000, guid: 79eaa303f29ab472894fcc074c80aabf, type: 3}
+  grabSprite: {fileID: 21300000, guid: 79eaa303f29ab472894fcc074c80aabf, type: 3}
+  pressSprite: {fileID: 21300000, guid: d91a147291ed941ffa4a2c9ef830f999, type: 3}
   iconType: 0
+  iconScaleFactor: 1
   fadeInDuration: 0.15
   fadeOutDuration: 0.25
 --- !u!212 &2027428294155580331

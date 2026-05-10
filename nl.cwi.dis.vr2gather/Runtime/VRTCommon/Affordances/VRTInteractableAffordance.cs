@@ -37,6 +37,8 @@ namespace VRT.Pilots.Common
         public Sprite pressSprite;
         [Tooltip("Auto: detect from parent interactable type. Override to force a specific icon.")]
         public IconType iconType = IconType.Auto;
+        [Tooltip("Icon size as a fraction of the parent collider's bounding box diagonal. 0 = no auto-scaling.")]
+        public float iconScaleFactor = 1f;
         [Tooltip("Seconds to fade the icon in on hover enter.")]
         public float fadeInDuration = 0.15f;
         [Tooltip("Seconds to fade the icon out on hover exit.")]
@@ -73,6 +75,20 @@ namespace VRT.Pilots.Common
 
                 // Start hidden
                 SetAlpha(0f);
+
+                // Auto-scale icon relative to the parent collider's world-space size
+                if (iconScaleFactor > 0f)
+                {
+                    Collider col = _interactable != null ? _interactable.GetComponent<Collider>() : null;
+                    if (col == null && _interactable != null)
+                        col = _interactable.GetComponentInChildren<Collider>();
+                    if (col != null)
+                    {
+                        float worldSize = col.bounds.size.magnitude * iconScaleFactor;
+                        float parentScale = transform.parent != null ? transform.parent.lossyScale.x : 1f;
+                        transform.localScale = Vector3.one * (worldSize / parentScale);
+                    }
+                }
             }
         }
 

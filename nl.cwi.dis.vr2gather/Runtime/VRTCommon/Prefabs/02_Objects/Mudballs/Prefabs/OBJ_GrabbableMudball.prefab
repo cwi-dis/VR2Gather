@@ -90,80 +90,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &2474786444391025392
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 2125739197500702209}
-    m_Modifications:
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2424690970669447115, guid: 45b53cf9de5654f118b25af7e3208a93,
-        type: 3}
-      propertyPath: m_Name
-      value: VRTAffordance
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 45b53cf9de5654f118b25af7e3208a93, type: 3}
---- !u!4 &4282963307015551083 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1812717847803114139, guid: 45b53cf9de5654f118b25af7e3208a93,
-    type: 3}
-  m_PrefabInstance: {fileID: 2474786444391025392}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4760417667668338050
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -180,11 +106,6 @@ PrefabInstance:
     - target: {fileID: 6886076587129330562, guid: bbd7e943559eb764387ecb95b1d1f1f1,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6886076587129330563, guid: bbd7e943559eb764387ecb95b1d1f1f1,
-        type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6886076587129330563, guid: bbd7e943559eb764387ecb95b1d1f1f1,
@@ -262,12 +183,8 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 6886076587129330563, guid: bbd7e943559eb764387ecb95b1d1f1f1,
         type: 3}
-      insertIndex: -1
+      insertIndex: 1
       addedObject: {fileID: 1813158428389684777}
-    - targetCorrespondingSourceObject: {fileID: 6886076587129330563, guid: bbd7e943559eb764387ecb95b1d1f1f1,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4282963307015551083}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbd7e943559eb764387ecb95b1d1f1f1, type: 3}
 --- !u!4 &2125739197500702209 stripped
