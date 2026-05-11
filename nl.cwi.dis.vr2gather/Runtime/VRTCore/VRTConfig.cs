@@ -330,9 +330,16 @@ namespace VRT.Core
             }
             var fullName = ConfigFilename(userConfigFilename, label:"User config");
             Debug.Log($"VRTConfig: Full user config filename: {fullName}");
-            JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(fullName), RepresentationConfig);
-            _PostLoad();
-            Debug.Log($"VRTConfig: loaded UserData from {fullName}");
+            if (System.IO.File.Exists(fullName))
+            {
+                JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(fullName), RepresentationConfig);
+                _PostLoad();
+                Debug.Log($"VRTConfig: loaded UserData from {fullName}");
+            }
+            else
+            {
+                Debug.LogWarning($"VRTConfig: user config file not found: {fullName}");
+            }
         }
         
 #if UNITY_EDITOR
