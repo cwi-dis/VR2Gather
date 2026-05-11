@@ -50,7 +50,7 @@ namespace VRT.Pilots.Common
                     userData = new UserData
                     {
                         userRepresentation = config.representation,
-                        hasVoice = !string.IsNullOrEmpty(config.microphoneName) && config.microphoneName != "None",
+                        hasVoice = config.HasVoice(),
                         userRepresentationTCPUrl = config.userRepresentationTCPUrl,
                     }
                 };

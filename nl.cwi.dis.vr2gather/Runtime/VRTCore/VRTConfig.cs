@@ -244,8 +244,9 @@ namespace VRT.Core
             public string representation_str;
             [Tooltip("Name of webcam to use (for webcam representation")]
             public string webcamName = "";
-            [Tooltip("Name of microphone to use (empty or None for no voice transmission)")]
+            [Tooltip("Name of microphone to use (empty or None or Muted for no voice transmission)")]
             public string microphoneName = "";
+            public bool HasVoice() { return !string.IsNullOrEmpty(microphoneName) && microphoneName != "None" && microphoneName != "Muted"; }
             [Tooltip("For TCP: URL to use for representation transport protocol")]
             public string userRepresentationTCPUrl = "";
             [Serializable]

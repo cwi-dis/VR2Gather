@@ -46,9 +46,9 @@ namespace VRT.UserRepresentation.Voice
             string _streamName = "audio";
             string microphoneName = VRTConfig.Instance.RepresentationConfig.microphoneName;
             int minBufferSize = 0;
-            if (microphoneName == "None" || microphoneName == "")
+            if (microphoneName == "None" || microphoneName == "" || microphoneName == "Muted")
             {
-                Debug.Log($"{Name()}: no microphone, other participants will not hear you");
+                Debug.Log($"{Name()}: no microphone (\"{microphoneName}\"), other participants will not hear you");
                 return;
             }
 

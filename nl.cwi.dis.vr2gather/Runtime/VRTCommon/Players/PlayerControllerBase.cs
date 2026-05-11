@@ -195,10 +195,11 @@ namespace VRT.Pilots.Common
 
         public void LoadVoicePipeline(VRT.Orchestrator.User user)
         {
+            var selfUserCfg = VRTConfig.Instance.RepresentationConfig;
             //xxxjack if (isPreviewPlayer) return;
             if (!user.userData.hasVoice)
             {
-                if (isLocalPlayer)
+                if (isLocalPlayer && selfUserCfg.microphoneName != "Muted")
                 {
                     Debug.LogWarning($"SessionPlayersManager: You have no microphone, skipping voice transmission.");
                 }
@@ -208,7 +209,6 @@ namespace VRT.Pilots.Common
             voice.SetActive(true);
             if (isLocalPlayer)
             { // Sender
-                var userCfg = VRTConfig.Instance.RepresentationConfig;
                 VoicePipelineSelf voicePipelineSelf = voice.GetComponent<VoicePipelineSelf>();
                 if (voicePipelineSelf != null)
                 {
@@ -218,7 +218,7 @@ namespace VRT.Pilots.Common
                 {
                     voicePipelineSelf = voice.AddComponent<VoicePipelineSelf>();
                 }
-                voicePipelineSelf.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
+                voicePipelineSelf.Init(isLocalPlayer, user, selfUserCfg, isPreviewPlayer);
             }
             else
             { // Receiver
