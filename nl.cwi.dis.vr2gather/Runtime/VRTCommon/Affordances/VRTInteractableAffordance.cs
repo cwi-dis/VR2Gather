@@ -1,7 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 namespace VRT.Pilots.Common
 {
@@ -45,14 +47,32 @@ namespace VRT.Pilots.Common
         public float fadeOutDuration = 0.25f;
 
         XRBaseInteractable _interactable;
+        XRBaseInteractable[] _childInteractables;
         Camera _camera;
         Coroutine _fadeCoroutine;
+        bool _parentHovered;
+        bool _childRayHovered;
 
         void Awake()
         {
             _interactable = GetComponentInParent<XRBaseInteractable>();
             if (_interactable == null)
                 Debug.LogWarning($"VRTInteractableAffordance({name}): no XRBaseInteractable found in parent hierarchy");
+
+            // Find child interactables (excluding self) — used to suppress the grab icon
+            // when a nested button is ray-hovered and would capture the select action.
+            if (_interactable != null)
+            {
+                var all = _interactable.GetComponentsInChildren<XRBaseInteractable>();
+                var children = new List<XRBaseInteractable>();
+                foreach (var c in all)
+                    if (c != _interactable) children.Add(c);
+                _childInteractables = children.ToArray();
+            }
+            else
+            {
+                _childInteractables = new XRBaseInteractable[0];
+            }
 
             if (audioSource == null)
                 audioSource = GetComponent<AudioSource>();
@@ -62,18 +82,21 @@ namespace VRT.Pilots.Common
 
             if (iconRenderer != null)
             {
+                // Render on UI-Overlay so the icon is never occluded by scene geometry
+                int overlayLayer = LayerMask.NameToLayer("UI-Overlay");
+                if (overlayLayer < 0)
+                    Debug.LogWarning($"VRTInteractableAffordance({name}): UI-Overlay layer not found; icon may be occluded");
+                else
+                    iconRenderer.gameObject.layer = overlayLayer;
+
                 // Pick sprite: explicit override wins; otherwise detect from interactable type
-                Sprite chosen = null;
                 IconType resolved = iconType;
                 if (resolved == IconType.Auto)
                     resolved = (_interactable is XRGrabInteractable) ? IconType.Grab : IconType.Press;
-
-                chosen = (resolved == IconType.Grab) ? grabSprite : pressSprite;
-
+                Sprite chosen = (resolved == IconType.Grab) ? grabSprite : pressSprite;
                 if (chosen != null)
                     iconRenderer.sprite = chosen;
 
-                // Start hidden
                 SetAlpha(0f);
 
                 // Auto-scale icon relative to the parent collider's world-space size
@@ -102,6 +125,11 @@ namespace VRT.Pilots.Common
             _interactable.lastHoverExited.AddListener(OnLastHoverExited);
             _interactable.firstSelectEntered.AddListener(OnFirstSelectEntered);
             _interactable.lastSelectExited.AddListener(OnLastSelectExited);
+            foreach (var child in _childInteractables)
+            {
+                child.firstHoverEntered.AddListener(OnChildFirstHoverEntered);
+                child.lastHoverExited.AddListener(OnChildLastHoverExited);
+            }
         }
 
         void OnDisable()
@@ -111,6 +139,11 @@ namespace VRT.Pilots.Common
             _interactable.lastHoverExited.RemoveListener(OnLastHoverExited);
             _interactable.firstSelectEntered.RemoveListener(OnFirstSelectEntered);
             _interactable.lastSelectExited.RemoveListener(OnLastSelectExited);
+            foreach (var child in _childInteractables)
+            {
+                child.firstHoverEntered.RemoveListener(OnChildFirstHoverEntered);
+                child.lastHoverExited.RemoveListener(OnChildLastHoverExited);
+            }
         }
 
         void Update()
@@ -125,13 +158,56 @@ namespace VRT.Pilots.Common
         void OnFirstHoverEntered(HoverEnterEventArgs args)
         {
             Play(hoverEnterClip);
-            FadeTo(1f, fadeInDuration);
+            _parentHovered = true;
+            if (_childInteractables.Length > 0)
+                // Delay one frame so child hover events from the same raycast settle first.
+                StartCoroutine(DelayedShowIfNoChildRayHover());
+            else
+                FadeTo(1f, fadeInDuration);
         }
 
         void OnLastHoverExited(HoverExitEventArgs args)
         {
             Play(hoverExitClip);
+            _parentHovered = false;
+            _childRayHovered = false;
             FadeTo(0f, fadeOutDuration);
+        }
+
+        void OnChildFirstHoverEntered(HoverEnterEventArgs args)
+        {
+            if (args.interactorObject is XRRayInteractor)
+            {
+                _childRayHovered = true;
+                FadeTo(0f, fadeOutDuration);
+            }
+        }
+
+        void OnChildLastHoverExited(HoverExitEventArgs args)
+        {
+            if (args.interactorObject is XRRayInteractor)
+            {
+                _childRayHovered = AnyChildRayHovered();
+                if (!_childRayHovered && _parentHovered)
+                    FadeTo(1f, fadeInDuration);
+            }
+        }
+
+        IEnumerator DelayedShowIfNoChildRayHover()
+        {
+            yield return null;
+            _childRayHovered = AnyChildRayHovered();
+            if (_parentHovered && !_childRayHovered)
+                FadeTo(1f, fadeInDuration);
+        }
+
+        bool AnyChildRayHovered()
+        {
+            foreach (var child in _childInteractables)
+                foreach (var interactor in child.interactorsHovering)
+                    if (interactor is XRRayInteractor)
+                        return true;
+            return false;
         }
 
         void OnFirstSelectEntered(SelectEnterEventArgs args) => Play(selectEnterClip);
