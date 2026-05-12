@@ -2,7 +2,7 @@
 	"name" : "nl.cwi.dis.vr2gather",
 	"version" : "1.3.995",
 	"displayName" : "VR2Gather",
-	"description" : "Create networked shared social VR experiences in Unity.\nPlease check the documentation before installing this package into your project.",
+	"description" : "Create networked shared social VR experiences in Unity.\nRun Tools->VR2Gather Porting Check to help with porting.",
 	"documentationUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/README.md",
 	"changelogUrl" : "https://github.com/cwi-dis/VR2Gather/blob/master/nl.cwi.dis.vr2gather/CHANGELOG.md",
 	"dependencies": {
@@ -23,7 +23,7 @@
 	"samples" : [
 		{
 			"displayName": "VRT Essential Assets",
-			"description": "A set of assets that are essential when using VR2Gather\n\nWhen _updating_ the assets from an older version it is best to remember any changes you have made, update the samples, exit Unity, remove the Library cache, start Unity again, apply your changes again.\n\nNOTE: from XR Interaction Toolkit you need the Starter Assets, World Space UI and Hands Interaction Demo.\n\nFrom XR Hands you need the HandVisualizer.",
+			"description": "A set of assets that are essential when using VR2Gather\n\nRun Tools->VR2Gather Porting Check both before (if available) and after updating the essentials.",
 			"path": "Samples~/VRTAssets"
 		}
 	]
