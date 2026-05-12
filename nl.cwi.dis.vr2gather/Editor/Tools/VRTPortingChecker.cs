@@ -248,20 +248,29 @@ namespace VRT.Tools
             var errors = new List<string>();
             var warnings = new List<string>();
 
-            // a) User prefab variant check
+            // a) User prefab variant check — prefab must live in Assets/, not in Packages/ or Assets/Samples/
             var source = PrefabUtility.GetCorrespondingObjectFromSource(registry.gameObject);
             if (source == null)
                 warnings.Add("ScenarioRegistry is not a prefab instance — save it as a prefab variant in your own Assets folder");
-            else if (AssetDatabase.GetAssetPath(source).Contains("/Samples/"))
-                warnings.Add("ScenarioRegistry still uses the Samples original — create a prefab variant in your own Assets folder");
+            else if (!AssetDatabase.GetAssetPath(source).StartsWith("Assets/") ||
+                     AssetDatabase.GetAssetPath(source).StartsWith("Assets/Samples/"))
+                warnings.Add($"ScenarioRegistry prefab is from '{AssetDatabase.GetAssetPath(source)}' — create a user prefab variant in your own Assets folder");
 
-            // b) All registered scenes present in Build Settings
+            // b) Consistency between ScenarioRegistry and Build Settings (bi-directional)
             var buildSceneNames = EditorBuildSettings.scenes
                 .Select(s => Path.GetFileNameWithoutExtension(s.path))
                 .ToHashSet();
+            var registrySceneNames = registry.Scenarios
+                .Select(s => s.scenarioSceneName)
+                .ToHashSet();
+
             foreach (var s in registry.Scenarios)
                 if (!buildSceneNames.Contains(s.scenarioSceneName))
-                    errors.Add($"Scene '{s.scenarioSceneName}' (scenario '{s.scenarioName}') is missing from Build Settings");
+                    errors.Add($"Scene '{s.scenarioSceneName}' (scenario '{s.scenarioName}') is in ScenarioRegistry but missing from Build Settings");
+
+            foreach (var buildName in buildSceneNames)
+                if (buildName != "VRTLoginManager" && !registrySceneNames.Contains(buildName))
+                    warnings.Add($"Scene '{buildName}' is in Build Settings but not registered in ScenarioRegistry");
 
             var allIssues = warnings.Concat(errors).ToList();
             return new CheckResult
