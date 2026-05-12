@@ -314,19 +314,6 @@ namespace VRT.Tools
                 }
             }
 
-            string xrHandsRoot = Path.Combine(Application.dataPath, "Samples", "XR Hands");
-            if (!Directory.Exists(xrHandsRoot))
-            {
-                missing.Add("XR Hands samples folder absent — import via Package Manager → XR Hands → Samples");
-            }
-            else
-            {
-                bool found = Directory.GetDirectories(xrHandsRoot)
-                    .Any(v => Directory.Exists(Path.Combine(v, "HandVisualizer")));
-                if (!found)
-                    missing.Add("XR Hands 'HandVisualizer' not imported — Package Manager → XR Hands → Samples → HandVisualizer → Import");
-            }
-
             if (!Directory.Exists(Path.Combine(Application.dataPath, "TextMesh Pro")))
                 missing.Add("TMP Essentials missing — Window → TextMeshPro → Import TMP Essential Resources");
 
