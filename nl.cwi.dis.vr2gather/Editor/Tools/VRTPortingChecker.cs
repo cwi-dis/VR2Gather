@@ -438,24 +438,52 @@ namespace VRT.Tools
 
         protected override CheckResult RunInScene(Scene scene)
         {
-            var type = Type.GetType(
+            var interactableType = Type.GetType(
                 "UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.BaseTeleportationInteractable, Unity.XR.Interaction.Toolkit");
-            if (type == null)
+            if (interactableType == null)
                 return new CheckResult { Status = CheckStatus.Skipped, Summary = "XRI not installed" };
 
-            var wrong = AllObjects(scene)
-                .Where(go => go.GetComponent(type) != null && go.layer != 31)
-                .ToList();
+            // Look up the "Teleport" XRI interaction layer index by name
+            var maskType = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.InteractionLayerMask, Unity.XR.Interaction.Toolkit");
+            var nameToLayer = maskType?.GetMethod("NameToLayer",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            int teleportIdx = nameToLayer != null ? (int)nameToLayer.Invoke(null, new object[] { "Teleport" }) : -1;
 
-            if (wrong.Count == 0)
-                return new CheckResult { Status = CheckStatus.OK, Summary = "All teleportation areas on layer 31" };
+            if (teleportIdx < 0)
+                return new CheckResult
+                {
+                    Status = CheckStatus.Warning,
+                    Summary = "'Teleport' interaction layer not defined in this project",
+                    Details = new List<string> { "Define a 'Teleport' interaction layer in Edit → Project Settings → XR Interaction Toolkit" },
+                };
+
+            uint teleportBit = 1u << teleportIdx;
+            var issues = new List<string>();
+            var issueObjects = new List<GameObject>();
+
+            foreach (var go in AllObjects(scene))
+            {
+                var comp = go.GetComponent(interactableType) as Component;
+                if (comp == null) continue;
+                var so = new SerializedObject(comp);
+                var bits = so.FindProperty("m_InteractionLayerMask.m_Bits");
+                if (bits != null && ((uint)bits.longValue & teleportBit) == 0)
+                {
+                    issues.Add($"{go.name} — 'Teleport' interaction layer not set (bits: {bits.longValue})");
+                    issueObjects.Add(go);
+                }
+            }
+
+            if (issues.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "All teleportation areas have 'Teleport' interaction layer" };
 
             return new CheckResult
             {
                 Status = CheckStatus.Error,
-                Summary = $"{wrong.Count} teleportation area(s) not on layer 31 (Teleport)",
-                Details = wrong.Select(go => $"[layer {go.layer}] {go.name}").ToList(),
-                SelectAction = () => Selection.objects = wrong.Cast<UnityEngine.Object>().ToArray(),
+                Summary = $"{issues.Count} teleportation area(s) missing 'Teleport' interaction layer",
+                Details = issues,
+                SelectAction = () => Selection.objects = issueObjects.Cast<UnityEngine.Object>().ToArray(),
             };
         }
     }
