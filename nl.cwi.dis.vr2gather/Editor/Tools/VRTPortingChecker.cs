@@ -187,8 +187,23 @@ namespace VRT.Tools
             if (check.Result.Details != null && check.Result.Details.Count > 0)
             {
                 EditorGUI.indentLevel += 2;
-                foreach (var d in check.Result.Details)
-                    EditorGUILayout.LabelField(d, EditorStyles.wordWrappedMiniLabel);
+                for (int i = 0; i < check.Result.Details.Count; i++)
+                {
+                    var selectAction = check.Result.DetailSelectActions != null && i < check.Result.DetailSelectActions.Count
+                        ? check.Result.DetailSelectActions[i] : null;
+                    if (selectAction != null)
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField(check.Result.Details[i], EditorStyles.wordWrappedMiniLabel);
+                        if (GUILayout.Button("Select", GUILayout.Width(50)))
+                            selectAction();
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    else
+                    {
+                        EditorGUILayout.LabelField(check.Result.Details[i], EditorStyles.wordWrappedMiniLabel);
+                    }
+                }
                 EditorGUI.indentLevel -= 2;
             }
         }
@@ -205,6 +220,7 @@ namespace VRT.Tools
         public CheckStatus Status = CheckStatus.NotRun;
         public string Summary;
         public List<string> Details;
+        public List<Action> DetailSelectActions; // parallel to Details; null entry = no button for that line
         public Action FixAction;
         public Action SelectAction;
         public Action OpenAction;
@@ -709,8 +725,10 @@ namespace VRT.Tools
             var teleportType = Type.GetType(
                 "UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.BaseTeleportationInteractable, Unity.XR.Interaction.Toolkit");
 
-            var warnings = new List<string>();
-            var warnObjects = new List<GameObject>();
+            var details       = new List<string>();
+            var detailSelects = new List<Action>();
+            var allBadObjects = new List<GameObject>();
+            int errorCount    = 0;
 
             foreach (var go in AllObjects(scene))
             {
@@ -718,19 +736,33 @@ namespace VRT.Tools
                 if (teleportType != null && go.GetComponent(teleportType) != null) continue;
                 if (PortingCheckerUtil.IsDerivedFromAny(go, "PFB_Grabbable", "PFB_Trigger")) continue;
 
-                warnings.Add($"{go.name} — has XRI interactable but is not derived from PFB_Grabbable or PFB_Trigger");
-                warnObjects.Add(go);
+                allBadObjects.Add(go);
+                var captured = go;
+                if (PrefabUtility.IsPartOfPrefabInstance(go))
+                {
+                    details.Add($"{go.name} — interactable is part of a non-VR2Gather prefab");
+                }
+                else
+                {
+                    details.Add($"{go.name} — interactable is not part of any prefab (will block future automated porting)");
+                    errorCount++;
+                }
+                detailSelects.Add(() => Selection.activeGameObject = captured);
             }
 
-            if (warnings.Count == 0)
+            if (details.Count == 0)
                 return new CheckResult { Status = CheckStatus.OK, Summary = "All interactables follow VR2Gather conventions" };
 
+            int warnCount = details.Count - errorCount;
             return new CheckResult
             {
-                Status = CheckStatus.Warning,
-                Summary = $"{warnings.Count} interactable(s) not derived from a VR2Gather base prefab",
-                Details = warnings,
-                SelectAction = () => Selection.objects = warnObjects.Cast<UnityEngine.Object>().ToArray(),
+                Status = errorCount > 0 ? CheckStatus.Error : CheckStatus.Warning,
+                Summary = errorCount > 0
+                    ? $"{errorCount} bare interactable(s) (not in any prefab); {warnCount} in non-VR2Gather prefab(s)"
+                    : $"{warnCount} interactable(s) in non-VR2Gather prefab(s)",
+                Details = details,
+                DetailSelectActions = detailSelects,
+                SelectAction = () => Selection.objects = allBadObjects.Cast<UnityEngine.Object>().ToArray(),
             };
         }
     }
