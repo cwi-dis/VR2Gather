@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VRT.Login;
 
 namespace VRT.Tools
@@ -15,6 +17,9 @@ namespace VRT.Tools
 
         List<PortingCheck> _checks;
         Vector2 _scroll;
+        string[] _sceneNames = new string[0];
+        string[] _scenePaths = new string[0];
+        int _selectedScene = -1;
 
         void OnEnable()
         {
@@ -24,19 +29,54 @@ namespace VRT.Tools
                 new InputActionsCheck(),
                 new ScenarioRegistryCheck(),
                 new OrchestratorRefCheck(),
-                new DeferredCheck("Physics Layers",     CheckCategory.Scene),
-                new DeferredCheck("Teleport Layer",     CheckCategory.Scene),
-                new DeferredCheck("Interaction Layers", CheckCategory.Scene),
-                new DeferredCheck("Teleportable Tag",   CheckCategory.Scene),
+                new PhysicsLayerCheck(),
+                new TeleportLayerCheck(),
+                new InteractionLayerCheck(),
+                new TeleportableTagCheck(),
             };
+            InitScenes();
+            EditorSceneManager.activeSceneChangedInEditMode += OnActiveSceneChanged;
+        }
+
+        void OnDisable()
+        {
+            EditorSceneManager.activeSceneChangedInEditMode -= OnActiveSceneChanged;
+        }
+
+        void OnActiveSceneChanged(Scene _, Scene __)
+        {
+            InitScenes();
+            Repaint();
+        }
+
+        void InitScenes()
+        {
+            var buildScenes = EditorBuildSettings.scenes;
+            _sceneNames = buildScenes.Select(s => Path.GetFileNameWithoutExtension(s.path)).ToArray();
+            _scenePaths = buildScenes.Select(s => s.path).ToArray();
+
+            string active = Path.GetFileNameWithoutExtension(EditorSceneManager.GetActiveScene().path);
+            int idx = Array.IndexOf(_sceneNames, active);
+            _selectedScene = idx >= 0 ? idx : (_sceneNames.Length > 0 ? 0 : -1);
+            UpdateSceneCheckTargets();
+        }
+
+        void UpdateSceneCheckTargets()
+        {
+            string path = _selectedScene >= 0 && _selectedScene < _scenePaths.Length
+                ? _scenePaths[_selectedScene] : null;
+            foreach (var c in _checks.OfType<SceneCheck>())
+                c.TargetScenePath = path;
         }
 
         void OnGUI()
         {
             if (GUILayout.Button("Run All Checks"))
+            {
+                UpdateSceneCheckTargets();
                 foreach (var c in _checks)
-                    if (!(c is DeferredCheck))
-                        c.RunAndStore();
+                    c.RunAndStore();
+            }
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
 
@@ -48,11 +88,54 @@ namespace VRT.Tools
                     current = check.Category;
                     EditorGUILayout.Space(4);
                     EditorGUILayout.LabelField(check.Category.ToString().ToUpper(), EditorStyles.boldLabel);
+                    if (current == CheckCategory.Scene)
+                        DrawScenePicker();
                 }
                 DrawRow(check);
             }
 
             EditorGUILayout.EndScrollView();
+        }
+
+        void DrawScenePicker()
+        {
+            if (_sceneNames.Length == 0)
+            {
+                EditorGUILayout.HelpBox("No scenes in Build Settings — add scenes to File → Build Settings first.", MessageType.Warning);
+                return;
+            }
+
+            string activeName = Path.GetFileNameWithoutExtension(EditorSceneManager.GetActiveScene().path);
+            bool activeInList = Array.IndexOf(_sceneNames, activeName) >= 0;
+
+            EditorGUILayout.BeginHorizontal();
+
+            Color prev = GUI.color;
+            if (!activeInList)
+            {
+                GUI.color = ColorWarning;
+                GUILayout.Label("Select VR2Gather scene:", GUILayout.Width(160));
+                GUI.color = prev;
+            }
+            else
+            {
+                GUILayout.Label("Scene:", GUILayout.Width(50));
+            }
+
+            int sel = _selectedScene >= 0 ? _selectedScene : 0;
+            int newSel = EditorGUILayout.Popup(sel, _sceneNames);
+            if (newSel != _selectedScene)
+            {
+                _selectedScene = newSel;
+                UpdateSceneCheckTargets();
+            }
+
+            bool loaded = _selectedScene >= 0 &&
+                EditorSceneManager.GetSceneByPath(_scenePaths[_selectedScene]).isLoaded;
+            if (!loaded && GUILayout.Button("Open", GUILayout.Width(50)))
+                EditorSceneManager.OpenScene(_scenePaths[_selectedScene]);
+
+            EditorGUILayout.EndHorizontal();
         }
 
         static readonly Color ColorOK      = new Color(0.3f, 0.9f, 0.3f);
@@ -62,9 +145,7 @@ namespace VRT.Tools
 
         void DrawRow(PortingCheck check)
         {
-            bool deferred = check is DeferredCheck;
             Color prev = GUI.color;
-
             EditorGUILayout.BeginHorizontal();
 
             string icon;
@@ -79,30 +160,25 @@ namespace VRT.Tools
 
             GUI.color = iconColor;
             GUILayout.Label(icon, GUILayout.Width(18));
-            GUI.color = deferred ? ColorGray : prev;
-            GUILayout.Label(check.Name, GUILayout.Width(160));
             GUI.color = prev;
+            GUILayout.Label(check.Name, GUILayout.Width(160));
 
-            if (deferred)
+            GUILayout.Label(check.Result.Summary ?? "", GUILayout.ExpandWidth(true));
+            if (check.Result.FixAction != null && GUILayout.Button("Fix", GUILayout.Width(36)))
+                check.Result.FixAction();
+            if (check.Result.SelectAction != null && GUILayout.Button("Select", GUILayout.Width(50)))
+                check.Result.SelectAction();
+            if (check.Result.OpenAction != null && GUILayout.Button(check.Result.OpenLabel ?? "Open", GUILayout.Width(80)))
+                check.Result.OpenAction();
+            if (GUILayout.Button("↺", GUILayout.Width(22)))
             {
-                GUI.color = ColorGray;
-                GUILayout.Label("(future)", GUILayout.ExpandWidth(true));
-                GUI.color = prev;
-            }
-            else
-            {
-                GUILayout.Label(check.Result.Summary ?? "", GUILayout.ExpandWidth(true));
-                if (check.Result.FixAction != null && GUILayout.Button("Fix", GUILayout.Width(36)))
-                    check.Result.FixAction();
-                if (check.Result.OpenAction != null && GUILayout.Button(check.Result.OpenLabel ?? "Open", GUILayout.Width(80)))
-                    check.Result.OpenAction();
-                if (GUILayout.Button("↺", GUILayout.Width(22)))
-                    check.RunAndStore();
+                UpdateSceneCheckTargets();
+                check.RunAndStore();
             }
 
             EditorGUILayout.EndHorizontal();
 
-            if (!deferred && check.Result.Details != null && check.Result.Details.Count > 0)
+            if (check.Result.Details != null && check.Result.Details.Count > 0)
             {
                 EditorGUI.indentLevel += 2;
                 foreach (var d in check.Result.Details)
@@ -123,8 +199,9 @@ namespace VRT.Tools
         public CheckStatus Status = CheckStatus.NotRun;
         public string Summary;
         public List<string> Details;
-        public System.Action FixAction;
-        public System.Action OpenAction;
+        public Action FixAction;
+        public Action SelectAction;
+        public Action OpenAction;
         public string OpenLabel;
     }
 
@@ -137,14 +214,33 @@ namespace VRT.Tools
         protected abstract CheckResult Run();
     }
 
-    class DeferredCheck : PortingCheck
+    abstract class SceneCheck : PortingCheck
     {
-        readonly string _name;
-        readonly CheckCategory _cat;
-        public DeferredCheck(string name, CheckCategory cat) { _name = name; _cat = cat; }
-        public override string Name => _name;
-        public override CheckCategory Category => _cat;
-        protected override CheckResult Run() => new CheckResult { Status = CheckStatus.Skipped };
+        public string TargetScenePath { get; set; }
+        public override CheckCategory Category => CheckCategory.Scene;
+
+        protected override CheckResult Run()
+        {
+            if (string.IsNullOrEmpty(TargetScenePath))
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "No scene selected" };
+
+            var scene = EditorSceneManager.GetSceneByPath(TargetScenePath);
+            if (!scene.isLoaded)
+                return new CheckResult
+                {
+                    Status = CheckStatus.Skipped,
+                    Summary = $"Open {Path.GetFileNameWithoutExtension(TargetScenePath)} to run this check",
+                };
+
+            return RunInScene(scene);
+        }
+
+        protected abstract CheckResult RunInScene(Scene scene);
+
+        protected static IEnumerable<GameObject> AllObjects(Scene scene) =>
+            scene.GetRootGameObjects()
+                 .SelectMany(r => r.GetComponentsInChildren<Transform>(true))
+                 .Select(t => t.gameObject);
     }
 
     // ── Global checks ────────────────────────────────────────────────────────────
@@ -192,7 +288,7 @@ namespace VRT.Tools
         protected override CheckResult Run()
         {
             EditorBuildSettings.TryGetConfigObject("com.unity.input.settings.actions", out UnityEngine.Object obj);
-            System.Action openSettings = () => SettingsService.OpenProjectSettings("Project/Input System Package");
+            Action openSettings = () => SettingsService.OpenProjectSettings("Project/Input System Package");
 
             if (obj == null)
                 return new CheckResult
@@ -240,7 +336,7 @@ namespace VRT.Tools
                     OpenLabel = "Open Scene",
                 };
 
-            var registry = Object.FindObjectsByType<ScenarioRegistry>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+            var registry = UnityEngine.Object.FindObjectsByType<ScenarioRegistry>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                                .FirstOrDefault();
             if (registry == null)
                 return new CheckResult { Status = CheckStatus.Error, Summary = "No ScenarioRegistry found in VRTLoginManager scene" };
@@ -308,6 +404,138 @@ namespace VRT.Tools
                 return new CheckResult { Status = CheckStatus.OK, Summary = "No OrchestratorController.Instance references" };
 
             return new CheckResult { Status = CheckStatus.Warning, Summary = $"{hits.Count} file(s) use old API", Details = hits };
+        }
+    }
+
+    // ── Scene checks ─────────────────────────────────────────────────────────────
+
+    class PhysicsLayerCheck : SceneCheck
+    {
+        public override string Name => "Physics Layers";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            var wrong = AllObjects(scene)
+                .Where(go => go.layer == 28 || go.layer == 29)
+                .ToList();
+
+            if (wrong.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "No objects on old VRT layers 28/29" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Error,
+                Summary = $"{wrong.Count} object(s) on layer 28 or 29 — should be Default (0)",
+                Details = wrong.Select(go => $"[layer {go.layer}] {PortingCheckerUtil.HierarchyPath(go)}").ToList(),
+                SelectAction = () => Selection.objects = wrong.Cast<UnityEngine.Object>().ToArray(),
+            };
+        }
+    }
+
+    class TeleportLayerCheck : SceneCheck
+    {
+        public override string Name => "Teleport Layer";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            var type = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.BaseTeleportationInteractable, Unity.XR.Interaction.Toolkit");
+            if (type == null)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "XRI not installed" };
+
+            var wrong = AllObjects(scene)
+                .Where(go => go.GetComponent(type) != null && go.layer != 31)
+                .ToList();
+
+            if (wrong.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "All teleportation areas on layer 31" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Error,
+                Summary = $"{wrong.Count} teleportation area(s) not on layer 31 (Teleport)",
+                Details = wrong.Select(go => $"[layer {go.layer}] {go.name}").ToList(),
+                SelectAction = () => Selection.objects = wrong.Cast<UnityEngine.Object>().ToArray(),
+            };
+        }
+    }
+
+    class InteractionLayerCheck : SceneCheck
+    {
+        public override string Name => "Interaction Layers";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            var type = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable, Unity.XR.Interaction.Toolkit");
+            if (type == null)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "XRI not installed" };
+
+            var issues = new List<string>();
+            var issueObjects = new List<GameObject>();
+
+            foreach (var go in AllObjects(scene))
+            {
+                var comp = go.GetComponent(type) as Component;
+                if (comp == null) continue;
+                var so = new SerializedObject(comp);
+                var bits = so.FindProperty("m_InteractionLayerMask.m_Bits");
+                if (bits != null && ((uint)bits.longValue & 14u) != 0)
+                {
+                    issues.Add($"{go.name} — interaction layer bits: {bits.longValue} (bits 2/4/8 set)");
+                    issueObjects.Add(go);
+                }
+            }
+
+            if (issues.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "No old interaction layer bits found" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Error,
+                Summary = $"{issues.Count} interactable(s) have old interaction layer bits",
+                Details = issues,
+                SelectAction = () => Selection.objects = issueObjects.Cast<UnityEngine.Object>().ToArray(),
+            };
+        }
+    }
+
+    class TeleportableTagCheck : SceneCheck
+    {
+        public override string Name => "Teleportable Tag";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            if (!UnityEditorInternal.InternalEditorUtility.tags.Contains("Teleportable"))
+                return new CheckResult { Status = CheckStatus.OK, Summary = "Tag 'Teleportable' not defined" };
+
+            var tagged = AllObjects(scene)
+                .Where(go => { try { return go.CompareTag("Teleportable"); } catch { return false; } })
+                .ToList();
+
+            if (tagged.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "No objects tagged 'Teleportable'" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Warning,
+                Summary = $"{tagged.Count} object(s) have old 'Teleportable' tag — review these",
+                Details = tagged.Select(go => go.name).ToList(),
+                SelectAction = () => Selection.objects = tagged.Cast<UnityEngine.Object>().ToArray(),
+            };
+        }
+    }
+
+    // ── Utilities ────────────────────────────────────────────────────────────────
+
+    static class PortingCheckerUtil
+    {
+        public static string HierarchyPath(GameObject go)
+        {
+            string path = go.name;
+            var t = go.transform.parent;
+            while (t != null) { path = t.name + "/" + path; t = t.parent; }
+            return path;
         }
     }
 }
