@@ -551,7 +551,7 @@ namespace VRT.Tools
                 var comp = go.GetComponent(interactableType) as Component;
                 if (comp == null) continue;
                 var so = new SerializedObject(comp);
-                var bits = so.FindProperty("m_InteractionLayerMask.m_Bits");
+                var bits = so.FindProperty("m_InteractionLayers.m_Bits");
                 if (bits != null && ((uint)bits.longValue & teleportBit) == 0)
                 {
                     issues.Add($"{go.name} — XRI interaction layer 31 (Teleport) not set (mask: {bits.longValue})");
@@ -591,7 +591,7 @@ namespace VRT.Tools
                 var comp = go.GetComponent(type) as Component;
                 if (comp == null) continue;
                 var so = new SerializedObject(comp);
-                var bits = so.FindProperty("m_InteractionLayerMask.m_Bits");
+                var bits = so.FindProperty("m_InteractionLayers.m_Bits");
                 if (bits != null && ((uint)bits.longValue & 14u) != 0)
                 {
                     issues.Add($"{go.name} — interaction layer bits: {bits.longValue} (bits 2/4/8 set)");
