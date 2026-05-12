@@ -304,13 +304,26 @@ namespace VRT.Tools
             }
             else
             {
-                foreach (var sample in new[] { "Starter Assets", "Hands Interaction Demo", "World Space UI" })
+                foreach (var sample in new[] { "Starter Assets", "Hands Interaction Demo" })
                 {
                     bool found = Directory.GetDirectories(xritRoot)
                         .Any(v => Directory.Exists(Path.Combine(v, sample)));
                     if (!found)
                         missing.Add($"XRIT '{sample}' not imported — Package Manager → XR Interaction Toolkit → Samples → {sample} → Import");
                 }
+            }
+
+            string xrHandsRoot = Path.Combine(Application.dataPath, "Samples", "XR Hands");
+            if (!Directory.Exists(xrHandsRoot))
+            {
+                missing.Add("XR Hands samples folder absent — import via Package Manager → XR Hands → Samples");
+            }
+            else
+            {
+                bool found = Directory.GetDirectories(xrHandsRoot)
+                    .Any(v => Directory.Exists(Path.Combine(v, "HandVisualizer")));
+                if (!found)
+                    missing.Add("XR Hands 'HandVisualizer' not imported — Package Manager → XR Hands → Samples → HandVisualizer → Import");
             }
 
             if (!Directory.Exists(Path.Combine(Application.dataPath, "TextMesh Pro")))
