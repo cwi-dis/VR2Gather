@@ -25,6 +25,7 @@ namespace VRT.Tools
         {
             _checks = new List<PortingCheck>
             {
+                new VR2GatherSamplesVersionCheck(),
                 new RequiredSamplesCheck(),
                 new InputActionsCheck(),
                 new ScenarioRegistryCheck(),
@@ -246,6 +247,44 @@ namespace VRT.Tools
     }
 
     // ── Global checks ────────────────────────────────────────────────────────────
+
+    class VR2GatherSamplesVersionCheck : PortingCheck
+    {
+        public override string Name => "VR2Gather Samples";
+        public override CheckCategory Category => CheckCategory.Global;
+
+        protected override CheckResult Run()
+        {
+            var info = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(VRTPortingCheckerWindow).Assembly);
+            if (info == null)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "Could not determine VR2Gather package version" };
+
+            string packageVersion = info.version;
+            string samplesRoot = Path.Combine(Application.dataPath, "Samples", "VR2Gather");
+
+            if (!Directory.Exists(samplesRoot) || Directory.GetDirectories(samplesRoot).Length == 0)
+                return new CheckResult
+                {
+                    Status = CheckStatus.Error,
+                    Summary = $"VR2Gather samples not imported (package is v{packageVersion})",
+                    Details = new List<string> { "Import via Package Manager → VR2Gather → Samples → VRTAssets → Import" },
+                };
+
+            bool currentVersionPresent = Directory.GetDirectories(samplesRoot)
+                .Any(d => Path.GetFileName(d) == packageVersion);
+
+            if (currentVersionPresent)
+                return new CheckResult { Status = CheckStatus.OK, Summary = $"VR2Gather samples v{packageVersion} present" };
+
+            string installed = string.Join(", ", Directory.GetDirectories(samplesRoot).Select(d => Path.GetFileName(d)));
+            return new CheckResult
+            {
+                Status = CheckStatus.Error,
+                Summary = $"VR2Gather samples version mismatch — installed: {installed}, package: v{packageVersion}",
+                Details = new List<string> { "Re-import VR2Gather samples: Package Manager → VR2Gather → Samples → VRTAssets → Import" },
+            };
+        }
+    }
 
     class RequiredSamplesCheck : PortingCheck
     {
