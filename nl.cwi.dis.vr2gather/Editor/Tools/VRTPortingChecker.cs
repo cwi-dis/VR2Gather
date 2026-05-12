@@ -28,6 +28,7 @@ namespace VRT.Tools
                 new VR2GatherSamplesVersionCheck(),
                 new RequiredSamplesCheck(),
                 new InputActionsCheck(),
+                new TeleportInteractionLayerCheck(),
                 new ScenarioRegistryCheck(),
                 new OrchestratorRefCheck(),
                 new SceneSetupCheck(),
@@ -369,6 +370,38 @@ namespace VRT.Tools
         }
     }
 
+    class TeleportInteractionLayerCheck : PortingCheck
+    {
+        public override string Name => "Teleport XRI Layer";
+        public override CheckCategory Category => CheckCategory.Global;
+
+        protected override CheckResult Run()
+        {
+            var maskType = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.InteractionLayerMask, Unity.XR.Interaction.Toolkit");
+            if (maskType == null)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "XRI not installed" };
+
+            var layerToName = maskType.GetMethod("LayerToName",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            string name = layerToName != null ? (string)layerToName.Invoke(null, new object[] { 31 }) : null;
+
+            Action openSettings = () => SettingsService.OpenProjectSettings("Project/XR Interaction Toolkit");
+
+            if (string.IsNullOrEmpty(name) || name != "Teleport")
+                return new CheckResult
+                {
+                    Status = CheckStatus.Error,
+                    Summary = $"XRI interaction layer 31 is '{name ?? "(empty)"}', expected 'Teleport'",
+                    Details = new List<string> { "Set interaction layer 31 to 'Teleport' in Edit → Project Settings → XR Interaction Toolkit" },
+                    OpenAction = openSettings,
+                    OpenLabel = "Open Settings",
+                };
+
+            return new CheckResult { Status = CheckStatus.OK, Summary = "XRI interaction layer 31 is 'Teleport'" };
+        }
+    }
+
     class ScenarioRegistryCheck : PortingCheck
     {
         public override string Name => "Scenario Registry";
@@ -522,22 +555,7 @@ namespace VRT.Tools
             if (interactableType == null)
                 return new CheckResult { Status = CheckStatus.Skipped, Summary = "XRI not installed" };
 
-            // Look up the "Teleport" XRI interaction layer index by name
-            var maskType = Type.GetType(
-                "UnityEngine.XR.Interaction.Toolkit.InteractionLayerMask, Unity.XR.Interaction.Toolkit");
-            var nameToLayer = maskType?.GetMethod("NameToLayer",
-                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            int teleportIdx = nameToLayer != null ? (int)nameToLayer.Invoke(null, new object[] { "Teleport" }) : -1;
-
-            if (teleportIdx < 0)
-                return new CheckResult
-                {
-                    Status = CheckStatus.Warning,
-                    Summary = "'Teleport' interaction layer not defined in this project",
-                    Details = new List<string> { "Define a 'Teleport' interaction layer in Edit → Project Settings → XR Interaction Toolkit" },
-                };
-
-            uint teleportBit = 1u << teleportIdx;
+            const uint teleportBit = 1u << 31;
             var issues = new List<string>();
             var issueObjects = new List<GameObject>();
 
@@ -549,18 +567,18 @@ namespace VRT.Tools
                 var bits = so.FindProperty("m_InteractionLayerMask.m_Bits");
                 if (bits != null && ((uint)bits.longValue & teleportBit) == 0)
                 {
-                    issues.Add($"{go.name} — 'Teleport' interaction layer not set (bits: {bits.longValue})");
+                    issues.Add($"{go.name} — XRI interaction layer 31 (Teleport) not set (mask: {bits.longValue})");
                     issueObjects.Add(go);
                 }
             }
 
             if (issues.Count == 0)
-                return new CheckResult { Status = CheckStatus.OK, Summary = "All teleportation areas have 'Teleport' interaction layer" };
+                return new CheckResult { Status = CheckStatus.OK, Summary = "All teleportation areas have interaction layer 31 (Teleport)" };
 
             return new CheckResult
             {
                 Status = CheckStatus.Error,
-                Summary = $"{issues.Count} teleportation area(s) missing 'Teleport' interaction layer",
+                Summary = $"{issues.Count} teleportation area(s) missing interaction layer 31 (Teleport)",
                 Details = issues,
                 SelectAction = () => Selection.objects = issueObjects.Cast<UnityEngine.Object>().ToArray(),
             };
