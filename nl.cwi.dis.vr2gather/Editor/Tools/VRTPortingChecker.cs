@@ -7,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRT.Login;
+using VRT.Pilots.Common;
 
 namespace VRT.Tools
 {
@@ -31,6 +32,7 @@ namespace VRT.Tools
                 new TeleportInteractionLayerCheck(),
                 new ScenarioRegistryCheck(),
                 new OrchestratorRefCheck(),
+                new PilotControllerCheck(),
                 new SceneSetupCheck(),
                 new PhysicsLayerCheck(),
                 new TeleportLayerCheck(),
@@ -484,6 +486,61 @@ namespace VRT.Tools
     }
 
     // ── Scene checks ─────────────────────────────────────────────────────────────
+
+    class PilotControllerCheck : SceneCheck
+    {
+        public override string Name => "Pilot Controller";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            var controllers = AllObjects(scene)
+                .Select(go => go.GetComponent<PilotController>())
+                .Where(c => c != null)
+                .ToList();
+
+            if (controllers.Count == 0)
+                return new CheckResult { Status = CheckStatus.Warning, Summary = "No PilotController found in scene" };
+
+            if (controllers.Count > 1)
+                return new CheckResult
+                {
+                    Status = CheckStatus.Error,
+                    Summary = $"{controllers.Count} PilotControllers found — exactly one expected",
+                    Details = controllers.Select(c => $"{c.gameObject.name} ({c.GetType().Name})").ToList(),
+                    SelectAction = () => Selection.objects = controllers.Select(c => (UnityEngine.Object)c.gameObject).ToArray(),
+                };
+
+            var issues = new List<string>();
+            var issueObjects = new List<GameObject>();
+
+            foreach (var controller in controllers)
+            {
+                var so = new SerializedObject(controller);
+                bool configMissing = so.FindProperty("configurationPrefab")?.objectReferenceValue == null;
+                bool orchMissing   = so.FindProperty("orchestratorPrefab")?.objectReferenceValue == null;
+
+                if (configMissing || orchMissing)
+                {
+                    var missing = new List<string>();
+                    if (configMissing) missing.Add("configurationPrefab");
+                    if (orchMissing)   missing.Add("orchestratorPrefab");
+                    issues.Add($"{controller.gameObject.name} ({controller.GetType().Name}) — {string.Join(", ", missing)} not set");
+                    issueObjects.Add(controller.gameObject);
+                }
+            }
+
+            if (issues.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = $"{controllers.Count} PilotController(s) have required prefabs set" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Error,
+                Summary = $"{issues.Count} PilotController(s) missing required prefab references",
+                Details = issues,
+                SelectAction = () => Selection.objects = issueObjects.Cast<UnityEngine.Object>().ToArray(),
+            };
+        }
+    }
 
     class SceneSetupCheck : SceneCheck
     {
