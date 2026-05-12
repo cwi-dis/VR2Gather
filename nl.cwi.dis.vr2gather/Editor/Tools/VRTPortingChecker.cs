@@ -29,10 +29,12 @@ namespace VRT.Tools
                 new InputActionsCheck(),
                 new ScenarioRegistryCheck(),
                 new OrchestratorRefCheck(),
+                new SceneSetupCheck(),
                 new PhysicsLayerCheck(),
                 new TeleportLayerCheck(),
                 new InteractionLayerCheck(),
                 new TeleportableTagCheck(),
+                new InteractableConventionCheck(),
             };
             InitScenes();
             EditorSceneManager.activeSceneChangedInEditMode += OnActiveSceneChanged;
@@ -409,6 +411,29 @@ namespace VRT.Tools
 
     // ── Scene checks ─────────────────────────────────────────────────────────────
 
+    class SceneSetupCheck : SceneCheck
+    {
+        public override string Name => "Scene Setup";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            bool hasFull = AllObjects(scene).Any(go => PortingCheckerUtil.IsDerivedFromAny(go, "Tool_scenesetup"));
+            if (hasFull)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "Tool_scenesetup present" };
+
+            bool hasSolo = AllObjects(scene).Any(go => PortingCheckerUtil.IsDerivedFromAny(go, "Tool_scenesetup_solo"));
+            if (hasSolo)
+                return new CheckResult { Status = CheckStatus.Warning, Summary = "Scene uses Tool_scenesetup_solo — solo-only, no networking" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Error,
+                Summary = "No Tool_scenesetup (or variant) found in scene",
+                Details = new List<string> { "Every VR2Gather scene requires the Tool_scenesetup prefab — add it from the VR2Gather package" },
+            };
+        }
+    }
+
     class PhysicsLayerCheck : SceneCheck
     {
         public override string Name => "Physics Layers";
@@ -554,6 +579,46 @@ namespace VRT.Tools
         }
     }
 
+    class InteractableConventionCheck : SceneCheck
+    {
+        public override string Name => "Interactable Conventions";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            var baseType = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable, Unity.XR.Interaction.Toolkit");
+            if (baseType == null)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "XRI not installed" };
+
+            var teleportType = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.BaseTeleportationInteractable, Unity.XR.Interaction.Toolkit");
+
+            var warnings = new List<string>();
+            var warnObjects = new List<GameObject>();
+
+            foreach (var go in AllObjects(scene))
+            {
+                if (go.GetComponent(baseType) == null) continue;
+                if (teleportType != null && go.GetComponent(teleportType) != null) continue;
+                if (PortingCheckerUtil.IsDerivedFromAny(go, "PFB_Grabbable", "PFB_Trigger")) continue;
+
+                warnings.Add($"{go.name} — has XRI interactable but is not derived from PFB_Grabbable or PFB_Trigger");
+                warnObjects.Add(go);
+            }
+
+            if (warnings.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "All interactables follow VR2Gather conventions" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Warning,
+                Summary = $"{warnings.Count} interactable(s) not derived from a VR2Gather base prefab",
+                Details = warnings,
+                SelectAction = () => Selection.objects = warnObjects.Cast<UnityEngine.Object>().ToArray(),
+            };
+        }
+    }
+
     // ── Utilities ────────────────────────────────────────────────────────────────
 
     static class PortingCheckerUtil
@@ -564,6 +629,18 @@ namespace VRT.Tools
             var t = go.transform.parent;
             while (t != null) { path = t.name + "/" + path; t = t.parent; }
             return path;
+        }
+
+        public static bool IsDerivedFromAny(GameObject go, params string[] baseNames)
+        {
+            var nameSet = new HashSet<string>(baseNames);
+            var source = PrefabUtility.GetCorrespondingObjectFromSource(go);
+            while (source != null)
+            {
+                if (nameSet.Contains(source.name)) return true;
+                source = PrefabUtility.GetCorrespondingObjectFromSource(source);
+            }
+            return false;
         }
     }
 }
