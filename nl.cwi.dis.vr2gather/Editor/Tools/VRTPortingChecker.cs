@@ -255,7 +255,9 @@ namespace VRT.Tools
 
         protected override CheckResult Run()
         {
-            var info = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(VRTPortingCheckerWindow).Assembly);
+            // Use a runtime type with an explicit asmdef (VRT.Login) rather than the
+            // Tools editor scripts which have no asmdef and resolve to the default assembly.
+            var info = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(ScenarioRegistry).Assembly);
             if (info == null)
                 return new CheckResult { Status = CheckStatus.Skipped, Summary = "Could not determine VR2Gather package version" };
 
