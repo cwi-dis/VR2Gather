@@ -32,8 +32,9 @@ namespace VRT.Tools
                 new TeleportInteractionLayerCheck(),
                 new ScenarioRegistryCheck(),
                 new OrchestratorRefCheck(),
-                new PilotControllerCheck(),
                 new SceneSetupCheck(),
+                new SoloPlayerCheck(),
+                new PilotControllerCheck(),
                 new PhysicsLayerCheck(),
                 new TeleportLayerCheck(),
                 new InteractionLayerCheck(),
@@ -77,12 +78,17 @@ namespace VRT.Tools
 
         void OnGUI()
         {
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Run All Checks"))
             {
                 UpdateSceneCheckTargets();
                 foreach (var c in _checks)
                     c.RunAndStore();
+                LogReport();
             }
+            if (GUILayout.Button("Log Report", GUILayout.Width(90)))
+                LogReport();
+            EditorGUILayout.EndHorizontal();
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
 
@@ -101,6 +107,43 @@ namespace VRT.Tools
             }
 
             EditorGUILayout.EndScrollView();
+        }
+
+        void LogReport()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("=== VR2Gather Porting Check Report ===");
+            CheckCategory? current = null;
+            foreach (var check in _checks)
+            {
+                if (check.Category != current)
+                {
+                    current = check.Category;
+                    sb.AppendLine($"[{check.Category.ToString().ToUpper()}]");
+                }
+                string icon = check.Result.Status switch
+                {
+                    CheckStatus.OK      => "OK     ",
+                    CheckStatus.Warning => "WARN   ",
+                    CheckStatus.Error   => "ERROR  ",
+                    CheckStatus.Skipped => "SKIP   ",
+                    _                   => "NOTRUN ",
+                };
+                sb.AppendLine($"  {icon} {check.Name}: {check.Result.Summary ?? "(no result)"}");
+                if (check.Result.Details != null)
+                    foreach (var d in check.Result.Details)
+                        sb.AppendLine($"           {d}");
+            }
+            sb.Append("=== End Report ===");
+            string report = sb.ToString();
+            bool hasError   = _checks.Any(c => c.Result.Status == CheckStatus.Error);
+            bool hasWarning = _checks.Any(c => c.Result.Status == CheckStatus.Warning);
+            if (hasError)
+                Debug.LogError(report);
+            else if (hasWarning)
+                Debug.LogWarning(report);
+            else
+                Debug.Log(report);
         }
 
         void DrawScenePicker()
@@ -281,6 +324,12 @@ namespace VRT.Tools
                 return new CheckResult { Status = CheckStatus.Skipped, Summary = "Could not determine VR2Gather package version" };
 
             string packageVersion = info.version;
+
+            // In VRTApp-Develop the package assets live directly at Assets/VRTAssets rather
+            // than being imported as samples — treat that as equivalent to samples being present.
+            if (Directory.Exists(Path.Combine(Application.dataPath, "VRTAssets")))
+                return new CheckResult { Status = CheckStatus.OK, Summary = $"Development project: VRTAssets present in Assets (package v{packageVersion})" };
+
             string samplesRoot = Path.Combine(Application.dataPath, "Samples", "VR2Gather");
 
             if (!Directory.Exists(samplesRoot) || Directory.GetDirectories(samplesRoot).Length == 0)
@@ -438,13 +487,19 @@ namespace VRT.Tools
             var errors = new List<string>();
             var warnings = new List<string>();
 
-            // a) User prefab variant check — prefab must live in Assets/, not in Packages/ or Assets/Samples/
-            var source = PrefabUtility.GetCorrespondingObjectFromSource(registry.gameObject);
-            if (source == null)
-                warnings.Add("ScenarioRegistry is not a prefab instance — save it as a prefab variant in your own Assets folder");
-            else if (!AssetDatabase.GetAssetPath(source).StartsWith("Assets/") ||
-                     AssetDatabase.GetAssetPath(source).StartsWith("Assets/Samples/"))
-                warnings.Add($"ScenarioRegistry prefab is from '{AssetDatabase.GetAssetPath(source)}' — create a user prefab variant in your own Assets folder");
+            // a) User prefab variant check — prefab must live in Assets/, not in Packages/ or Assets/Samples/.
+            //    Skip in the VR2Gather development project (Assets/VRTAssets present), where using
+            //    the package prefab directly is correct.
+            bool isDevProject = Directory.Exists(Path.Combine(Application.dataPath, "VRTAssets"));
+            if (!isDevProject)
+            {
+                var source = PrefabUtility.GetCorrespondingObjectFromSource(registry.gameObject);
+                if (source == null)
+                    warnings.Add("ScenarioRegistry is not a prefab instance — save it as a prefab variant in your own Assets folder");
+                else if (!AssetDatabase.GetAssetPath(source).StartsWith("Assets/") ||
+                         AssetDatabase.GetAssetPath(source).StartsWith("Assets/Samples/"))
+                    warnings.Add($"ScenarioRegistry prefab is from '{AssetDatabase.GetAssetPath(source)}' — create a user prefab variant in your own Assets folder");
+            }
 
             // b) Consistency between ScenarioRegistry and Build Settings (bi-directional)
             var buildSceneNames = EditorBuildSettings.scenes
@@ -509,6 +564,9 @@ namespace VRT.Tools
 
         protected override CheckResult RunInScene(Scene scene)
         {
+            if (AllObjects(scene).Any(go => PortingCheckerUtil.IsDerivedFromAny(go, "Tool_scenesetup_solo")))
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "Solo scene — prefab refs not required (see Solo Player check)" };
+
             var controllers = AllObjects(scene)
                 .Select(go => go.GetComponent<PilotController>())
                 .Where(c => c != null)
@@ -570,7 +628,7 @@ namespace VRT.Tools
 
             bool hasSolo = AllObjects(scene).Any(go => PortingCheckerUtil.IsDerivedFromAny(go, "Tool_scenesetup_solo"));
             if (hasSolo)
-                return new CheckResult { Status = CheckStatus.Warning, Summary = "Scene uses Tool_scenesetup_solo — solo-only, no networking" };
+                return new CheckResult { Status = CheckStatus.OK, Summary = "Scene uses Tool_scenesetup_solo — solo-only, no networking" };
 
             return new CheckResult
             {
@@ -578,6 +636,37 @@ namespace VRT.Tools
                 Summary = "No Tool_scenesetup (or variant) found in scene",
                 Details = new List<string> { "Every VR2Gather scene requires the Tool_scenesetup prefab — add it from the VR2Gather package" },
             };
+        }
+    }
+
+    class SoloPlayerCheck : SceneCheck
+    {
+        public override string Name => "Solo Player";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            bool isSolo = AllObjects(scene).Any(go => PortingCheckerUtil.IsDerivedFromAny(go, "Tool_scenesetup_solo"));
+            if (!isSolo)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "Not a solo scene" };
+
+            var players = AllObjects(scene)
+                .Where(go => PortingCheckerUtil.IsDerivedFromAny(go, "P_Self_Player"))
+                .ToList();
+
+            if (players.Count == 0)
+                return new CheckResult { Status = CheckStatus.Error, Summary = "Solo scene has no P_Self_Player instance" };
+
+            var inactive = players.Where(go => !go.activeInHierarchy).ToList();
+            if (inactive.Count > 0)
+                return new CheckResult
+                {
+                    Status = CheckStatus.Warning,
+                    Summary = $"{inactive.Count} P_Self_Player instance(s) present but inactive",
+                    Details = inactive.Select(go => PortingCheckerUtil.HierarchyPath(go)).ToList(),
+                    SelectAction = () => Selection.objects = inactive.Cast<UnityEngine.Object>().ToArray(),
+                };
+
+            return new CheckResult { Status = CheckStatus.OK, Summary = $"{players.Count} P_Self_Player instance(s) present and active" };
         }
     }
 
