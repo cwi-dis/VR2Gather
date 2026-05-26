@@ -18,6 +18,8 @@ VR2Gather is a Unity package (`nl.cwi.dis.vr2gather`) for collaborative networke
 
 ## Build and Development Commands
 
+> **Note:** This section may be outdated — verify before relying on it.
+
 **Building** (from repo root):
 ```bash
 ./build-VR2Gather.sh          # Builds for current platform
@@ -52,12 +54,12 @@ VR2Gather diverges from standard Unity VR in important ways (see `Documentation/
 
 ### Package Structure (`nl.cwi.dis.vr2gather/Runtime/`)
 
-16 assembly modules with clear dependency layers (bottom-up):
+17 assembly modules with clear dependency layers (bottom-up):
 
 | Layer | Assemblies |
 |-------|-----------|
-| Foundation | `VRTCore`, `VRTInitializer`, `VRTProfiler`, `VRTDeprecated` |
-| Framework | `VRTCommon` (48 files), `VRTOrchestrator` |
+| Foundation | `VRTCore`, `VRTInitializer`, `VRTProfiler` |
+| Framework | `VRTCommon`, `VRTOrchestrator`, `VRTOrchestratorComm`, `VRTOrchestratorImplementation` |
 | User representation | `VRTUserPointClouds`, `VRTUserVoice`, `VRTUserWebCam` |
 | Transport | `VRTTransportDash`, `VRTTransportSocketIO`, `VRTTransportTCP`, `VRTTransportTCPReflector`, `VRTTransportWebRTC` |
 | Features | `VRTLogin`, `VRTVideo` |
@@ -117,7 +119,6 @@ See `Documentation/10-createnew.md` for the full walkthrough.
 | `LoginManager/` | Entry point for all VR2Gather apps |
 | `Pilot0/` | Minimal "Hello World" experience |
 | `TechnicalPlayground/` | Full feature showcase (requires orchestrator) |
-| `SoloPlayground/` | Test locally without orchestrator |
 | `Empty/` | Blank template |
 
 ## Editor Utilities
@@ -126,6 +127,7 @@ In `nl.cwi.dis.vr2gather/Editor/Tools/`:
 - `DependenciesHunter.cs` — analyze asset dependencies
 - `MissingReferencesHunter.cs` — find broken asset references
 - `FindMissingScriptsRecursively.cs` — find GameObjects with missing scripts
+- `VRTPortingChecker.cs` — verify scene and project setup for VR2Gather (run via Tools/VR2Gather Porting Check)
 
 ## External Dependencies
 
