@@ -817,7 +817,7 @@ namespace VRT.Tools
             var details       = new List<string>();
             var detailSelects = new List<Action>();
             var allBadObjects = new List<GameObject>();
-            int errorCount    = 0;
+            int bareCount = 0, autoCount = 0, manualCount = 0;
 
             foreach (var go in AllObjects(scene))
             {
@@ -827,28 +827,40 @@ namespace VRT.Tools
 
                 allBadObjects.Add(go);
                 var captured = go;
-                if (PrefabUtility.IsPartOfPrefabInstance(go))
+                string label;
+
+                if (!PrefabUtility.IsPartOfPrefabInstance(go))
                 {
-                    details.Add($"{go.name} — interactable is part of a non-VR2Gather prefab");
+                    label = $"{go.name} — bare scene object (not a prefab); works fine, easy to auto-convert — don't use as template for new work";
+                    bareCount++;
+                }
+                else if (PortingCheckerUtil.HasMixedRootComponents(go))
+                {
+                    label = $"{go.name} — non-VR2Gather prefab, mixed root (visuals + interactable on same GO) — needs manual pre-cleaning before auto-conversion";
+                    manualCount++;
                 }
                 else
                 {
-                    details.Add($"{go.name} — interactable is not part of any prefab (will block future automated porting)");
-                    errorCount++;
+                    label = $"{go.name} — non-VR2Gather prefab, clean root — auto-convertible";
+                    autoCount++;
                 }
+
+                details.Add(label);
                 detailSelects.Add(() => Selection.activeGameObject = captured);
             }
 
             if (details.Count == 0)
                 return new CheckResult { Status = CheckStatus.OK, Summary = "All interactables follow VR2Gather conventions" };
 
-            int warnCount = details.Count - errorCount;
+            var parts = new List<string>();
+            if (bareCount  > 0) parts.Add($"{bareCount} bare scene object(s)");
+            if (autoCount  > 0) parts.Add($"{autoCount} auto-convertible prefab(s)");
+            if (manualCount > 0) parts.Add($"{manualCount} prefab(s) needing manual work");
+
             return new CheckResult
             {
-                Status = errorCount > 0 ? CheckStatus.Error : CheckStatus.Warning,
-                Summary = errorCount > 0
-                    ? $"{errorCount} bare interactable(s) (not in any prefab); {warnCount} in non-VR2Gather prefab(s)"
-                    : $"{warnCount} interactable(s) in non-VR2Gather prefab(s)",
+                Status = CheckStatus.Warning,
+                Summary = string.Join("; ", parts),
                 Details = details,
                 DetailSelectActions = detailSelects,
                 SelectAction = () => Selection.objects = allBadObjects.Cast<UnityEngine.Object>().ToArray(),
@@ -876,6 +888,26 @@ namespace VRT.Tools
             {
                 if (nameSet.Contains(source.name)) return true;
                 source = PrefabUtility.GetCorrespondingObjectFromSource(source);
+            }
+            return false;
+        }
+
+        // Returns true if the GO has components beyond Transform, Rigidbody, Colliders,
+        // XR interaction components, and VRT components — i.e. it has "content" (mesh, audio,
+        // custom logic) mixed onto the same root as its interactable, which makes auto-conversion
+        // harder because those components would need to be moved to children first.
+        public static bool HasMixedRootComponents(GameObject go)
+        {
+            foreach (var comp in go.GetComponents<Component>())
+            {
+                if (comp == null) continue;
+                var t = comp.GetType();
+                if (t == typeof(Transform)) continue;
+                if (t == typeof(Rigidbody)) continue;
+                if (typeof(Collider).IsAssignableFrom(t)) continue;
+                if (t.Namespace != null && t.Namespace.StartsWith("UnityEngine.XR")) continue;
+                if (t.Namespace != null && t.Namespace.StartsWith("VRT")) continue;
+                return true;
             }
             return false;
         }
