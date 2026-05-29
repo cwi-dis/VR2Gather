@@ -23,6 +23,7 @@ namespace VRT.Pilots.Common
         public string outputFilename;
 
         string _currentFilename;
+        float _recordingStartTime;
 
         void OnEnable()
         {
@@ -63,15 +64,22 @@ namespace VRT.Pilots.Common
             filename = filename.Replace("{time}", dateTime);
             filename = System.IO.Path.Combine(Application.persistentDataPath, filename);
             _currentFilename = filename;
+            _recordingStartTime = Time.realtimeSinceStartup;
             voicePipeline.StartRecording(filename);
 #if VRT_WITH_STATS
             Statistics.Output("RecordUserVoice", $"recording_started=1, filename={filename}");
 #endif
         }
 
+        void OnDestroy()
+        {
+            StopRecording();
+        }
+
         public void StopRecording()
         {
             if (voicePipeline == null) return;
+            if (_currentFilename == null) return;
             voicePipeline.StopRecording();
 #if VRT_WITH_STATS
             Statistics.Output("RecordUserVoice", $"recording_stopped=1, filename={_currentFilename}");
@@ -82,7 +90,8 @@ namespace VRT.Pilots.Common
         public void AddMarker(string markerName)
         {
 #if VRT_WITH_STATS
-            Statistics.Output("RecordUserVoice", $"marker={markerName}, filename={_currentFilename}");
+            float position = Time.realtimeSinceStartup - _recordingStartTime;
+            Statistics.Output("RecordUserVoice", $"marker={markerName}, position_sec={position:F3}, filename={_currentFilename}");
 #endif
         }
     }
