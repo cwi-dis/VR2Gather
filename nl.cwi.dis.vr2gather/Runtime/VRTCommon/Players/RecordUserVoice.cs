@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRT.UserRepresentation.Voice;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
 namespace VRT.Pilots.Common
 {
@@ -18,6 +21,8 @@ namespace VRT.Pilots.Common
 
         [Tooltip("Filename, can contain {scene} and {time} constructs")]
         public string outputFilename;
+
+        string _currentFilename;
 
         void OnEnable()
         {
@@ -57,13 +62,28 @@ namespace VRT.Pilots.Common
             filename = filename.Replace("{scene}", sceneName);
             filename = filename.Replace("{time}", dateTime);
             filename = System.IO.Path.Combine(Application.persistentDataPath, filename);
+            _currentFilename = filename;
             voicePipeline.StartRecording(filename);
+#if VRT_WITH_STATS
+            Statistics.Output("RecordUserVoice", $"recording_started=1, filename={filename}");
+#endif
         }
 
         public void StopRecording()
         {
             if (voicePipeline == null) return;
             voicePipeline.StopRecording();
+#if VRT_WITH_STATS
+            Statistics.Output("RecordUserVoice", $"recording_stopped=1, filename={_currentFilename}");
+#endif
+            _currentFilename = null;
+        }
+
+        public void AddMarker(string markerName)
+        {
+#if VRT_WITH_STATS
+            Statistics.Output("RecordUserVoice", $"marker={markerName}, filename={_currentFilename}");
+#endif
         }
     }
 }
