@@ -7,7 +7,7 @@ using VRT.UserRepresentation.Voice;
 namespace VRT.Pilots.Common
 {
     /// <summary>
-    /// Allow disabling a user to move (because the scenario requires them to be static)
+    /// Record the local user's voice to a WAV file via the VoicePipelineSelf.
     /// </summary>
     public class RecordUserVoice : MonoBehaviour
     {
@@ -56,6 +56,7 @@ namespace VRT.Pilots.Common
             string dateTime = DateTime.Now.ToString("yyyyMMdd-HHmm");
             filename = filename.Replace("{scene}", sceneName);
             filename = filename.Replace("{time}", dateTime);
+            filename = System.IO.Path.Combine(Application.persistentDataPath, filename);
             voicePipeline.StartRecording(filename);
         }
 
