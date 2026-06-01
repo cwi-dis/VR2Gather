@@ -112,6 +112,16 @@ Two JSON files in `VRTApp-Develop/`:
 
 See `Documentation/10-createnew.md` for the full walkthrough.
 
+> **Critical:** Every scene controller **must** subclass `PilotController` (not plain
+> `MonoBehaviour`). If a controller extends `MonoBehaviour` directly it loses:
+> - coordinated scene transitions (`LoadNewScene()` with fade-out)
+> - the `PilotController.Instance` static reference other components rely on
+> - graceful session leave / application quit handling
+>
+> This is a common mistake when AI assistants scaffold a new scene controller without
+> knowing the VR2Gather conventions. The symptom is that scene transitions work for the
+> user who triggers them but leave other participants stuck in the old scene.
+
 ## Sample Scenes (in `Samples~/VRTAssets/Scenes/`)
 
 | Scene | Purpose |
