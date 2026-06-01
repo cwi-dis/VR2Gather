@@ -430,6 +430,7 @@ namespace VRT.Core
         
         private void Initialize()
         {
+            System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             string file = ConfigFilename(force:true);
             if (System.IO.File.Exists(file))
             {
