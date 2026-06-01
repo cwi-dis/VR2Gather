@@ -474,16 +474,10 @@ namespace VRT.Core
             DontDestroyOnLoad(this.gameObject);
             if (autoInventUsername) {
                 if (string.IsNullOrEmpty(RepresentationConfig.userName)) {
-                    // Migrate from PlayerPrefs if available, otherwise invent from machine name
-                    if (PlayerPrefs.HasKey("userNameLoginIF") && !string.IsNullOrEmpty(PlayerPrefs.GetString("userNameLoginIF"))) {
-                        RepresentationConfig.userName = PlayerPrefs.GetString("userNameLoginIF");
-                        Debug.Log($"VRTConfig: Migrated username from PlayerPrefs: {RepresentationConfig.userName}");
-                    } else {
-                        string invented = System.Environment.MachineName.ToLower();
-                        if (invented.Length > 20) invented = invented.Substring(0, 20);
-                        RepresentationConfig.userName = invented;
-                        Debug.Log($"VRTConfig: Invented username: {RepresentationConfig.userName}");
-                    }
+                    string invented = System.Environment.MachineName.ToLower();
+                    if (invented.Length > 20) invented = invented.Substring(0, 20);
+                    RepresentationConfig.userName = invented;
+                    Debug.Log($"VRTConfig: Invented username: {RepresentationConfig.userName}");
                     SaveUserConfig();
                 }
             }
