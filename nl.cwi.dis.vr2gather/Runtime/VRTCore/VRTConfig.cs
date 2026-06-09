@@ -464,7 +464,7 @@ namespace VRT.Core
             }
             // Initialize some other modules that have their own configuration.
 #if VRT_WITH_STATS
-            Statistics.Initialize(this.StatisticsConfig.interval, ConfigFilename(this.StatisticsConfig.outputFile, force:true, label:"Stats output"), this.StatisticsConfig.outputFileAppend);
+            Statistics.Initialize(this.StatisticsConfig.interval, this.StatisticsConfig.outputFile, this.StatisticsConfig.outputFileAppend);
 #endif
             // Communicate cwipc settings to cwipc package. This sets all sorts
             // of things, from native log level to queue sizes, etc.
