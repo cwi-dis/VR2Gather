@@ -62,7 +62,7 @@ namespace VRT.Pilots.Common
             string dateTime = DateTime.Now.ToString("yyyyMMdd-HHmm");
             filename = filename.Replace("{scene}", sceneName);
             filename = filename.Replace("{time}", dateTime);
-            filename = System.IO.Path.Combine(Application.persistentDataPath, filename);
+            filename = VRT.Core.VRTConfig.ConfigFilename(filename, force:true, label:"Voice recording");
             _currentFilename = filename;
             _recordingStartTime = Time.realtimeSinceStartup;
             voicePipeline.StartRecording(filename);
