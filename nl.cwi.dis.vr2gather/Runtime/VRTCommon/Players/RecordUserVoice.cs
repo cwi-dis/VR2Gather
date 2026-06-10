@@ -89,6 +89,10 @@ namespace VRT.Pilots.Common
 
         public void AddMarker(string markerName)
         {
+            if (_recordingStartTime == 0)
+            {
+                Debug.LogError($"RecordUserVoice: AddMarker: called while not recording");
+            }
 #if VRT_WITH_STATS
             float position = Time.realtimeSinceStartup - _recordingStartTime;
             Statistics.Output("RecordUserVoice", $"marker={markerName}, position_sec={position:F3}, filename={_currentFilename}");
