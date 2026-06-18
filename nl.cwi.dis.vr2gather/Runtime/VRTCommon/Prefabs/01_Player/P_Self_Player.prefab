@@ -7912,6 +7912,16 @@ PrefabInstance:
       propertyPath: RightHandPoseDriver
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1468001081182870797, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: leftHand
+      value: 
+      objectReference: {fileID: 1310974505417587039}
+    - target: {fileID: 1468001081182870797, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: rightHand
+      value: 
+      objectReference: {fileID: 5341018814333240860}
     - target: {fileID: 2107846204465463838, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_RootOrder
