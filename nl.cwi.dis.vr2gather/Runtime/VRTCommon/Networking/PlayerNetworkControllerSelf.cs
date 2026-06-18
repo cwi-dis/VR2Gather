@@ -24,6 +24,22 @@ namespace VRT.Pilots.Common
 
 		void Update()
 		{
+            // Copy tracking transforms every frame so avatar representations track even outside a session
+            if (HeadPositionOrientation != null)
+            {
+                HeadPositionOrientation.rotation = camTransform.rotation;
+                HeadPositionOrientation.position = camTransform.position;
+            }
+            if (LeftHandPositionOrientation != null)
+            {
+                LeftHandPositionOrientation.position = LeftHandTransform.position;
+                LeftHandPositionOrientation.rotation = LeftHandTransform.rotation;
+            }
+            if (RightHandPositionOrientation != null)
+            {
+                RightHandPositionOrientation.position = RightHandTransform.position;
+                RightHandPositionOrientation.rotation = RightHandTransform.rotation;
+            }
 			if (_LastSendTime + (1.0f / SendRate) <= Time.realtimeSinceStartup)
 			{
 				SendPlayerData();
@@ -46,22 +62,6 @@ namespace VRT.Pilots.Common
             if (AlternativeUserRepresentation != null && AlternativeUserRepresentation.activeInHierarchy)
             {
                 BodySize = AlternativeUserRepresentation.transform.localScale.y;
-            }
-            // Also copy head/hand position/orientation locally so avatar representations can track
-            if (HeadPositionOrientation != null)
-			{
-				HeadPositionOrientation.rotation = camTransform.rotation;
-				HeadPositionOrientation.position = camTransform.position;
-			}
-            if (LeftHandPositionOrientation != null)
-            {
-                LeftHandPositionOrientation.position = LeftHandTransform.position;
-                LeftHandPositionOrientation.rotation = LeftHandTransform.rotation;
-            }
-            if (RightHandPositionOrientation != null)
-            {
-                RightHandPositionOrientation.position = RightHandTransform.position;
-                RightHandPositionOrientation.rotation = RightHandTransform.rotation;
             }
 			var data = new NetworkPlayerData
 			{
