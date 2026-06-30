@@ -17,7 +17,7 @@ namespace VRT.Core
 
         public static ErrorManager Instance { get { return instance; } }
 
-        [Tooltip("Prefab of dialog to use, if no errorManagerSink registered")]
+        [Tooltip("Prefab of dialog to use, if no errorManagerSink registered. Leave empty for no popup.")]
         public GameObject myPrefab;
 
         [Tooltip("GameObject where dialogs are instantiated (if no errorManagerSink registered), should contain overlay canvas")]
@@ -69,7 +69,7 @@ namespace VRT.Core
                         {
                             mySink.FillError(error[0], error[1]);
                         }
-                        else
+                        else if (myPrefab != null)
                         {
                             // Show  dialog
                             bool instantiate = true;
