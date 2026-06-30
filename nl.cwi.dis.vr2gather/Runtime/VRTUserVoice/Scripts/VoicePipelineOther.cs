@@ -39,6 +39,7 @@ namespace VRT.UserRepresentation.Voice
         [Tooltip("Introspection: audio level for previous frame, from GetSpectrumData")]
         public float currentFrameAltAudioLevel = 0;
 
+        private bool warnedAboutChannels = false;
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
         QueueThreadSafe preparerQueue;
@@ -220,7 +221,11 @@ namespace VRT.UserRepresentation.Voice
             } 
             else
             {
-                Debug.LogWarning($"{Name()}: Convert audio to {channels} channels");
+                if (!warnedAboutChannels)
+                {
+                    Debug.Log($"{Name()}: Convert audio to {channels} channels");
+                    warnedAboutChannels = true;                    
+                }
                 float[] tmpBuffer = new float[data.Length / channels];
                 nZeroSamplesInserted = preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length);
                 if (nZeroSamplesInserted > 0)
