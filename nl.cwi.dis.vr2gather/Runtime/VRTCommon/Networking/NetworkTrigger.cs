@@ -77,10 +77,10 @@ namespace VRT.Pilots.Common
 			}
 			else
 			{
-				OnTrigger.Invoke();
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
+				Statistics.Output("NetworkTrigger", $"name={name}, origin=1, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
+				OnTrigger.Invoke();
 				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(triggerData);
 			}
 		}
@@ -90,7 +90,7 @@ namespace VRT.Pilots.Common
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
+                Statistics.Output("NetworkTrigger", $"name={name}, origin=0, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
 
 				OnTrigger.Invoke();
