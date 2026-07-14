@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.4.3] - 2026-07-14
 
 - Bump `nl.cwi.dis.cwipc` to 8.2.0, add URP package (prep for #256)
+- `P_Self_Player`/`P_Player`/`VRTLoginManager` now work under URP too (#256, #333)
 
 ## [1.4.2] - 2026-06-18
 
