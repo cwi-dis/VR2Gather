@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3] - 2026-07-14
+
+- Bump `nl.cwi.dis.cwipc` to 8.2.0, add URP package (prep for #256)
+
 ## [1.4.2] - 2026-06-18
 
 - Self-wiring avatar swap system: `PlayerTrackingTargets` + `PlayerRepresentationWirer` (#328)
