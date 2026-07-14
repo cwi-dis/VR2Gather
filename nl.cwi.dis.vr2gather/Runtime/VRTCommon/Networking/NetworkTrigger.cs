@@ -78,7 +78,8 @@ namespace VRT.Pilots.Common
 			else
 			{
 #if VRT_WITH_STATS
-				Statistics.Output("NetworkTrigger", $"name={name}, origin=1, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
+				string originId = VRTOrchestratorSingleton.Comm.SelfUser.userId;
+				Statistics.Output("NetworkTrigger", $"name={name}, origin={originId}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
 				OnTrigger.Invoke();
 				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(triggerData);
@@ -90,14 +91,16 @@ namespace VRT.Pilots.Common
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
 #if VRT_WITH_STATS
-                Statistics.Output("NetworkTrigger", $"name={name}, origin=0, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
+                Statistics.Output("NetworkTrigger", $"name={name}, origin={data.SenderId}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
 
 				OnTrigger.Invoke();
 
 				if (VRTOrchestratorSingleton.Comm.UserIsMaster)
 				{
-					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data);
+					// forward: true preserves the original sender's SenderId, so the true
+					// originator stays identifiable after the master relays it to everyone.
+					VRTOrchestratorSingleton.Comm.SendTypeEventToAll(data, forward: true);
 				}
 			}
 		}
