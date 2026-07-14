@@ -112,7 +112,16 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Allocate queues we need for this sourceType
             //
-            if (preview)
+            // No sfuData means there is no SFU to send to (e.g. a Standalone Session,
+            // which has no other participants) -- treat that like preview and skip
+            // transmission setup entirely, rather than crashing on the null dereference
+            // further down.
+            bool wantsTransmission = !preview && user.sfuData != null;
+            if (!preview && user.sfuData == null)
+            {
+                Debug.Log($"{Name()}: self user has no sfuData, skipping point cloud transmission setup (no other participants to send to)");
+            }
+            if (!wantsTransmission)
             {
                 encoderQueue = null;
             }
@@ -129,8 +138,8 @@ namespace VRT.UserRepresentation.PointCloud
             //
             reader = PointCloudCapturerFactory.Create(config, selfPreparerQueue, encoderQueue);
 
-            
-            if (!preview)
+
+            if (wantsTransmission)
             {
                 // Which encoder do we want?
                 string pointcloudCodec = SessionConfig.Instance.pointCloudCodec;
