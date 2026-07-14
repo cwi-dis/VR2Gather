@@ -9,6 +9,7 @@
     "com.unity.multiplayer.center": "1.0.1",
     "com.unity.postprocessing": "3.5.1",
     "com.unity.recorder": "5.1.5",
+    "com.unity.render-pipelines.universal": "17.3.0",
     "com.unity.shadergraph": "17.3.0",
     "com.unity.ugui": "2.0.0",
     "com.unity.xr.hands": "1.7.3",
