@@ -46,3 +46,13 @@ You will also find a Unity project `VRTApp-Develop` which is a pretty empty proj
 
     ```
 After making changes, and before pushing or testing with `VR2Gather_sample` you should _always_ change the package version number in `nl.cwi.dis.vr2gather/package.json` and commit and push. Otherwise the Unity package manager will think that package has not changed and it will not re-import it.
+
+## Render pipeline (BIRP/URP) plan
+
+Unity is deprecating the Built-in Render Pipeline (BIRP) in 6000.5, so VR2Gather is moving towards the Universal Render Pipeline (URP). This is happening in two tracks rather than converting everything at once:
+
+- `master` stays BIRP-default, but keeps the core self-player path (`P_Self_Player`, `P_Player`, `VRTLoginManager`) working under both pipelines. The rest of the samples/scenes are not URP-compatible yet, and we're not chasing every non-compatible material there for now.
+- A long-lived `urp` branch will eventually host a full URP conversion (via Unity's built-in Render Pipeline Converter), likely alongside a `VR2Gather_Sample_URP` variant of the sample project. For a transition period `master` (BIRP) and `urp` will coexist.
+- Once URP usage becomes the norm - decided by observed usage, not a fixed date - `master` will be forked off as `birp` and `urp` will become the new `master`.
+
+See [issue #256](https://github.com/cwi-dis/VR2Gather/issues/256) for the full plan and rationale.
