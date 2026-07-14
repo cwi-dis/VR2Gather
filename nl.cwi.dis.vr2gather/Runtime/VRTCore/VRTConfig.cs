@@ -494,9 +494,24 @@ namespace VRT.Core
         }
 
         static private string configFileFolder;
+        static private string clConfigFileFull;
+        static private bool configFileFolderResolved = false;
+
+        static private void _ResolveConfigFileFolder()
+        {
+            if (configFileFolderResolved) return;
+            configFileFolderResolved = true;
+            string clConfigFile = _ConfigFilenameFromCommandLineArgs();
+            if (clConfigFile != null)
+            {
+                clConfigFileFull = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
+                configFileFolder = System.IO.Path.GetDirectoryName(clConfigFileFull);
+            }
+        }
 
         public static string ConfigFilename(string filename="config.json", bool force=false, bool allowSearch=false, string label="Config file")
         {
+            _ResolveConfigFileFolder();
             if (allowSearch)
             {
                 // Special case: filename starting with .../ will be searched in parent folders
@@ -509,16 +524,10 @@ namespace VRT.Core
                     allowSearch = false;
                 }
             }
-            if (filename == "config.json")
+            if (filename == "config.json" && clConfigFileFull != null)
             {
-                string clConfigFile = _ConfigFilenameFromCommandLineArgs();
-                if (clConfigFile != null)
-                {
-                    clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
-                    Debug.Log($"VRTConfig: {label} {filename}: {clConfigFile}");
-                    configFileFolder = System.IO.Path.GetDirectoryName(clConfigFile);
-                    return clConfigFile;
-                }
+                Debug.Log($"VRTConfig: {label} {filename}: {clConfigFileFull}");
+                return clConfigFileFull;
             }
             if (configFileFolder != null)
             {
