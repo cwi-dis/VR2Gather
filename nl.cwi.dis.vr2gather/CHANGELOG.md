@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `VRTConfig.ConfigFilename()` finds the run folder regardless of which file is asked for first (#337)
 - `NetworkTrigger` stats lines log the true originator's userId (#335)
 - No crash in a Standalone Session with point cloud self-representation (#338)
+- Fades no longer log a `_MainTex` warning (#342)
 
 ## [1.4.3] - 2026-07-08
 

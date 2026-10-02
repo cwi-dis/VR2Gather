@@ -3,6 +3,9 @@ Shader "Unlit/Fader"
     Properties
     {
         _Color ("Color", Color) = (0,0,0,1)
+        // Unused by the shader body, but CameraFader puts this material on a UI Image, and the
+        // UI system wants a _MainTex to bind to. Without it every fade logs a warning. See #342.
+        _MainTex ("Texture", 2D) = "white" {}
     }
 
     // URP
