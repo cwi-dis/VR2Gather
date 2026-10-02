@@ -5,10 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.3] - 2026-07-14
+## [1.4.4] - unreleased
 
 - Bump `nl.cwi.dis.cwipc` to 8.2.0, add URP package (prep for #256)
 - `P_Self_Player`/`P_Player`/`VRTLoginManager` now work under URP too (#256, #333)
+- `VRTConfig.ConfigFilename()` finds the run folder regardless of which file is asked for first (#337)
+- `NetworkTrigger` stats lines log the true originator's userId (#335)
+- No crash in a Standalone Session with point cloud self-representation (#338)
+
+## [1.4.3] - 2026-07-08
+
+Retroactive tag: the version used for the TrolleyExperiment. `package.json` still says 1.4.2.
+
+- `NetworkTrigger` stats lines show which participant initiated the trigger
+- `ErrorManager` popups are optional (leave `myPrefab` empty)
+- Audio channel-conversion warning is much less noisy
 
 ## [1.4.2] - 2026-06-18
 
