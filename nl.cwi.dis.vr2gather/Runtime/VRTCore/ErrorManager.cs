@@ -20,6 +20,12 @@ namespace VRT.Core
         [Tooltip("Prefab of dialog to use, if no errorManagerSink registered. Leave empty for no popup.")]
         public GameObject myPrefab;
 
+        [Tooltip("If no popup prefab is set, hold messages until a sink (the HUD) registers, in stead of dropping them")]
+        public bool holdUntilSink = true;
+
+        [Tooltip("Maximum number of messages held while waiting for a sink to register (oldest are dropped)")]
+        public int maxHeldMessages = 100;
+
         [Tooltip("GameObject where dialogs are instantiated (if no errorManagerSink registered), should contain overlay canvas")]
         public GameObject myCanvas;
 
@@ -61,6 +67,15 @@ namespace VRT.Core
         {
             lock (thisLock)
             {
+                if (holdUntilSink && mySink == null && myPrefab == null)
+                {
+                    // No popup dialog configured: hold messages until the HUD registers as sink.
+                    if (queue.Count > maxHeldMessages)
+                    {
+                        queue.RemoveRange(0, queue.Count - maxHeldMessages);
+                    }
+                    return;
+                }
                 if (queue.Count > 0)
                 {
                     foreach (string[] error in queue)
