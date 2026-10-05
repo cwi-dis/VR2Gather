@@ -17,3 +17,5 @@ Here is a old overview (outdated) of how to create a VRTApp in the old structure
 ## Additional how-tos
 
 There is documentation on how to record and playback a user during a session, which can be very useful for things like performance measurements under varying conditions: [record and playback](41-record-playback.md).
+
+There is documentation on how to send application-specific data between participants: [typed network messages](42-typed-messages.md).

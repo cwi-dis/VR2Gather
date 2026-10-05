@@ -5,6 +5,11 @@ using UnityEngine;
 namespace VRT.OrchestratorComm
 {
 
+	/// <summary>
+	/// Type IDs for typed messages. 100-199 are reserved for the VR2Gather package.
+	/// Applications use IDs from TID_FirstAppDefined (200) upward, passed as int
+	/// to RegisterEventType(). See Documentation/42-typed-messages.md.
+	/// </summary>
 	public enum MessageTypeID
 	{
 		TID_NetworkPlayerData = 100,
@@ -25,6 +30,8 @@ namespace VRT.OrchestratorComm
 		TID_SyncConfigMessage = 115,
 		TID_NetworkInstantiatorData = 116,
 		TID_PersistenceManagerData = 117,
+		// First ID available for application-defined message types
+		TID_FirstAppDefined = 200,
 	};
 
 	/// <summary>
@@ -46,9 +53,13 @@ namespace VRT.OrchestratorComm
 		{
 		}
 
-		public void AddTypeIdMapping(MessageTypeID _typeId, Type type)
+		public void AddTypeIdMapping(MessageTypeID typeId, Type type)
 		{
-			int typeId = (int)_typeId;
+			AddTypeIdMapping((int)typeId, type);
+		}
+
+		public void AddTypeIdMapping(int typeId, Type type)
+		{
 			if (!type.IsSubclassOf(typeof(BaseMessage)))
 			{
 				Debug.LogError($"Programmer error: [MessageForwarder] The type {type.ToString()} is not derived from BaseMessage. Please ensure all types used in type mappings derived from BaseMessage.");
