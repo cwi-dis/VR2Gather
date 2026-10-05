@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `PilotController` logs scene started/stopped stats lines (#346)
 - App-defined message type IDs start at 200, with an `int` overload of `RegisterEventType` and new typed-messages docs (#345)
 - Porting Check warns about direct `SceneManager.LoadScene` calls (#348)
+- `BarrierController` and `PFB_Barrier`: wait until all participants are ready (#319)
 
 ## [1.4.3] - 2026-07-08
 

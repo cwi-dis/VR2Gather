@@ -92,6 +92,21 @@ When the button is pressed, the request is routed to the **session master**, whi
 
 Key component: **`NetworkInstantiator`** (shares a base class with `NetworkTrigger`). The spawned prefab needs special setup so that its network ID is assigned by the master at instantiation time rather than auto-generated.
 
+### Waiting for everyone — `PFB_Barrier`
+
+Sometimes something should only happen once *all* participants are ready, for example moving on to the next scene after everyone has pressed "Done". `PFB_Barrier` does this with three objects, wired in the Inspector:
+
+- **Ready** (`NetworkTrigger`): each participant triggers this once when they are ready, typically from a button's `OnTrigger`.
+- **Barrier** (`BarrierController`): counts the Ready triggers on the session master. When the count reaches the number of participants in the session (or `requiredCount`, if set), it fires `OnAllReady`, which triggers Proceed.
+- **Proceed** (`NetworkTrigger`): fires on all participants at the same moment. Wire its `OnTrigger` to whatever should happen, for example `PilotController.LoadNewScene()`.
+
+Things to be aware of:
+
+- The barrier counts triggers, not participants, so each participant must trigger Ready exactly once. If a button or a code path could fire it twice, the barrier opens too early.
+- For repeated rounds, set `resetWhenDone` on the barrier.
+- If a participant leaves the session while the others are waiting, the barrier doesn't notice until another Ready trigger arrives.
+- From code, `BarrierController.WaitFor(ready, proceed)` is a coroutine that triggers Ready and waits until Proceed fires.
+
 ---
 
 ## Summary tables
