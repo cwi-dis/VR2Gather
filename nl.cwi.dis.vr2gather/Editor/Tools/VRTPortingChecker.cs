@@ -32,6 +32,7 @@ namespace VRT.Tools
                 new TeleportInteractionLayerCheck(),
                 new ScenarioRegistryCheck(),
                 new OrchestratorRefCheck(),
+                new SceneLoadCheck(),
                 new SceneSetupCheck(),
                 new SoloPlayerCheck(),
                 new PilotControllerCheck(),
@@ -553,6 +554,46 @@ namespace VRT.Tools
                 return new CheckResult { Status = CheckStatus.OK, Summary = "No OrchestratorController.Instance references" };
 
             return new CheckResult { Status = CheckStatus.Warning, Summary = $"{hits.Count} file(s) use old API", Details = hits };
+        }
+    }
+
+    // Direct SceneManager.LoadScene() calls change the scene only for the participant
+    // that makes the call. Scene changes should go through PilotController.LoadNewScene(),
+    // triggered for everyone via a NetworkTrigger.
+    class SceneLoadCheck : PortingCheck
+    {
+        public override string Name => "Coordinated scene changes";
+        public override CheckCategory Category => CheckCategory.Scripts;
+
+        protected override CheckResult Run()
+        {
+            var details = new List<string>();
+            var detailSelects = new List<Action>();
+            foreach (var file in Directory.GetFiles(Application.dataPath, "*.cs", SearchOption.AllDirectories))
+            {
+                string rel = "Assets" + file.Substring(Application.dataPath.Length).Replace('\\', '/');
+                string[] lines = File.ReadAllLines(file);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i].Trim();
+                    if (line.StartsWith("//") || !line.Contains("SceneManager.LoadScene")) continue;
+                    int lineNumber = i + 1;
+                    details.Add($"{rel}:{lineNumber} → use PilotController.Instance.LoadNewScene(), triggered via a NetworkTrigger");
+                    detailSelects.Add(() => AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath<MonoScript>(rel), lineNumber));
+                    Debug.LogWarning($"VRTPortingCheck: direct SceneManager.LoadScene in {rel}:{lineNumber}");
+                }
+            }
+
+            if (details.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "No direct SceneManager.LoadScene calls" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Warning,
+                Summary = $"{details.Count} direct SceneManager.LoadScene call(s), not coordinated across participants",
+                Details = details,
+                DetailSelectActions = detailSelects,
+            };
         }
     }
 
