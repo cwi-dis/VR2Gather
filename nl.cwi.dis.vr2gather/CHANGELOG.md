@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No crash in a Standalone Session with point cloud self-representation (#338)
 - Fades no longer log a `_MainTex` warning (#342)
 - Early warnings/errors wait for the HUD instead of showing old-style popups (#343)
+- `PilotController` logs scene started/stopped stats lines (#346)
 
 ## [1.4.3] - 2026-07-08
 
