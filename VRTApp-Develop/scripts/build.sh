@@ -54,6 +54,6 @@ if [ "$platform" = windows ] && command -v powershell.exe >/dev/null; then
 	powershell.exe -NoProfile -Command "Get-ChildItem '$(cygpath -w "$BUILD_DIR")' | Where-Object { \$_.Name -notlike '*DoNotShip*' -and \$_.Name -notlike '*DontShip*' } | Compress-Archive -DestinationPath '$(cygpath -w "$ZIP_PATH")'"
 else
 	# -y keeps symlinks, needed for macOS .app bundles
-	(cd "$BUILD_DIR" && zip -qry "$ZIP_PATH" . -x '*DoNotShip*' '*DontShip*')
+	(cd "$BUILD_DIR" && zip -qry "$ZIP_PATH" . -x '*DoNotShip*' '*DontShip*' '*.DS_Store')
 fi
 echo "Done: $ZIP_PATH"
