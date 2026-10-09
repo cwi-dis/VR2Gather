@@ -39,7 +39,7 @@ git config --local core.symlinks true
 cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 ```
 
-**CI/CD**: GitHub Actions (`.github/workflows/main.yml`) builds Windows standalone on branches matching `deployment/**` or tags matching `build*`.
+**CI/CD**: none at the moment (the old workflow was removed in #322); see #355.
 
 There are no automated test commands — testing is done by running sample scenes in the Unity Editor (see Samples below).
 
