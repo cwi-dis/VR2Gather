@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `VRTPilotConfig`: base class for per-session settings from `pilotconfig.json` (#325)
 - `P_Self_Player` holds no references into its representations: avatars subscribe to `PlayerTrackingTargets.ViewAdjusted` themselves (#331)
 - `P_Mannequin` is no longer scaled 13% too tall (bent knees): its height is measured to the top of the head (#331)
+- Avatar hands use the wrist attach points for other players too, not only for yourself (#332)
 
 ## [1.4.3] - 2026-07-08
 
