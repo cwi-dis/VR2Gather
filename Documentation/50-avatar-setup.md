@@ -11,6 +11,8 @@ The wiring between the player's VR tracking transforms and the avatar's IK targe
 - **`PlayerTrackingTargets`** — sits on the player prefab root; holds the five tracking transforms the avatar needs (`head`, `neck`, `headTop`, `leftHand`, `rightHand`).
 - **`PlayerRepresentationWirer`** — sits on the avatar prefab root; on `OnEnable()` it walks up the parent hierarchy to find `PlayerTrackingTargets` and wires `SyncSkeletonToVRRig` and `SizeAdjust` automatically. No cross-prefab Inspector overrides are needed.
 
+The same goes for events: when the user adjusts their view height (`ViewAdjust` in `P_Self_Player`), `ViewAdjust.viewAdjusted` calls `PlayerTrackingTargets.NotifyViewAdjusted()`. That raises the C# event `PlayerTrackingTargets.ViewAdjusted`, to which `PlayerRepresentationWirer` has subscribed the avatar's `SizeAdjust.AdjustHeight` (and from which it unsubscribes in `OnDisable()`). So the player prefab holds no references into any representation, and adding or swapping an avatar needs no changes to the player prefab.
+
 ## Preparing the rigged avatar prefab
 
 1. **Rig type**: Humanoid Mixamo rigs (e.g. Remy, Megan) work. Generic rigs require manual bone mapping in `SyncSkeletonToVRRig`.
