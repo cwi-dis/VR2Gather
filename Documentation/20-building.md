@@ -1,9 +1,27 @@
 # VR2Gather - Building the application
 
-> xxxjack This session still needs to be written. Because it is likely to change in the near future.
-> 
-> This section should also explain the CI/CD.
+## Building from the command line
 
+`VRTApp-Develop/scripts/build.sh` builds a player and zips it:
+
+```
+VRTApp-Develop/scripts/build.sh            # for the current platform
+VRTApp-Develop/scripts/build.sh windows    # or mac, linux
+```
+
+- It uses the Unity CLI (`unity build`), which reads the Unity version from `ProjectSettings/ProjectVersion.txt` and finds the matching Editor. Install the CLI first, with `curl -fsSL https://unity.com/install.sh | bash` (macOS, Linux) or `irm https://unity.com/install.ps1 | iex` (Windows PowerShell). On Windows, run the script from Git Bash.
+- The project must not be open in a Unity Editor while building.
+- The player goes to `VRTApp-Develop/Builds/<platform>/`, the zip to `Builds/<productName>-<platform>.zip`, and the build log to `Builds/buildlog-<platform>.txt`. Unity's debug-symbol folders (`*_DoNotShip`, `*_DontShip…`) are left out of the zip.
+- Building for another platform than the one you're on needs that platform's build support module in the Editor.
+- cwipc must be installed on the build machine, otherwise its native libraries aren't found.
+
+The script is the same in every VR2Gather project: it finds the project from its own location and the app name from `productName` in the Player Settings. To use it in your own project, copy it to `scripts/build.sh` in your project folder (`VR2Gather_sample` already has it).
+
+Before your first build, check the **Product Name** in Player Settings (`productName` in `ProjectSettings/ProjectSettings.asset`), and fix it if needed. A project copied from `VR2Gather_sample` or another app still has that project's name. It names the app and the zip, and Unity also uses it for the app's settings and log folders.
+
+There is currently no CI build; see issue #355.
+
+## Older notes (may be outdated)
 
 Here is old stuff from the toplevel readme:
 

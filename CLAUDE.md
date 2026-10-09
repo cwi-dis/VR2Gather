@@ -20,13 +20,13 @@ VR2Gather is a Unity package (`nl.cwi.dis.vr2gather`) for collaborative networke
 
 > **Note:** This section may be outdated — verify before relying on it.
 
-**Building** (from repo root):
+**Building** (from repo root, with the Editor closed; uses the Unity CLI `unity build`):
 ```bash
-./build-VR2Gather.sh          # Builds for current platform
-./build-scripts/mac-fix-quarantine.sh  # macOS: fix code signing after build
+./VRTApp-Develop/scripts/build.sh [mac|windows|linux]   # default: current platform
+./build-scripts/mac-fix-quarantine.sh          # macOS: fix code signing after build
 ```
 
-Logs to `buildlog.txt`. Output goes to `Builds/`.
+Output and log go to `VRTApp-Develop/Builds/`. See `Documentation/20-building.md`.
 
 **Git setup** (required on Windows for symlinks in VRTApp-Develop):
 ```bash
@@ -39,7 +39,7 @@ git config --local core.symlinks true
 cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 ```
 
-**CI/CD**: GitHub Actions (`.github/workflows/main.yml`) builds Windows standalone on branches matching `deployment/**` or tags matching `build*`.
+**CI/CD**: none at the moment (the old workflow was removed in #322); see #355.
 
 There are no automated test commands — testing is done by running sample scenes in the Unity Editor (see Samples below).
 
