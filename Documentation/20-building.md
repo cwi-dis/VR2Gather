@@ -15,7 +15,7 @@ VRTApp-Develop/scripts/build.sh windows    # or mac, linux
 - Building for another platform than the one you're on needs that platform's build support module in the Editor.
 - cwipc must be installed on the build machine, otherwise its native libraries aren't found.
 
-The script is the same in every VR2Gather project: it finds the project from its own location and the app name from `productName` in the Player Settings. To use it in your own project, copy it to `scripts/build.sh` in your project folder.
+The script is the same in every VR2Gather project: it finds the project from its own location and the app name from `productName` in the Player Settings. To use it in your own project, copy it to `scripts/build.sh` in your project folder (`VR2Gather_sample` already has it).
 
 There is currently no CI build; see issue #355.
 
