@@ -17,6 +17,8 @@ VRTApp-Develop/scripts/build.sh windows    # or mac, linux
 
 The script is the same in every VR2Gather project: it finds the project from its own location and the app name from `productName` in the Player Settings. To use it in your own project, copy it to `scripts/build.sh` in your project folder (`VR2Gather_sample` already has it).
 
+Before your first build, check the **Product Name** in Player Settings (`productName` in `ProjectSettings/ProjectSettings.asset`), and fix it if needed. A project copied from `VR2Gather_sample` or another app still has that project's name. It names the app and the zip, and Unity also uses it for the app's settings and log folders.
+
 There is currently no CI build; see issue #355.
 
 ## Older notes (may be outdated)
