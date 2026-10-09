@@ -111,6 +111,16 @@ Things to be aware of:
 - If a participant leaves the session while the others are waiting, the barrier doesn't notice until another Ready trigger arrives.
 - From code, `BarrierController.WaitFor(ready, proceed)` is a coroutine that triggers Ready and waits until Proceed fires.
 
+### Gaze targets — `GazeTarget` / `PFB_GazeTarget`
+
+Not a user action as such, but a way to detect what a participant is looking at. `P_Self_Player`'s camera has a **`GazeDetector`**, which each frame casts a ray straight forward from the head. Any object with a **`GazeTarget`** component is "looked at" when that ray hits one of its colliders (on the object or its children; triggers included, physics layers ignored).
+
+- `GazeTarget` fires `OnGazeEnter` / `OnGazeExit` for the local participant only. To make something happen for everyone, wire these to a `NetworkTrigger`.
+- With `VRT_WITH_STATS`, it logs `gazing=1`/`gazing=0` and its position as `stats:` lines (component `GazeTarget`).
+- `PFB_GazeTarget` is an invisible trigger box with a `GazeTarget`, for marking a region rather than an object. You can also add `GazeTarget` to an existing object and use its colliders: the TechnicalPlayground mirror does this.
+
+Head direction is only a proxy for gaze. Without eye tracking, people look around with their eyes, so small targets give poor results: make colliders generous, especially vertically. Gaze also passes through walls and other objects, because only gaze targets are tested.
+
 ---
 
 ## Summary tables
@@ -132,6 +142,7 @@ Things to be aware of:
 | Grabbable | `PFB_Grabbable` | `VRTGrabbableController` | OBJ_GrabbableMudball |
 | Static button | `PFB_Trigger` / `OBJ_NetworkButton` | `NetworkTrigger` | Blue button, table 4 |
 | Button everyone must press | `OBJ_BarrierNetworkButton` | `BarrierController` | "Barrier Pilot0", table 4 |
+| Gaze target | `PFB_GazeTarget` (or add `GazeTarget`) | `GazeTarget` + `GazeDetector` | The mirror |
 | Grabbable + button | `PFB_Grabbable` + `PFB_Trigger` child | Both of the above | Clickers, camera |
 | Factory | `PFB_Trigger` + `NetworkInstantiator` | `NetworkInstantiator` | Mudball generator |
 | Grabbable + button + factory | All three combined | All three | Camera (produces photographs) |
