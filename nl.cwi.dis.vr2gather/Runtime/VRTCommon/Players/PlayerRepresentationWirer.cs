@@ -8,17 +8,25 @@ namespace VRT.Pilots.Common
     ///
     /// On activation (OnEnable) and on explicit Apply() calls, wires the avatar's
     /// tracking inputs (SyncSkeletonToVRRig vrTargets, SizeAdjust sources) from the
-    /// PlayerTrackingTargets found in the parent player hierarchy.
+    /// PlayerTrackingTargets found in the parent player hierarchy, and subscribes
+    /// SizeAdjust.AdjustHeight to its ViewAdjusted event (unsubscribed in OnDisable).
+    /// So the player prefab needs no references into the representation.
     ///
     /// Subclass and override OnApply() to add app-specific setup such as skin/hair
     /// tinting. The avatar selection UI can call Apply() to re-apply after a change.
     /// </summary>
     public class PlayerRepresentationWirer : MonoBehaviour
     {
+        PlayerTrackingTargets m_SubscribedTargets;
+        SizeAdjust m_SubscribedSizeAdjust;
+
         void OnEnable() => Apply();
+
+        void OnDisable() => Unsubscribe();
 
         public void Apply()
         {
+            Unsubscribe();
             var targets = GetComponentInParent<PlayerTrackingTargets>();
             if (targets == null)
             {
@@ -41,9 +49,22 @@ namespace VRT.Pilots.Common
             {
                 sizeAdjust.SourceTop = targets.headTop.gameObject;
                 sizeAdjust.SourceBottom = targets.gameObject;
+                targets.ViewAdjusted += sizeAdjust.AdjustHeight;
+                m_SubscribedTargets = targets;
+                m_SubscribedSizeAdjust = sizeAdjust;
             }
 
             OnApply(targets);
+        }
+
+        void Unsubscribe()
+        {
+            if (m_SubscribedTargets != null && m_SubscribedSizeAdjust != null)
+            {
+                m_SubscribedTargets.ViewAdjusted -= m_SubscribedSizeAdjust.AdjustHeight;
+            }
+            m_SubscribedTargets = null;
+            m_SubscribedSizeAdjust = null;
         }
 
         /// <summary>
