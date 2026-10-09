@@ -40,4 +40,36 @@ If you need multiple scenes: your `PilotController` can open a new scene for you
 
 If you need additional functionality in your `P_Player` and `P_Self_player`, for example if you have multiple avatars that you want to switch between: subclass the PlayerControllers and provide the new functionality there. Then create variants of `P_Player` and `P_Player_Self`, reference the new controller and add any GameObjects you need. Finally references these new prefabs in your scene's `SessionPlayersManager`.
 
+## Per-session settings — `VRTPilotConfig`
+
+Experiments often need settings that differ per session, such as the condition, the scenario order or participant numbers, and that must survive scene transitions. `VRTPilotConfig` is the base class for those. `VRTConfig` (`config.json`) describes the machine and the installation; `VRTPilotConfig` describes the experience.
+
+`VRTPilotConfig` loads its fields from `pilotconfig.json` at startup. The file is found the same way as `config.json`, so with VRTrun you can supply it in the run folder. The object then stays alive across scene changes (`DontDestroyOnLoad`).
+
+To use it:
+
+- Subclass it and add your fields. Override `HasConfig` to tell whether the loaded settings are complete, and `OnLoaded()` to validate them:
+
+  ```csharp
+  public class MyPilotConfig : VRTPilotConfig
+  {
+      public string condition = "";
+      public string[] scenarioOrder = null;
+
+      public override bool HasConfig => base.HasConfig && !string.IsNullOrEmpty(condition);
+
+      protected override void OnLoaded(string filename)
+      {
+          if (condition != "Solo" && condition != "Paired")
+              Debug.LogWarning($"{filename}: invalid condition '{condition}'");
+      }
+  }
+  ```
+
+- Put your subclass on a GameObject in your `LoginManager` scene, so it exists from the start.
+- Access it from anywhere with `VRTPilotConfig.GetInstance<MyPilotConfig>()`. That returns `null` if there is none, for example when you play a scene directly in the Editor, so handle that case.
+- To create a first `pilotconfig.json`, fill in the fields in the Inspector and use _Save to config file_ from the component's context menu.
+
+A setup scene where the researcher fills in the settings can read and write the same object, so a pre-filled `pilotconfig.json` pre-populates it. Note that every participant's instance loads its own file: if the settings must be the same for everyone, make sure every machine gets the same file.
+
 > xxxjack there is probably a lot more that should be said here, but I don't know what. I will update as I get requests for help.
