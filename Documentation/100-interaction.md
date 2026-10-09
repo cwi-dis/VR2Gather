@@ -106,7 +106,7 @@ Wire Ready only from **local** sources: an interactable's `SelectEntered`/`Activ
 
 Things to be aware of:
 
-- The barrier counts triggers, not participants, so each participant must trigger Ready exactly once. If a button or a code path could fire it twice, the barrier opens too early. `OBJ_NetworkButton` wires both `SelectEntered` and `Activated`, so with the far ray one press may count twice (#350).
+- The barrier counts triggers, not participants, so each participant must trigger Ready exactly once. If a button or a code path could fire it twice, the barrier opens too early. `OBJ_NetworkButton` wires both `SelectEntered` and `Activated`, so with the far ray one press may count twice (#352).
 - For repeated rounds, set `resetWhenDone` on the barrier.
 - If a participant leaves the session while the others are waiting, the barrier doesn't notice until another Ready trigger arrives.
 - From code, `BarrierController.WaitFor(ready, proceed)` is a coroutine that triggers Ready and waits until Proceed fires.
