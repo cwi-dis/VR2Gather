@@ -2300,8 +2300,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1408698125888528228, guid: d2d4f926a0e8bfc4fa8cd76266f70e52,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1429521455}
   m_SourcePrefab: {fileID: 100100000, guid: d2d4f926a0e8bfc4fa8cd76266f70e52, type: 3}
+--- !u!1 &1429521454 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1408698125888528228, guid: d2d4f926a0e8bfc4fa8cd76266f70e52,
+    type: 3}
+  m_PrefabInstance: {fileID: 1429521453}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1429521455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1429521454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47b1daeb5d84a4d6082cb60482eca43d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VRT.Pilots.Common::VRT.Pilots.Common.GazeTarget
+  m_OnGazeEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnGazeExit:
+    m_PersistentCalls:
+      m_Calls: []
+  m_PositionLogIntervalMs: 200
 --- !u!1001 &1511423908
 PrefabInstance:
   m_ObjectHideFlags: 0

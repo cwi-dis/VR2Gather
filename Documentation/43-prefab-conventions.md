@@ -27,6 +27,8 @@ When a coding agent does the editing, the division of labour is:
 - The agent reads the result back from the Editor (wiring, overrides, NetworkIds), cleans up what Unity leaves behind (see below), and reports.
 - Nothing is committed that the developer hasn't inspected.
 
+A small change to an existing prefab, such as adding one component (e.g. `GazeDetector` on `P_Self_Player`'s camera), has no instance to apply from. The agent edits the prefab directly, shows the `git diff` of the prefab file, and the developer inspects the prefab in Prefab Mode.
+
 ## Pitfalls when editing prefabs from scripts
 
 These surfaced while building `OBJ_BarrierNetworkButton` (#319, #351). Unity gives no error for any of them, so always read the result back.
