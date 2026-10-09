@@ -28,41 +28,39 @@ The same goes for events: when the user adjusts their view height (`ViewAdjust` 
 
 | Field | What to wire | Notes |
 |---|---|---|
-| `head` | `RiggingAttachPointHead` | Child of `HeadPositionOrientation`; y:-0.12, z:-0.07 offset from HMD |
-| `neck` | `RiggingAttachPointNeck` | Child of `HeadPositionOrientation`; y:-0.23, z:-0.17 offset |
-| `headTop` | `RiggingAttachPointHeadTop` | Child of `HeadPositionOrientation`; y:+0.12 — used for height measurement by `SizeAdjust` |
-| `leftHand` | `RiggingAttachPointLeftHand` | Child of `Left Controller` (P_Self_Player) or child of `LeftHandPositionOrientation` (P_Player). Has a pre-baked rotation offset that maps controller space to wrist space. |
+| `head` | `RiggingAttachPointHead` | Child of `CameraPositionOrientation`; y:-0.12, z:-0.07 offset from HMD |
+| `neck` | `RiggingAttachPointNeck` | Child of `CameraPositionOrientation`; y:-0.23, z:-0.17 offset |
+| `headTop` | `RiggingAttachPointHeadTop` | Child of `CameraPositionOrientation`; y:+0.12 — used for height measurement by `SizeAdjust` |
+| `leftHand` | `RiggingAttachPointLeftHand` | Child of `HandsPositionOrientation/LeftHandPositionOrientation`. Has a pre-baked position and rotation offset that maps controller space to wrist space. |
 | `rightHand` | `RiggingAttachPointRightHand` | Same as leftHand, right side. |
 
-**Important**: for `P_Self_Player`, `leftHand`/`rightHand` must point to the `RiggingAttachPoint*Hand` that is a child of the **XR controller GO** (`Left Controller` / `Right Controller`), not the one inherited from P_Player's `LeftHandPositionOrientation`. The XR-controller attach points have the correct pre-baked rotation for mapping controller orientation to avatar wrist orientation.
+All five live in `P_Player` and are inherited by `P_Self_Player` (a variant of `P_Player`), so your own avatar and the way others see you use exactly the same attach points and offsets. `P_Self_Player` has no overrides on `PlayerTrackingTargets`.
 
 ## How tracking flows at runtime
 
 ### Other players (P_Player)
+
 ```
-Network data → PlayerNetworkControllerBase
-  → drives HeadPositionOrientation.position/rotation
+Network data → PlayerNetworkControllerOther
+  → drives CameraPositionOrientation.position/rotation
       → RiggingAttachPointHead (child, fixed offset)  ← PlayerTrackingTargets.head
       → RiggingAttachPointNeck (child, fixed offset)  ← PlayerTrackingTargets.neck
       → RiggingAttachPointHeadTop (child)             ← PlayerTrackingTargets.headTop
-  → drives LeftHandPositionOrientation.position/rotation
-      → RiggingAttachPointLeftHand (child)            ← PlayerTrackingTargets.leftHand
+  → drives LeftHandPositionOrientation.position/rotation (the raw controller pose)
+      → RiggingAttachPointLeftHand (child, fixed offset) ← PlayerTrackingTargets.leftHand
 ```
 
 ### Self player (P_Self_Player)
-```
-XR camera → Main Camera (auto-tracked)
-  → RiggingAttachPointHead (child)    ← PlayerTrackingTargets.head
-  → RiggingAttachPointNeck (child)    ← PlayerTrackingTargets.neck
-  → RiggingAttachPointHeadTop (child) ← PlayerTrackingTargets.headTop
 
-XR controller → Left Controller (auto-tracked)
-  → RiggingAttachPointLeftHand (child) ← PlayerTrackingTargets.leftHand
-
-PlayerNetworkControllerSelf.Update() also copies:
-  camTransform → HeadPositionOrientation  (so P_Player-inherited avatars track)
-  LeftHandTransform → LeftHandPositionOrientation  (same reason)
 ```
+XR camera → Main Camera, XR controller → Left Controller (auto-tracked)
+
+PlayerNetworkControllerSelf.Update() copies them, exactly as the network does for other players:
+  camTransform → CameraPositionOrientation   → RiggingAttachPoint{Head,Neck,HeadTop}
+  Left Controller → LeftHandPositionOrientation → RiggingAttachPointLeftHand
+```
+
+The same pose is what gets sent to the other participants, so what you see of your own avatar is what they see.
 
 ## Wiring checklist for a new avatar prefab
 
@@ -74,6 +72,6 @@ PlayerNetworkControllerSelf.Update() also copies:
 
 ## Known gotchas
 
-- **Hand rotation 90° off**: if `leftHand`/`rightHand` in `PlayerTrackingTargets` point to the wrong `RiggingAttachPointLeftHand` (e.g. the one inherited from P_Player rather than the one under `Left Controller`), the pre-baked rotation offset will be wrong and the avatar hands will appear twisted.
+- **Hand rotation 90° off**: if `leftHand`/`rightHand` in `PlayerTrackingTargets` point to the raw controller pose (`Left Controller`, or `LeftHandPositionOrientation` itself) instead of `RiggingAttachPointLeftHand`, the pre-baked rotation offset is missing and the avatar hands appear twisted.
 - **`PlayerRepresentationWirer` fires on first enable**: if the avatar GO is active when the player prefab is instantiated, `OnEnable` fires before `PlayerTrackingTargets` is fully set up. Ensure the player prefab has `PlayerTrackingTargets` wired before the avatar GO is activated (it always is in the shipped prefabs).
 - **Generic vs Humanoid rig**: P_Mannequin uses a Generic rig; Remy/Megan use Humanoid Mixamo rigs. There is no automatic retargeting — `SyncSkeletonToVRRig` must be wired to the correct bones for each rig.
