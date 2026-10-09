@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `BarrierController`, `PFB_Barrier` and `OBJ_BarrierNetworkButton`: wait until all participants are ready (#319)
 - `NetworkIdBehaviour` no longer invents NetworkIds when prefabs are edited from scripts (#351)
 - `GazeDetector` (on `P_Self_Player`'s camera), `GazeTarget` and `PFB_GazeTarget`: head-direction gaze detection without physics layers (#336)
+- `VRTPilotConfig`: base class for per-session settings from `pilotconfig.json` (#325)
 
 ## [1.4.3] - 2026-07-08
 
