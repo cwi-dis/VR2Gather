@@ -24,6 +24,10 @@ namespace VRT.Pilots.Common
         [Tooltip("Transform tracking the player's right hand/controller")]
         public Transform rightHand;
         // Future: leftFoot, rightFoot, waist, ...
+        [Tooltip("The player's own hand models. Representations with hands of their own (avatars) hide these while active.")]
+        public GameObject[] handModels;
+
+        int m_HandModelsHidden;
 
         /// <summary>
         /// Raised when the user has adjusted their view height (ViewAdjust), so representations
@@ -37,6 +41,20 @@ namespace VRT.Pilots.Common
         public void NotifyViewAdjusted()
         {
             ViewAdjusted?.Invoke();
+        }
+
+        /// <summary>
+        /// Hide (or stop hiding) the hand models. Counted, because during a representation
+        /// switch the new representation can be enabled before the old one is disabled.
+        /// </summary>
+        public void HideHandModels(bool hide)
+        {
+            m_HandModelsHidden = Mathf.Max(0, m_HandModelsHidden + (hide ? 1 : -1));
+            if (handModels == null) return;
+            foreach (var handModel in handModels)
+            {
+                if (handModel != null) handModel.SetActive(m_HandModelsHidden == 0);
+            }
         }
     }
 }
