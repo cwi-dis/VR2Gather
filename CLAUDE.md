@@ -41,6 +41,8 @@ cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 
 **CI/CD**: none at the moment (the old workflow was removed in #322); see #355.
 
+**Releasing**: follow `Documentation/21-releasing.md` (version + tag, players built on each platform, GitHub release, update `VR2Gather_sample`).
+
 There are no automated test commands — testing is done by running sample scenes in the Unity Editor (see Samples below).
 
 ## Architecture

@@ -10,6 +10,7 @@ This documentation is intended to get you started with developing a VR2Gather ex
 - [Interaction system](100-interaction.md) explains the two primary user actions (pressing buttons, holding objects), the input modes supported (XR controllers, hand tracking, desktop keyboard+mouse), and the four categories of interactable objects.
 - [Creating an experience](10-createnew.md) explains how to start creating a new experience with VR2Gather.
 - [Building the experience](20-building.md) has some information on creating the built application.
+- [Making a release](21-releasing.md) lists the steps for a VR2Gather release (tag, players, `VR2Gather_sample`).
 
 Here is a walkthrough on how to port an existing pre-April-2024 VR2Gather experience to the new VR2Gather package: [Port a VRTApp to the package](31-port-to-package.md).
 

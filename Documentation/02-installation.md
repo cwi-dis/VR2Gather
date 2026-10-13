@@ -106,6 +106,8 @@ You will probably want to update your version of VR2Gather and its samples at so
 
 For this reason it is a **very good idea** (bold used intentionally) not to modify the samples, and not to copy scripts or prefabs from the VR2Gather package.
 
+Importing the samples of a new VR2Gather version replaces the old ones (`Assets/Samples/VR2Gather/<old version>` is deleted), so any edits you made there are lost.
+
 In stead, create your own prefab variant (or C# subclass) where you implement your changes to the original.
 
 This way, when the underlying prefab or script is modified in a future version of VR2Gather you will have both any new features provided by the VR2Gather base object and your modifications.
