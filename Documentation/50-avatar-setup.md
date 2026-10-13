@@ -9,7 +9,7 @@ Each player prefab (`P_Player` for other participants, `P_Self_Player` for yours
 By default these hold the two grey mannequins:
 
 - `P_Mannequin` (`altRepOne`): the full mannequin.
-- `MannequinHeadless` (`altRepTwo`): the same without a head, so when you use it yourself in VR you don't look at the inside of your own head.
+- `MannequinHeadless` (`altRepTwo`): the same without a head, which can be used with point clouds in _Marie-Antoinette-mode_.
 
 Both are Humanoid avatars built with the *Setup Humanoid Avatar* tool described below, so your own avatars have exactly the same structure.
 
@@ -85,7 +85,6 @@ The measurement reflects your posture at that moment: a reset while sitting give
 4. **Save the wrapper as a prefab.**
 5. **Put it in a player.** In a variant of `P_Player` (and/or `P_Self_Player`): add the avatar prefab as a child of the player root (inactive), and assign it to `altRepOne` or `altRepTwo` of `PlayerControllerOther`/`PlayerControllerSelf`.
 6. **In a self player**, also set the avatar's `SizeAdjust` overrides as `P_Self_Player` does for the mannequins: tick `setHeightOnHMDTracking`, and set the HMD tracking action to the reference "XRI Head/Is Tracked". (Issue #360 is about moving this to the player, so it won't be needed any more.)
-7. **For your own view in VR**, consider a headless variant of the model, like `MannequinHeadless`.
 
 What the tool builds, under the wrapper:
 
