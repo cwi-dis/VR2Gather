@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mannequin avatars are sized at the neck, where they're anchored, so feet no longer float or sink (#356)
 - Mannequin feet are pinned to the floor without physics (no Rigidbody/BoxCollider on the leg IK targets) (#332)
 - Tools > VR2Gather Setup Humanoid Avatar: turn any Humanoid model into an avatar representation (`HumanoidAvatarSetup`) (#332)
+- Avatar representations hide the player's VR2Gather hand models (`PlayerTrackingTargets.handModels`) (#332)
 
 ## [1.4.3] - 2026-07-08
 

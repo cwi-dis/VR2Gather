@@ -10,6 +10,8 @@ namespace VRT.Pilots.Common
     /// tracking inputs (SyncSkeletonToVRRig vrTargets, SizeAdjust sources) from the
     /// PlayerTrackingTargets found in the parent player hierarchy, and subscribes
     /// SizeAdjust.AdjustHeight to its ViewAdjusted event (unsubscribed in OnDisable).
+    /// Optionally hides the player's own hand models while active, because the avatar
+    /// has hands of its own.
     /// So the player prefab needs no references into the representation.
     ///
     /// Subclass and override OnApply() to add app-specific setup such as skin/hair
@@ -17,8 +19,12 @@ namespace VRT.Pilots.Common
     /// </summary>
     public class PlayerRepresentationWirer : MonoBehaviour
     {
+        [Tooltip("Hide the player's own hand models while this representation is active (it has hands of its own). Switch off to see both, e.g. to check hand alignment.")]
+        [SerializeField] bool hideHandModels = true;
+
         PlayerTrackingTargets m_SubscribedTargets;
         SizeAdjust m_SubscribedSizeAdjust;
+        PlayerTrackingTargets m_HidingHandModelsOf;
 
         void OnEnable() => Apply();
 
@@ -56,6 +62,12 @@ namespace VRT.Pilots.Common
                 m_SubscribedSizeAdjust = sizeAdjust;
             }
 
+            if (hideHandModels)
+            {
+                targets.HideHandModels(true);
+                m_HidingHandModelsOf = targets;
+            }
+
             OnApply(targets);
         }
 
@@ -67,6 +79,11 @@ namespace VRT.Pilots.Common
             }
             m_SubscribedTargets = null;
             m_SubscribedSizeAdjust = null;
+            if (m_HidingHandModelsOf != null)
+            {
+                m_HidingHandModelsOf.HideHandModels(false);
+                m_HidingHandModelsOf = null;
+            }
         }
 
         /// <summary>

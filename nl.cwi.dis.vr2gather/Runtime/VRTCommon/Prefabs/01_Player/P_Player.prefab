@@ -1180,6 +1180,9 @@ MonoBehaviour:
   headTop: {fileID: 5227205512041566135}
   leftHand: {fileID: 7751018354254181280}
   rightHand: {fileID: 9021465172405032371}
+  handModels:
+  - {fileID: 711526660022205549}
+  - {fileID: 329863871898521528}
 --- !u!1 &5504617616520735306
 GameObject:
   m_ObjectHideFlags: 0
@@ -1812,6 +1815,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 368926196837826876}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &711526660022205549 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: bf7151579c38e2a44be94ba8773876c1,
+    type: 3}
+  m_PrefabInstance: {fileID: 368926196837826876}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &1991810227100634364 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -7009038412992213568, guid: bf7151579c38e2a44be94ba8773876c1,
@@ -1886,6 +1895,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56186ccf27ad7864681108ed88349071, type: 3}
+--- !u!1 &329863871898521528 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 56186ccf27ad7864681108ed88349071,
+    type: 3}
+  m_PrefabInstance: {fileID: 599683127101764329}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1141726126990644482 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 56186ccf27ad7864681108ed88349071,
