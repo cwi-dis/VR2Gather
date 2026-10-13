@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mannequin feet are pinned to the floor without physics (no Rigidbody/BoxCollider on the leg IK targets) (#332)
 - Tools > VR2Gather Setup Humanoid Avatar: turn any Humanoid model into an avatar representation (`HumanoidAvatarSetup`) (#332)
 - Avatar representations hide the player's VR2Gather hand models (`PlayerTrackingTargets.handModels`) (#332)
+- `P_Mannequin` and `MannequinHeadless` are now Humanoid, built with the Setup Humanoid Avatar tool (#359)
 
 ## [1.4.3] - 2026-07-08
 
