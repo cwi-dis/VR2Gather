@@ -64,6 +64,10 @@ namespace VRT.Pilots.Common
             RemovePreviousSetup(wrapper, model);
 
             // The Animator must not move the model around: SyncSkeletonToVRRig positions it.
+            // SyncSkeletonToVRRig.neck moves the whole model (the Animator's own transform), as in
+            // P_Mannequin. A Humanoid Animator resets the hips every frame, but relative to the
+            // model, so they come along. (Trolley moved only the hips, with a Body Constraint;
+            // then the feet stay behind at the player root and the legs slant.)
             animator.applyRootMotion = false;
 
             // Rig with the constraints, under the model
@@ -73,26 +77,9 @@ namespace VRT.Pilots.Common
             var rig = vrConstraints.gameObject.AddComponent<Rig>();
             rig.weight = 1;
 
-            // Body Constraint, first so it evaluates before the IK. A Humanoid Animator puts the
-            // hips back at their default position every frame, before the constraints run, which
-            // folds the legs up ("lotus"). This pins the hips to the Body Constraint object, which
-            // SyncSkeletonToVRRig.neck moves in LateUpdate (so with one frame of lag).
-            var bodyTarget = NewChild(vrConstraints, "Body Constraint");
-            bodyTarget.position = Bone(HumanBodyBones.Hips).position;
-            var body = bodyTarget.gameObject.AddComponent<MultiPositionConstraint>();
-            var bodyData = body.data;
-            bodyData.constrainedObject = Bone(HumanBodyBones.Hips);
-            var sources = new WeightedTransformArray();
-            sources.Add(new WeightedTransform(bodyTarget, 1));
-            bodyData.sourceObjects = sources;
-            bodyData.constrainedXAxis = bodyData.constrainedYAxis = bodyData.constrainedZAxis = true;
-            bodyData.maintainOffset = false;
-            body.data = bodyData;
-            body.weight = 1;
-
             // Proxy for the head direction (used to turn the body). Not the head bone itself:
             // SyncSkeletonToVRRig maps the head before the neck, and the neck mapping moves the
-            // whole body, so the head would be moved twice.
+            // whole model, so the head would be moved twice.
             var headTarget = NewChild(vrConstraints, "Head Constraint");
             headTarget.SetPositionAndRotation(Bone(HumanBodyBones.Head).position, Bone(HumanBodyBones.Head).rotation);
 
@@ -117,7 +104,7 @@ namespace VRT.Pilots.Common
             sync.head = new SyncSkeletonToVRRig.VRMap { rigTarget = headTarget };
             sync.neck = new SyncSkeletonToVRRig.VRMap
             {
-                rigTarget = bodyTarget,
+                rigTarget = model.transform,
                 rigSource = Bone(HumanBodyBones.Neck),
                 positionOnly = true,
                 includeYRotation = true,
