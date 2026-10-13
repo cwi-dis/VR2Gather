@@ -306,12 +306,17 @@ namespace VRT.UserRepresentation.PointCloud
 
         public new SyncConfig GetSyncConfig()
         {
+            SyncConfig rv = new SyncConfig();
             if (!isSource)
             {
                 Debug.LogError($"Programmer error: {Name()}: GetSyncConfig called for pipeline that is not a source");
-                return new SyncConfig();
+                return rv;
             }
-            SyncConfig rv = new SyncConfig();
+
+            if (writer == null)
+            {
+                return rv;
+            }
             if (writer is AsyncWriter pcWriter)
             {
                 rv.visuals = pcWriter.GetSyncInfo();
