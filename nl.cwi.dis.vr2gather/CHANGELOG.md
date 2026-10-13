@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `P_Mannequin` is no longer scaled 13% too tall (bent knees): its height is measured to the top of the head (#331)
 - Avatar hands use the wrist attach points for other players too, not only for yourself (#332)
 - Other players' VR2Gather hand models are no longer rotated ~90° from the real hand (#332)
+- Mannequin avatars are sized at the neck, where they're anchored, so feet no longer float or sink (#356)
 
 ## [1.4.3] - 2026-07-08
 

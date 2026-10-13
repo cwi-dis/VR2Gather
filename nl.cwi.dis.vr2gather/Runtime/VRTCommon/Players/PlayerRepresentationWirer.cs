@@ -47,7 +47,9 @@ namespace VRT.Pilots.Common
             var sizeAdjust = GetComponentInChildren<SizeAdjust>();
             if (sizeAdjust != null)
             {
-                sizeAdjust.SourceTop = targets.headTop.gameObject;
+                // Measure at the neck: that's where SyncSkeletonToVRRig anchors the avatar, and it
+                // hardly moves when the user bends their head (#356).
+                sizeAdjust.SourceTop = targets.neck.gameObject;
                 sizeAdjust.SourceBottom = targets.gameObject;
                 targets.ViewAdjusted += sizeAdjust.AdjustHeight;
                 m_SubscribedTargets = targets;

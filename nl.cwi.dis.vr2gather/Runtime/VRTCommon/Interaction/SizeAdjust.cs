@@ -48,14 +48,14 @@ namespace VRT.Pilots.Common
             Vector3 topPoint = DestinationTop.transform.position;
             Vector3 bottomPoint = DestinationBottom.transform.position;
             nativeHeight = topPoint.y - bottomPoint.y;
-            if (debug) Debug.Log($"SizeAdjust: nativeHeight={nativeHeight}");
+            if (debug) Debug.Log($"SizeAdjust({DebugName()}): nativeHeight={nativeHeight:F3}, destTop.y={topPoint.y:F3}, destBottom.y={bottomPoint.y:F3}, scale={nativeSize.y:F3}");
         }
 
         private void Start()
         {
             if (setHeightOnStart)
             {
-                AdjustHeight();
+                AdjustHeight("start");
             }
         }
 
@@ -65,12 +65,17 @@ namespace VRT.Pilots.Common
             {
                 if (m_hmdTrackingAction.action.WasPerformedThisFrame())
                 {
-                    AdjustHeight();
+                    AdjustHeight("HMD tracking");
                 }
             }
         }
 
         public void AdjustHeight()
+        {
+            AdjustHeight("callback");
+        }
+
+        void AdjustHeight(string reason)
         {
             if (!gameObject.activeInHierarchy || !enabled) return;
             float topY = SourceTop.transform.position.y;
@@ -87,10 +92,20 @@ namespace VRT.Pilots.Common
                 Debug.LogWarning($"SizeAdjust: ignoring preposterous factor={factor}, too small. nativeHeight={nativeHeight}, actualHeight={actualHeight}");
                 return;
             }
+            float oldScale = Destination.transform.localScale.y;
             currentSize = nativeSize * factor;
 
             Destination.transform.localScale = currentSize;
-            if (debug) Debug.Log($"SizeAdjust: height was {actualHeight}. currentSize={currentSize}. Now height is {SourceTop.transform.position.y - SourceBottom.transform.position.y}");
+            if (debug)
+            {
+                Debug.Log($"SizeAdjust({DebugName()}): reason={reason}, sourceTop.y={topY:F3}, sourceBottom.y={botY:F3}, actualHeight={actualHeight:F3}, nativeHeight={nativeHeight:F3}, scale {oldScale:F3} -> {currentSize.y:F3}, after: destTop.y={DestinationTop.transform.position.y:F3}, destBottom.y={DestinationBottom.transform.position.y:F3}");
+            }
+        }
+
+        string DebugName()
+        {
+            var player = GetComponentInParent<PlayerTrackingTargets>();
+            return $"{(player != null ? player.name : transform.root.name)}/{name}";
         }
     }
 }

@@ -15,9 +15,9 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("Transform at head level (slightly below/behind HMD — RiggingAttachPointHead)")]
         public Transform head;
-        [Tooltip("Transform at neck level (further below/behind HMD — RiggingAttachPointNeck)")]
+        [Tooltip("Transform at neck level (further below/behind HMD — RiggingAttachPointNeck). Used for height measurement.")]
         public Transform neck;
-        [Tooltip("Transform at top of skull (slightly above HMD — RiggingAttachPointHeadTop). Used for height measurement.")]
+        [Tooltip("Transform at top of skull (slightly above HMD — RiggingAttachPointHeadTop)")]
         public Transform headTop;
         [Tooltip("Transform tracking the player's left hand/controller")]
         public Transform leftHand;
