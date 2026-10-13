@@ -375,7 +375,7 @@ MonoBehaviour:
   SourceTop: {fileID: 0}
   SourceBottom: {fileID: 0}
   Destination: {fileID: 2771220398156754783}
-  DestinationTop: {fileID: 3217419243018584959}
+  DestinationTop: {fileID: 8184641445505775108}
   DestinationBottom: {fileID: 1057528258240405490}
   setHeightOnStart: 0
   setHeightOnHMDTracking: 0
@@ -1361,12 +1361,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 174639318388073123}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &3217419243018584959 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3371753878029033948, guid: 04593bc496a3e45dfbc0a5797855c038,
-    type: 3}
-  m_PrefabInstance: {fileID: 174639318388073123}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3267274399224316528 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -5819845571130154797, guid: 04593bc496a3e45dfbc0a5797855c038,
@@ -1610,6 +1604,12 @@ Transform:
 --- !u!4 &8181729804740306349 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -871685807846209778, guid: 04593bc496a3e45dfbc0a5797855c038,
+    type: 3}
+  m_PrefabInstance: {fileID: 174639318388073123}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8184641445505775108 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -866448632342522713, guid: 04593bc496a3e45dfbc0a5797855c038,
     type: 3}
   m_PrefabInstance: {fileID: 174639318388073123}
   m_PrefabAsset: {fileID: 0}
