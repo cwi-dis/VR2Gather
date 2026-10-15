@@ -14,6 +14,7 @@ VRTApp-Develop/scripts/build.sh windows    # or mac, linux
 - The player goes to `VRTApp-Develop/Builds/<platform>/`, the zip to `Builds/<productName>-<platform>.zip`, and the build log to `Builds/buildlog-<platform>.txt`. Unity's debug-symbol folders (`*_DoNotShip`, `*_DontShip…`) are left out of the zip.
 - Building for another platform than the one you're on needs that platform's build support module in the Editor.
 - cwipc must be installed on the build machine, otherwise its native libraries aren't found.
+- Linux players have no VR: OpenXR doesn't support Linux, and with OpenXR active its build validation refuses a Linux build. So for Linux the script builds through `VRT.Tools.CommandLineBuild.BuildLinux`, which disables the XR loaders for Standalone during the build and puts them back afterwards. A Linux build from the Build Profiles window in the Editor still fails, unless you first disable OpenXR for Standalone in XR Plug-in Management (and enable it again afterwards).
 
 The script is the same in every VR2Gather project: it finds the project from its own location and the app name from `productName` in the Player Settings. To use it in your own project, copy it to `scripts/build.sh` in your project folder (`VR2Gather_sample` already has it).
 

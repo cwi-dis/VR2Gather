@@ -44,7 +44,12 @@ LOG_PATH="$PROJECT_DIR/Builds/buildlog-$platform.txt"
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 echo "Building $target player for $PROJECT_DIR into $BUILD_DIR/$player"
-unity build "$PROJECT_DIR" --target "$target" -o "$BUILD_DIR/$player" -l "$LOG_PATH" --no-tail --non-interactive
+# OpenXR doesn't support Linux: build the Linux player without the XR loaders (see CommandLineBuild.cs)
+method_args=()
+if [ "$platform" = linux ]; then
+	method_args=(--execute-method VRT.Tools.CommandLineBuild.BuildLinux)
+fi
+unity build "$PROJECT_DIR" --target "$target" "${method_args[@]}" -o "$BUILD_DIR/$player" -l "$LOG_PATH" --no-tail --non-interactive
 
 # Unity puts debug-symbol folders next to the player that must not be shipped
 echo "Zipping to $ZIP_PATH"
