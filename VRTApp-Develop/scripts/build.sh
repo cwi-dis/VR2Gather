@@ -2,13 +2,17 @@
 #
 # Build a player for this Unity project with the Unity CLI (`unity build`) and zip it.
 #
-# Usage: scripts/build.sh [mac|windows|linux]     (default: the current platform)
+# Usage: scripts/build.sh [mac|windows|linux] [--no-xr]     (default: the current platform)
+#
+# --no-xr builds a desktop-only player without XR (always the case for linux: OpenXR doesn't support
+# Linux, see VR2Gather issue #366).
 #
 # This script is identical in every VR2Gather project: the project is the directory above this
 # script, and the app name is the productName from ProjectSettings.
 # The Unity version comes from ProjectVersion.txt; the Unity CLI finds the Editor.
 # The project must not be open in a Unity Editor while building.
-# Output: Builds/<platform>/ and Builds/<productName>-<platform>.zip, build log in Builds/.
+# Output: Builds/<platform>/ and Builds/<productName>-<platform>.zip, build log in Builds/
+# (<platform> gets a -noxr suffix for --no-xr builds of mac and windows).
 #
 set -e
 set -x
@@ -20,7 +24,14 @@ if [ -z "$APP_NAME" ]; then
 	exit 1
 fi
 
-platform="$1"
+platform=""
+noxr=""
+for arg in "$@"; do
+	case "$arg" in
+	--no-xr) noxr=yes ;;
+	*) platform="$arg" ;;
+	esac
+done
 if [ -z "$platform" ]; then
 	case "$(uname -s)" in
 	Darwin) platform=mac ;;
@@ -34,17 +45,28 @@ case "$platform" in
 mac) target=StandaloneOSX; player="$APP_NAME.app" ;;
 windows) target=StandaloneWindows64; player="$APP_NAME.exe" ;;
 linux) target=StandaloneLinux64; player="$APP_NAME" ;;
-*) echo "Usage: $0 [mac|windows|linux]" >&2; exit 2 ;;
+*) echo "Usage: $0 [mac|windows|linux] [--no-xr]" >&2; exit 2 ;;
 esac
+variant="$platform"
+if [ "$platform" = linux ]; then
+	noxr=yes
+elif [ -n "$noxr" ]; then
+	variant="$platform-noxr"
+fi
 
-BUILD_DIR="$PROJECT_DIR/Builds/$platform"
-ZIP_PATH="$PROJECT_DIR/Builds/$APP_NAME-$platform.zip"
-LOG_PATH="$PROJECT_DIR/Builds/buildlog-$platform.txt"
+BUILD_DIR="$PROJECT_DIR/Builds/$variant"
+ZIP_PATH="$PROJECT_DIR/Builds/$APP_NAME-$variant.zip"
+LOG_PATH="$PROJECT_DIR/Builds/buildlog-$variant.txt"
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 echo "Building $target player for $PROJECT_DIR into $BUILD_DIR/$player"
-unity build "$PROJECT_DIR" --target "$target" -o "$BUILD_DIR/$player" -l "$LOG_PATH" --no-tail --non-interactive
+# Without XR: build through VRT.Tools.CommandLineBuild, which disables the XR loaders during the build
+method_args=()
+if [ -n "$noxr" ]; then
+	method_args=(--execute-method VRT.Tools.CommandLineBuild.BuildWithoutXR)
+fi
+unity build "$PROJECT_DIR" --target "$target" "${method_args[@]}" -o "$BUILD_DIR/$player" -l "$LOG_PATH" --no-tail --non-interactive
 
 # Unity puts debug-symbol folders next to the player that must not be shipped
 echo "Zipping to $ZIP_PATH"
