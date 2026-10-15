@@ -7,29 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.4] - unreleased
 
-- Bump `nl.cwi.dis.cwipc` to 8.2.0, add URP package (prep for #256)
-- `P_Self_Player`/`P_Player`/`VRTLoginManager` now work under URP too (#256, #333)
-- `VRTConfig.ConfigFilename()` finds the run folder regardless of which file is asked for first (#337)
-- `NetworkTrigger` stats lines log the true originator's userId (#335)
-- No crash in a Standalone Session with point cloud self-representation (#338)
-- Fades no longer log a `_MainTex` warning (#342)
-- Early warnings/errors wait for the HUD instead of showing old-style popups (#343)
-- `PilotController` logs scene started/stopped stats lines (#346)
-- App-defined message type IDs start at 200, with an `int` overload of `RegisterEventType` and new typed-messages docs (#345)
-- Porting Check warns about direct `SceneManager.LoadScene` calls (#348)
-- `BarrierController`, `PFB_Barrier` and `OBJ_BarrierNetworkButton`: wait until all participants are ready (#319)
-- `NetworkIdBehaviour` no longer invents NetworkIds when prefabs are edited from scripts (#351)
-- `GazeDetector` (on `P_Self_Player`'s camera), `GazeTarget` and `PFB_GazeTarget`: head-direction gaze detection without physics layers (#336)
-- `VRTPilotConfig`: base class for per-session settings from `pilotconfig.json` (#325)
-- `P_Self_Player` holds no references into its representations: avatars subscribe to `PlayerTrackingTargets.ViewAdjusted` themselves (#331)
-- `P_Mannequin` is no longer scaled 13% too tall (bent knees): its height is measured to the top of the head (#331)
-- Avatar hands use the wrist attach points for other players too, not only for yourself (#332)
-- Other players' VR2Gather hand models are no longer rotated ~90° from the real hand (#332)
-- Mannequin avatars are sized at the neck, where they're anchored, so feet no longer float or sink (#356)
-- Mannequin feet are pinned to the floor without physics (no Rigidbody/BoxCollider on the leg IK targets) (#332)
-- Tools > VR2Gather Setup Humanoid Avatar: turn any Humanoid model into an avatar representation (`HumanoidAvatarSetup`) (#332)
-- Avatar representations hide the player's VR2Gather hand models (`PlayerTrackingTargets.handModels`) (#332)
-- `P_Mannequin` and `MannequinHeadless` are now Humanoid, built with the Setup Humanoid Avatar tool (#359)
+- Avatar representations are much easier to add (Setup Humanoid Avatar tool), and avatars fit the player better: right size, feet on the floor, hands aligned (#331, #332, #356, #359)
+- New building blocks: a barrier that waits until all participants are ready, and head-direction gaze detection (#319, #336)
+- Better support for experiments: per-session settings (`pilotconfig.json`), more stats lines, app-defined message types (#325, #335, #345, #346)
+- Command-line builds for Windows, macOS and Linux; Linux players run without XR (#322, #366)
+- cwipc 8.2.0 and partial URP support (#256, #333)
+- Porting Check warns about scene changes that aren't coordinated between participants (#348)
+- Various minor bugs fixed (#337, #338, #342, #343, #351)
 
 ## [1.4.3] - 2026-07-08
 
