@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.4] - unreleased
+## [1.4.4] - 2026-10-16
 
 - Avatar representations are much easier to add (Setup Humanoid Avatar tool), and avatars fit the player better: right size, feet on the floor, hands aligned (#331, #332, #356, #359)
 - New building blocks: a barrier that waits until all participants are ready, and head-direction gaze detection (#319, #336)
