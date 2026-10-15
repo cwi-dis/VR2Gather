@@ -5,7 +5,7 @@ A release consists of a version tag in this repository, a GitHub release with bu
 ## 1. Prepare
 
 - The milestone for the release has no open issues left (move anything that isn't done to the next milestone).
-- `nl.cwi.dis.vr2gather/CHANGELOG.md`: review the section of the new version. One short line per change, with the issue number; leave out things that are too small to mention.
+- `nl.cwi.dis.vr2gather/CHANGELOG.md`: while working, the `unreleased` section gets one short line per change, with the issue number. For the release, regroup it into a few themed lines, each with all its issue numbers, plus a final catch-all like "Various minor bugs fixed (#…, #…)". A reader should see at a glance what the release is about; the issues have the details.
 - Anything that still needs a test on another platform or in VR has been tested. This includes building the players (step 3) on every platform, before tagging.
 
 ## 2. Version and tag
