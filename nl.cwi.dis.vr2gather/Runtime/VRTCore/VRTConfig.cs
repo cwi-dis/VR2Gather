@@ -154,13 +154,13 @@ namespace VRT.Core
             public readonly int AudioSampleRate = 48000;
             [Tooltip("Approximate voice input frame rate (will be rounded down to intgral number of DSP buffers)")]
             public int audioFps = 50;
-            [Tooltip("If > 0, voice output is further behind its natural playout time than this, and data is available, we will drop packets to catch up")]
+            [Tooltip("If > 0, and more than this much voice output (seconds) is buffered, we drop the oldest audio to get back to jitterBuffer")]
             public float maxPlayoutLatency = 0.3f;
-            [Tooltip("If voice output is further ahead of its natural playout time than this we will insert silence to allow the other streams to catch up")]
-            public float maxPlayoutAhead = 0.066f;
+            [Tooltip("Voice output (seconds) buffered before playout starts, and again after the buffer ran empty. Absorbs network jitter.")]
+            public float jitterBuffer = 0.1f;
             [Tooltip("If non-zero, sets the limit on the number of audio packets buffered for voice output (otherwise a sensible default is used)")]
             public int preparerQueueSize = 0;
-            [Tooltip("If true voice output will run at its own speed, unsynchronized with other streams, its natural playout clock determined by the local system clock")]
+            [Tooltip("If true voice output timing is not reported to the synchronizer, so other streams of the same user do not follow it")]
             public bool ignoreSynchronizer = false;
         }
         [Tooltip("Conversational audio settings")]

@@ -107,7 +107,7 @@ MonoBehaviour:
   VoiceConfig:
     audioFps: 50
     maxPlayoutLatency: 0.3
-    maxPlayoutAhead: 0.066
+    jitterBuffer: 0.1
     preparerQueueSize: 0
     ignoreSynchronizer: 0
   SynchronizerConfig:

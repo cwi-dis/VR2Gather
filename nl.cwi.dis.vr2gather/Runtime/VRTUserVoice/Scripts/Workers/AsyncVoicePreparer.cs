@@ -35,28 +35,36 @@ namespace VRT.UserRepresentation.Voice
         //
         float[] audioBuffer;
         Timestamp audioBufferHeadTimestamp;
-
-        bool PauseAudioPlayout = true;
-        // We should _not_ drop audio frames if they are in the past, but we also don't want to
-        // drop frames if we later have to insert zeros because we dropped too aggressive.
-        // Especially with bursty transport like Dash this is likely to happen.
         //
-        // The value of this parameter should be dynamically adjusted: it should start small and increase
-        // whenever we detect that after we have dropped frames we have to insert zeros a relatively short time
-        // later.
-        public Timedelta audioMaxAheadMs = 66;
-        // If we do need to drop frames to catch up it may be better to do a single drop of multiple
-        // frames than multiple drops of a single frame. We need to cater for that.
-        
+        // Jitter buffer. The network delivers packets irregularly, often in bursts. So playout only starts
+        // once jitterBufferSamples of audio is buffered, and whenever the buffer runs empty we buffer up to
+        // that level again (one short gap instead of many tiny ones). If more than maxBufferSamples piles up
+        // (after a network stall) the oldest audio is dropped to get back to the jitter buffer level.
+        //
+        // Everything is measured in buffered audio, never by comparing the sender timestamps to our own clock:
+        // the clocks of the sending and the receiving machine can easily differ by a second, and then every
+        // packet would look late and be dropped. For the same reason the synchronizer does not pause or drop
+        // voice: voice plays at its own pace, and only reports its timestamps so other streams can follow it.
+        //
+        readonly int jitterBufferSamples;
+        readonly int maxBufferSamples;
+        bool buffering = true;
+        int samplesPerPacket;
+
         public AsyncVoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
             NoUpdateCallsNeeded();
-            if (VRTConfig.Instance.VoiceConfig.maxPlayoutAhead != 0)
+            var voiceConfig = VRTConfig.Instance.VoiceConfig;
+            jitterBufferSamples = (int)(voiceConfig.jitterBuffer * voiceConfig.AudioSampleRate);
+            maxBufferSamples = (int)(voiceConfig.maxPlayoutLatency * voiceConfig.AudioSampleRate);
+            // Leave room above the jitter buffer level, otherwise every burst would cause drops
+            if (maxBufferSamples > 0 && maxBufferSamples < 2 * jitterBufferSamples)
             {
-                audioMaxAheadMs = (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutAhead * 1000);
+                maxBufferSamples = 2 * jitterBufferSamples;
             }
 #if VRT_WITH_STATS
             stats = new Stats(Name());
+            Statistics.Output(Name(), $"jitter_buffer_ms={1000 * jitterBufferSamples / voiceConfig.AudioSampleRate}, max_buffer_ms={1000 * maxBufferSamples / voiceConfig.AudioSampleRate}");
 #endif
             Debug.Log($"{Name()}: Started.");
             Start();
@@ -102,104 +110,77 @@ namespace VRT.UserRepresentation.Voice
         {
             lock (this)
             {
-                PauseAudioPlayout = false;
+                if (InQueue.IsClosed()) return false; // We are shutting down
+                _DropExcessAudio();
                 if (currentAudioFrame != null)
                 {
                     #pragma warning disable CS0162
                     if (debugBuffering) Debug.Log($"{Name()}: previous audio frame not consumed yet");
                     return true;
                 }
-                Timestamp bestTimestamp = 0;
-                if (synchronizer != null)
-                {
-                    bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame(isAudio: true);
-                    if (bestTimestamp != 0 && bestTimestamp < currentTimestamp)
-                    {
-                        if (debugBuffering || synchronizer.debugSynchronizer) Debug.Log($"{Name()}: LatchFrame: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp - bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
-                        PauseAudioPlayout = true;
-                        return false;
-                    }
-                    if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp - currentTimestamp} ms too late");
-                }
-                else
-                {
-                    // For voice, we do an extra step: we optionally set an upper limit to the latency.
-                    if (VRTConfig.Instance.VoiceConfig.maxPlayoutLatency > 0)
-                    {
-                        if (bestTimestamp == 0)
-                        {
-                            bestTimestamp = currentTimestamp;
-                        }
-                        Timestamp latestTimestampInqueue = InQueue.LatestTimestamp();
-                        if (latestTimestampInqueue > currentTimestamp + (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutLatency * 1000))
-                        {
-#pragma warning disable CS0162
-                            if (debugBuffering) Debug.Log($"{Name()}: LatchFrame: skip forward {latestTimestampInqueue - (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
-                            bestTimestamp = latestTimestampInqueue - (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutLatency * 1000);
-                        }
-                    }
-                }
-                if (InQueue.IsClosed()) return false; // We are shutting down
-                return _FillAudioFrame(bestTimestamp);
+                return _FillAudioFrame();
             }
         }
 
-        bool _FillAudioFrame(Timestamp minTimestamp)
+        // Audio available for playout, in samples. Caller must hold the lock.
+        int _BufferedSamples()
         {
-            int dropCount = 0;
-            while(true)
-            {
-                if (currentAudioFrame != null)
-                {
-                    Debug.LogError($"{Name()}: _fillAudioFrame called, but currentAudioFrame is not null");
-                    currentAudioFrame.free();
-                    currentAudioFrame = null;
-                }
-                currentAudioFrame = InQueue.TryDequeue(0);
-                if (currentAudioFrame == null) {
-                    if ((synchronizer != null && synchronizer.debugSynchronizer && currentTimestamp != 0))
-                    {
-                        Debug.Log($"{Name()}: no audio frame available");
-                    }
-#if VRT_WITH_STATS
-                    stats.statsUpdate(0, dropCount, true);
-#endif
-                    return false;
-                }
-#if VRT_AUDIO_DEBUG
-                ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.pointer, currentAudioFrame.length);
-#endif
-                currentTimestamp = currentAudioFrame.metadata.timestamp;
-#pragma warning disable CS0162
-                if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.metadata.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
-                if (minTimestamp > 0)
-                {
-                    bool canSkipForward = currentTimestamp < minTimestamp - audioMaxAheadMs;
-                    if (canSkipForward)
-                    {
-                        Timestamp queueHeadTimestamp = InQueue._PeekTimestamp();
-                        canSkipForward = queueHeadTimestamp != 0 && queueHeadTimestamp < minTimestamp - audioMaxAheadMs;
-#pragma warning disable CS0162
-                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack _FillAudioFrame: minTimestamp={minTimestamp} currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, queueHeadTimestamp={queueHeadTimestamp} canSkipForward={canSkipForward}");
-                        if (canSkipForward)
-                        {
-                            // There is another frame in the queue that is also earlier than minTimestamp.
-                            // Drop this one.
-                            if (debugBuffering) Debug.Log($"{Name()}: drop frame ts={currentTimestamp} because next ts={queueHeadTimestamp} is better");
-                            dropCount++;
-                            currentAudioFrame.free();
-                            currentAudioFrame = null;
-                            continue;
-                        }
-                    }
+            int count = InQueue.Count() * samplesPerPacket;
+            if (currentAudioFrame != null) count += currentAudioFrame.length / sizeof(float);
+            if (audioBuffer != null) count += audioBuffer.Length;
+            return count;
+        }
 
-                }
-                int nSamples = currentAudioFrame.length / sizeof(float);
-#if VRT_WITH_STATS
-                stats.statsUpdate(nSamples, dropCount, false);
-#endif
-                break;
+        // After a network stall the delayed packets arrive all at once. Playing them all would keep us
+        // that much behind for the rest of the session, so we skip the oldest audio down to the jitter buffer level.
+        void _DropExcessAudio()
+        {
+            if (maxBufferSamples <= 0 || samplesPerPacket == 0) return;
+            int buffered = _BufferedSamples();
+            if (buffered <= maxBufferSamples) return;
+            int dropCount = 0;
+            while (buffered - samplesPerPacket >= jitterBufferSamples)
+            {
+                BaseMemoryChunk frame = currentAudioFrame ?? InQueue.TryDequeue(0);
+                currentAudioFrame = null;
+                if (frame == null) break;
+                buffered -= frame.length / sizeof(float);
+                frame.free();
+                dropCount++;
             }
+#pragma warning disable CS0162
+            if (debugBuffering) Debug.Log($"{Name()}: dropped {dropCount} frames, {1000 * buffered / VRTConfig.Instance.VoiceConfig.AudioSampleRate} ms buffered");
+#if VRT_WITH_STATS
+            stats.statsDrop(dropCount);
+#endif
+        }
+
+        bool _FillAudioFrame()
+        {
+            if (currentAudioFrame != null)
+            {
+                Debug.LogError($"{Name()}: _fillAudioFrame called, but currentAudioFrame is not null");
+                currentAudioFrame.free();
+                currentAudioFrame = null;
+            }
+            currentAudioFrame = InQueue.TryDequeue(0);
+            if (currentAudioFrame == null)
+            {
+#if VRT_WITH_STATS
+                stats.statsUpdate(0, true);
+#endif
+                return false;
+            }
+#if VRT_AUDIO_DEBUG
+            ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.pointer, currentAudioFrame.length);
+#endif
+            currentTimestamp = currentAudioFrame.metadata.timestamp;
+            samplesPerPacket = currentAudioFrame.length / sizeof(float);
+#pragma warning disable CS0162
+            if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.metadata.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
+#if VRT_WITH_STATS
+            stats.statsUpdate(samplesPerPacket, false);
+#endif
             return true;
         }
 
@@ -241,7 +222,7 @@ namespace VRT.UserRepresentation.Voice
                 }
                 return true;
             }
-            if (currentAudioFrame == null) _FillAudioFrame(0);
+            if (currentAudioFrame == null) _FillAudioFrame();
             if (currentAudioFrame == null) return false;
             int availableLen = currentAudioFrame.length / sizeof(float);
             if (availableLen*sizeof(float) != currentAudioFrame.length)
@@ -262,11 +243,23 @@ namespace VRT.UserRepresentation.Voice
             lock(this)
             {
                 if (debugBuffering) Debug.Log($"{Name()}: GetAudioBuffer(..., {len})");
-                if (InQueue.IsClosed()) return len;
-                if (PauseAudioPlayout)
+                if (InQueue.IsClosed())
                 {
-                    if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: paused, inQueue={InQueue.QueuedDuration()} ms");
+                    System.Array.Clear(dst, 0, len);
                     return len;
+                }
+                if (buffering)
+                {
+                    if (currentAudioFrame == null) _FillAudioFrame();
+                    int buffered = _BufferedSamples();
+                    if (buffered == 0 || buffered < jitterBufferSamples)
+                    {
+                        if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack getAudioBuffer: buffering, {buffered} samples available");
+                        System.Array.Clear(dst, 0, len);
+                        return len;
+                    }
+                    if (debugBuffering) Debug.Log($"{Name()}: buffered {buffered} samples, starting playout");
+                    buffering = false;
                 }
 #pragma warning disable CS0162
                 if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack getAudioBuffer({len})");
@@ -284,9 +277,15 @@ namespace VRT.UserRepresentation.Voice
                 while (len > 0)
                 {
                     curLen = _fillFromAudioBuffer(dst, position, len);
-                    // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
+                    // If we didn't copy anything we ran out of audio: fill the rest with silence, and
+                    // buffer up to the jitter buffer level again before continuing.
                     if (curLen == 0)
                     {
+                        System.Array.Clear(dst, position, len);
+                        buffering = true;
+#if VRT_WITH_STATS
+                        stats.statsRebuffer();
+#endif
 #pragma warning disable CS0162
                         if (debugBuffering)
                         {
@@ -323,13 +322,23 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalSamples;
             double statsDrops;
             double statsNoData;
+            double statsRebuffers;
 
-            public void statsUpdate(int nSamples, int dropCount, bool noData)
+            public void statsDrop(int dropCount)
+            {
+                statsDrops += dropCount;
+            }
+
+            public void statsRebuffer()
+            {
+                statsRebuffers++;
+            }
+
+            public void statsUpdate(int nSamples, bool noData)
             {
 
                 statsTotalUpdates += 1;
                 statsTotalSamples += nSamples;
-                statsDrops += dropCount;
                 if (noData) statsNoData++;
 
                 if (ShouldOutput())
@@ -339,12 +348,13 @@ namespace VRT.UserRepresentation.Voice
                     {
                         samplesPerFrame = (int)(statsTotalSamples / (statsTotalUpdates - statsNoData));
                     }
-                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, samples_per_frame={samplesPerFrame}");
+                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, fps_rebuffered={statsRebuffers / Interval():F2}, samples_per_frame={samplesPerFrame}");
                     Clear();
                     statsTotalUpdates = 0;
                     statsTotalSamples = 0;
                     statsDrops = 0;
                     statsNoData = 0;
+                    statsRebuffers = 0;
                 }
             }
         }
