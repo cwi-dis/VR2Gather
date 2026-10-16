@@ -26,6 +26,12 @@ git push origin master vX.Y.Z
 
 On GitHub, create a release for the tag (*Releases*, *Draft a new release*), titled `vX.Y.Z`, and save it as a **draft**: nobody sees it yet, and the players get added in the next step. As release notes, copy the themed lines of the changelog section, optionally with a sentence on what the release is mainly about.
 
+Or from the command line, with the release notes in a file:
+
+```
+gh release create vX.Y.Z --draft --title vX.Y.Z --notes-file <release notes>
+```
+
 ## 4. Build the players and publish
 
 For now, by hand (some day GitHub Actions will do this, see #355). Build `VRTApp-Develop` on each platform with `VRTApp-Develop/scripts/build.sh`, from the tagged commit, with the Editor closed (see [Building the application](20-building.md)):
@@ -45,6 +51,13 @@ Rename the zips to the names earlier releases used (until `build.sh` makes them,
 | `VR2Gather-linux.zip` | `VRTApp-Develop-built-linux.zip` |
 
 When all three are there, publish the release and set it as the latest release.
+
+Or from the command line, after renaming the zips:
+
+```
+gh release upload vX.Y.Z VRTApp-Develop/Builds/VRTApp-Develop-built*.zip
+gh release edit vX.Y.Z --draft=false --latest
+```
 
 ## 5. Update VR2Gather_sample
 
