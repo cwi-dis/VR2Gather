@@ -24,7 +24,7 @@
 	"samples" : [
 		{
 			"displayName": "VRT Essential Assets",
-			"description": "A set of assets that are essential when using VR2Gather\n\nRun Tools->VR2Gather Porting Check both before (if available) and after updating the essentials.",
+			"description": "A set of assets that are essential when using VR2Gather\n\nRun Tools->VR2Gather Porting Check both before (if available) and after updating the essentials.\nEnsure you do not have VRTLoginManager (or another scene from these samples) open when updating.",
 			"path": "Samples~/VRTAssets"
 		}
 	]
