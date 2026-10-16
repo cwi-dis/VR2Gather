@@ -6,7 +6,7 @@ A release consists of a version tag in this repository, a GitHub release with bu
 
 - The milestone for the release has no open issues left (move anything that isn't done to the next milestone).
 - `nl.cwi.dis.vr2gather/CHANGELOG.md`: while working, the `unreleased` section gets one short line per change, with the issue number. For the release, regroup it into a few themed lines, each with all its issue numbers, plus a final catch-all like "Various minor bugs fixed (#…, #…)". A reader should see at a glance what the release is about; the issues have the details.
-- Anything that still needs a test on another platform or in VR has been tested. This includes building the players (step 3) on every platform, before tagging.
+- Anything that still needs a test on another platform or in VR has been tested. This includes building the players (step 4) on every platform, before tagging.
 
 ## 2. Version and tag
 
@@ -22,9 +22,13 @@ git tag -a vX.Y.Z -m "VR2Gather X.Y.Z"
 git push origin master vX.Y.Z
 ```
 
-## 3. Build the players
+## 3. Draft GitHub release
 
-For now, by hand (some day CI will do this, see #355). Build `VRTApp-Develop` on each platform with `VRTApp-Develop/scripts/build.sh`, from the tagged commit, with the Editor closed (see [Building the application](20-building.md)):
+On GitHub, create a release for the tag (*Releases*, *Draft a new release*), titled `vX.Y.Z`, and save it as a **draft**: nobody sees it yet, and the players get added in the next step. As release notes, copy the themed lines of the changelog section, optionally with a sentence on what the release is mainly about.
+
+## 4. Build the players and publish
+
+For now, by hand (some day GitHub Actions will do this, see #355). Build `VRTApp-Develop` on each platform with `VRTApp-Develop/scripts/build.sh`, from the tagged commit, with the Editor closed (see [Building the application](20-building.md)):
 
 - Windows: on a Windows machine, from Git Bash.
 - macOS: on a Mac.
@@ -32,13 +36,15 @@ For now, by hand (some day CI will do this, see #355). Build `VRTApp-Develop` on
 
 Each build leaves a zip in `VRTApp-Develop/Builds/`. Run each player once (login scene, and into a session) before releasing it.
 
-## 4. GitHub release
+Rename the zips to the names earlier releases used (until `build.sh` makes them, see #367), and attach them to the draft release:
 
-Create a release for the tag, with the changelog section as text and the zips attached:
+| `build.sh` makes | Upload as |
+|------------------|-----------|
+| `VR2Gather-windows.zip` | `VRTApp-Develop-built.zip` |
+| `VR2Gather-mac.zip` | `VRTApp-Develop-built-mac.zip` |
+| `VR2Gather-linux.zip` | `VRTApp-Develop-built-linux.zip` |
 
-```
-gh release create vX.Y.Z --title vX.Y.Z --notes-file <changelog section> VRTApp-Develop/Builds/*.zip
-```
+When all three are there, publish the release and set it as the latest release.
 
 ## 5. Update VR2Gather_sample
 
