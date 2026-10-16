@@ -21,11 +21,34 @@ namespace VRT.UserRepresentation.Voice
     {
         const float extraWaitTime = 0.005f; // Schedule the next enumerator call 5ms after we expect the next audio frame to be available.
         Coroutine coroutine;
-        QueueThreadSafe outQueue;
-        public float MicrophoneLevel { get; private set; }
+        protected QueueThreadSafe outQueue;
+        public float MicrophoneLevel { get; protected set; }
 
         BinaryWriter _wavWriter;
         int _wavSampleCount;
+
+        // An application can replace the microphone by another audio source (for example an AI voice)
+        // for a specific microphone name. The factory returns null to use the real microphone.
+        public delegate AsyncVoiceReader ReaderFactory(string deviceName, int sampleRate, int fps, int minBufferSize, QueueThreadSafe outQueue);
+        public static ReaderFactory CustomReaderFactory;
+        // The microphone names CustomReaderFactory handles, offered next to the real microphones in the settings dialog.
+        public static readonly List<string> CustomDeviceNames = new List<string>();
+
+        public static AsyncVoiceReader Create(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue)
+        {
+            return CustomReaderFactory?.Invoke(deviceName, sampleRate, fps, minBufferSize, _outQueue)
+                ?? new AsyncVoiceReader(deviceName, sampleRate, fps, minBufferSize, monoBehaviour, _outQueue);
+        }
+
+        // For subclasses that produce the audio themselves (from AsyncUpdate) instead of a microphone.
+        protected AsyncVoiceReader(int sampleRate, QueueThreadSafe _outQueue) : base()
+        {
+            wantedSampleRate = sampleRate;
+#if VRT_WITH_STATS
+            stats = new Stats(Name());
+#endif
+            outQueue = _outQueue;
+        }
 
         public AsyncVoiceReader(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
@@ -112,10 +135,10 @@ namespace VRT.UserRepresentation.Voice
 
         string device;
         int nSamplesInCircularBuffer;
-        int nSamplesPerPacket;
+        protected int nSamplesPerPacket;
         AudioClip recorder;
 
-        int wantedSampleRate;
+        protected int wantedSampleRate;
         
 
         IEnumerator MicroRecorder(string deviceName, int _sampleRate, int _fps, int _minBufferSize)

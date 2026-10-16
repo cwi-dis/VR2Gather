@@ -73,7 +73,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new AsyncVoiceReader(microphoneName, VRTConfig.Instance.VoiceConfig.AudioSampleRate, VRTConfig.Instance.VoiceConfig.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = AsyncVoiceReader.Create(microphoneName, VRTConfig.Instance.VoiceConfig.AudioSampleRate, VRTConfig.Instance.VoiceConfig.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {

@@ -139,6 +139,7 @@ namespace VRT.Login
             _webcamDropdown.index = webcamIdx >= 0 ? webcamIdx : 0;
 
             var mics = new List<string> { "None", "Muted" };
+            mics.AddRange(VRT.UserRepresentation.Voice.AsyncVoiceReader.CustomDeviceNames);
             foreach (string d in Microphone.devices) mics.Add(d);
             _microphoneDropdown.choices = mics;
             int micIdx = mics.IndexOf(config.microphoneName);
