@@ -21,8 +21,13 @@ public class CopyConfigOnBuild : IPostprocessBuildWithReport
         }
         if (report.summary.platform == BuildTarget.StandaloneOSX)
         {
-            // For Mac the outputPath is the application bundle path. We want to store config files inside the Contens folder.
-            dstDir = report.summary.outputPath + "/Contents/";
+            // For Mac the outputPath is the application bundle path. We want to store config files inside the Contents folder.
+            // game-ci passes the path without the .app extension, so Unity appends it — but outputPath in the BuildReport
+            // still lacks it. Normalise here so the copy target actually exists.
+            string bundlePath = report.summary.outputPath;
+            if (!bundlePath.EndsWith(".app"))
+                bundlePath += ".app";
+            dstDir = bundlePath + "/Contents/";
         } else
         {
             // For Windows and Linux this is "good enough": the config files should be in the same folder as the executable
@@ -67,7 +72,7 @@ public class CopyConfigOnBuild : IPostprocessBuildWithReport
             if (guids.Length == 1)
             {
                 string macScriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
-                File.Copy(macScriptPath, dstDir + "/MacOS/VRTrunservermac.sh", true);
+                File.Copy(macScriptPath, dstDir + "MacOS/VRTrunservermac.sh", true);
                 Debug.Log($"CopyConfigOnBuild.OnPostProcessBuild copied VRTrunservermac.sh");
             }
         }

@@ -64,7 +64,7 @@ namespace VRT.UserRepresentation.PointCloud
             PointCloudNetworkTileDescription tilingConfig = pipeline.GetTilingConfig();
             if (tilingConfig.tiles == null)
             {
-                Debug.LogWarning($"TilingConfigDistributor: no tiling information yet for user {selfUserId}");
+                Debug.Log($"TilingConfigDistributor: no tiling information yet for user {selfUserId}");
                 return;
             }
             if (debug) Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");

@@ -93,6 +93,11 @@ namespace VRT.Pilots.Common
 			}
 			else
 			{
+				// Preview scenes (PrefabUtility.LoadPrefabContents, editor scripts) hold prefab contents too
+				if (EditorSceneManager.IsPreviewScene(gameObject.scene))
+				{
+					return true;
+				}
 				// If the GameObject is not persistent let's determine which stage we are in first because getting Prefab info depends on it
 				var mainStage = StageUtility.GetMainStageHandle();
 				var currentStage = StageUtility.GetStageHandle(gameObject);

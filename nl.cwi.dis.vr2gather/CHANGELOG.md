@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [next] - unreleased
+
+- Requires cwipc 8.2.0 (was 8.0.0), which 1.4.4 already used
+
+## [1.4.4] - 2026-10-16
+
+- Avatar representations are much easier to add (Setup Humanoid Avatar tool), and avatars fit the player better: right size, feet on the floor, hands aligned (#331, #332, #356, #359)
+- New building blocks: a barrier that waits until all participants are ready, and head-direction gaze detection (#319, #336)
+- Better support for experiments: per-session settings (`pilotconfig.json`), more stats lines, app-defined message types (#325, #335, #345, #346)
+- Command-line builds for Windows, macOS and Linux; Linux players run without XR (#322, #366)
+- cwipc 8.2.0 and partial URP support (#256, #333)
+- Porting Check warns about scene changes that aren't coordinated between participants (#348)
+- Various minor bugs fixed (#337, #338, #342, #343, #351)
+
+## [1.4.3] - 2026-07-08
+
+Retroactive tag: the version used for the TrolleyExperiment. `package.json` still says 1.4.2.
+
+- `NetworkTrigger` stats lines show which participant initiated the trigger
+- `ErrorManager` popups are optional (leave `myPrefab` empty)
+- Audio channel-conversion warning is much less noisy
+
+## [1.4.2] - 2026-06-18
+
+- Self-wiring avatar swap system: `PlayerTrackingTargets` + `PlayerRepresentationWirer` (#328)
+- Add `LeftHandPositionOrientation`/`RightHandPositionOrientation` intermediates for hand tracking (#328)
+- Rename `Head3TransformAlsoMove` → `HeadPositionOrientation` (with `[FormerlySerializedAs]`)
+- `PlayerNetworkControllerSelf`: copy tracking transforms in `Update()` so avatar tracks outside sessions
+
+## [1.4.1] - 2026-05-29
+
+- Changes needed for Trolley experiment
+- Camera prefab fixed (#313)
+
 ## [1.4.0] - 2026-05-12
 
 - Compatible with Unity 6000.3

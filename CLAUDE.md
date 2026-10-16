@@ -2,13 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Collaborator Preferences
+## Development Rules
 
-**Jack** (main contributor): If Jack suggests an approach or implementation strategy that you think isn't the best way, say so and explain why — don't just implement it silently.
-
-**Debug markers**: Jack uses `xxxjack` to flag his own temporary debug code. Claude should use `xxxclaude` for any temporary debug code, log statements, or comments it adds, so they're easy to identify and clean up.
-
-**Unexpected obstacles**: When hitting something unexpected (a file is gitignored, a tool is missing, a path doesn't exist, a permission is denied), stop and ask Jack rather than working around it silently. The unexpected thing is often a symptom of a misconfiguration that Jack would want to fix at the source.
+**Debug markers**: Use a personal tag (e.g. `xxxjack`, `xxxtom`) to flag your own temporary debug code, log statements, or comments, so they're easy to search for and clean up. Claude uses `xxxclaude` for the same purpose.
 
 **Imported samples — never edit directly**: Assets under `VRTApp-Develop/Assets/Samples/` are imported from Unity packages (XRIT, etc.) and are **not** part of the VR2Gather package that end users import. Changes there are invisible to downstream users and get wiped on re-import. When a sample asset (prefab, script, scriptable object) needs a different value, override it from within the VR2Gather package — typically via a prefab override in a player prefab (`P_Self_Player`, etc.) or a subclass/wrapper script in `nl.cwi.dis.vr2gather/Runtime/`.
 
@@ -22,13 +18,15 @@ VR2Gather is a Unity package (`nl.cwi.dis.vr2gather`) for collaborative networke
 
 ## Build and Development Commands
 
-**Building** (from repo root):
+> **Note:** This section may be outdated — verify before relying on it.
+
+**Building** (from repo root, with the Editor closed; uses the Unity CLI `unity build`):
 ```bash
-./build-VR2Gather.sh          # Builds for current platform
-./build-scripts/mac-fix-quarantine.sh  # macOS: fix code signing after build
+./VRTApp-Develop/scripts/build.sh [mac|windows|linux]   # default: current platform
+./build-scripts/mac-fix-quarantine.sh          # macOS: fix code signing after build
 ```
 
-Logs to `buildlog.txt`. Output goes to `Builds/`.
+Output and log go to `VRTApp-Develop/Builds/`. See `Documentation/20-building.md`.
 
 **Git setup** (required on Windows for symlinks in VRTApp-Develop):
 ```bash
@@ -41,7 +39,9 @@ git config --local core.symlinks true
 cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 ```
 
-**CI/CD**: GitHub Actions (`.github/workflows/main.yml`) builds Windows standalone on branches matching `deployment/**` or tags matching `build*`.
+**CI/CD**: none at the moment (the old workflow was removed in #322); see #355.
+
+**Releasing**: follow `Documentation/21-releasing.md` (version + tag, players built on each platform, GitHub release, update `VR2Gather_sample`).
 
 There are no automated test commands — testing is done by running sample scenes in the Unity Editor (see Samples below).
 
@@ -56,12 +56,12 @@ VR2Gather diverges from standard Unity VR in important ways (see `Documentation/
 
 ### Package Structure (`nl.cwi.dis.vr2gather/Runtime/`)
 
-16 assembly modules with clear dependency layers (bottom-up):
+17 assembly modules with clear dependency layers (bottom-up):
 
 | Layer | Assemblies |
 |-------|-----------|
-| Foundation | `VRTCore`, `VRTInitializer`, `VRTProfiler`, `VRTDeprecated` |
-| Framework | `VRTCommon` (48 files), `VRTOrchestrator` |
+| Foundation | `VRTCore`, `VRTInitializer`, `VRTProfiler` |
+| Framework | `VRTCommon`, `VRTOrchestrator`, `VRTOrchestratorComm`, `VRTOrchestratorImplementation` |
 | User representation | `VRTUserPointClouds`, `VRTUserVoice`, `VRTUserWebCam` |
 | Transport | `VRTTransportDash`, `VRTTransportSocketIO`, `VRTTransportTCP`, `VRTTransportTCPReflector`, `VRTTransportWebRTC` |
 | Features | `VRTLogin`, `VRTVideo` |
@@ -114,6 +114,16 @@ Two JSON files in `VRTApp-Develop/`:
 
 See `Documentation/10-createnew.md` for the full walkthrough.
 
+> **Critical:** Every scene controller **must** subclass `PilotController` (not plain
+> `MonoBehaviour`). If a controller extends `MonoBehaviour` directly it loses:
+> - coordinated scene transitions (`LoadNewScene()` with fade-out)
+> - the `PilotController.Instance` static reference other components rely on
+> - graceful session leave / application quit handling
+>
+> This is a common mistake when AI assistants scaffold a new scene controller without
+> knowing the VR2Gather conventions. The symptom is that scene transitions work for the
+> user who triggers them but leave other participants stuck in the old scene.
+
 ## Sample Scenes (in `Samples~/VRTAssets/Scenes/`)
 
 | Scene | Purpose |
@@ -121,7 +131,6 @@ See `Documentation/10-createnew.md` for the full walkthrough.
 | `LoginManager/` | Entry point for all VR2Gather apps |
 | `Pilot0/` | Minimal "Hello World" experience |
 | `TechnicalPlayground/` | Full feature showcase (requires orchestrator) |
-| `SoloPlayground/` | Test locally without orchestrator |
 | `Empty/` | Blank template |
 
 ## Editor Utilities
@@ -130,6 +139,7 @@ In `nl.cwi.dis.vr2gather/Editor/Tools/`:
 - `DependenciesHunter.cs` — analyze asset dependencies
 - `MissingReferencesHunter.cs` — find broken asset references
 - `FindMissingScriptsRecursively.cs` — find GameObjects with missing scripts
+- `VRTPortingChecker.cs` — verify scene and project setup for VR2Gather (run via Tools/VR2Gather Porting Check)
 
 ## External Dependencies
 

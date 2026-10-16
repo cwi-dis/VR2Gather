@@ -38,6 +38,19 @@ namespace VRT.OrchestratorComm
 		}
 
 		/// <summary>
+		/// Register an application-defined message type. typeId must be
+		/// MessageTypeID.TID_FirstAppDefined (200) or higher.
+		/// </summary>
+		public static void RegisterEventType(this IVRTOrchestratorComm controller, int typeId, Type T)
+		{
+			if (typeId < (int)MessageTypeID.TID_FirstAppDefined)
+			{
+				Debug.LogError($"Programmer error: [OrchestratorCommExtensions] typeId {typeId} for {T.Name} is in the range reserved for VR2Gather, use {(int)MessageTypeID.TID_FirstAppDefined} or higher");
+			}
+			_MessageForwarderManager.AddTypeIdMapping(typeId, T);
+		}
+
+		/// <summary>
 		/// Send a TypedMessage from the Master to all Users
 		/// </summary>
 		/// <typeparam name="T">Exact type of the derived BaseMessage type to send</typeparam>

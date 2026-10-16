@@ -24,6 +24,22 @@ namespace VRT.Pilots.Common
 
 		void Update()
 		{
+            // Copy tracking transforms every frame so avatar representations track even outside a session
+            if (HeadPositionOrientation != null)
+            {
+                HeadPositionOrientation.rotation = camTransform.rotation;
+                HeadPositionOrientation.position = camTransform.position;
+            }
+            if (LeftHandPositionOrientation != null)
+            {
+                LeftHandPositionOrientation.position = LeftHandTransform.position;
+                LeftHandPositionOrientation.rotation = LeftHandTransform.rotation;
+            }
+            if (RightHandPositionOrientation != null)
+            {
+                RightHandPositionOrientation.position = RightHandTransform.position;
+                RightHandPositionOrientation.rotation = RightHandTransform.rotation;
+            }
 			if (_LastSendTime + (1.0f / SendRate) <= Time.realtimeSinceStartup)
 			{
 				SendPlayerData();
@@ -32,6 +48,7 @@ namespace VRT.Pilots.Common
 		void SendPlayerData()
 		{
 			if (PilotController.Instance == null || PilotController.Instance.IsLeavingSession) return;
+			if (VRTOrchestratorSingleton.Comm == null || VRTOrchestratorSingleton.Comm.CurrentSession == null) return;
 			if (playerController == null)
 			{
 				Debug.LogError($"{Name()}: SendPlayerData with no playerController. Probably SetupPlayerNetworkController was not called.");
@@ -47,12 +64,6 @@ namespace VRT.Pilots.Common
             {
                 BodySize = AlternativeUserRepresentation.transform.localScale.y;
             }
-            // For debugging mainly: also copy head position/orientation for the self user
-            if (Head3TransformAlsoMove != null)
-			{
-				Head3TransformAlsoMove.rotation = camTransform.rotation;
-				Head3TransformAlsoMove.position = camTransform.position;
-			}
 			var data = new NetworkPlayerData
 			{
 				BodyPosition = BodyTransform.position,

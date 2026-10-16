@@ -92,6 +92,35 @@ When the button is pressed, the request is routed to the **session master**, whi
 
 Key component: **`NetworkInstantiator`** (shares a base class with `NetworkTrigger`). The spawned prefab needs special setup so that its network ID is assigned by the master at instantiation time rather than auto-generated.
 
+### Waiting for everyone — `PFB_Barrier`
+
+Sometimes something should only happen once *all* participants are ready, for example moving on to the next scene after everyone has pressed "Done". `PFB_Barrier` does this with three objects, wired in the Inspector:
+
+- **Ready** (`NetworkTrigger`, on the `PFB_Barrier` root): each participant triggers this once when they are ready.
+- **Barrier** (`BarrierController`): counts the Ready triggers on the session master. When the count reaches the number of participants in the session (or `requiredCount`, if set), it fires `OnAllReady`, which triggers Proceed.
+- **Proceed** (`NetworkTrigger`): fires on all participants at the same moment. Wire its `OnTrigger` to whatever should happen, for example `PilotController.LoadNewScene()`.
+
+For the common case, a button everyone has to press, use **`OBJ_BarrierNetworkButton`**: a variant of `OBJ_NetworkButton` with a `PFB_Barrier` inside, and the button wired straight to Ready. Only Proceed needs wiring in your scene. TechnicalPlayground has an example ("Barrier Pilot0" on table 4).
+
+Wire Ready only from **local** sources: an interactable's `SelectEntered`/`Activated`, your own code, or a non-networked UI button. Never wire it from another `NetworkTrigger`'s `OnTrigger`: that fires on every participant, so one press would be counted once per participant.
+
+Things to be aware of:
+
+- The barrier counts triggers, not participants, so each participant must trigger Ready exactly once. If a button or a code path could fire it twice, the barrier opens too early. `OBJ_NetworkButton` wires both `SelectEntered` and `Activated`, so with the far ray one press may count twice (#352).
+- For repeated rounds, set `resetWhenDone` on the barrier.
+- If a participant leaves the session while the others are waiting, the barrier doesn't notice until another Ready trigger arrives.
+- From code, `BarrierController.WaitFor(ready, proceed)` is a coroutine that triggers Ready and waits until Proceed fires.
+
+### Gaze targets — `GazeTarget` / `PFB_GazeTarget`
+
+Not a user action as such, but a way to detect what a participant is looking at. `P_Self_Player`'s camera has a **`GazeDetector`**, which each frame casts a ray straight forward from the head. Any object with a **`GazeTarget`** component is "looked at" when that ray hits one of its colliders (on the object or its children; triggers included, physics layers ignored).
+
+- `GazeTarget` fires `OnGazeEnter` / `OnGazeExit` for the local participant only. To make something happen for everyone, wire these to a `NetworkTrigger`.
+- With `VRT_WITH_STATS`, it logs `gazing=1`/`gazing=0` and its position as `stats:` lines (component `GazeTarget`).
+- `PFB_GazeTarget` is an invisible trigger box with a `GazeTarget`, for marking a region rather than an object. You can also add `GazeTarget` to an existing object and use its colliders: the TechnicalPlayground mirror does this.
+
+Head direction is only a proxy for gaze. Without eye tracking, people look around with their eyes, so small targets give poor results: make colliders generous, especially vertically. Gaze also passes through walls and other objects, because only gaze targets are tested.
+
 ---
 
 ## Summary tables
@@ -112,6 +141,8 @@ Key component: **`NetworkInstantiator`** (shares a base class with `NetworkTrigg
 |-------------|-------------|------------------------|---------|
 | Grabbable | `PFB_Grabbable` | `VRTGrabbableController` | OBJ_GrabbableMudball |
 | Static button | `PFB_Trigger` / `OBJ_NetworkButton` | `NetworkTrigger` | Blue button, table 4 |
+| Button everyone must press | `OBJ_BarrierNetworkButton` | `BarrierController` | "Barrier Pilot0", table 4 |
+| Gaze target | `PFB_GazeTarget` (or add `GazeTarget`) | `GazeTarget` + `GazeDetector` | The mirror |
 | Grabbable + button | `PFB_Grabbable` + `PFB_Trigger` child | Both of the above | Clickers, camera |
 | Factory | `PFB_Trigger` + `NetworkInstantiator` | `NetworkInstantiator` | Mudball generator |
 | Grabbable + button + factory | All three combined | All three | Camera (produces photographs) |

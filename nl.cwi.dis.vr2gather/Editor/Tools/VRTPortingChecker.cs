@@ -32,8 +32,10 @@ namespace VRT.Tools
                 new TeleportInteractionLayerCheck(),
                 new ScenarioRegistryCheck(),
                 new OrchestratorRefCheck(),
-                new PilotControllerCheck(),
+                new SceneLoadCheck(),
                 new SceneSetupCheck(),
+                new SoloPlayerCheck(),
+                new PilotControllerCheck(),
                 new PhysicsLayerCheck(),
                 new TeleportLayerCheck(),
                 new InteractionLayerCheck(),
@@ -77,12 +79,17 @@ namespace VRT.Tools
 
         void OnGUI()
         {
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Run All Checks"))
             {
                 UpdateSceneCheckTargets();
                 foreach (var c in _checks)
                     c.RunAndStore();
+                LogReport();
             }
+            if (GUILayout.Button("Log Report", GUILayout.Width(90)))
+                LogReport();
+            EditorGUILayout.EndHorizontal();
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
 
@@ -101,6 +108,43 @@ namespace VRT.Tools
             }
 
             EditorGUILayout.EndScrollView();
+        }
+
+        void LogReport()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("=== VR2Gather Porting Check Report ===");
+            CheckCategory? current = null;
+            foreach (var check in _checks)
+            {
+                if (check.Category != current)
+                {
+                    current = check.Category;
+                    sb.AppendLine($"[{check.Category.ToString().ToUpper()}]");
+                }
+                string icon = check.Result.Status switch
+                {
+                    CheckStatus.OK      => "OK     ",
+                    CheckStatus.Warning => "WARN   ",
+                    CheckStatus.Error   => "ERROR  ",
+                    CheckStatus.Skipped => "SKIP   ",
+                    _                   => "NOTRUN ",
+                };
+                sb.AppendLine($"  {icon} {check.Name}: {check.Result.Summary ?? "(no result)"}");
+                if (check.Result.Details != null)
+                    foreach (var d in check.Result.Details)
+                        sb.AppendLine($"           {d}");
+            }
+            sb.Append("=== End Report ===");
+            string report = sb.ToString();
+            bool hasError   = _checks.Any(c => c.Result.Status == CheckStatus.Error);
+            bool hasWarning = _checks.Any(c => c.Result.Status == CheckStatus.Warning);
+            if (hasError)
+                Debug.LogError(report);
+            else if (hasWarning)
+                Debug.LogWarning(report);
+            else
+                Debug.Log(report);
         }
 
         void DrawScenePicker()
@@ -281,6 +325,12 @@ namespace VRT.Tools
                 return new CheckResult { Status = CheckStatus.Skipped, Summary = "Could not determine VR2Gather package version" };
 
             string packageVersion = info.version;
+
+            // In VRTApp-Develop the package assets live directly at Assets/VRTAssets rather
+            // than being imported as samples — treat that as equivalent to samples being present.
+            if (Directory.Exists(Path.Combine(Application.dataPath, "VRTAssets")))
+                return new CheckResult { Status = CheckStatus.OK, Summary = $"Development project: VRTAssets present in Assets (package v{packageVersion})" };
+
             string samplesRoot = Path.Combine(Application.dataPath, "Samples", "VR2Gather");
 
             if (!Directory.Exists(samplesRoot) || Directory.GetDirectories(samplesRoot).Length == 0)
@@ -438,13 +488,19 @@ namespace VRT.Tools
             var errors = new List<string>();
             var warnings = new List<string>();
 
-            // a) User prefab variant check — prefab must live in Assets/, not in Packages/ or Assets/Samples/
-            var source = PrefabUtility.GetCorrespondingObjectFromSource(registry.gameObject);
-            if (source == null)
-                warnings.Add("ScenarioRegistry is not a prefab instance — save it as a prefab variant in your own Assets folder");
-            else if (!AssetDatabase.GetAssetPath(source).StartsWith("Assets/") ||
-                     AssetDatabase.GetAssetPath(source).StartsWith("Assets/Samples/"))
-                warnings.Add($"ScenarioRegistry prefab is from '{AssetDatabase.GetAssetPath(source)}' — create a user prefab variant in your own Assets folder");
+            // a) User prefab variant check — prefab must live in Assets/, not in Packages/ or Assets/Samples/.
+            //    Skip in the VR2Gather development project (Assets/VRTAssets present), where using
+            //    the package prefab directly is correct.
+            bool isDevProject = Directory.Exists(Path.Combine(Application.dataPath, "VRTAssets"));
+            if (!isDevProject)
+            {
+                var source = PrefabUtility.GetCorrespondingObjectFromSource(registry.gameObject);
+                if (source == null)
+                    warnings.Add("ScenarioRegistry is not a prefab instance — save it as a prefab variant in your own Assets folder");
+                else if (!AssetDatabase.GetAssetPath(source).StartsWith("Assets/") ||
+                         AssetDatabase.GetAssetPath(source).StartsWith("Assets/Samples/"))
+                    warnings.Add($"ScenarioRegistry prefab is from '{AssetDatabase.GetAssetPath(source)}' — create a user prefab variant in your own Assets folder");
+            }
 
             // b) Consistency between ScenarioRegistry and Build Settings (bi-directional)
             var buildSceneNames = EditorBuildSettings.scenes
@@ -501,6 +557,46 @@ namespace VRT.Tools
         }
     }
 
+    // Direct SceneManager.LoadScene() calls change the scene only for the participant
+    // that makes the call. Scene changes should go through PilotController.LoadNewScene(),
+    // triggered for everyone via a NetworkTrigger.
+    class SceneLoadCheck : PortingCheck
+    {
+        public override string Name => "Coordinated scene changes";
+        public override CheckCategory Category => CheckCategory.Scripts;
+
+        protected override CheckResult Run()
+        {
+            var details = new List<string>();
+            var detailSelects = new List<Action>();
+            foreach (var file in Directory.GetFiles(Application.dataPath, "*.cs", SearchOption.AllDirectories))
+            {
+                string rel = "Assets" + file.Substring(Application.dataPath.Length).Replace('\\', '/');
+                string[] lines = File.ReadAllLines(file);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i].Trim();
+                    if (line.StartsWith("//") || !line.Contains("SceneManager.LoadScene")) continue;
+                    int lineNumber = i + 1;
+                    details.Add($"{rel}:{lineNumber} → use PilotController.Instance.LoadNewScene(), triggered via a NetworkTrigger");
+                    detailSelects.Add(() => AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath<MonoScript>(rel), lineNumber));
+                    Debug.LogWarning($"VRTPortingCheck: direct SceneManager.LoadScene in {rel}:{lineNumber}");
+                }
+            }
+
+            if (details.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "No direct SceneManager.LoadScene calls" };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Warning,
+                Summary = $"{details.Count} direct SceneManager.LoadScene call(s), not coordinated across participants",
+                Details = details,
+                DetailSelectActions = detailSelects,
+            };
+        }
+    }
+
     // ── Scene checks ─────────────────────────────────────────────────────────────
 
     class PilotControllerCheck : SceneCheck
@@ -509,6 +605,9 @@ namespace VRT.Tools
 
         protected override CheckResult RunInScene(Scene scene)
         {
+            if (AllObjects(scene).Any(go => PortingCheckerUtil.IsDerivedFromAny(go, "Tool_scenesetup_solo")))
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "Solo scene — prefab refs not required (see Solo Player check)" };
+
             var controllers = AllObjects(scene)
                 .Select(go => go.GetComponent<PilotController>())
                 .Where(c => c != null)
@@ -570,7 +669,7 @@ namespace VRT.Tools
 
             bool hasSolo = AllObjects(scene).Any(go => PortingCheckerUtil.IsDerivedFromAny(go, "Tool_scenesetup_solo"));
             if (hasSolo)
-                return new CheckResult { Status = CheckStatus.Warning, Summary = "Scene uses Tool_scenesetup_solo — solo-only, no networking" };
+                return new CheckResult { Status = CheckStatus.OK, Summary = "Scene uses Tool_scenesetup_solo — solo-only, no networking" };
 
             return new CheckResult
             {
@@ -578,6 +677,37 @@ namespace VRT.Tools
                 Summary = "No Tool_scenesetup (or variant) found in scene",
                 Details = new List<string> { "Every VR2Gather scene requires the Tool_scenesetup prefab — add it from the VR2Gather package" },
             };
+        }
+    }
+
+    class SoloPlayerCheck : SceneCheck
+    {
+        public override string Name => "Solo Player";
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            bool isSolo = AllObjects(scene).Any(go => PortingCheckerUtil.IsDerivedFromAny(go, "Tool_scenesetup_solo"));
+            if (!isSolo)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "Not a solo scene" };
+
+            var players = AllObjects(scene)
+                .Where(go => PortingCheckerUtil.IsDerivedFromAny(go, "P_Self_Player"))
+                .ToList();
+
+            if (players.Count == 0)
+                return new CheckResult { Status = CheckStatus.Error, Summary = "Solo scene has no P_Self_Player instance" };
+
+            var inactive = players.Where(go => !go.activeInHierarchy).ToList();
+            if (inactive.Count > 0)
+                return new CheckResult
+                {
+                    Status = CheckStatus.Warning,
+                    Summary = $"{inactive.Count} P_Self_Player instance(s) present but inactive",
+                    Details = inactive.Select(go => PortingCheckerUtil.HierarchyPath(go)).ToList(),
+                    SelectAction = () => Selection.objects = inactive.Cast<UnityEngine.Object>().ToArray(),
+                };
+
+            return new CheckResult { Status = CheckStatus.OK, Summary = $"{players.Count} P_Self_Player instance(s) present and active" };
         }
     }
 
@@ -728,7 +858,7 @@ namespace VRT.Tools
             var details       = new List<string>();
             var detailSelects = new List<Action>();
             var allBadObjects = new List<GameObject>();
-            int errorCount    = 0;
+            int bareCount = 0, autoCount = 0, manualCount = 0;
 
             foreach (var go in AllObjects(scene))
             {
@@ -738,28 +868,40 @@ namespace VRT.Tools
 
                 allBadObjects.Add(go);
                 var captured = go;
-                if (PrefabUtility.IsPartOfPrefabInstance(go))
+                string label;
+
+                if (!PrefabUtility.IsPartOfPrefabInstance(go))
                 {
-                    details.Add($"{go.name} — interactable is part of a non-VR2Gather prefab");
+                    label = $"{go.name} — bare scene object (not a prefab); works fine, easy to auto-convert — don't use as template for new work";
+                    bareCount++;
+                }
+                else if (PortingCheckerUtil.HasMixedRootComponents(go))
+                {
+                    label = $"{go.name} — non-VR2Gather prefab, mixed root (visuals + interactable on same GO) — needs manual pre-cleaning before auto-conversion";
+                    manualCount++;
                 }
                 else
                 {
-                    details.Add($"{go.name} — interactable is not part of any prefab (will block future automated porting)");
-                    errorCount++;
+                    label = $"{go.name} — non-VR2Gather prefab, clean root — auto-convertible";
+                    autoCount++;
                 }
+
+                details.Add(label);
                 detailSelects.Add(() => Selection.activeGameObject = captured);
             }
 
             if (details.Count == 0)
                 return new CheckResult { Status = CheckStatus.OK, Summary = "All interactables follow VR2Gather conventions" };
 
-            int warnCount = details.Count - errorCount;
+            var parts = new List<string>();
+            if (bareCount  > 0) parts.Add($"{bareCount} bare scene object(s)");
+            if (autoCount  > 0) parts.Add($"{autoCount} auto-convertible prefab(s)");
+            if (manualCount > 0) parts.Add($"{manualCount} prefab(s) needing manual work");
+
             return new CheckResult
             {
-                Status = errorCount > 0 ? CheckStatus.Error : CheckStatus.Warning,
-                Summary = errorCount > 0
-                    ? $"{errorCount} bare interactable(s) (not in any prefab); {warnCount} in non-VR2Gather prefab(s)"
-                    : $"{warnCount} interactable(s) in non-VR2Gather prefab(s)",
+                Status = CheckStatus.Warning,
+                Summary = string.Join("; ", parts),
                 Details = details,
                 DetailSelectActions = detailSelects,
                 SelectAction = () => Selection.objects = allBadObjects.Cast<UnityEngine.Object>().ToArray(),
@@ -787,6 +929,26 @@ namespace VRT.Tools
             {
                 if (nameSet.Contains(source.name)) return true;
                 source = PrefabUtility.GetCorrespondingObjectFromSource(source);
+            }
+            return false;
+        }
+
+        // Returns true if the GO has components beyond Transform, Rigidbody, Colliders,
+        // XR interaction components, and VRT components — i.e. it has "content" (mesh, audio,
+        // custom logic) mixed onto the same root as its interactable, which makes auto-conversion
+        // harder because those components would need to be moved to children first.
+        public static bool HasMixedRootComponents(GameObject go)
+        {
+            foreach (var comp in go.GetComponents<Component>())
+            {
+                if (comp == null) continue;
+                var t = comp.GetType();
+                if (t == typeof(Transform)) continue;
+                if (t == typeof(Rigidbody)) continue;
+                if (typeof(Collider).IsAssignableFrom(t)) continue;
+                if (t.Namespace != null && t.Namespace.StartsWith("UnityEngine.XR")) continue;
+                if (t.Namespace != null && t.Namespace.StartsWith("VRT")) continue;
+                return true;
             }
             return false;
         }

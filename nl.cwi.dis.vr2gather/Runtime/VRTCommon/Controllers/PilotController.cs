@@ -5,12 +5,16 @@ using UnityEngine.Video;
 using VRT.Core;
 using System;
 using VRT.Orchestrator.Implementation;
+using Statistics = Cwipc.Statistics;
 
 namespace VRT.Pilots.Common
 {
     /// <summary>
     /// Base class for controlling a scene, and switch to another scene.
-    /// NOTE: when overriding ensure that base.Awake() and base.Start() are called.
+    /// NOTE: when overriding ensure that base.Awake(), base.Start() and base.OnDestroy() are called.
+    ///
+    /// Emits "scene=..., started=1" and "scene=..., stopped=1" stats lines (component PilotController)
+    /// from Awake() and OnDestroy(), so analysis can split a run by scene.
     ///
     /// If there is a CameraFader it will be attached somewhere to the camera, and
     /// it will ensure its static Instance attribute is set.
@@ -67,11 +71,21 @@ namespace VRT.Pilots.Common
             }
             Instance = this;
             Debug.Log($"{Name()}: Awake.");
+#if VRT_WITH_STATS
+            Statistics.Output("PilotController", $"controller={Name()}, scene={gameObject.scene.name}, started=1");
+#endif
             if (playableInEditor && !VRTConfig.InstanceExists())
             {
                 Debug.LogWarning($"{Name()}: scene started in isolation. Creating config and orchestrator");
                 CreatePlayableEditorScene();
             }
+        }
+
+        protected virtual void OnDestroy()
+        {
+#if VRT_WITH_STATS
+            Statistics.Output("PilotController", $"controller={Name()}, scene={gameObject.scene.name}, stopped=1");
+#endif
         }
 
         void CreatePlayableEditorScene()
