@@ -63,7 +63,8 @@ gh release edit vX.Y.Z --draft=false --latest
 
 `VR2Gather_sample` uses the package from GitHub (not pinned to a version), plus a copy of its samples.
 
-- Open the project in Unity. In the Package Manager, update VR2Gather to the new version; this changes `Packages/packages-lock.json`.
+- Update VR2Gather and its git dependencies (`nl.cwi.dis.cwipc`, `nl.cwi.dis.vr2gather.nativelibraries`, `nl.cwi.dis.vr2gather.nativelibraries.webrtc`) to the versions `VRTApp-Develop` was tested with: compare the hashes in both `Packages/packages-lock.json` files. Either use *Update* in the Package Manager for each, or delete their entries from the sample's `packages-lock.json` (with Unity closed) so Unity fetches the current master when it opens the project. Updating only VR2Gather leaves the others at their old versions.
+- Packages that `VRTApp-Develop` has and the sample needs too: for now that includes the URP package, also for built-in render pipeline projects (#365).
 - In the Package Manager, VR2Gather, *Samples* tab: import the samples again (*VRT Essential Assets*). This replaces `Assets/Samples/VR2Gather/<old version>` by `<new version>`; check that the old folder is gone.
 - Check that the login scene, Pilot0 and TechnicalPlayground still work.
 - Commit ("Updated to VR2Gather X.Y.Z"), tag `vX.Y.Z`, and push both.
