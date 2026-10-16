@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [next] - unreleased
+
+- Requires cwipc 8.2.0 (was 8.0.0), which 1.4.4 already used
+
 ## [1.4.4] - 2026-10-16
 
 - Avatar representations are much easier to add (Setup Humanoid Avatar tool), and avatars fit the player better: right size, feet on the floor, hands aligned (#331, #332, #356, #359)
