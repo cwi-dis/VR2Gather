@@ -205,6 +205,13 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
             Debug.Log($"{Name()}: received tilingConfig with {networkTileDescription.tiles.Length} tiles");
+            for (int i = 0; i < networkTileDescription.tiles.Length; i++)
+            {
+                if (networkTileDescription.tiles[i].qualities == null || networkTileDescription.tiles[i].qualities.Length == 0)
+                {
+                    Debug.LogError($"{Name()}: tilingConfig tile#{i} has no qualities: this participant's point cloud will not be received. Check PointCloudTransmissionConfig.EncoderConfigs on the sending machine.");
+                }
+            }
 
             _InitForOtherUser();
             _InitTileSelector();
