@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [next] - unreleased
 
 - Requires cwipc 8.2.0 (was 8.0.0), which 1.4.4 already used
+- Pluggable voice readers (#368)
+- Fixed point clouds not being transmitted: empty encoder config, and users joining a session (#377)
+- `VRTConfig` reports invalid point cloud encoder config and representation strings (#377)
+- Missing `sfuData` in a networked session is now an error; Standalone Sessions don't transmit (#375)
+- Login no longer stops when the webcam pipeline can't start: reverts to avatar (#312)
 
 ## [1.4.4] - 2026-10-16
 
