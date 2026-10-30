@@ -120,7 +120,8 @@ MonoBehaviour:
     acceptDesyncOnDataUnavailable: 0
   PointCloudTransmissionConfig:
     tiled: 0
-    EncoderConfigs: []
+    EncoderConfigs:
+    - octreeBits: 9
   TileSelectorConfig:
     algorithm: 
     debugDecisions: 0

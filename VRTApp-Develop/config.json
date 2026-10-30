@@ -82,7 +82,11 @@
     },
     "PointCloudTransmissionConfig": {
         "tiled": false,
-        "EncoderConfigs": []
+        "EncoderConfigs": [
+            {
+                "octreeBits": 9
+            }
+        ]
     },
     "TileSelectorConfig": {
         "algorithm": "",

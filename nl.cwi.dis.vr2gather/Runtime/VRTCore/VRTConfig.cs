@@ -361,6 +361,7 @@ namespace VRT.Core
             JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
             LoadUserConfig();
             _PostLoad();
+            _Validate();
             configOverrideFilename = file;
             Debug.Log($"VRTConfig: Loaded configuration from {file}");
         }
@@ -399,23 +400,32 @@ namespace VRT.Core
             // Convert all enums to their string representation
             if (!String.IsNullOrEmpty(RepresentationConfig.RepresentationPointcloudConfig.variant_str))
             {
-                if (!Enum.TryParse<RepresentationPointcloudVariant>(
+                // Parse into a local: on failure TryParse sets its output to the default value.
+                if (Enum.TryParse<RepresentationPointcloudVariant>(
                     RepresentationConfig.RepresentationPointcloudConfig.variant_str,
-                    true, 
-                    out RepresentationConfig.RepresentationPointcloudConfig.variant))
+                    true,
+                    out RepresentationPointcloudVariant variant))
                 {
-                    Debug.LogError($"VRTConfig: Invalid value for variant_str");
+                    RepresentationConfig.RepresentationPointcloudConfig.variant = variant;
+                }
+                else
+                {
+                    Debug.LogError($"VRTConfig: Invalid value \"{RepresentationConfig.RepresentationPointcloudConfig.variant_str}\" for variant_str, keeping {RepresentationConfig.RepresentationPointcloudConfig.variant}");
                 }
             }
 
             if (!string.IsNullOrEmpty(RepresentationConfig.representation_str))
             {
-                if (!Enum.TryParse<UserRepresentationType>(
+                if (Enum.TryParse<UserRepresentationType>(
                     RepresentationConfig.representation_str,
                     true,
-                    out RepresentationConfig.representation))
+                    out UserRepresentationType representation))
                 {
-                    Debug.LogError($"VRTConfig: Invalid value for representation_str");
+                    RepresentationConfig.representation = representation;
+                }
+                else
+                {
+                    Debug.LogError($"VRTConfig: Invalid value \"{RepresentationConfig.representation_str}\" for representation_str, keeping {RepresentationConfig.representation}");
                 }
             }
             // And ensure everything is consistent again
@@ -427,7 +437,24 @@ namespace VRT.Core
             RepresentationConfig.RepresentationPointcloudConfig.variant_str = RepresentationConfig.RepresentationPointcloudConfig.variant.ToString();
             RepresentationConfig.representation_str = RepresentationConfig.representation.ToString();
         }
-        
+
+        private void _Validate()
+        {
+            var encoderConfigs = PointCloudTransmissionConfig.EncoderConfigs;
+            if (encoderConfigs == null || encoderConfigs.Length == 0)
+            {
+                Debug.LogError("VRTConfig: PointCloudTransmissionConfig.EncoderConfigs is empty: point clouds will not be transmitted to other participants");
+                return;
+            }
+            for (int i = 0; i < encoderConfigs.Length; i++)
+            {
+                if (encoderConfigs[i].octreeBits <= 0)
+                {
+                    Debug.LogError($"VRTConfig: PointCloudTransmissionConfig.EncoderConfigs[{i}].octreeBits is {encoderConfigs[i].octreeBits}, must be greater than 0");
+                }
+            }
+        }
+
         private void Initialize()
         {
             System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
@@ -451,6 +478,7 @@ namespace VRT.Core
             {
                 Debug.LogError($"VRTConfig: config file is version {configVersion} in stead of expected version {CurrentConfigVersion}");
             }
+            _Validate();
             //
             // Update various settings after reading configfile overrides
             //
