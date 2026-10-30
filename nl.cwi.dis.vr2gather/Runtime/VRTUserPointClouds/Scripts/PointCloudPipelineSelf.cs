@@ -242,6 +242,10 @@ namespace VRT.UserRepresentation.PointCloud
             int nQuality = Encoders.Length;
             int nStream = nQuality * nTileToTransmit;
             Debug.Log($"{Name()}: tiling sender: minTileNum={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
+            if (nStream == 0)
+            {
+                Debug.LogWarning($"{Name()}: no point cloud streams to transmit (nTile={nTileToTransmit}, nQuality={nQuality}): other participants will not see this point cloud. Check PointCloudTransmissionConfig.EncoderConfigs.");
+            }
             //
             // Create all three sets of descriptions needed.
             //
