@@ -86,7 +86,7 @@ namespace VRT.UserRepresentation.WebCam
                 //
                 webReader = new AsyncWebCamReader(VRTConfig.Instance.RepresentationConfig.webcamName, width, height, fps, this, encoderQueue);
                 webCamTexture = webReader.webcamTexture;
-                if (!preview)
+                if (!preview && VRTOrchestratorSingleton.Comm.IsNetworked)
                 {
                     //
                     // Create encoders for transmission

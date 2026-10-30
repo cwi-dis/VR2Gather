@@ -80,7 +80,7 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogWarning($"{Name()}: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
-            if (preview)
+            if (preview || !VRTOrchestratorSingleton.Comm.IsNetworked)
             {
                 return;
             }

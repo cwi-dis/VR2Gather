@@ -76,6 +76,7 @@ namespace VRT.Orchestrator.Implementation
         // ── IVRTOrchestratorSessionState ─────────────────────────────────────────
         public override User SelfUser { get { return _selfUser; } set { _selfUser = value; } }
         public override bool UserIsMaster => true;
+        public override bool IsNetworked => false;
         public override Session CurrentSession => _currentSession;
 
         // ── IVRTOrchestratorLogin ────────────────────────────────────────────────

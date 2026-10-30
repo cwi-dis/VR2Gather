@@ -62,6 +62,7 @@ namespace VRT.Orchestrator.Implementation
         public abstract event Action<string> OnUserLeaveSessionEvent;
         public abstract User SelfUser { get; set; }
         public abstract bool UserIsMaster { get; }
+        public abstract bool IsNetworked { get; }
         public abstract Session CurrentSession { get; }
         public abstract void LeaveSession();
 

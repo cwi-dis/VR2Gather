@@ -112,14 +112,11 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Allocate queues we need for this sourceType
             //
-            // No sfuData means there is no SFU to send to (e.g. a Standalone Session,
-            // which has no other participants) -- treat that like preview and skip
-            // transmission setup entirely, rather than crashing on the null dereference
-            // further down.
-            bool wantsTransmission = !preview && user.sfuData != null;
-            if (!preview && user.sfuData == null)
+            bool wantsTransmission = !preview && VRTOrchestratorSingleton.Comm.IsNetworked;
+            if (wantsTransmission && user.sfuData == null)
             {
-                Debug.Log($"{Name()}: self user has no sfuData, skipping point cloud transmission setup (no other participants to send to)");
+                Debug.LogError($"{Name()}: self user has no sfuData, not transmitting point cloud: other participants will not see it");
+                wantsTransmission = false;
             }
             if (!wantsTransmission)
             {

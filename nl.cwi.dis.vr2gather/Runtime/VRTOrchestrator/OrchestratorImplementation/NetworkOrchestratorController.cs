@@ -115,6 +115,7 @@ namespace VRT.Orchestrator.Implementation
         public override bool WarnOnUnhandledEvents => warnOnUnhandledEvents;
         public override bool UserIsLogged { get { return userIsLogged; } }
         public override bool UserIsMaster { get { return userIsMaster; } }
+        public override bool IsNetworked => true;
         public override User SelfUser { get { return _selfUser; } set { _selfUser = value; } }
         public override Scenario CurrentScenario { get { return myScenario; } }
         public override Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }

@@ -22,6 +22,8 @@ namespace VRT.Orchestrator
         
         User SelfUser { get; set; }
         bool UserIsMaster { get; }
+        // False for a standalone session: there is nobody to send media streams to.
+        bool IsNetworked { get; }
         Session CurrentSession { get; }
 
         void LeaveSession();
