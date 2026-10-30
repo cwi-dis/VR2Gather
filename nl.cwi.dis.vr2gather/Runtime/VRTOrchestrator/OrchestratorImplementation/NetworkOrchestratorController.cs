@@ -454,6 +454,14 @@ namespace VRT.Orchestrator.Implementation
 
             // success
             mySession = session;
+            // We may need to update our own user definition (because the sfuData may have been added)
+            User newMe = session.GetUser(SelfUser.userId);
+            if (newMe == null)
+            {
+                Debug.LogError($"NetworkOrchestratorController: OnJoinSessionResponse: userId {SelfUser.userId} (which is me) not in session");
+                return;
+            }
+            SelfUser = newMe;
             userIsMaster = session.sessionMaster == SelfUser.userId;
             int userCount = session.GetUserCount();
             if (enableLogging) Debug.Log($"NetworkOrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={userCount}");
