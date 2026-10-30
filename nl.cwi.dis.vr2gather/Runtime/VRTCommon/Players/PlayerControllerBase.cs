@@ -129,7 +129,19 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     webcam.SetActive(true);
                     BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, userRepresentation, isLocalPlayer);
-                    wcPipeline?.Init(isLocalPlayer, user, isPreviewPlayer);
+                    try
+                    {
+                        wcPipeline?.Init(isLocalPlayer, user, isPreviewPlayer);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log($"Cannot set representation VideoAvatar. Exception {e}");
+                        Debug.LogError($"Cannot set representation VideoAvatar. Revert to avatar.");
+                        userRepresentation = UserRepresentationType.SimpleAvatar;
+                        avatar.SetActive(true);
+                        webcam.SetActive(false);
+                        Destroy(wcPipeline);
+                    }
                     break;
                 case UserRepresentationType.SimpleAvatar:
                     isVisible = true;
