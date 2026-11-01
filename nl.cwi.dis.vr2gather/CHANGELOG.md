@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [next] - unreleased
 
 - Requires cwipc 8.2.0 (was 8.0.0), which 1.4.4 already used
+- Stats log has a `VRTConfig` line at startup: app, package and Unity versions (#373)
 - Pluggable voice readers (#368)
 - Fixed point clouds not being transmitted: empty encoder config, and users joining a session (#377)
 - `VRTConfig` reports invalid point cloud encoder config and representation strings (#377)
