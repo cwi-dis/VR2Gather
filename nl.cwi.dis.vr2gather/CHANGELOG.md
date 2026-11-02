@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pluggable voice readers (#368)
 - Fixed point clouds not being transmitted: empty encoder config, and users joining a session (#377)
 - `VRTConfig` reports invalid point cloud encoder config and representation strings (#377)
+- Porting fixers for old layers, PilotController prefabs and stale grab wiring, run with `unity command run_script` for now (#383)
 - Missing `sfuData` in a networked session is now an error; Standalone Sessions don't transmit (#375)
 - Login no longer stops when the webcam pipeline can't start: reverts to avatar (#312)
 
