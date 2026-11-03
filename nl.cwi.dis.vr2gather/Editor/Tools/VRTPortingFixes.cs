@@ -351,6 +351,131 @@ namespace VRT.Tools
             }
         }
 
+        // ── Buttons that only react to Activate ─────────────────────────────────────
+
+        // Old buttons call NetworkTrigger.Trigger from the interactable's Activated event only. The ray
+        // (select + activate on the trigger) works, but poke only ever selects, so poking does nothing.
+        // VR2Gather's own PFB_Trigger calls Trigger from both SelectEntered and Activated; this fixer adds
+        // the SelectEntered call. Interactables that can be grabbed are reported, not changed: there,
+        // select means "grab", and grabbing shouldn't fire the trigger.
+
+        public static string FixActivateOnlyTriggersInActiveScene(bool dryRun) => FixActivateOnlyTriggers(SceneManager.GetActiveScene(), dryRun);
+
+        public static string FixActivateOnlyTriggers(Scene scene, bool dryRun)
+        {
+            var report = new Report("Activate-only triggers", scene, dryRun);
+            FixActivateOnlyTriggers(AllObjects(scene), report, dryRun);
+            return report.Finish();
+        }
+
+        /// <summary>
+        /// Same, for a prefab asset. Unlike the scene fixers this saves the prefab.
+        /// </summary>
+        public static string FixActivateOnlyTriggersInPrefab(string prefabPath, bool dryRun)
+        {
+            var root = PrefabUtility.LoadPrefabContents(prefabPath);
+            var report = new Report("Activate-only triggers", prefabPath, dryRun);
+            try
+            {
+                FixActivateOnlyTriggers(root.GetComponentsInChildren<Transform>(true).Select(t => t.gameObject), report, dryRun);
+                if (!dryRun && report.Changed > 0)
+                {
+                    PrefabUtility.SaveAsPrefabAsset(root, prefabPath, out bool saved);
+                    if (!saved)
+                        report.SaveFailed(prefabPath, "see console");
+                }
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+            return report.Finish();
+        }
+
+        static void FixActivateOnlyTriggers(IEnumerable<GameObject> objects, Report report, bool dryRun)
+        {
+            var interactableType = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable, Unity.XR.Interaction.Toolkit");
+            if (interactableType == null)
+            {
+                report.Skip("XRI not installed");
+                return;
+            }
+
+            foreach (var go in objects)
+            {
+                foreach (var comp in go.GetComponents(interactableType))
+                {
+                    var so = new SerializedObject(comp);
+                    var activated = so.FindProperty("m_Activated.m_PersistentCalls.m_Calls");
+                    var selected = so.FindProperty("m_SelectEntered.m_PersistentCalls.m_Calls");
+                    if (activated == null || selected == null) continue;
+
+                    bool changed = false;
+                    for (int i = 0; i < activated.arraySize; i++)
+                    {
+                        var call = activated.GetArrayElementAtIndex(i);
+                        var target = call.FindPropertyRelative("m_Target").objectReferenceValue;
+                        if (target == null || call.FindPropertyRelative("m_MethodName").stringValue != "Trigger") continue;
+                        if (!IsNetworkTrigger(target.GetType())) continue;
+                        if (HasCall(selected, target, "Trigger")) continue;
+
+                        string what = $"{comp.GetType().Name}: Activated calls {target.name}.Trigger";
+                        if (comp.GetType().Name.Contains("Grab") || go.GetComponent("VRTGrabbableController") != null)
+                        {
+                            report.Unknown(go, $"{what}, but the object can be grabbed");
+                            continue;
+                        }
+                        report.Change(go, $"{what}, added to SelectEntered");
+                        if (dryRun) continue;
+
+                        int n = selected.arraySize;
+                        selected.InsertArrayElementAtIndex(n);
+                        CopyPersistentCall(call, selected.GetArrayElementAtIndex(n));
+                        changed = true;
+                    }
+                    if (changed)
+                        so.ApplyModifiedProperties(); // records Undo, and a prefab override on instances
+                }
+            }
+        }
+
+        static bool IsNetworkTrigger(Type t)
+        {
+            for (; t != null; t = t.BaseType)
+                if (t.Name == "NetworkTrigger") return true;
+            return false;
+        }
+
+        static bool HasCall(SerializedProperty calls, UnityEngine.Object target, string method)
+        {
+            for (int i = 0; i < calls.arraySize; i++)
+            {
+                var c = calls.GetArrayElementAtIndex(i);
+                if (c.FindPropertyRelative("m_Target").objectReferenceValue == target
+                    && c.FindPropertyRelative("m_MethodName").stringValue == method)
+                    return true;
+            }
+            return false;
+        }
+
+        static void CopyPersistentCall(SerializedProperty src, SerializedProperty dst)
+        {
+            dst.FindPropertyRelative("m_Target").objectReferenceValue = src.FindPropertyRelative("m_Target").objectReferenceValue;
+            dst.FindPropertyRelative("m_TargetAssemblyTypeName").stringValue = src.FindPropertyRelative("m_TargetAssemblyTypeName").stringValue;
+            dst.FindPropertyRelative("m_MethodName").stringValue = src.FindPropertyRelative("m_MethodName").stringValue;
+            dst.FindPropertyRelative("m_Mode").enumValueIndex = src.FindPropertyRelative("m_Mode").enumValueIndex;
+            dst.FindPropertyRelative("m_CallState").enumValueIndex = src.FindPropertyRelative("m_CallState").enumValueIndex;
+            var sa = src.FindPropertyRelative("m_Arguments");
+            var da = dst.FindPropertyRelative("m_Arguments");
+            da.FindPropertyRelative("m_ObjectArgument").objectReferenceValue = sa.FindPropertyRelative("m_ObjectArgument").objectReferenceValue;
+            da.FindPropertyRelative("m_ObjectArgumentAssemblyTypeName").stringValue = sa.FindPropertyRelative("m_ObjectArgumentAssemblyTypeName").stringValue;
+            da.FindPropertyRelative("m_IntArgument").intValue = sa.FindPropertyRelative("m_IntArgument").intValue;
+            da.FindPropertyRelative("m_FloatArgument").floatValue = sa.FindPropertyRelative("m_FloatArgument").floatValue;
+            da.FindPropertyRelative("m_StringArgument").stringValue = sa.FindPropertyRelative("m_StringArgument").stringValue;
+            da.FindPropertyRelative("m_BoolArgument").boolValue = sa.FindPropertyRelative("m_BoolArgument").boolValue;
+        }
+
         // ── Helpers ─────────────────────────────────────────────────────────────────
 
         static IEnumerable<GameObject> AllObjects(Scene scene) =>
