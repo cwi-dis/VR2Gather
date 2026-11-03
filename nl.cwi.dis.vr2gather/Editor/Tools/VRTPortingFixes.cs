@@ -153,6 +153,121 @@ namespace VRT.Tools
             return report.Finish();
         }
 
+        // ── Trigger colliders on interactables ──────────────────────────────────────
+
+        // The VR controller casters in P_Self_Player ignore trigger colliders (QueryTriggerInteraction.Ignore),
+        // while the P_Handsfree ray does hit them. An interactable whose colliders are all triggers therefore
+        // works with keyboard/mouse but is invisible to the VR controllers (ray, near and poke).
+
+        public static string FixTriggerInteractablesInActiveScene(bool dryRun) => FixTriggerInteractables(SceneManager.GetActiveScene(), dryRun);
+
+        public static string FixTriggerInteractables(Scene scene, bool dryRun)
+        {
+            var report = new Report("Trigger-only interactables", scene, dryRun);
+            FixTriggerInteractables(AllObjects(scene), report, dryRun);
+            return report.Finish();
+        }
+
+        /// <summary>
+        /// Same, for a prefab asset. Unlike the scene fixers this saves the prefab.
+        /// </summary>
+        public static string FixTriggerInteractablesInPrefab(string prefabPath, bool dryRun)
+        {
+            var root = PrefabUtility.LoadPrefabContents(prefabPath);
+            var report = new Report("Trigger-only interactables", prefabPath, dryRun);
+            try
+            {
+                FixTriggerInteractables(root.GetComponentsInChildren<Transform>(true).Select(t => t.gameObject), report, dryRun);
+                if (!dryRun && report.Changed > 0)
+                {
+                    PrefabUtility.SaveAsPrefabAsset(root, prefabPath, out bool saved);
+                    if (!saved)
+                        report.SaveFailed(prefabPath, "see console");
+                }
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+            return report.Finish();
+        }
+
+        static void FixTriggerInteractables(IEnumerable<GameObject> objects, Report report, bool dryRun)
+        {
+            var interactableType = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable, Unity.XR.Interaction.Toolkit");
+            var teleportType = Type.GetType(
+                "UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.BaseTeleportationInteractable, Unity.XR.Interaction.Toolkit");
+            if (interactableType == null || teleportType == null)
+            {
+                report.Skip("XRI not installed");
+                return;
+            }
+
+            foreach (var go in objects)
+            {
+                foreach (var comp in go.GetComponents(interactableType))
+                {
+                    var colliders = InteractableColliders(comp);
+                    if (colliders.Count == 0 || colliders.Any(c => !c.isTrigger))
+                        continue;
+
+                    var names = string.Join(", ", colliders.Select(c => $"{HierarchyPath(c.gameObject)} ({c.GetType().Name})"));
+                    if (teleportType.IsInstanceOfType(comp))
+                    {
+                        report.Unknown(go, $"teleportation area with only trigger colliders: {names}");
+                        continue;
+                    }
+                    var body = colliders.Select(c => c.attachedRigidbody).FirstOrDefault(b => b != null && !b.isKinematic);
+                    if (body != null)
+                    {
+                        report.Unknown(go, $"{comp.GetType().Name}: non-kinematic Rigidbody on {body.name}, making {names} solid would change physics");
+                        continue;
+                    }
+                    var listener = colliders.SelectMany(c => c.GetComponents<MonoBehaviour>()).FirstOrDefault(HasTriggerCallback);
+                    if (listener != null)
+                    {
+                        report.Unknown(go, $"{comp.GetType().Name}: {listener.GetType().Name} on {listener.name} handles trigger events, trigger probably deliberate");
+                        continue;
+                    }
+
+                    report.Change(go, $"{comp.GetType().Name}: isTrigger off on {names}");
+                    if (dryRun) continue;
+                    foreach (var c in colliders)
+                    {
+                        Undo.RecordObject(c, "Fix trigger collider on interactable");
+                        c.isTrigger = false;
+                    }
+                }
+            }
+        }
+
+        // The colliders XRI uses for an interactable: the Colliders list, or else all colliders in its children.
+        static List<Collider> InteractableColliders(Component interactable)
+        {
+            var so = new SerializedObject(interactable);
+            var list = so.FindProperty("m_Colliders");
+            var result = new List<Collider>();
+            if (list != null)
+                for (int i = 0; i < list.arraySize; i++)
+                    if (list.GetArrayElementAtIndex(i).objectReferenceValue is Collider c && c != null)
+                        result.Add(c);
+            if (result.Count == 0)
+                result.AddRange(interactable.GetComponentsInChildren<Collider>(true));
+            return result;
+        }
+
+        static bool HasTriggerCallback(MonoBehaviour mb)
+        {
+            if (mb == null) return false;
+            const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+            var t = mb.GetType();
+            return t.GetMethod("OnTriggerEnter", flags) != null
+                || t.GetMethod("OnTriggerStay", flags) != null
+                || t.GetMethod("OnTriggerExit", flags) != null;
+        }
+
         // ── Grabbable event wiring ──────────────────────────────────────────────────
 
         // Old VRTGrabbableController method names, renamed long ago (d11419a2b). Unity silently skips
