@@ -421,6 +421,21 @@ namespace VRT.Tools
                         if (HasCall(selected, target, "Trigger")) continue;
 
                         string what = $"{comp.GetType().Name}: Activated calls {target.name}.Trigger";
+
+                        // A prefab instance whose Activated was redirected (override) to another trigger, while
+                        // SelectEntered still has the call inherited from the prefab: point that call at the same
+                        // trigger, instead of adding a second one (which would fire both triggers on a poke).
+                        var inherited = call.FindPropertyRelative("m_Target").prefabOverride
+                            ? InheritedTriggerCall(selected) : null;
+                        if (inherited != null)
+                        {
+                            var oldTarget = inherited.FindPropertyRelative("m_Target").objectReferenceValue;
+                            report.Change(go, $"{what} (override), SelectEntered redirected from {(oldTarget != null ? oldTarget.name : "a missing object")}.Trigger");
+                            if (dryRun) continue;
+                            CopyPersistentCall(call, inherited);
+                            changed = true;
+                            continue;
+                        }
                         if (comp.GetType().Name.Contains("Grab") || go.GetComponent("VRTGrabbableController") != null)
                         {
                             report.Unknown(go, $"{what}, but the object can be grabbed");
@@ -445,6 +460,26 @@ namespace VRT.Tools
             for (; t != null; t = t.BaseType)
                 if (t.Name == "NetworkTrigger") return true;
             return false;
+        }
+
+        // The single NetworkTrigger.Trigger call in this event, if it is inherited from the prefab (not overridden).
+        // Its target may be missing: the instance may no longer have the prefab's own trigger object.
+        static SerializedProperty InheritedTriggerCall(SerializedProperty calls)
+        {
+            SerializedProperty found = null;
+            for (int i = 0; i < calls.arraySize; i++)
+            {
+                var c = calls.GetArrayElementAtIndex(i);
+                var t = c.FindPropertyRelative("m_Target").objectReferenceValue;
+                if (c.FindPropertyRelative("m_MethodName").stringValue != "Trigger") continue;
+                if (t != null ? !IsNetworkTrigger(t.GetType())
+                              : !c.FindPropertyRelative("m_TargetAssemblyTypeName").stringValue.StartsWith("VRT.Pilots.Common.NetworkTrigger"))
+                    continue;
+                if (found != null || c.FindPropertyRelative("m_Target").prefabOverride)
+                    return null;
+                found = c;
+            }
+            return found;
         }
 
         static bool HasCall(SerializedProperty calls, UnityEngine.Object target, string method)
