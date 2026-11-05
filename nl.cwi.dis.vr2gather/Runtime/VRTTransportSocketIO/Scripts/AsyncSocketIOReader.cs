@@ -29,8 +29,9 @@ namespace VRT.Transport.SocketIO
         }
 
         IncomingTileDescription[] descriptors;
-        
-        
+        // The user whose streams we receive (not ourselves). Needed again in Stop() to unregister.
+        string remoteUserId;
+
         public ITransportProtocolReader_Tiled Init(string remoteUrl, string userId, string streamName, string fourcc, IncomingTileDescription[] descriptors)
         {
             NoUpdateCallsNeeded();
@@ -39,6 +40,7 @@ namespace VRT.Transport.SocketIO
                 throw new System.Exception($"{Name()}: descriptors is null");
             }
             this.descriptors = descriptors;
+            this.remoteUserId = userId;
             try
             {
                 for (int i = 0; i < this.descriptors.Length; ++i)
@@ -84,11 +86,17 @@ namespace VRT.Transport.SocketIO
         public override void Stop()
         {
             base.Stop();
+            // Unsubscribe first: otherwise this stopped reader keeps receiving every packet of
+            // its stream (stream names are the same in every scene) and drops it into its
+            // closed queue, for the rest of the session (#399).
+            if (VRTOrchestratorSingleton.Streams != null)
+                VRTOrchestratorSingleton.Streams.OnDataStreamReceived -= OnDataPacketReceived;
             for (int i = 0; i < descriptors.Length; ++i)
             {
                 descriptors[i].outQueue?.Close();
-                if (VRTOrchestratorSingleton.Streams != null && VRTOrchestratorSingleton.Streams.SelfUser != null)
-                    VRTOrchestratorSingleton.Streams.UnregisterFromDataStream(VRTOrchestratorSingleton.Streams.SelfUser.userId, descriptors[i].name);
+                // Unregister with the same (remote) user id we registered with in Init().
+                if (VRTOrchestratorSingleton.Streams != null)
+                    VRTOrchestratorSingleton.Streams.UnregisterFromDataStream(remoteUserId, descriptors[i].name);
             }
         }
 
