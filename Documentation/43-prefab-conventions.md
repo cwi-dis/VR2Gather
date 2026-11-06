@@ -33,6 +33,8 @@ A small change to an existing prefab, such as adding one component (e.g. `GazeDe
 
 These surfaced while building `OBJ_BarrierNetworkButton` (#319, #351). Unity gives no error for any of them, so always read the result back.
 
+The first three are general Unity pitfalls, not specific to VR2Gather. Their general version, along with the prefab editing workflow above, is maintained in Jack Jansen's Claude Code onboarding document, available on request.
+
 - **Values set from a script on a prefab instance aren't automatically overrides.** Change instances through `SerializedObject`, or call `PrefabUtility.RecordPrefabInstancePropertyModifications()` afterwards, or the change may be lost on save.
 - **Applying references into a freshly applied object fails silently.** After applying an added GameObject to a prefab, references from other overrides into that object arrive in the prefab as `null`. Apply added objects first, in a separate step, then the rest.
 - **Removing a component leaves its overrides behind.** They remain as modifications with a `null` target. Remove them with `PrefabUtility.GetPropertyModifications()` / `SetPropertyModifications()`.
