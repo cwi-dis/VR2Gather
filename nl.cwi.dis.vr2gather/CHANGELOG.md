@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed HUD, locomotion and snap turn not working in built players: `VR2GatherInputActions` is now enabled by the player's `InputActionManager` (#389)
 - Fixed voice senders leaking in the login scene, and spurious `Close() on closed queue` warnings when they stop (#380)
 - Voice receiver stats line has the sender's `userid`, for analysis with more than two participants (#381)
+- A repeated, unchanged tiling config is no longer a warning (#400)
 
 ## [1.4.4] - 2026-10-16
 
