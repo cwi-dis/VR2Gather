@@ -42,6 +42,9 @@ namespace VRT.UserRepresentation.Voice
         public void Init(bool isLocalPlayer, object _user, VRTConfig.RepresentationConfigType cfg, bool preview = false)
         //public void Init(User user, string _streamName, int _segmentSize, int _segmentLife)
         {
+            // The login scene calls Init again on the same component every time it shows the Home dialog.
+            // Stop the previous pipeline, or its reader thread keeps running with an unclosed queue (#380).
+            StopPipeline();
             User user = (User)_user;
             string _streamName = "audio";
             string microphoneName = VRTConfig.Instance.RepresentationConfig.microphoneName;
@@ -56,8 +59,13 @@ namespace VRT.UserRepresentation.Voice
             bool audioIsEncoded = audioCodec == "VR2A";
             string proto = SessionConfig.Instance.protocolType;
 
+            // Without a writer nobody reads senderQueue. A non-dropping senderQueue would then fill up and
+            // block the encoder, so in that case there is no encoder and the reader writes to a dropping queue.
+            // The reader still computes MicrophoneLevel, for the level meter in the preview.
+            bool transmit = !preview && VRTOrchestratorSingleton.Comm.IsNetworked;
+
             QueueThreadSafe _readerOutputQueue = null;
-            if (audioIsEncoded)
+            if (audioIsEncoded && transmit)
             {
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = new QueueThreadSafe("VoiceSenderSender");
@@ -80,7 +88,7 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogWarning($"{Name()}: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
-            if (preview || !VRTOrchestratorSingleton.Comm.IsNetworked)
+            if (!transmit)
             {
                 return;
             }
@@ -112,14 +120,21 @@ namespace VRT.UserRepresentation.Voice
 
         void OnDestroy()
         {
-            reader?.Stop();
+            StopPipeline();
+        }
+
+        void StopPipeline()
+        {
+            // Upstream first: each worker closes its own output queue when it stops, which also
+            // ends the next worker in the chain. So the queues are not closed here (#380).
+            reader?.StopAndWait();
             reader = null;
-            codec?.Stop();
+            codec?.StopAndWait();
             codec = null;
-            writer?.Stop();
+            writer?.StopAndWait();
             writer = null;
-            encoderQueue?.Close();
-            senderQueue?.Close();
+            encoderQueue = null;
+            senderQueue = null;
         }
 
         public SyncConfig.ClockCorrespondence GetSyncInfo()

@@ -59,9 +59,10 @@ namespace VRT.UserRepresentation.Voice
 #endif
             outQueue = _outQueue;
             device = deviceName;
+            // Start() first: StartCoroutine runs MicroRecorder up to its first yield right away, and its loop needs isRunning.
+            Start();
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName, sampleRate, fps, minBufferSize));
             Debug.Log($"{Name()}: Started with bufferLength {nSamplesPerPacket} samples");
-            Start();
         }
 
         public int getBufferSize()
@@ -192,7 +193,10 @@ namespace VRT.UserRepresentation.Voice
 
                 int readPosition = 0;
 
-                while (true)
+                // Stop when the worker is stopped: the coroutine runs on the pipeline's MonoBehaviour, which
+                // may live on and start a new reader (#380). Microphone.End() is deliberately not called,
+                // because that new reader may already be recording from the same device.
+                while (isRunning)
                 {
                     //
                     // Get the position in the circular buffer where the DSP has just deposited a sample.
