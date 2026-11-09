@@ -120,13 +120,13 @@
                 "port": 0
             },
             "SyntheticConfig": {
-                "nPoints": 0
+                "nPoints": 40000
             },
             "PrerecordedConfig": {
                 "folder": ""
             },
             "voxelSize": 0.0,
-            "frameRate": 0.0
+            "frameRate": 15.0
         }
     }
 }
