@@ -161,7 +161,7 @@ namespace VRT.Core
             [Tooltip("If non-zero, sets the limit on the number of audio packets buffered for voice output (otherwise a sensible default is used)")]
             public int preparerQueueSize = 0;
             [Tooltip("If true voice output will run at its own speed, unsynchronized with other streams, its natural playout clock determined by the local system clock")]
-            public bool ignoreSynchronizer = false;
+            public bool ignoreSynchronizer = true; // true until #403 is solved: the synchronizer turns most received voice into inserted silence
         }
         [Tooltip("Conversational audio settings")]
         public VoiceConfigType VoiceConfig;
