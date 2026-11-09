@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A repeated, unchanged tiling config is no longer a warning (#400)
 - Fixed choppy, lagging received voice: voice ignores the synchronizer by default; apps with `"ignoreSynchronizer": false` in `config.json` should change it (#403)
 - New players start in the middle of the floor again, instead of past its corner, where they could fall before being placed (#404)
+- Porting Check warns when new players would not start above a floor (#404)
 
 ## [1.4.4] - 2026-10-16
 

@@ -35,6 +35,7 @@ namespace VRT.Tools
                 new SceneLoadCheck(),
                 new SceneSetupCheck(),
                 new SoloPlayerCheck(),
+                new PlayerStartFloorCheck(),
                 new PilotControllerCheck(),
                 new PhysicsLayerCheck(),
                 new TeleportLayerCheck(),
@@ -708,6 +709,82 @@ namespace VRT.Tools
                 };
 
             return new CheckResult { Status = CheckStatus.OK, Summary = $"{players.Count} P_Self_Player instance(s) present and active" };
+        }
+    }
+
+    // New players are copies of SessionPlayersManager's SelfPlayerPrefab/PlayerPrefab (in Tool_scenesetup:
+    // disabled scene objects) and start at the template's position until they are moved to their location.
+    // If there is no floor under that position they fall when physics runs first (#404). Developers may
+    // move the templates (for a scene that isn't around the origin), so this checks for a floor, not for (0,0,0).
+    class PlayerStartFloorCheck : SceneCheck
+    {
+        public override string Name => "Player Start Floor";
+
+        const float RayStartAbove = 0.5f;  // start the ray a bit above the template, so a floor at exactly its height is hit
+        const float MaxDropBelow = 2.0f;   // a floor more than this far below the template doesn't count
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            var managers = AllObjects(scene)
+                .Select(go => go.GetComponent<SessionPlayersManager>())
+                .Where(m => m != null)
+                .ToList();
+            if (managers.Count == 0)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "No SessionPlayersManager in scene" };
+
+            Physics.SyncTransforms();
+            var physics = scene.GetPhysicsScene();
+            var details = new List<string>();
+            var selects = new List<Action>();
+            var found = new List<string>();
+            var foundSelects = new List<Action>();
+            var bad = new List<GameObject>();
+            int nChecked = 0;
+
+            foreach (var m in managers)
+            {
+                foreach (var (label, template) in new[] { ("SelfPlayerPrefab", m.SelfPlayerPrefab), ("PlayerPrefab", m.PlayerPrefab) })
+                {
+                    if (template == null) continue;
+                    nChecked++;
+                    // For a scene object this is its world position; for a prefab asset, its root position:
+                    // either way, where Instantiate() without a position puts the copy.
+                    Vector3 start = template.transform.position;
+                    bool hit = physics.Raycast(start + Vector3.up * RayStartAbove, Vector3.down, out RaycastHit info,
+                        RayStartAbove + MaxDropBelow, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+                    var go = template;
+                    if (hit)
+                    {
+                        var floor = info.collider.gameObject;
+                        found.Add($"{PortingCheckerUtil.HierarchyPath(m.gameObject)}.{label}: new players start at {start}, above '{PortingCheckerUtil.HierarchyPath(floor)}' ({info.distance - RayStartAbove:F2} m below)");
+                        foundSelects.Add(() => Selection.activeObject = floor);
+                        continue;
+                    }
+                    bad.Add(go);
+                    details.Add($"{PortingCheckerUtil.HierarchyPath(m.gameObject)}.{label}: new players start at {start}, no floor collider within {MaxDropBelow} m below");
+                    selects.Add(() => Selection.activeObject = go);
+                }
+            }
+
+            if (nChecked == 0)
+                return new CheckResult { Status = CheckStatus.Warning, Summary = "SessionPlayersManager has no player templates set" };
+            if (bad.Count == 0)
+                return new CheckResult
+                {
+                    Status = CheckStatus.OK,
+                    Summary = $"New players start above a floor ({nChecked} template(s))",
+                    Details = found,
+                    DetailSelectActions = foundSelects,
+                };
+
+            return new CheckResult
+            {
+                Status = CheckStatus.Warning,
+                Summary = $"{bad.Count} player template(s) not above a floor: new players fall before they are placed",
+                Details = details,
+                DetailSelectActions = selects,
+                SelectAction = () => Selection.objects = bad.Cast<UnityEngine.Object>().ToArray(),
+            };
         }
     }
 
