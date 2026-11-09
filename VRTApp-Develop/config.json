@@ -84,7 +84,7 @@
         "tiled": false,
         "EncoderConfigs": [
             {
-                "octreeBits": 9
+                "octreeBits": 7
             }
         ]
     },
