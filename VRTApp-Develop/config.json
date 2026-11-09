@@ -69,7 +69,7 @@
         "maxPlayoutLatency": 0.30000001192092898,
         "maxPlayoutAhead": 0.06599999964237213,
         "preparerQueueSize": 0,
-        "ignoreSynchronizer": false
+        "ignoreSynchronizer": true
     },
     "SynchronizerConfig": {
         "debugSynchronizer": false,
