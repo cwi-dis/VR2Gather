@@ -606,9 +606,29 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "HmdTracking",
+                    "type": "Button",
+                    "id": "536ad8cb-5f67-46d5-9a08-c71776786127",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
+                {
+                    "name": "",
+                    "id": "807b3625-5cb6-4403-9554-b34a35639818",
+                    "path": "<XRHMD>/isTracked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HmdTracking",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
                 {
                     "name": "",
                     "id": "49e9cea9-9f58-419a-ab06-23d7ad2c4b8b",

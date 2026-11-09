@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed choppy, lagging received voice: voice ignores the synchronizer by default; apps with `"ignoreSynchronizer": false` in `config.json` should change it (#403)
 - New players start in the middle of the floor again, instead of past its corner, where they could fall before being placed (#404)
 - Porting Check warns when new players would not start above a floor (#404)
+- Automatic reset view when the HMD starts tracking (headset put on) works again; the action is now `ViewPosition/HmdTracking` in `VR2GatherInputActions` (#393)
 
 ## [1.4.4] - 2026-10-16
 
