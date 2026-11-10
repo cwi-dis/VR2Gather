@@ -42,20 +42,14 @@ For now, by hand (some day GitHub Actions will do this, see #355). Build `VRTApp
 
 Each build leaves a zip in `VRTApp-Develop/Builds/`. Run each player once (login scene, and into a session) before releasing it.
 
-Rename the zips to the names earlier releases used (until `build.sh` makes them, see #367), and attach them to the draft release:
-
-| `build.sh` makes | Upload as |
-|------------------|-----------|
-| `VR2Gather-windows.zip` | `VRTApp-Develop-built.zip` |
-| `VR2Gather-mac.zip` | `VRTApp-Develop-built-mac.zip` |
-| `VR2Gather-linux.zip` | `VRTApp-Develop-built-linux.zip` |
+Attach the zips to the draft release under the names `build.sh` gives them: `VR2Gather-windows.zip`, `VR2Gather-mac.zip` and `VR2Gather-linux.zip`. The names come from the project's Product Name (`VR2Gather`), which VRTrun also expects (cwi-dis/VRTstatistics#47). Releases up to 1.4.4 used `VRTApp-Develop-built.zip`, `VRTApp-Develop-built-mac.zip` and `VRTApp-Develop-built-linux.zip` (#367).
 
 When all three are there, publish the release and set it as the latest release.
 
-Or from the command line, after renaming the zips:
+Or from the command line:
 
 ```
-gh release upload vX.Y.Z VRTApp-Develop/Builds/VRTApp-Develop-built*.zip
+gh release upload vX.Y.Z VRTApp-Develop/Builds/VR2Gather-*.zip
 gh release edit vX.Y.Z --draft=false --latest
 ```
 
