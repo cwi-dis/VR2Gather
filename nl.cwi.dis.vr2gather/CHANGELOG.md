@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release players are now `VR2Gather-windows.zip`, `VR2Gather-mac.zip` and `VR2Gather-linux.zip` (were `VRTApp-Develop-built*.zip`) (#367)
 - A missing microphone no longer breaks the login menu: voice is off until it is re-attached, the configured microphone is kept (#374)
 - Porting Check has Fix buttons for the mechanical problems, and new checks for trigger-only interactables, activate-only buttons and old grabbable event wiring (#383)
+- The camera's exposure button (`PFB_CameraDevice`) works with the VR controllers: its collider is no longer a trigger (#385)
 
 ## [1.4.4] - 2026-10-16
 
