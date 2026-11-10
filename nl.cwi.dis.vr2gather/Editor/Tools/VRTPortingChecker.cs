@@ -40,6 +40,9 @@ namespace VRT.Tools
                 new PhysicsLayerCheck(),
                 new TeleportLayerCheck(),
                 new InteractionLayerCheck(),
+                new TriggerInteractablesCheck(),
+                new ActivateOnlyTriggersCheck(),
+                new GrabbableEventsCheck(),
                 new TeleportableTagCheck(),
                 new InteractableConventionCheck(),
             };
@@ -308,6 +311,63 @@ namespace VRT.Tools
             scene.GetRootGameObjects()
                  .SelectMany(r => r.GetComponentsInChildren<Transform>(true))
                  .Select(t => t.gameObject);
+
+        // A Fix button that runs a fixer from VRTPortingFixes on the scene (#383): one Undo step,
+        // the fixer's report goes to the console, and the check runs again. Runs after the current
+        // GUI event, so the window's layout doesn't change in the middle of it.
+        protected Action FixActionFor(Scene scene, Func<Scene, bool, VRTPortingFixes.Report> fixer)
+        {
+            return () => EditorApplication.delayCall += () =>
+            {
+                if (!scene.isLoaded) return;
+                Undo.IncrementCurrentGroup();
+                int group = Undo.GetCurrentGroup();
+                Undo.SetCurrentGroupName($"Porting Check: fix {Name}");
+                var report = fixer(scene, false);
+                Undo.CollapseUndoOperations(group);
+                Debug.Log(report.Text);
+                RunAndStore();
+                if (EditorWindow.HasOpenInstances<VRTPortingCheckerWindow>())
+                    EditorWindow.GetWindow<VRTPortingCheckerWindow>(false, null, false).Repaint();
+            };
+        }
+    }
+
+    // A scene check that is the dry run of a fixer: every object the fixer would change, or that
+    // it found but can't fix (an unknown pattern), is listed; Fix runs the fixer for real.
+    abstract class FixerCheck : SceneCheck
+    {
+        protected abstract VRTPortingFixes.Report Fixer(Scene scene, bool dryRun);
+        protected abstract string OkSummary { get; }
+        protected abstract string ProblemSummary { get; }  // after "N object(s): "
+        protected virtual CheckStatus ProblemStatus => CheckStatus.Error;
+
+        protected override CheckResult RunInScene(Scene scene)
+        {
+            var report = Fixer(scene, true);
+            if (report.SkipReason != null)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = report.SkipReason };
+            if (report.Items.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = OkSummary };
+
+            var objects = report.Items.Where(i => i.Object != null).Select(i => i.Object).Distinct().ToList();
+            string summary = $"{report.Items.Count} {ProblemSummary}";
+            if (report.NotFixed > 0)
+                summary += report.Changed > 0 ? $" ({report.NotFixed} need manual work)" : " (need manual work)";
+            return new CheckResult
+            {
+                Status = ProblemStatus,
+                Summary = summary,
+                Details = report.Items.Select(i => (i.Fixable ? "" : "manual: ") + i.Line).ToList(),
+                DetailSelectActions = report.Items.Select(i =>
+                {
+                    var go = i.Object;
+                    return go != null ? (Action)(() => Selection.activeGameObject = go) : null;
+                }).ToList(),
+                SelectAction = () => Selection.objects = objects.Cast<UnityEngine.Object>().ToArray(),
+                FixAction = report.Changed > 0 ? FixActionFor(scene, Fixer) : null,
+            };
+        }
     }
 
     // ── Global checks ────────────────────────────────────────────────────────────
@@ -632,6 +692,9 @@ namespace VRT.Tools
             foreach (var controller in controllers)
             {
                 var so = new SerializedObject(controller);
+                // The prefabs are only used to play the scene on its own in the editor; a developer who
+                // turned playableInEditor off (default on) doesn't need them, e.g. the login scene.
+                if (so.FindProperty("playableInEditor")?.boolValue == false) continue;
                 bool configMissing = so.FindProperty("configurationPrefab")?.objectReferenceValue == null;
                 bool orchMissing   = so.FindProperty("orchestratorPrefab")?.objectReferenceValue == null;
 
@@ -646,7 +709,7 @@ namespace VRT.Tools
             }
 
             if (issues.Count == 0)
-                return new CheckResult { Status = CheckStatus.OK, Summary = $"{controllers.Count} PilotController(s) have required prefabs set" };
+                return new CheckResult { Status = CheckStatus.OK, Summary = $"{controllers.Count} PilotController(s) have required prefabs set, or are not playable in the editor" };
 
             return new CheckResult
             {
@@ -654,6 +717,7 @@ namespace VRT.Tools
                 Summary = $"{issues.Count} PilotController(s) missing required prefab references",
                 Details = issues,
                 SelectAction = () => Selection.objects = issueObjects.Cast<UnityEngine.Object>().ToArray(),
+                FixAction = FixActionFor(scene, VRTPortingFixes.FixPilotControllerPrefabs),
             };
         }
     }
@@ -788,108 +852,62 @@ namespace VRT.Tools
         }
     }
 
-    class PhysicsLayerCheck : SceneCheck
+    class PhysicsLayerCheck : FixerCheck
     {
         public override string Name => "Physics Layers";
-
-        protected override CheckResult RunInScene(Scene scene)
-        {
-            var wrong = AllObjects(scene)
-                .Where(go => go.layer == 28 || go.layer == 29)
-                .ToList();
-
-            if (wrong.Count == 0)
-                return new CheckResult { Status = CheckStatus.OK, Summary = "No objects on old VRT layers 28/29" };
-
-            return new CheckResult
-            {
-                Status = CheckStatus.Error,
-                Summary = $"{wrong.Count} object(s) on layer 28 or 29 — should be Default (0)",
-                Details = wrong.Select(go => $"[layer {go.layer}] {PortingCheckerUtil.HierarchyPath(go)}").ToList(),
-                SelectAction = () => Selection.objects = wrong.Cast<UnityEngine.Object>().ToArray(),
-            };
-        }
+        protected override string OkSummary => "No objects on old VRT layers 28/29";
+        protected override string ProblemSummary => "object(s) on layer 28 or 29, should be Default (0)";
+        protected override VRTPortingFixes.Report Fixer(Scene scene, bool dryRun) =>
+            VRTPortingFixes.FixPhysicsLayers(scene, dryRun);
     }
 
-    class TeleportLayerCheck : SceneCheck
+    class TeleportLayerCheck : FixerCheck
     {
         public override string Name => "Teleport Layer";
-
-        protected override CheckResult RunInScene(Scene scene)
-        {
-            var interactableType = Type.GetType(
-                "UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.BaseTeleportationInteractable, Unity.XR.Interaction.Toolkit");
-            if (interactableType == null)
-                return new CheckResult { Status = CheckStatus.Skipped, Summary = "XRI not installed" };
-
-            const uint teleportBit = 1u << 31;
-            var issues = new List<string>();
-            var issueObjects = new List<GameObject>();
-
-            foreach (var go in AllObjects(scene))
-            {
-                var comp = go.GetComponent(interactableType) as Component;
-                if (comp == null) continue;
-                var so = new SerializedObject(comp);
-                var bits = so.FindProperty("m_InteractionLayers.m_Bits");
-                if (bits != null && ((uint)bits.longValue & teleportBit) == 0)
-                {
-                    issues.Add($"{go.name} — XRI interaction layer 31 (Teleport) not set (mask: {bits.longValue})");
-                    issueObjects.Add(go);
-                }
-            }
-
-            if (issues.Count == 0)
-                return new CheckResult { Status = CheckStatus.OK, Summary = "All teleportation areas have interaction layer 31 (Teleport)" };
-
-            return new CheckResult
-            {
-                Status = CheckStatus.Error,
-                Summary = $"{issues.Count} teleportation area(s) missing interaction layer 31 (Teleport)",
-                Details = issues,
-                SelectAction = () => Selection.objects = issueObjects.Cast<UnityEngine.Object>().ToArray(),
-            };
-        }
+        protected override string OkSummary => "All teleportation areas have only interaction layer 31 (Teleport)";
+        protected override string ProblemSummary => "teleportation area(s) with old interaction layers, should be 31 (Teleport)";
+        protected override VRTPortingFixes.Report Fixer(Scene scene, bool dryRun) =>
+            VRTPortingFixes.FixInteractionLayers(scene, dryRun, VRTPortingFixes.InteractionLayerScope.Teleportation);
     }
 
-    class InteractionLayerCheck : SceneCheck
+    class InteractionLayerCheck : FixerCheck
     {
         public override string Name => "Interaction Layers";
+        protected override string OkSummary => "No old interaction layer bits found";
+        protected override string ProblemSummary => "interactable(s) with old interaction layer bits 2/4/8, should be Default";
+        protected override VRTPortingFixes.Report Fixer(Scene scene, bool dryRun) =>
+            VRTPortingFixes.FixInteractionLayers(scene, dryRun, VRTPortingFixes.InteractionLayerScope.NonTeleportation);
+    }
 
-        protected override CheckResult RunInScene(Scene scene)
-        {
-            var type = Type.GetType(
-                "UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable, Unity.XR.Interaction.Toolkit");
-            if (type == null)
-                return new CheckResult { Status = CheckStatus.Skipped, Summary = "XRI not installed" };
+    // VR controller casters ignore trigger colliders, the keyboard/mouse ray doesn't (#383, #385).
+    class TriggerInteractablesCheck : FixerCheck
+    {
+        public override string Name => "Trigger-only Interactables";
+        protected override string OkSummary => "All interactables have a solid collider";
+        protected override string ProblemSummary => "interactable(s) with only trigger colliders: invisible to the VR controllers";
+        protected override VRTPortingFixes.Report Fixer(Scene scene, bool dryRun) =>
+            VRTPortingFixes.FixTriggerInteractables(scene, dryRun);
+    }
 
-            var issues = new List<string>();
-            var issueObjects = new List<GameObject>();
+    // Old buttons call NetworkTrigger.Trigger only on Activated, so poking them does nothing (#383).
+    class ActivateOnlyTriggersCheck : FixerCheck
+    {
+        public override string Name => "Activate-only Triggers";
+        protected override string OkSummary => "All NetworkTrigger buttons react to Select Entered";
+        protected override string ProblemSummary => "button(s) that call NetworkTrigger only on Activated: poke does nothing";
+        protected override CheckStatus ProblemStatus => CheckStatus.Warning;
+        protected override VRTPortingFixes.Report Fixer(Scene scene, bool dryRun) =>
+            VRTPortingFixes.FixActivateOnlyTriggers(scene, dryRun);
+    }
 
-            foreach (var go in AllObjects(scene))
-            {
-                var comp = go.GetComponent(type) as Component;
-                if (comp == null) continue;
-                var so = new SerializedObject(comp);
-                var bits = so.FindProperty("m_InteractionLayers.m_Bits");
-                if (bits != null && ((uint)bits.longValue & 14u) != 0)
-                {
-                    issues.Add($"{go.name} — interaction layer bits: {bits.longValue} (bits 2/4/8 set)");
-                    issueObjects.Add(go);
-                }
-            }
-
-            if (issues.Count == 0)
-                return new CheckResult { Status = CheckStatus.OK, Summary = "No old interaction layer bits found" };
-
-            return new CheckResult
-            {
-                Status = CheckStatus.Error,
-                Summary = $"{issues.Count} interactable(s) have old interaction layer bits",
-                Details = issues,
-                SelectAction = () => Selection.objects = issueObjects.Cast<UnityEngine.Object>().ToArray(),
-            };
-        }
+    // Events wired to VRTGrabbableController methods that were renamed: Unity silently skips them (#383).
+    class GrabbableEventsCheck : FixerCheck
+    {
+        public override string Name => "Grabbable Events";
+        protected override string OkSummary => "No calls to old VRTGrabbableController methods";
+        protected override string ProblemSummary => "event call(s) to old VRTGrabbableController methods: grabs are not synchronized";
+        protected override VRTPortingFixes.Report Fixer(Scene scene, bool dryRun) =>
+            VRTPortingFixes.FixGrabbableEvents(scene, dryRun);
     }
 
     class TeleportableTagCheck : SceneCheck
