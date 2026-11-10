@@ -172,6 +172,8 @@ namespace VRT.UserRepresentation.PointCloud
             base.OnDestroy();
         }
 
+        string firstReceivedConfigJson;
+
         public void SetTilingConfig(PointCloudNetworkTileDescription config)
         {
             if (isSource)
@@ -179,11 +181,23 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetTilingConfig called for pipeline that is a source");
                 return;
             }
+            // Compare as received: the stored copy has its orientations mirrored below.
+            string receivedConfigJson = JsonUtility.ToJson(config);
             if (networkTileDescription.tiles != null && networkTileDescription.tiles.Length > 0)
             {
-                Debug.LogWarning($"{Name()}: SetTilingConfig: ignoring second tilingConfig");
+                // The sender resends its tiling config periodically, to cover for receivers that
+                // didn't exist yet when it was first sent. An identical repeat is expected (until #401).
+                if (receivedConfigJson == firstReceivedConfigJson)
+                {
+                    Debug.Log($"{Name()}: SetTilingConfig: ignoring repeated tilingConfig");
+                }
+                else
+                {
+                    Debug.LogWarning($"{Name()}: SetTilingConfig: ignoring second tilingConfig, which differs from the first");
+                }
                 return;
             }
+            firstReceivedConfigJson = receivedConfigJson;
             //
             // The orientation vectors in the config are in the comon right-handed coordinate system.
             // But Unity uses mirroring X or Z, so we need to convert.

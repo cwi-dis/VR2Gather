@@ -128,7 +128,7 @@ namespace VRT.UserRepresentation.Voice
             }
             reader = TransportProtocol.NewReader(proto).Init(url, user.userId, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
 #if VRT_WITH_STATS
-            Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
+            Statistics.Output(Name(), $"userid={user.userId}, proto={proto}, url={url}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
 #endif
 
             

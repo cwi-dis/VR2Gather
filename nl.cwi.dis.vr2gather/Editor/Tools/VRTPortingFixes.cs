@@ -31,9 +31,9 @@ namespace VRT.Tools
 
         // ── Physics layers ──────────────────────────────────────────────────────────
 
-        public static string FixPhysicsLayersInActiveScene(bool dryRun) => FixPhysicsLayers(SceneManager.GetActiveScene(), dryRun);
+        public static string FixPhysicsLayersInActiveScene(bool dryRun) => FixPhysicsLayers(SceneManager.GetActiveScene(), dryRun).Text;
 
-        public static string FixPhysicsLayers(Scene scene, bool dryRun)
+        public static Report FixPhysicsLayers(Scene scene, bool dryRun)
         {
             var report = new Report("Physics layers", scene, dryRun);
             foreach (var go in AllObjects(scene))
@@ -49,11 +49,19 @@ namespace VRT.Tools
 
         // ── Interaction layers (including teleportation areas) ──────────────────────
 
-        public static string FixInteractionLayersInActiveScene(bool dryRun) => FixInteractionLayers(SceneManager.GetActiveScene(), dryRun);
+        /// <summary>Which interactables FixInteractionLayers looks at.</summary>
+        public enum InteractionLayerScope { All, Teleportation, NonTeleportation }
 
-        public static string FixInteractionLayers(Scene scene, bool dryRun)
+        public static string FixInteractionLayersInActiveScene(bool dryRun) => FixInteractionLayers(SceneManager.GetActiveScene(), dryRun).Text;
+
+        public static Report FixInteractionLayers(Scene scene, bool dryRun, InteractionLayerScope scope = InteractionLayerScope.All)
         {
-            var report = new Report("Interaction layers", scene, dryRun);
+            var report = new Report(scope switch
+            {
+                InteractionLayerScope.Teleportation => "Interaction layers of teleportation areas",
+                InteractionLayerScope.NonTeleportation => "Interaction layers (except teleportation areas)",
+                _ => "Interaction layers",
+            }, scene, dryRun);
             var interactableType = Type.GetType(
                 "UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable, Unity.XR.Interaction.Toolkit");
             var teleportType = Type.GetType(
@@ -70,6 +78,8 @@ namespace VRT.Tools
                     if (bits == null) continue;
                     uint oldBits = (uint)bits.longValue;
                     bool isTeleport = teleportType.IsInstanceOfType(comp);
+                    if (scope == InteractionLayerScope.Teleportation && !isTeleport) continue;
+                    if (scope == InteractionLayerScope.NonTeleportation && isTeleport) continue;
                     uint newBits;
 
                     if (isTeleport)
@@ -109,13 +119,13 @@ namespace VRT.Tools
         const string ConfigurationPrefabPath = "Packages/nl.cwi.dis.vr2gather/Runtime/VRTCore/Prefabs/Tool_VRTInitializer.prefab";
         const string OrchestratorPrefabPath = "Packages/nl.cwi.dis.vr2gather/Runtime/VRTOrchestrator/Prefabs/Tool_StandaloneOrchestratorController.prefab";
 
-        public static string FixPilotControllerPrefabsInActiveScene(bool dryRun) => FixPilotControllerPrefabs(SceneManager.GetActiveScene(), dryRun);
+        public static string FixPilotControllerPrefabsInActiveScene(bool dryRun) => FixPilotControllerPrefabs(SceneManager.GetActiveScene(), dryRun).Text;
 
         /// <summary>
         /// Fill empty configurationPrefab/orchestratorPrefab on PilotControllers with the package
         /// defaults (the same ones Tool_scenesetup uses), so the scene is playable in the editor.
         /// </summary>
-        public static string FixPilotControllerPrefabs(Scene scene, bool dryRun)
+        public static Report FixPilotControllerPrefabs(Scene scene, bool dryRun)
         {
             var report = new Report("PilotController prefabs", scene, dryRun);
             var configurationPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ConfigurationPrefabPath);
@@ -132,6 +142,8 @@ namespace VRT.Tools
                     var config = so.FindProperty("configurationPrefab");
                     var orch = so.FindProperty("orchestratorPrefab");
                     if (config == null || orch == null) continue;
+                    // Only used with playableInEditor (default on); off means the developer doesn't want them.
+                    if (so.FindProperty("playableInEditor")?.boolValue == false) continue;
                     if (config.objectReferenceValue != null && orch.objectReferenceValue != null) continue;
 
                     var what = new List<string>();
@@ -159,9 +171,9 @@ namespace VRT.Tools
         // while the P_Handsfree ray does hit them. An interactable whose colliders are all triggers therefore
         // works with keyboard/mouse but is invisible to the VR controllers (ray, near and poke).
 
-        public static string FixTriggerInteractablesInActiveScene(bool dryRun) => FixTriggerInteractables(SceneManager.GetActiveScene(), dryRun);
+        public static string FixTriggerInteractablesInActiveScene(bool dryRun) => FixTriggerInteractables(SceneManager.GetActiveScene(), dryRun).Text;
 
-        public static string FixTriggerInteractables(Scene scene, bool dryRun)
+        public static Report FixTriggerInteractables(Scene scene, bool dryRun)
         {
             var report = new Report("Trigger-only interactables", scene, dryRun);
             FixTriggerInteractables(AllObjects(scene), report, dryRun);
@@ -189,7 +201,7 @@ namespace VRT.Tools
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
-            return report.Finish();
+            return report.Finish().Text;
         }
 
         static void FixTriggerInteractables(IEnumerable<GameObject> objects, Report report, bool dryRun)
@@ -279,9 +291,9 @@ namespace VRT.Tools
             ("OnRelease", "OnSelectExit", PersistentListenerMode.Void, null),
         };
 
-        public static string FixGrabbableEventsInActiveScene(bool dryRun) => FixGrabbableEvents(SceneManager.GetActiveScene(), dryRun);
+        public static string FixGrabbableEventsInActiveScene(bool dryRun) => FixGrabbableEvents(SceneManager.GetActiveScene(), dryRun).Text;
 
-        public static string FixGrabbableEvents(Scene scene, bool dryRun)
+        public static Report FixGrabbableEvents(Scene scene, bool dryRun)
         {
             var report = new Report("Grabbable events", scene, dryRun);
             FixGrabbableEvents(AllObjects(scene), report, dryRun);
@@ -311,7 +323,7 @@ namespace VRT.Tools
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
-            return report.Finish();
+            return report.Finish().Text;
         }
 
         static void FixGrabbableEvents(IEnumerable<GameObject> objects, Report report, bool dryRun)
@@ -359,9 +371,9 @@ namespace VRT.Tools
         // the SelectEntered call. Interactables that can be grabbed are reported, not changed: there,
         // select means "grab", and grabbing shouldn't fire the trigger.
 
-        public static string FixActivateOnlyTriggersInActiveScene(bool dryRun) => FixActivateOnlyTriggers(SceneManager.GetActiveScene(), dryRun);
+        public static string FixActivateOnlyTriggersInActiveScene(bool dryRun) => FixActivateOnlyTriggers(SceneManager.GetActiveScene(), dryRun).Text;
 
-        public static string FixActivateOnlyTriggers(Scene scene, bool dryRun)
+        public static Report FixActivateOnlyTriggers(Scene scene, bool dryRun)
         {
             var report = new Report("Activate-only triggers", scene, dryRun);
             FixActivateOnlyTriggers(AllObjects(scene), report, dryRun);
@@ -389,7 +401,7 @@ namespace VRT.Tools
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
-            return report.Finish();
+            return report.Finish().Text;
         }
 
         static void FixActivateOnlyTriggers(IEnumerable<GameObject> objects, Report report, bool dryRun)
@@ -526,13 +538,29 @@ namespace VRT.Tools
             return path;
         }
 
-        class Report
+        /// <summary>
+        /// What a fixer did (or, with dryRun, would do): a readable text, plus the counts and the
+        /// objects per line, so the Porting Check can show the dry run and offer a Fix button.
+        /// </summary>
+        public class Report
         {
+            public struct Item
+            {
+                public GameObject Object;  // null for lines that aren't about one object
+                public string Line;        // without the "would fix"/"NOT FIXED" prefix
+                public bool Fixable;
+            }
+
             readonly StringBuilder _sb = new StringBuilder();
             readonly Scene? _scene;
             readonly bool _dryRun;
             int _changed, _unknown;
             public int Changed => _changed;
+            public int NotFixed => _unknown;
+            public string SkipReason { get; private set; }
+            public List<Item> Items { get; } = new List<Item>();
+            public string Text => _sb.ToString();
+            public override string ToString() => Text;
 
             public Report(string what, Scene scene, bool dryRun) : this(what, scene.path, dryRun)
             {
@@ -548,12 +576,14 @@ namespace VRT.Tools
             public void Change(GameObject go, string what)
             {
                 _changed++;
+                Items.Add(new Item { Object = go, Line = $"{HierarchyPath(go)}: {what}", Fixable = true });
                 _sb.AppendLine($"  {(_dryRun ? "would fix" : "fixed")}  {HierarchyPath(go)}: {what}");
             }
 
             public void Unknown(GameObject go, string what)
             {
                 _unknown++;
+                Items.Add(new Item { Object = go, Line = $"{HierarchyPath(go)}: {what}", Fixable = false });
                 _sb.AppendLine($"  NOT FIXED  {HierarchyPath(go)}: {what} (unknown pattern)");
             }
 
@@ -564,18 +594,19 @@ namespace VRT.Tools
                 _sb.AppendLine($"  NOT SAVED  {path}: {why}; none of the changes above were kept");
             }
 
-            public string Skip(string why)
+            public Report Skip(string why)
             {
+                SkipReason = why;
                 _sb.AppendLine($"  skipped: {why}");
-                return _sb.ToString();
+                return this;
             }
 
-            public string Finish()
+            public Report Finish()
             {
                 if (!_dryRun && _changed > 0 && _scene.HasValue)
                     EditorSceneManager.MarkSceneDirty(_scene.Value);
                 _sb.AppendLine($"{_changed} {(_dryRun ? "to fix" : "fixed")}, {_unknown} not fixed");
-                return _sb.ToString();
+                return this;
             }
         }
     }

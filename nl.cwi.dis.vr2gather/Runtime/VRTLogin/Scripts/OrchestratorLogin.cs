@@ -87,8 +87,18 @@ namespace VRT.Login
         private bool _pendingAutoCreate;
         private bool _pendingAutoJoin;
         private bool _pendingAutoCreateStandalone;
-        private bool _autoStartDone;
-        private bool _autoStartAlreadyStarted;
+        // Static: auto-start is once per application run (#376). The login scene, and with it this object,
+        // is loaded again after every session; an instance field would start it all over again.
+        private static bool _autoStartDone;
+        private static bool _autoStartAlreadyStarted;
+
+        // Statics survive Play mode in the Editor when domain reload is disabled.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetAutoStartStatics()
+        {
+            _autoStartDone = false;
+            _autoStartAlreadyStarted = false;
+        }
 
         // ── Unity lifecycle ─────────────────────────────────────────────────────
 
@@ -149,7 +159,16 @@ namespace VRT.Login
             TransitionTo(() => {
                 CleanupOrchestrator();
                 ClearContent();
-                FixSelfRepresentation();
+                try
+                {
+                    FixSelfRepresentation();
+                }
+                catch (Exception e)
+                {
+                    // Build the Home dialog anyway: a failing representation or microphone must not leave
+                    // the login without a menu (#374).
+                    Debug.LogError($"OrchestratorLogin: setting up the self representation failed: {e}");
+                }
 
                 var clone = homeDialogAsset.CloneTree();
                 clone.style.flexGrow = 1;
@@ -661,19 +680,14 @@ namespace VRT.Login
             _autoStartAlreadyStarted = false;
             _autoStartDone = true;
 
-            UpdateAutoStatus("AutoStart: CapsLock to cancel");
-            // Defer the actual trigger so the user has autoDelay seconds to press CapsLock.
+            UpdateAutoStatus("AutoStart: turn Caps Lock on to cancel");
+            // Defer the actual trigger so the user has autoDelay seconds to turn Caps Lock on.
             Invoke(nameof(AutoStart_Fire), config.autoDelay);
         }
 
         private void AutoStart_Fire()
         {
-            if (Keyboard.current != null && Keyboard.current.capsLockKey.isPressed)
-            {
-                Debug.Log("OrchestratorLogin: AutoStart suppressed (CapsLock held)");
-                UpdateAutoStatus("AutoStart: cancelled");
-                return;
-            }
+            if (AutoStartCancelled()) return;
 
             if (_pendingAutoCreate)
                 ShowCreate();
@@ -696,6 +710,7 @@ namespace VRT.Login
         private void AutoStart_TriggerCreate()
         {
             if (_createDialog == null) return;
+            if (AutoStartCancelled()) return;
             // Reuse the same logic as clicking Create: read current dialog state.
             // We achieve this by having the dialog fire OnCreateClicked normally.
             // Since we can't click the button programmatically, we duplicate the logic here.
@@ -741,6 +756,7 @@ namespace VRT.Login
 
         private void AutoStart_TriggerCreateStandalone()
         {
+            if (AutoStartCancelled()) return;
             var config = VRTConfig.Instance.AutoStartConfig;
             var scenarios = ScenarioRegistry.Instance?.Scenarios;
             ScenarioRegistry.ScenarioInfo scenarioInfo = null;
@@ -776,6 +792,7 @@ namespace VRT.Login
 
         private void AutoStart_TriggerJoin()
         {
+            if (AutoStartCancelled()) return;
             UpdateAutoStatus($"AutoStart: Joining session \"{VRTConfig.Instance.AutoStartConfig.sessionName}\"...");
             _joinDialog?.AutoJoin(VRTConfig.Instance.AutoStartConfig.sessionName);
         }
@@ -801,8 +818,27 @@ namespace VRT.Login
             {
                 _autoStartAlreadyStarted = true;
                 UpdateAutoStatus("AutoStart: Starting session...");
-                Invoke(nameof(OnStartSessionRequested), config.autoDelay);
+                Invoke(nameof(AutoStart_TriggerStart), config.autoDelay);
             }
+        }
+
+        private void AutoStart_TriggerStart()
+        {
+            if (AutoStartCancelled()) return;
+            OnStartSessionRequested();
+        }
+
+        // Cancelling: Caps Lock *on* (its toggle state), checked before every auto-start step. It used to be
+        // the Caps Lock key held down, read through the Input System, which only sees keys while Unity has
+        // focus: with a headset on, the Oculus/Link app has it (#376).
+        private bool AutoStartCancelled()
+        {
+            if (!KeyboardLocks.CapsLockOn()) return false;
+            Debug.Log("OrchestratorLogin: AutoStart cancelled (Caps Lock on)");
+            UpdateAutoStatus("AutoStart: cancelled (Caps Lock on)");
+            _pendingAutoCreate = _pendingAutoJoin = _pendingAutoCreateStandalone = false;
+            _autoStartAlreadyStarted = true;
+            return true;
         }
 
         // ── Helpers ─────────────────────────────────────────────────────────────

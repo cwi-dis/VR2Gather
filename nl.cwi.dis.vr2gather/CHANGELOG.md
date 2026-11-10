@@ -16,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Missing `sfuData` in a networked session is now an error; Standalone Sessions don't transmit (#375)
 - Login no longer stops when the webcam pipeline can't start: reverts to avatar (#312)
 - Fixed HUD, locomotion and snap turn not working in built players: `VR2GatherInputActions` is now enabled by the player's `InputActionManager` (#389)
+- Fixed voice senders leaking in the login scene, and spurious `Close() on closed queue` warnings when they stop (#380)
+- Voice receiver stats line has the sender's `userid`, for analysis with more than two participants (#381)
+- A repeated, unchanged tiling config is no longer a warning (#400)
+- Fixed choppy, lagging received voice: voice ignores the synchronizer by default; apps with `"ignoreSynchronizer": false` in `config.json` should change it (#403)
+- New players start in the middle of the floor again, instead of past its corner, where they could fall before being placed (#404)
+- Porting Check warns when new players would not start above a floor (#404)
+- Automatic reset view when the headset is put on works again, also after short breaks; detected from the head tracking state instead of an input action (#393)
+- Stats records for HMD tracking lost/regained and for reset view started/done, with the view correction; needs the next cwipc_unity release (#392)
+- Auto-start is cancelled by turning Caps Lock on (also with a headset on), and runs only once per application run (#376)
+- Release players are now `VR2Gather-windows.zip`, `VR2Gather-mac.zip` and `VR2Gather-linux.zip` (were `VRTApp-Develop-built*.zip`) (#367)
+- A missing microphone no longer breaks the login menu: voice is off until it is re-attached, the configured microphone is kept (#374)
+- Porting Check has Fix buttons for the mechanical problems, and new checks for trigger-only interactables, activate-only buttons and old grabbable event wiring (#383)
+- The camera's exposure button (`PFB_CameraDevice`) works with the VR controllers: its collider is no longer a trigger (#385)
+- Fixed VR controller sticks moving and teleporting at the same time after the pointer leaves a UI panel or the HUD is hidden (#409)
 
 ## [1.4.4] - 2026-10-16
 
