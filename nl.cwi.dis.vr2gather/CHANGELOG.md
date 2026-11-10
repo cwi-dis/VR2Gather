@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A missing microphone no longer breaks the login menu: voice is off until it is re-attached, the configured microphone is kept (#374)
 - Porting Check has Fix buttons for the mechanical problems, and new checks for trigger-only interactables, activate-only buttons and old grabbable event wiring (#383)
 - The camera's exposure button (`PFB_CameraDevice`) works with the VR controllers: its collider is no longer a trigger (#385)
+- Fixed VR controller sticks moving and teleporting at the same time after the pointer leaves a UI panel or the HUD is hidden (#409)
 
 ## [1.4.4] - 2026-10-16
 

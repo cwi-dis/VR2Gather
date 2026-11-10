@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -10,6 +11,11 @@ namespace VRT.Pilots.Common
     /// (mouse or XR ray) is over it, or a TextField has keyboard focus.
     ///
     /// Attach to the same GameObject as the UIDocument (the interactable side).
+    ///
+    /// Restoring a map re-enables only the actions that were enabled when this guard suppressed it.
+    /// Other components switch individual actions on and off too: XRI's ControllerInputActionManager
+    /// keeps only one of Move and Teleport enabled per stick, so enabling the whole map would make
+    /// a stick move and teleport at the same time (#409).
     /// </summary>
     public class VRTPanelInputGuard : MonoBehaviour
     {
@@ -30,6 +36,8 @@ namespace VRT.Pilots.Common
         private VisualElement m_Root;
         private readonly List<InputActionMap> m_TextFieldMaps = new();
         private readonly List<InputActionMap> m_HoverMaps = new();
+        // Maps this guard has suppressed, with the actions that were enabled at that moment.
+        private readonly Dictionary<InputActionMap, List<InputAction>> m_Suppressed = new();
         private bool m_TextFieldFocused;
         private bool m_PointerOver;
         private bool m_FocusCallbacksRegistered;
@@ -72,13 +80,9 @@ namespace VRT.Pilots.Common
         {
             UnregisterCallbacks();
 
-            if (m_TextFieldFocused)
-            {
-                m_TextFieldFocused = false;
-                SetMapsEnabled(m_TextFieldMaps, true);
-            }
+            m_TextFieldFocused = false;
             m_PointerOver = false;
-            SetMapsEnabled(m_HoverMaps, true);
+            ApplyMapsState();
         }
 
         // ── Callback registration ────────────────────────────────────────────────
@@ -136,31 +140,44 @@ namespace VRT.Pilots.Common
         {
             if (evt.target != m_Root) return;
             m_PointerOver = true;
-            ApplyHoverMapsState();
+            ApplyMapsState();
         }
 
         private void OnPanelPointerLeave(PointerLeaveEvent evt)
         {
             if (evt.target != m_Root) return;
             m_PointerOver = false;
-            ApplyHoverMapsState();
+            ApplyMapsState();
         }
 
-        private void ApplyHoverMapsState()
+        // Suppress every map that should be suppressed now (pointer over the panel, or a text field
+        // focused), and restore the ones this guard suppressed that no longer should be.
+        private void ApplyMapsState()
         {
-            foreach (var map in m_HoverMaps)
+            foreach (var map in m_HoverMaps.Concat(m_TextFieldMaps).Distinct())
             {
-                if (m_PointerOver)
-                {
-                    map.Disable();
-                }
+                bool suppress = (m_PointerOver && m_HoverMaps.Contains(map))
+                             || (m_TextFieldFocused && m_TextFieldMaps.Contains(map));
+                if (suppress)
+                    Suppress(map);
                 else
-                {
-                    bool heldByTextFocus = m_TextFieldFocused && m_TextFieldMaps.Contains(map);
-                    if (!heldByTextFocus)
-                        map.Enable();
-                }
+                    Restore(map);
             }
+        }
+
+        private void Suppress(InputActionMap map)
+        {
+            if (m_Suppressed.ContainsKey(map)) return;
+            m_Suppressed[map] = map.actions.Where(a => a.enabled).ToList();
+            map.Disable();
+        }
+
+        private void Restore(InputActionMap map)
+        {
+            if (!m_Suppressed.TryGetValue(map, out var wasEnabled)) return;
+            m_Suppressed.Remove(map);
+            foreach (var action in wasEnabled)
+                action.Enable();
         }
 
         // ── Text field focus ─────────────────────────────────────────────────────
@@ -169,7 +186,7 @@ namespace VRT.Pilots.Common
         {
             if (m_TextFieldFocused || !IsInsideInteractiveField(evt.target as VisualElement)) return;
             m_TextFieldFocused = true;
-            SetMapsEnabled(m_TextFieldMaps, false);
+            ApplyMapsState();
         }
 
         private void OnFocusOut(FocusOutEvent evt)
@@ -179,7 +196,7 @@ namespace VRT.Pilots.Common
             if (IsInsideDropdownPopup(evt.relatedTarget as VisualElement)) return;
             if (IsInsideInteractiveField(evt.relatedTarget as VisualElement)) return;
             m_TextFieldFocused = false;
-            SetMapsEnabled(m_TextFieldMaps, true);
+            ApplyMapsState();
         }
 
         // ── Helpers ──────────────────────────────────────────────────────────────
@@ -207,15 +224,6 @@ namespace VRT.Pilots.Common
                 current = current.parent;
             }
             return false;
-        }
-
-        private static void SetMapsEnabled(List<InputActionMap> maps, bool enabled)
-        {
-            foreach (var map in maps)
-            {
-                if (enabled) map.Enable();
-                else map.Disable();
-            }
         }
 
         private void CollectMaps(string[] names, List<InputActionMap> target)
