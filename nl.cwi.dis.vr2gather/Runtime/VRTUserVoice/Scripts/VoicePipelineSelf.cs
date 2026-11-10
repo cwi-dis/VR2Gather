@@ -54,6 +54,13 @@ namespace VRT.UserRepresentation.Voice
                 Debug.Log($"{Name()}: no microphone (\"{microphoneName}\"), other participants will not hear you");
                 return;
             }
+            if (!AsyncVoiceReader.CustomDeviceNames.Contains(microphoneName) && System.Array.IndexOf(Microphone.devices, microphoneName) < 0)
+            {
+                // The configured microphone is gone (unplugged, Bluetooth off): behave as "None" for now, but keep
+                // the configured name, so it works again when the microphone is re-attached (#374).
+                Debug.LogWarning($"{Name()}: microphone \"{microphoneName}\" not found, other participants will not hear you");
+                return;
+            }
 
             string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
@@ -81,7 +88,21 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = AsyncVoiceReader.Create(microphoneName, VRTConfig.Instance.VoiceConfig.AudioSampleRate, VRTConfig.Instance.VoiceConfig.audioFps, minBufferSize, this, _readerOutputQueue);
+            try
+            {
+                reader = AsyncVoiceReader.Create(microphoneName, VRTConfig.Instance.VoiceConfig.AudioSampleRate, VRTConfig.Instance.VoiceConfig.audioFps, minBufferSize, this, _readerOutputQueue);
+            }
+            catch (System.Exception e)
+            {
+                // For example an app's own reader that can't open a microphone that has been unplugged.
+                // Don't let it break the caller (the login menu, #374): continue without voice.
+                Debug.LogError($"{Name()}: cannot open microphone \"{microphoneName}\", other participants will not hear you: {e.Message}");
+                // The reader would have closed its output queue when stopping; close it ourselves so the
+                // encoder (waiting on it) stops instead of timing out.
+                _readerOutputQueue?.Close();
+                StopPipeline();
+                return;
+            }
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {

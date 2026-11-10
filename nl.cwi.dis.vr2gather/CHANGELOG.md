@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Stats records for HMD tracking lost/regained and for reset view started/done, with the view correction; needs the next cwipc_unity release (#392)
 - Auto-start is cancelled by turning Caps Lock on (also with a headset on), and runs only once per application run (#376)
 - Release players are now `VR2Gather-windows.zip`, `VR2Gather-mac.zip` and `VR2Gather-linux.zip` (were `VRTApp-Develop-built*.zip`) (#367)
+- A missing microphone no longer breaks the login menu: voice is off until it is re-attached, the configured microphone is kept (#374)
 
 ## [1.4.4] - 2026-10-16
 

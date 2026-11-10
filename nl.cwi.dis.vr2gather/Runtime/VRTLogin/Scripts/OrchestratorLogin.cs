@@ -159,7 +159,16 @@ namespace VRT.Login
             TransitionTo(() => {
                 CleanupOrchestrator();
                 ClearContent();
-                FixSelfRepresentation();
+                try
+                {
+                    FixSelfRepresentation();
+                }
+                catch (Exception e)
+                {
+                    // Build the Home dialog anyway: a failing representation or microphone must not leave
+                    // the login without a menu (#374).
+                    Debug.LogError($"OrchestratorLogin: setting up the self representation failed: {e}");
+                }
 
                 var clone = homeDialogAsset.CloneTree();
                 clone.style.flexGrow = 1;

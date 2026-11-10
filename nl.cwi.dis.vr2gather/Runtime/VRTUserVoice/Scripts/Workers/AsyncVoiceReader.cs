@@ -180,7 +180,7 @@ namespace VRT.UserRepresentation.Voice
                 }
                 if (recorder.channels != 1)
                 {
-                    Debug.LogWarning("{Name()}: Microphone has {recorder.channels} channels, not supported");
+                    Debug.LogWarning($"{Name()}: Microphone has {recorder.channels} channels, not supported");
                 }
                 if (nSamplesInCircularBuffer != wantedSampleRate)
                 {
@@ -295,7 +295,7 @@ namespace VRT.UserRepresentation.Voice
                 }
             }
             else
-                Debug.LogError("{Name()}: No Microphones detected.");
+                Debug.LogError($"{Name()}: No microphones detected, other participants will not hear you");
         }
 
 #if VRT_WITH_STATS
