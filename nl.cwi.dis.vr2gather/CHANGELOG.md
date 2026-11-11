@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [next] - unreleased
+## [1.4.5] - 2026-11-11
 
 - VR controls work properly again: HUD, locomotion and snap turn in built players, sticks no longer move and teleport at the same time, camera button usable with the controllers (#389, #409, #385)
 - Automatic reset view when the headset is put on works again, and new players start in the middle of the floor (#393, #404)
