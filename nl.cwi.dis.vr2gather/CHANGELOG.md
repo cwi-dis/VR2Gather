@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [next] - unreleased
 
-- Requires cwipc 8.2.0 (was 8.0.0), which 1.4.4 already used
+- Requires cwipc_unity 8.2.1 (#392, #393, cwi-dis/cwipc_unity#60), and cwipc 8.2.0 (was 8.0.0), which 1.4.4 already used
 - Stats log has a `VRTConfig` line at startup: app, package and Unity versions (#373)
 - Pluggable voice readers (#368)
 - Fixed point clouds not being transmitted: empty encoder config, and users joining a session (#377)
@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New players start in the middle of the floor again, instead of past its corner, where they could fall before being placed (#404)
 - Porting Check warns when new players would not start above a floor (#404)
 - Automatic reset view when the headset is put on works again, also after short breaks; detected from the head tracking state instead of an input action (#393)
-- Stats records for HMD tracking lost/regained and for reset view started/done, with the view correction; needs the next cwipc_unity release (#392)
+- Stats records for HMD tracking lost/regained and for reset view started/done, with the view correction (#392)
 - Auto-start is cancelled by turning Caps Lock on (also with a headset on), and runs only once per application run (#376)
 - Release players are now `VR2Gather-windows.zip`, `VR2Gather-mac.zip` and `VR2Gather-linux.zip` (were `VRTApp-Develop-built*.zip`) (#367)
 - A missing microphone no longer breaks the login menu: voice is off until it is re-attached, the configured microphone is kept (#374)
