@@ -74,6 +74,12 @@ namespace VRT.Transport.WebRTC
             Uri url = new(_url);
             peerSFUAddress = $"{url.Host}:{url.Port}";
             logFileDirectory = VRTConfig.Instance.TransportWebRTCConfig.logFileDirectory;
+            if (!string.IsNullOrEmpty(logFileDirectory))
+            {
+                // Relative to the config file folder, like other path-typed config fields (#186).
+                // force: it is an output directory, which need not exist yet.
+                logFileDirectory = VRTConfig.ConfigFilename(logFileDirectory, force:true, label:"WebRTC log directory");
+            }
             debugLevel = VRTConfig.Instance.TransportWebRTCConfig.debugLevel;
             WebRTCConnectorPinvoke.ConfigureDebug(logFileDirectory, debugLevel);
         }
