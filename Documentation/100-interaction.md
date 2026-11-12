@@ -43,6 +43,7 @@ Originally added as a debug mode so development could proceed without a headset;
 |-------|--------|
 | Alt + left click | Press button |
 | Alt + right click (hold) | Grab object; release to drop |
+| Alt + Shift + right click | Teleport to the point under the mouse (on a teleportation area or anchor) |
 
 ### Gamepad (non-functional)
 
@@ -132,7 +133,7 @@ Head direction is only a proxy for gaze. Without eye tracking, people look aroun
 | XR controllers, near | NearFarInteractor (near mode) | PokeInteractor | Primary, fully supported |
 | XR controllers, far | NearFarInteractor (far mode) → pulls to hand | Ray + trigger | Works, feel needs polish |
 | Hand tracking | Same as controllers | Same | Incomplete |
-| Desktop (keyboard+mouse) | Alt + right-click (hold) | Alt + left-click | Supported |
+| Desktop (keyboard+mouse) | Alt + right-click (hold) | Alt + left-click | Supported; teleport with Alt + Shift + right-click |
 | Gamepad | Joystick-steered ray | Ray + button | Not functional |
 
 ### Interactable object types
