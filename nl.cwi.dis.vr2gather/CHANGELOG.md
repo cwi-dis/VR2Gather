@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [next] - unreleased
 
+- Requires cwipc_unity 8.3.0 (#423)
+
 ## [1.4.5] - 2026-11-11
 
 - VR controls work properly again: HUD, locomotion and snap turn in built players, sticks no longer move and teleport at the same time, camera button usable with the controllers (#389, #409, #385)

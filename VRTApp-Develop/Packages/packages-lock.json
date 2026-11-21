@@ -350,8 +350,11 @@
       "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
       "depth": 0,
       "source": "git",
-      "dependencies": {},
-      "hash": "cccb6a4bc20fb22367bd4acd2413e1baf91ca4cf"
+      "dependencies": {
+        "com.unity.inputsystem": "1.8.1",
+        "com.unity.xr.interaction.toolkit": "3.3.0"
+      },
+      "hash": "42c7fb725b7e1fad43d1f3a16f47ea5c33766396"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",
@@ -360,7 +363,7 @@
       "dependencies": {
         "nl.cwi.dis.vr2gather.nativelibraries": "0.99.8",
         "nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.6",
-        "nl.cwi.dis.cwipc": "8.2.1",
+        "nl.cwi.dis.cwipc": "8.3.0",
         "com.itisnajim.socketiounity": "1.1.4",
         "com.unity.animation.rigging": "1.4.1",
         "com.unity.recorder": "5.1.5",
