@@ -113,7 +113,9 @@ namespace VRT.Transport.Dash
 
         protected override void Start()
         {
-            joinTimeout = 999999; // xxxjack Dash can be very slow stopping currently (Dec 2025).
+            // No longer joinTimeout = 999999 ("Dash can be very slow stopping", Dec 2025): with no
+            // Thread.Abort that would block the main thread for minutes. If Dash still needs longer than
+            // the default, AsyncWorker.StopAndWait() logs it (cwi-dis/VR2Gather#422, cwi-dis/cwipc_unity#88).
             
             int nStreams = descriptions.Length;
             streamPushers = new DashStreamPusher[nStreams];
@@ -131,14 +133,10 @@ namespace VRT.Transport.Dash
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
             // Signal that no more data is forthcoming to every pusher
-            for (int i = 0; i < descriptions.Length; i++)
+            // Our input queues belong to their producers; we don't close them (cwi-dis/cwipc_unity#82, rule 1).
+            foreach (var p in streamPushers)
             {
-                var d = descriptions[i];
-                if (!d.inQueue.IsClosed())
-                {
-                    Debug.LogWarning($"{Name()}.{i}: input queue not closed. Closing.");
-                    d.inQueue.Close();
-                }
+                p.FreeBuffer();
             }
             lldpkgHandle?.free();
             lldpkgHandle = null;
@@ -208,6 +206,15 @@ namespace VRT.Transport.Dash
                     }
                     curBuffer = (NativeMemoryChunk)description.inQueue.TryDequeue(0);
                     return curBuffer != null;
+                }
+            }
+
+            public void FreeBuffer()
+            {
+                lock(this)
+                {
+                    curBuffer?.free();
+                    curBuffer = null;
                 }
             }
 

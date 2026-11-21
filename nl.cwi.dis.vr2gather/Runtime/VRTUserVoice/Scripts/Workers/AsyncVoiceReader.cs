@@ -127,9 +127,18 @@ namespace VRT.UserRepresentation.Voice
         {
         }
 
+        public override void Stop()
+        {
+            // On the main thread, like the MicroRecorder coroutine that writes the WAV file,
+            // so the two can't interleave.
+            StopRecording();
+            // Close our output so the consumer wakes up at once (cwi-dis/cwipc_unity#82, rule 1).
+            outQueue.Close();
+            base.Stop();
+        }
+
         public override void AsyncOnStop()
         {
-            StopRecording();
             outQueue.Close();
             base.AsyncOnStop();
         }

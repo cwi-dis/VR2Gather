@@ -78,6 +78,17 @@ namespace VRT.UserRepresentation.Voice
         {
         }
 
+        public override void AsyncOnStop()
+        {
+            // Free the frame we may still hold, under the lock LatchFrame() and GetAudioBuffer() take.
+            lock (this)
+            {
+                currentAudioFrame?.free();
+                currentAudioFrame = null;
+            }
+            base.AsyncOnStop();
+        }
+
         public Timestamp getCurrentTimestamp()
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);

@@ -29,7 +29,10 @@ namespace VRT.Pilots.Common
 			CreateNetworkId(false);
 		}
 
-		public void OnDestroy()
+		// protected virtual, so a subclass that needs its own OnDestroy() must override it and call
+		// base.OnDestroy(): otherwise Unity calls only the subclass's, and the object is never
+		// removed from NetworkIdManager (#421).
+		protected virtual void OnDestroy()
 		{
 			NetworkIdManager.Remove(this);
 		}

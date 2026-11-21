@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Requires cwipc_unity 8.3.0 (#423)
 - Statistics are compiled in by default; define `VRT_WITHOUT_STATS` to leave them out, `VRT_WITH_STATS` is no longer used (#419)
+- Readers, writers and codecs stop cleanly without `Thread.Abort`; a thread that doesn't stop is logged with a `join_timeout` stats record (#422)
+- Fixed: one silent tile could stall the others in socket.io and TCP reflector writers; second TCP reflector session in one run didn't work (#422)
+- Fixed: socket.io writer exception at session end (#408)
+- `OnDestroy()` of `NetworkIdBehaviour` and the point cloud pipelines is `protected virtual`: subclasses must `override` it and call `base.OnDestroy()` (#421)
 
 ## [1.4.5] - 2026-11-11
 

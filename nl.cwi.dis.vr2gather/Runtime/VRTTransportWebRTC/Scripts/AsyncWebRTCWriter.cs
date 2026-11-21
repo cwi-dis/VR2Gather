@@ -65,6 +65,7 @@ namespace VRT.Transport.WebRTC
             AsyncWebRTCWriter parent;
             WebRTCStreamDescription description;
             System.Threading.Thread myThread;
+            volatile bool stopping = false;
             int tile_number;
             int quality;
           
@@ -74,6 +75,8 @@ namespace VRT.Transport.WebRTC
                 description = _description;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
+                // A thread that doesn't stop must not keep the application from quitting (cwi-dis/cwipc_unity#82, rule 5).
+                myThread.IsBackground = true;
                 tile_number = _tile_number;
                 quality = _quality;
 #if !VRT_WITHOUT_STATS
@@ -93,22 +96,12 @@ namespace VRT.Transport.WebRTC
 
             public void Stop()
             {
-                // [jvdhooft]
-                Debug.Log($"{Name()}: Closing stream from within the reader");
-            }
-
-            public void Join()
-            {
-                myThread.Join();
+                stopping = true;
             }
 
             public bool Join(int joinTimeout)
             {
-                return myThread.Join(joinTimeout);
-            }
-
-            public void Abort() {
-                myThread.Abort();
+                return HelperThreads.Join(myThread, joinTimeout, parent.Name());
             }
 
             protected void run()
@@ -117,9 +110,10 @@ namespace VRT.Transport.WebRTC
                 {
                     Debug.Log($"{Name()}: thread started");
                     QueueThreadSafe queue = description.inQueue;
-                    while (!queue.IsClosed())
+                    // Stops when told to, also if the producer never closes our input (cwi-dis/cwipc_unity#82, rule 2).
+                    while (!stopping && !queue.IsClosed())
                     {
-                        NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
+                        NativeMemoryChunk mc = (NativeMemoryChunk)queue.TryDequeue(AsyncWorker.DequeueTimeoutMs);
                         if (mc == null) continue;
 #if !VRT_WITHOUT_STATS
                         stats.statsUpdate(mc.length);
@@ -246,7 +240,6 @@ namespace VRT.Transport.WebRTC
 
         protected override void Start()
         {
-            base.Start();
             int nTracks = descriptions.Length;
 
             int nTiles = 0;
@@ -280,36 +273,34 @@ namespace VRT.Transport.WebRTC
             {
                 t.Start();
             }
+            // Everything the threads use exists before the worker thread starts; base.Start() last (rule 3).
+            base.Start();
         }
 
         public override void Stop()
         {
+            // Only signal here, on the main thread; the joining is done in AsyncOnStop() (cwi-dis/cwipc_unity#82, rule 4).
+            // Our input queues belong to their producers; we don't close them (rule 1).
             base.Stop();
-            connection.UnregisterTransmitter();
-            connection = null;
-            // Signal that no more data is forthcoming to every pusher
-            for (int i = 0; i < descriptions.Length; i++)
-            {
-                var d = descriptions[i];
-                if (!d.inQueue.IsClosed())
-                {
-                    Debug.LogWarning($"{Name()}.{i}: input queue not closed. Closing.");
-                    d.inQueue.Close();
-                }
-            }
-
-            // wait for pusherThreads to terminate
             foreach (var t in pusherThreads)
             {
                 t.Stop();
-                if (!t.Join(joinTimeout))
-                {
-                    Debug.LogWarning($"{Name()}: thread did not stop in {joinTimeout}ms. Aborting.");
-                    t.Abort();
-                }            
             }
+        }
 
-            Debug.Log($"{Name()} Stopped");
+        public override void AsyncOnStop()
+        {
+            // Join the push threads before unregistering: the last UnregisterTransmitter() cleans up the
+            // native WebRTC connector, which the push threads may still be calling into, and they use
+            // connection until they have stopped.
+            // A thread that doesn't stop in time is left running (logged, stats record); we unregister anyway.
+            foreach (var t in pusherThreads)
+            {
+                t.Join(joinTimeout);
+            }
+            connection.UnregisterTransmitter();
+            connection = null;
+            base.AsyncOnStop();
         }
 
         protected override void AsyncUpdate() {}

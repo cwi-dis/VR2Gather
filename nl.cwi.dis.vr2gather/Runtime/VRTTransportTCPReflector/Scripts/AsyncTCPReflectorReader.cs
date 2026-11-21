@@ -105,11 +105,23 @@ namespace VRT.Transport.TCPReflector
         public override void Stop()
         {
             base.Stop();
+            // Close our outputs so the consumers wake up at once (cwi-dis/cwipc_unity#82, rule 1).
+            for (int i = 0; i < descriptors.Length; ++i)
+            {
+                descriptors[i].outQueue?.Close();
+            }
+        }
+
+        public override void AsyncOnStop()
+        {
+            // Not in Stop(): the last unregister stops the connection, which joins its threads,
+            // and that must not happen on the main thread (rule 4).
             for (int i = 0; i < descriptors.Length; ++i)
             {
                 descriptors[i].outQueue?.Close();
                 connection.UnregisterIncomingStream(descriptors[i].name); // This should also delete the handler by removing the last ref to it.
             }
+            base.AsyncOnStop();
         }
 
         protected override void AsyncUpdate()

@@ -78,10 +78,20 @@ namespace VRT.Video
         public override void Stop()
         {
             base.Stop();
+            // Without a device the constructor returns early, before any of these exist.
             webcamTexture?.Stop();
-            outQueue.Close();
-            isClosed.Cancel();
-            monoBehaviour.StopCoroutine(coroutine);
+            outQueue?.Close();
+            isClosed?.Cancel();
+            if (coroutine != null) monoBehaviour?.StopCoroutine(coroutine);
+        }
+
+        public override void AsyncOnStop()
+        {
+            outQueue?.Close();
+            // On the worker thread, the only one that uses the filter. Best effort; see #312.
+            RGBA2RGBFilter?.Free();
+            RGBA2RGBFilter = null;
+            base.AsyncOnStop();
         }
 
         void Color32ArrayToByteArray(Color32[] colors, QueueThreadSafe outQueue)

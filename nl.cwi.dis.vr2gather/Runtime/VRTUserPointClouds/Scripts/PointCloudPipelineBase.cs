@@ -103,7 +103,8 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        protected void OnDestroy()
+        // protected virtual, so subclasses must override it and call base.OnDestroy() (#421).
+        protected virtual void OnDestroy()
         {
 
             foreach (var preparer in preparers)

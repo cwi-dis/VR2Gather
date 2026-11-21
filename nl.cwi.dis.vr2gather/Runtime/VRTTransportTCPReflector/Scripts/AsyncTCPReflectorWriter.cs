@@ -69,13 +69,9 @@ namespace VRT.Transport.TCPReflector
         public override void AsyncOnStop()
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
+            // Our input queues belong to their producers; we don't close them (cwi-dis/cwipc_unity#82, rule 1).
             for (int i = 0; i < streams.Length; ++i)
             {
-                if (!streams[i].inQueue.IsClosed())
-                {
-                    Debug.LogWarning($"{Name()}: inQueue not closed, closing");
-                    streams[i].inQueue.Close();
-                }
                 connection.UnregisterOutgoingStream(streams[i].name);
             }
             base.AsyncOnStop();
@@ -83,9 +79,12 @@ namespace VRT.Transport.TCPReflector
 
         protected override void AsyncUpdate()
         {
+            // Never wait on one stream while others may have data: with one stream, wait a short time
+            // (cwi-dis/cwipc_unity#82, rule 2); with several, poll them all (as AsyncDashWriter does).
+            int timeout = streams.Length == 1 ? DequeueTimeoutMs : 0;
             for (int i = 0; i < streams.Length; ++i)
             {
-                BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
+                BaseMemoryChunk chk = streams[i].inQueue.TryDequeue(timeout);
                 if (chk == null) {
                     continue;
                 }

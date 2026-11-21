@@ -67,6 +67,7 @@ namespace VRT.Video
             {
                 didReadData = true;
                 NativeMemoryChunk mc = (NativeMemoryChunk)InQueue._Peek();
+                if (mc == null) return false; // Closed and drained during teardown.
                 int len = mc.length;
                 videFrameSize = len;
                 if (videoBufferSize == 0)
@@ -80,7 +81,8 @@ namespace VRT.Video
                 {
                     lock (this)
                     {
-                        mc = (NativeMemoryChunk)InQueue.Dequeue();
+                        mc = (NativeMemoryChunk)InQueue.TryDequeue(0);
+                        if (mc == null) return false; // Closed and drained during teardown.
                         if (writeVideoPosition + len < videoBufferSize)
                         {
                             Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, len);
@@ -108,10 +110,12 @@ namespace VRT.Video
             {
                 didReadData = true;
                 FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue._Peek();
+                if (mc == null) return didReadData; // Closed and drained during teardown.
                 int len = mc.elements;
                 if (len < freeAudio)
                 {
-                    mc = (FloatMemoryChunk)inAudioQueue.Dequeue();
+                    mc = (FloatMemoryChunk)inAudioQueue.TryDequeue(0);
+                    if (mc == null) return didReadData; // Closed and drained during teardown.
                     if (writeAudioPosition + len < audioBufferSize)
                     {
                         Marshal.Copy(mc.pointer, circularAudioBuffer, writeAudioPosition, len);

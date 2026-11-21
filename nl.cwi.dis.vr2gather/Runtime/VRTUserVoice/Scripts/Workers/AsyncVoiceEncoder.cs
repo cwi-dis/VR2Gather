@@ -37,10 +37,16 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
+        public override void Stop()
+        {
+            // Close our output so the consumer wakes up at once (cwi-dis/cwipc_unity#82, rule 1).
+            outQueue?.Close();
+            base.Stop();
+        }
+
         public override void AsyncOnStop()
         {
             outQueue?.Close();
-            outQueue = null;
             base.AsyncOnStop();
         }
 
@@ -49,14 +55,11 @@ namespace VRT.UserRepresentation.Voice
         {
             if (inQueue.IsClosed())
             {
-                if (outQueue != null && !outQueue.IsClosed())
-                {
-                    outQueue.Close();
-                    outQueue = null;
-                }
+                // End of input: pass it on downstream.
+                outQueue?.Close();
                 return;
             }
-            FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
+            FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.TryDequeue(DequeueTimeoutMs);
             if (mcIn == null) return;
             if (sendBuffer == null) sendBuffer = new byte[mcIn.length];
 
@@ -70,6 +73,7 @@ namespace VRT.UserRepresentation.Voice
             if (outQueue.IsClosed())
             {
                 mcOut.free();
+                mcIn.free();
                 return;
             }
             Timedelta queuedDuration = outQueue.QueuedDuration();

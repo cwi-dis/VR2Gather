@@ -61,11 +61,53 @@ namespace VRT.Video
 #if ENCODER_MONOTONIC_TIMESTAMPS
         long frame = 0;
 #endif
+        public override void Stop()
+        {
+            // Close our outputs so the consumers wake up at once (cwi-dis/cwipc_unity#82, rule 1).
+            outVideoQueue?.Close();
+            outAudioQueue?.Close();
+            base.Stop();
+        }
+
+        public override void AsyncOnStop()
+        {
+            outVideoQueue?.Close();
+            outAudioQueue?.Close();
+            // Free the ffmpeg objects, on the worker thread that used them. Best effort; see #312.
+            if (codecVideo_ctx != null)
+            {
+                AVCodecContext* ctx = codecVideo_ctx;
+                ffmpeg.avcodec_free_context(&ctx);
+                codecVideo_ctx = null;
+            }
+            if (videoFrame != null)
+            {
+                AVFrame* frame = videoFrame;
+                ffmpeg.av_frame_free(&frame);
+                videoFrame = null;
+            }
+            if (videoPacket != null)
+            {
+                AVPacket* packet = videoPacket;
+                ffmpeg.av_packet_free(&packet);
+                videoPacket = null;
+            }
+            RGB2YUV420PFilter?.Free();
+            RGB2YUV420PFilter = null;
+            if (errbuf != null)
+            {
+                Marshal.FreeHGlobal((IntPtr)errbuf);
+                errbuf = null;
+            }
+            base.AsyncOnStop();
+        }
+
         protected override void AsyncUpdate()
         {
-            if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue())
+            if (outVideoQueue._CanEnqueue())
             {
-                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
+                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.TryDequeue(DequeueTimeoutMs);
+                if (mc == null) return;
                 if (codecVideo == null) CreateVideoCodec(mc, setup.width, setup.height, setup.fps, setup.bitrate);
                 if (!RGB2YUV420PFilter.Process(new byte*[] { (byte*)mc.pointer }, ref videoFrame->data, ref videoFrame->linesize))
                     Debug.LogError("Error while encoding video (RGB2YUV420PFilter.Process)");

@@ -50,5 +50,22 @@ namespace VRT.Video
         {
             return srcStride[0];
         }
+
+        /// <summary>
+        /// Free the native scaler and picture buffer. The filter can't be used afterwards.
+        /// </summary>
+        public void Free()
+        {
+            if (swsFilterContext != null)
+            {
+                ffmpeg.sws_freeContext(swsFilterContext);
+                swsFilterContext = null;
+            }
+            if (pictureFrameData != null)
+            {
+                ffmpeg.av_free(pictureFrameData);
+                pictureFrameData = null;
+            }
+        }
     }
 }

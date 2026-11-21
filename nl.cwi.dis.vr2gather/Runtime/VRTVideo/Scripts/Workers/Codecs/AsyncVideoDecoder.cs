@@ -63,11 +63,98 @@ namespace VRT.Video
             Start();
         }
         
+        public override void Stop()
+        {
+            // Close our outputs so the consumers wake up at once (cwi-dis/cwipc_unity#82, rule 1).
+            outVideoQueue?.Close();
+            outAudioQueue?.Close();
+            base.Stop();
+        }
+
+        public override void AsyncOnStop()
+        {
+            outVideoQueue?.Close();
+            outAudioQueue?.Close();
+            // Free the ffmpeg objects, on the worker thread that used them. Best effort; see #312.
+            if (codecVideo_ctx != null)
+            {
+                AVCodecContext* ctx = codecVideo_ctx;
+                ffmpeg.avcodec_free_context(&ctx);
+                codecVideo_ctx = null;
+            }
+            if (codecAudio_ctx != null)
+            {
+                AVCodecContext* ctx = codecAudio_ctx;
+                ffmpeg.avcodec_free_context(&ctx);
+                codecAudio_ctx = null;
+            }
+            if (videoParser != null)
+            {
+                ffmpeg.av_parser_close(videoParser);
+                videoParser = null;
+            }
+            if (audioParser != null)
+            {
+                ffmpeg.av_parser_close(audioParser);
+                audioParser = null;
+            }
+            // The packets' data pointed into our input chunks, which are freed already;
+            // the packets don't own it (no buf), so av_packet_free() leaves it alone.
+            if (videoPacket != null)
+            {
+                AVPacket* packet = videoPacket;
+                ffmpeg.av_packet_free(&packet);
+                videoPacket = null;
+            }
+            if (audioPacket != null)
+            {
+                AVPacket* packet = audioPacket;
+                ffmpeg.av_packet_free(&packet);
+                audioPacket = null;
+            }
+            if (videoFrame != null)
+            {
+                AVFrame* frame = videoFrame;
+                ffmpeg.av_frame_free(&frame);
+                videoFrame = null;
+            }
+            if (audioFrame != null)
+            {
+                AVFrame* frame = audioFrame;
+                ffmpeg.av_frame_free(&frame);
+                audioFrame = null;
+            }
+            if (swsYUV2RGBCtx != null)
+            {
+                ffmpeg.sws_freeContext(swsYUV2RGBCtx);
+                swsYUV2RGBCtx = null;
+            }
+            if (_pictureFrameData != null)
+            {
+                ffmpeg.av_free(_pictureFrameData);
+                _pictureFrameData = null;
+            }
+            if (swrCtx != null)
+            {
+                SwrContext* swr = swrCtx;
+                ffmpeg.swr_free(&swr);
+                swrCtx = null;
+            }
+            if (errbuf != null)
+            {
+                Marshal.FreeHGlobal((System.IntPtr)errbuf);
+                errbuf = null;
+            }
+            base.AsyncOnStop();
+        }
+
         protected override void AsyncUpdate()
         {
-            if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue())
+            // Two inputs in one loop: don't wait on either (TryDequeue(0)), the loop's own sleep paces it.
+            NativeMemoryChunk mcVideo = outVideoQueue._CanEnqueue() ? (NativeMemoryChunk)inVideoQueue.TryDequeue(0) : null;
+            if (mcVideo != null)
             {
-                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
+                NativeMemoryChunk mc = mcVideo;
                 if (codecVideo == null) CreateVideoCodec(mc);
                 videoPacket->data = (byte*)mc.pointer; // <-- Romain way
                 videoPacket->size = mc.length;
@@ -107,9 +194,10 @@ namespace VRT.Video
                 mc.free();
             }
 
-            if (inAudioQueue != null && outAudioQueue != null && inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue())
+            NativeMemoryChunk mcAudio = (inAudioQueue != null && outAudioQueue != null && outAudioQueue._CanEnqueue()) ? (NativeMemoryChunk)inAudioQueue.TryDequeue(0) : null;
+            if (mcAudio != null)
             {
-                NativeMemoryChunk mc = (NativeMemoryChunk)inAudioQueue.Dequeue();
+                NativeMemoryChunk mc = mcAudio;
                 // Audio-
                 if (codecAudio == null) CreateAudioCodec(mc);
                 audioPacket->data = (byte*)mc.pointer; // <-- Romain way2

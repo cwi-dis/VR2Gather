@@ -20,6 +20,9 @@ namespace VRT.Transport.WebRTC
         }
         private static TransportProtocolWebRTC _Instance;
         private static string _InstanceURL;
+        // Guards _Instance and _InstanceURL: Connect() runs on the main thread, Stop() (via the last
+        // Unregister...()) on a worker thread.
+        private static readonly object _InstanceLock = new object();
 
         public string logFileDirectory = null;
         public int debugLevel = 0;
@@ -41,6 +44,9 @@ namespace VRT.Transport.WebRTC
 
         private int nTransmitters = 0;
         private int nReceivers = 0;
+        // Guards the Register/Unregister counters, which readers and writers change from their worker
+        // threads. Not lock(this): GetNextTile() and friends note that lock(this) deadlocks.
+        private readonly object registrationLock = new object();
         private int nTransmitterTracks = 0;
         private int nReceiverTracks = 0; // xxxjack needs to be set dynamically
         private int maxReceiverTracks = 9;
@@ -53,15 +59,18 @@ namespace VRT.Transport.WebRTC
 
         public static TransportProtocolWebRTC Connect(string url)
         {
-            if (_Instance == null)
+            lock (_InstanceLock)
             {
-                _Instance = new TransportProtocolWebRTC(url);
-                _InstanceURL = url;
-                return _Instance;
-            }
-            if (_InstanceURL == url)
-            {
-                return _Instance;
+                if (_Instance == null)
+                {
+                    _Instance = new TransportProtocolWebRTC(url);
+                    _InstanceURL = url;
+                    return _Instance;
+                }
+                if (_InstanceURL == url)
+                {
+                    return _Instance;
+                }
             }
             throw new System.Exception($"{Name()}: request connection to {url} but {_InstanceURL} already connected");
         }
@@ -176,6 +185,16 @@ namespace VRT.Transport.WebRTC
             }
             WebRTCConnectorPinvoke.clean_up();
             peerConnected = false;
+            // A stopped connection is not reused: the next session gets a fresh one, with its
+            // track and tile counts starting at zero (cwi-dis/VR2Gather#422).
+            lock (_InstanceLock)
+            {
+                if (_Instance == this)
+                {
+                    _Instance = null;
+                    _InstanceURL = null;
+                }
+            }
             if (peerProcess != null)
             {
                 Debug.Log($"{Name()}: Terminating peer");
@@ -196,15 +215,18 @@ namespace VRT.Transport.WebRTC
                 throw new Exception($"{Name()}: RegisterTransmitter() called after peer started");
             }
 
-            nTransmitterTracks += _nTracks;
-            nTransmitters++;
-
-            if (_nTiles > nTiles)
+            lock (registrationLock)
             {
-                nTiles = _nTiles;
-            }
-            if (_nQualities > nQualities) {
-                nQualities = _nQualities;
+                nTransmitterTracks += _nTracks;
+                nTransmitters++;
+
+                if (_nTiles > nTiles)
+                {
+                    nTiles = _nTiles;
+                }
+                if (_nQualities > nQualities) {
+                    nQualities = _nQualities;
+                }
             }
         }
 
@@ -217,28 +239,37 @@ namespace VRT.Transport.WebRTC
                 throw new Exception($"{Name()}: RegisterReceiver() called after peer started");
             }
 #endif
-            nReceiverTracks += _nTracks;
-            if (nReceiverTracks > maxReceiverTracks) {
-                Debug.LogWarning($"{Name()}: Too many receiver tracks: {nReceiverTracks}, max={maxReceiverTracks}");
+            lock (registrationLock)
+            {
+                nReceiverTracks += _nTracks;
+                if (nReceiverTracks > maxReceiverTracks) {
+                    Debug.LogWarning($"{Name()}: Too many receiver tracks: {nReceiverTracks}, max={maxReceiverTracks}");
+                }
+                nReceivers++;
             }
-            nReceivers++;
         }
 
         public void UnregisterTransmitter()
         {
-            nTransmitters--;
-            if (nTransmitters <= 0 && nReceivers <= 0)
+            lock (registrationLock)
             {
-                Stop();
+                nTransmitters--;
+                if (nTransmitters <= 0 && nReceivers <= 0)
+                {
+                    Stop();
+                }
             }
         }
 
         public void UnregisterReceiver()
         {
-            nReceivers--;
-            if (nTransmitters <= 0 && nReceivers <= 0)
+            lock (registrationLock)
             {
-                Stop();
+                nReceivers--;
+                if (nTransmitters <= 0 && nReceivers <= 0)
+                {
+                    Stop();
+                }
             }
         }
 

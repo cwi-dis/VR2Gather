@@ -75,7 +75,7 @@ namespace VRT.Transport.WebRTC
         protected class WebRTCPullThread
         {
             AsyncWebRTCReader parent;
-            bool stopping = false;
+            volatile bool stopping = false;
             int thread_index;
             ReceiverInfo receiverInfo;
             System.Threading.Thread myThread;
@@ -87,6 +87,8 @@ namespace VRT.Transport.WebRTC
                 receiverInfo = _receiverInfo;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
+                // A thread that doesn't stop must not keep the application from quitting (cwi-dis/cwipc_unity#82, rule 5).
+                myThread.IsBackground = true;
 #if !VRT_WITHOUT_STATS
                 stats = new Stats(Name());
 #endif
@@ -108,20 +110,13 @@ namespace VRT.Transport.WebRTC
                 Debug.Log($"{Name()}: Thread stopping");
             }
 
-            public void Join()
-            {
-                myThread.Join();
-            }
 
 
             public bool Join(int joinTimeout)
             {
-                return myThread.Join(joinTimeout);
+                return HelperThreads.Join(myThread, joinTimeout, parent.Name());
             }
 
-            public void Abort() {
-                myThread.Abort();
-            }
 
 
             protected void run()
@@ -252,6 +247,7 @@ namespace VRT.Transport.WebRTC
 
         public override void Stop()
         {
+            // Only signal here, on the main thread; the joining is done in AsyncOnStop() (cwi-dis/cwipc_unity#82, rule 4).
             base.Stop();
             _closeQueues();
             if (debugThreading) Debug.Log($"{Name()}: Stopping threads");
@@ -259,22 +255,27 @@ namespace VRT.Transport.WebRTC
             {
                 t.Stop();
             }
-            connection.UnregisterReceiver();
-            foreach(var t in threads)
+        }
+
+        public override void AsyncOnStop()
+        {
+            // Join the pull threads before unregistering: the last UnregisterReceiver() cleans up the
+            // native WebRTC connector, which the pull threads may still be calling into.
+            // A thread that doesn't stop in time is left running (logged, stats record); we unregister anyway.
+            foreach (var t in threads)
             {
-                if (!t.Join(joinTimeout))
-                {
-                    Debug.LogWarning($"{Name()}: thread did not stop in {joinTimeout}ms. Aborting.");
-                    t.Abort();
-                }            
+                t.Join(joinTimeout);
             }
+            connection.UnregisterReceiver();
+            base.AsyncOnStop();
         }
 
         protected override void Start()
         {
-            base.Start();
+            // Everything the threads use exists before any thread starts; base.Start() last (rule 3).
             connection.RegisterReceiver(receivers.Length);
             InitThreads();
+            base.Start();
         }
 
         protected override void AsyncUpdate()

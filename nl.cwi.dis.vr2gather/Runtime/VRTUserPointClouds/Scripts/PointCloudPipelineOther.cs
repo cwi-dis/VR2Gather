@@ -162,7 +162,7 @@ namespace VRT.UserRepresentation.PointCloud
             Statistics.Output(Name(), $"reader={reader.Name()}, codec={pointcloudCodec}, synchronizer={synchronizerName}");
 #endif
         }
-        new void OnDestroy()
+        protected override void OnDestroy()
         {
             reader?.StopAndWait();
             foreach (var decoder in decoders)

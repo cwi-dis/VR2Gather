@@ -32,6 +32,13 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
+        public override void Stop()
+        {
+            // Close our output so the consumer wakes up at once (cwi-dis/cwipc_unity#82, rule 1).
+            outQueue.Close();
+            base.Stop();
+        }
+
         public override void AsyncOnStop()
         {
             outQueue.Close();
@@ -43,15 +50,15 @@ namespace VRT.UserRepresentation.Voice
         NTPTools.NTPTime tempTime;
         protected override void AsyncUpdate()
         {
-            // Wipe out the inQueue for initial burst.
-            NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.Dequeue();
-            if(inQueue._Count > 100){
-                Debug.LogWarning($"{Name()}: flushing overfull inQueue, size={inQueue._Count}");
-                while(inQueue._Count > 1) {
-                    mcIn.free();
-                    mcIn = (NativeMemoryChunk)inQueue.Dequeue();
-                }
+            if (inQueue.IsClosed())
+            {
+                // End of input: pass it on downstream.
+                outQueue.Close();
+                return;
             }
+            // No flushing of an overfull inQueue here: the pipeline gives us a dropping queue of
+            // 10 entries (VoicePipelineOther.decoderQueueSize), so it can't fill up.
+            NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.TryDequeue(DequeueTimeoutMs);
             if (mcIn == null) return;
 
 

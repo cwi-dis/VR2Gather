@@ -216,7 +216,9 @@ namespace VRT.Transport.Dash
             _url = TransportProtocolDash.CombineUrl(_url, _streamName, true);
             lock (this)
             {
-                joinTimeout = 999999; // xxxjack Dash can be very slow stopping currently (Dec 2025).
+                // No longer joinTimeout = 999999 ("Dash can be very slow stopping", Dec 2025): with no
+                // Thread.Abort that would block the main thread for minutes. If Dash still needs longer than
+                // the default, AsyncWorker.StopAndWait() logs it (cwi-dis/VR2Gather#422, cwi-dis/cwipc_unity#88).
 
 
                 if (_url == "" || _url == null || _streamName == "")

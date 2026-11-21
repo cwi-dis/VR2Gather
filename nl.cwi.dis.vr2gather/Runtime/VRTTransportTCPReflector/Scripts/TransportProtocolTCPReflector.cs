@@ -83,6 +83,12 @@ namespace VRT.Transport.TCPReflector
 
         private Dictionary<string, IncomingStreamHandler> IncomingHandlers = new();
         private Thread IncomingThread;
+        // Guards _Instance and _InstanceURL (Connect() on the main thread, Stop() on a worker thread).
+        private static readonly object _InstanceLock = new object();
+        // Guards OutgoingStreams and IncomingHandlers, used from the main thread, worker threads and IncomingThread.
+        private readonly object streamsLock = new object();
+        private volatile bool stopping = false;
+        const int JoinTimeoutMs = 5000;
 
         public static void Register()
         {
@@ -91,20 +97,23 @@ namespace VRT.Transport.TCPReflector
 
         public static TransportProtocolTCPReflector Connect(string url)
         {
-            if (_Instance == null)
+            lock (_InstanceLock)
             {
-                try {
-                    _Instance = new TransportProtocolTCPReflector(url);
+                if (_Instance == null)
+                {
+                    try {
+                        _Instance = new TransportProtocolTCPReflector(url);
+                    }
+                    catch(SocketException e) {
+                        throw new SystemException($"TransportProtocolTCPSFU: {url}: {e.Message}");
+                    }
+                    _InstanceURL = url;
+                    return _Instance;
                 }
-                catch(SocketException e) {
-                    throw new SystemException($"TransportProtocolTCPSFU: {url}: {e.Message}");
+                if (_InstanceURL == url)
+                {
+                    return _Instance;
                 }
-                _InstanceURL = url;
-                return _Instance;
-            }
-            if (_InstanceURL == url)
-            {
-                return _Instance;
             }
             throw new System.Exception($"TransportProtocolTCPSFU: request connection to {url} but {_InstanceURL} already connected");
         }
@@ -123,53 +132,81 @@ namespace VRT.Transport.TCPReflector
             Sock.Connect(host, port);
             OutgoingThread = new Thread(OutgoingRun);
             IncomingThread = new Thread(IncomingRun);
+            OutgoingThread.Name = $"{Name()}.Outgoing";
+            IncomingThread.Name = $"{Name()}.Incoming";
+            // Threads that don't stop must not keep the application from quitting (cwi-dis/cwipc_unity#82, rule 5).
+            OutgoingThread.IsBackground = true;
+            IncomingThread.IsBackground = true;
             OutgoingThread.Start();
             IncomingThread.Start();
         }
 
+        /// <summary>
+        /// Stop the connection: called by the last Unregister...(), on a worker thread.
+        /// Not with Thread.Abort (cwi-dis/cwipc_unity#82, rule 5): the outgoing thread sees the flag within
+        /// AsyncWorker.DequeueTimeoutMs, the incoming thread is woken by closing the socket.
+        /// A stopped connection is not reused: the next Connect() creates a new one.
+        /// </summary>
         public void Stop()
         {
-            Sock.Close();
-            Sock = null;
-            OutgoingThread.Abort();
-            IncomingThread.Abort();
-            OutgoingQueue = null;
-            IncomingHandlers = null;
+            lock (_InstanceLock)
+            {
+                if (_Instance == this)
+                {
+                    _Instance = null;
+                    _InstanceURL = null;
+                }
+            }
+            stopping = true;
+            Sock?.Close();
+            HelperThreads.Join(OutgoingThread, JoinTimeoutMs, Name());
+            HelperThreads.Join(IncomingThread, JoinTimeoutMs, Name());
         }
 
         public void RegisterOutgoingStream(string streamName)
         {
-            OutgoingStreams.Add(streamName);
+            lock (streamsLock)
+            {
+                OutgoingStreams.Add(streamName);
+            }
         }
 
         public void UnregisterOutgoingStream(string streamName)
         {
-            OutgoingStreams.Remove(streamName);
-            if (OutgoingStreams.Count == 0 && IncomingHandlers.Count == 0)
+            bool last;
+            lock (streamsLock)
             {
-                Stop();
+                OutgoingStreams.Remove(streamName);
+                last = OutgoingStreams.Count == 0 && IncomingHandlers.Count == 0;
             }
+            // Outside the lock: Stop() joins IncomingThread, which takes the lock to find a handler.
+            if (last) Stop();
         }
 
         public void RegisterIncomingStream(string streamName, IncomingStreamHandler handler)
         {
-            IncomingHandlers[streamName] = handler;
+            lock (streamsLock)
+            {
+                IncomingHandlers[streamName] = handler;
+            }
         }
 
         public void UnregisterIncomingStream(string streamName)
         {
-            IncomingHandlers.Remove(streamName);
-            if (OutgoingStreams.Count == 0 && IncomingHandlers.Count == 0)
+            bool last;
+            lock (streamsLock)
             {
-                Stop();
+                IncomingHandlers.Remove(streamName);
+                last = OutgoingStreams.Count == 0 && IncomingHandlers.Count == 0;
             }
+            // Outside the lock: Stop() joins IncomingThread, which takes the lock to find a handler.
+            if (last) Stop();
         }
 
         public void SendChunk(BaseMemoryChunk chk, string streamName)
         {
-            if (Sock == null)
+            if (stopping)
             {
-                Debug.Log($"{Name()}: No socket, dropping.");
                 return;
             }
             string header = $"{HeaderVersion},{streamName},{chk.metadata.timestamp},{chk.length},";
@@ -216,22 +253,24 @@ namespace VRT.Transport.TCPReflector
 
         private void OutgoingRun()
         {
+            Socket sock = Sock;
             try {
-                while (Sock != null)
+                while (!stopping)
                 {
-                    byte[] packet = OutgoingQueue.Take();
-                    Sock.Send(packet);
+                    // Not Take(): that blocks with no way out (cwi-dis/cwipc_unity#82, rule 2).
+                    if (!OutgoingQueue.TryTake(out byte[] packet, AsyncWorker.DequeueTimeoutMs)) continue;
+                    sock.Send(packet);
                 }
             }
-            catch(SocketException e) {
-                Debug.LogError($"{Name()}: {e}");
+            catch(Exception e) when (e is SocketException || e is ObjectDisposedException) {
+                if (!stopping) Debug.LogError($"{Name()}: {e}");
             }
         }
 
-        private int _ReceiveAll(byte[] buffer) {
+        private int _ReceiveAll(Socket sock, byte[] buffer) {
             int off = 0;
             while(true) {
-                int gotten = Sock.Receive(buffer, off, buffer.Length-off, SocketFlags.None);
+                int gotten = sock.Receive(buffer, off, buffer.Length-off, SocketFlags.None);
                 off += gotten;
                 if (gotten == 0 || off >= buffer.Length) {
                     return off;
@@ -239,13 +278,13 @@ namespace VRT.Transport.TCPReflector
             }
         }
 
-        private string _ReadHeader()
+        private string _ReadHeader(Socket sock)
         {
             byte[] b_header = new byte[HeaderLength];
-            int actualSize = _ReceiveAll(b_header);
+            int actualSize = _ReceiveAll(sock, b_header);
             if (actualSize != HeaderLength)
             {
-                Debug.LogError($"{Name()}: Received short header, {actualSize} bytes");
+                if (!stopping) Debug.LogError($"{Name()}: Received short header, {actualSize} bytes");
                 return null;
             }
             int lf_pos = 0;
@@ -258,10 +297,12 @@ namespace VRT.Transport.TCPReflector
 
         private void IncomingRun()
         {
+            // Ends when the socket is closed (by Stop(), or by the other side): Receive() then returns 0 or throws.
+            Socket sock = Sock;
             try {
-                  while (Sock != null)
+                while (!stopping)
                 {
-                    string header = _ReadHeader();
+                    string header = _ReadHeader(sock);
                     if (header == null)
                     {
                         break;
@@ -273,23 +314,28 @@ namespace VRT.Transport.TCPReflector
                     }
                     // We always want to read the data, even if we don't want it
                     byte[] data = new byte[dataLength];
-                    int dataLengthGotten = _ReceiveAll(data);
+                    int dataLengthGotten = _ReceiveAll(sock, data);
                     if (dataLengthGotten != dataLength)
                     {
-                        Debug.LogError($"{Name()}: Received {dataLengthGotten} bytes in stead of {dataLength}");
+                        if (!stopping) Debug.LogError($"{Name()}: Received {dataLengthGotten} bytes in stead of {dataLength}");
                         break;
                     }
-                    if (IncomingHandlers.ContainsKey(streamName))
+                    IncomingStreamHandler handler;
+                    lock (streamsLock)
+                    {
+                        IncomingHandlers.TryGetValue(streamName, out handler);
+                    }
+                    if (handler != null)
                     {
                         BaseMemoryChunk chunk = new NativeMemoryChunk(dataLength);
                         chunk.metadata.timestamp = timeStamp;
                         System.Runtime.InteropServices.Marshal.Copy(data, 0, chunk.pointer, chunk.length);
-                        IncomingHandlers[streamName].HandlePacket(chunk);
+                        handler.HandlePacket(chunk);
                     }
                 }
             }
-            catch(SocketException e) {
-                Debug.LogError($"{Name()}: {e}");
+            catch(Exception e) when (e is SocketException || e is ObjectDisposedException) {
+                if (!stopping) Debug.LogError($"{Name()}: {e}");
             }
         }
     }    

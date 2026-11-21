@@ -217,7 +217,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        new void OnDestroy()
+        protected override void OnDestroy()
         {
             reader?.StopAndWait();
             encoder?.StopAndWait();

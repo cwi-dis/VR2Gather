@@ -65,14 +65,7 @@ namespace VRT.Transport.SocketIO
         public override void AsyncOnStop()
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
-            for (int i = 0; i < streams.Length; ++i)
-            {
-                if (!streams[i].inQueue.IsClosed())
-                {
-                    Debug.LogWarning($"[FPA] {Name()}: inQueue not closed, closing");
-                    streams[i].inQueue.Close();
-                }
-            }
+            // Our input queues belong to their producers; we don't close them (cwi-dis/cwipc_unity#82, rule 1).
             if (streams != null)
             {
                 for (int i = 0; i < streams.Length; ++i)
@@ -85,30 +78,37 @@ namespace VRT.Transport.SocketIO
 
         protected override void AsyncUpdate()
         {
-            if (VRTOrchestratorSingleton.Streams != null)
+            // Never wait on one stream while others may have data: with one stream, wait a short time
+            // (cwi-dis/cwipc_unity#82, rule 2); with several, poll them all (as AsyncDashWriter does).
+            int timeout = streams.Length == 1 ? DequeueTimeoutMs : 0;
+            for (int i = 0; i < streams.Length; ++i)
             {
-                for (int i = 0; i < streams.Length; ++i)
+                BaseMemoryChunk chk = streams[i].inQueue.TryDequeue(timeout);
+                if (chk == null) continue;
+                // Read once: the orchestrator connection can be torn down on the main thread meanwhile (#408).
+                var orchestratorStreams = VRTOrchestratorSingleton.Streams;
+                if (orchestratorStreams == null)
                 {
-                    BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
-                    if (chk == null) continue;
-                    if (chk.length > 1000000)
-                    {
-                        // Messages > 1MB case socket.io to hang up the connection. This will create very
-                        // weird errors with the current Orchestrator and BestHTTP implementations.
-                        Debug.LogError($"{Name()}: Message size {chk.length} exceeds SocketIO 1MByte maximum. Dropping. ");
-                        continue;
-                    }
-                    var hdr_timestamp = BitConverter.GetBytes(chk.metadata.timestamp);
-                    var buf = new byte[chk.length+sizeof(long)];
-                    Array.Copy(hdr_timestamp, buf, sizeof(long));
-                    System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
-                    VRTOrchestratorSingleton.Streams.SendData(streams[i].name, buf);
-#if !VRT_WITHOUT_STATS
-                    stats.statsUpdate(chk.length, i);
-#endif
                     chk.free();
-
+                    continue;
                 }
+                if (chk.length > 1000000)
+                {
+                    // Messages > 1MB case socket.io to hang up the connection. This will create very
+                    // weird errors with the current Orchestrator and BestHTTP implementations.
+                    Debug.LogError($"{Name()}: Message size {chk.length} exceeds SocketIO 1MByte maximum. Dropping. ");
+                    chk.free();
+                    continue;
+                }
+                var hdr_timestamp = BitConverter.GetBytes(chk.metadata.timestamp);
+                var buf = new byte[chk.length+sizeof(long)];
+                Array.Copy(hdr_timestamp, buf, sizeof(long));
+                System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
+                orchestratorStreams.SendData(streams[i].name, buf);
+#if !VRT_WITHOUT_STATS
+                stats.statsUpdate(chk.length, i);
+#endif
+                chk.free();
             }
         }
         // FPA: Ask Jack about GetSyncInfo().
