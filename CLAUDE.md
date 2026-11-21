@@ -23,7 +23,6 @@ VR2Gather is a Unity package (`nl.cwi.dis.vr2gather`) for collaborative networke
 **Building** (from repo root, with the Editor closed; uses the Unity CLI `unity build`):
 ```bash
 ./VRTApp-Develop/scripts/build.sh [mac|windows|linux]   # default: current platform
-./build-scripts/mac-fix-quarantine.sh          # macOS: fix code signing after build
 ```
 
 Output and log go to `VRTApp-Develop/Builds/`. See `Documentation/20-building.md`.
