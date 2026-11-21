@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -184,14 +184,14 @@ namespace VRT.Core
             if (!currentFrameDesync && !stableStreamsDetected)
             {
                 Debug.Log($"{Name()}: First synchronized frame produced");
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), "synchronised=1");
 #endif
                 stableStreamsDetected = true;
             }
             _AdjustParameters();
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats?.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
 #endif
         }
@@ -236,7 +236,7 @@ namespace VRT.Core
             {
                 currentLatency = currentMinLatency = minLatency;
                 stableStreamsDetected = false;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), "synchronised=0");
 #endif
                 Debug.LogWarning($"{Name()}: lost synchronization");
@@ -342,7 +342,7 @@ namespace VRT.Core
             acceptDesyncOnDataUnavailable = VRTConfig.Instance.SynchronizerConfig.acceptDesyncOnDataUnavailable;
 
             if (debugSynchronizer) Debug.Log($"{Name()}: Synchronizer started");
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"minLatency={minLatency}, maxLatency={maxLatency}, maxDecrease={latencyMaxDecrease}, maxIncrease={latencyMaxIncrease}, acceptDesync={acceptDesyncOnDataUnavailable}");
 
             stats = new Stats(Name());
@@ -353,7 +353,7 @@ namespace VRT.Core
         void Update()
         {
         }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

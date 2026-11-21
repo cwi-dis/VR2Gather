@@ -3,7 +3,7 @@ using VRT.Orchestrator;
 using VRT.Core;
 using Cwipc;
 using UnityEngine.Windows.WebCam;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -124,7 +124,7 @@ namespace VRT.UserRepresentation.Voice
                     break;
             }
             writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, _streamName, audioCodec, b2dStreams);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"proto={proto}, url={url}, streamName={_streamName}, codec={audioCodec}");
 #endif
 
@@ -133,7 +133,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 encoderName = codec.Name();
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
 #endif
         }

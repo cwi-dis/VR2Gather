@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
 using Cwipc;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -55,7 +55,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 audioMaxAheadMs = (Timedelta)(VRTConfig.Instance.VoiceConfig.maxPlayoutAhead * 1000);
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats = new Stats(Name());
 #endif
             Debug.Log($"{Name()}: Started.");
@@ -66,7 +66,7 @@ namespace VRT.UserRepresentation.Voice
         {
             if (_synchronizer != null && VRTConfig.Instance.VoiceConfig.ignoreSynchronizer)
             {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(base.Name(), "unsynchronized=1");
 #endif
                 _synchronizer = null;
@@ -161,7 +161,7 @@ namespace VRT.UserRepresentation.Voice
                     {
                         Debug.Log($"{Name()}: no audio frame available");
                     }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     stats.statsUpdate(0, dropCount, true);
 #endif
                     return false;
@@ -195,7 +195,7 @@ namespace VRT.UserRepresentation.Voice
 
                 }
                 int nSamples = currentAudioFrame.length / sizeof(float);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 stats.statsUpdate(nSamples, dropCount, false);
 #endif
                 break;
@@ -314,7 +314,7 @@ namespace VRT.UserRepresentation.Voice
             }
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

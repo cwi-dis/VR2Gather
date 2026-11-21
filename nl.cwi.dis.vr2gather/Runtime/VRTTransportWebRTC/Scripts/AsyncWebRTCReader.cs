@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using AOT;
 // using UnityEditor.MemoryProfiler;
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -87,7 +87,7 @@ namespace VRT.Transport.WebRTC
                 receiverInfo = _receiverInfo;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 stats = new Stats(Name());
 #endif
             }
@@ -151,7 +151,7 @@ namespace VRT.Transport.WebRTC
                         if (mc != null)
                         {
                             bool ok = receiverInfo.outQueue.Enqueue(mc);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                             stats.statsUpdate(mc.length, !ok);
 #endif
                         } else
@@ -176,7 +176,7 @@ namespace VRT.Transport.WebRTC
 
             }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             protected class Stats : Statistics
             {
                 public Stats(string name) : base(name) { }
@@ -237,7 +237,7 @@ namespace VRT.Transport.WebRTC
                         fourcc = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3])
                     },
                 };
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"url={_url}, stream={streamName}, nStream={1}, clientId={clientId}");
 #endif
                 Start();
@@ -295,7 +295,7 @@ namespace VRT.Transport.WebRTC
                     {
                         msg += $", tile={receivers[i].tileNumber}";
                     }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     Statistics.Output(Name(), msg);
 #endif
                 }

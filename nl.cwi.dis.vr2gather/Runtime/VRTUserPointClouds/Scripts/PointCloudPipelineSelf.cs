@@ -1,6 +1,6 @@
 using UnityEngine;
 using VRT.Core;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.UserRepresentation.Voice;
@@ -73,7 +73,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogWarning($"{Name()}: self-user tileSelector != null");
             }
            
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             int selfness = preview ? -1 : 1;
             string proto = "";
             if (!preview) proto = $", proto={SessionConfig.Instance.protocolType}";
@@ -211,7 +211,7 @@ namespace VRT.UserRepresentation.PointCloud
                 writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={tilesToTransmit.Length}, nquality={VRTConfig.Instance.PointCloudTransmissionConfig.EncoderConfigs.Length}, nStream={outgoingStreamDescriptions.Length}");
 #endif
             }

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [next] - unreleased
 
 - Requires cwipc_unity 8.3.0 (#423)
+- Statistics are compiled in by default; define `VRT_WITHOUT_STATS` to leave them out, `VRT_WITH_STATS` is no longer used (#419)
 
 ## [1.4.5] - 2026-11-11
 

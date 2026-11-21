@@ -6,7 +6,7 @@ using UnityEngine.Experimental.XR.Interaction;
 using Cwipc;
 using cwipc_skeleton = Cwipc.SkeletonSupport.cwipc_skeleton;
 using cwipc_skeleton_joint = Cwipc.SkeletonSupport.cwipc_skeleton_joint;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.UserRepresentation.PointCloud;
@@ -31,7 +31,7 @@ public class KinectJointPoseProvider : BasePoseProvider
 
     void Start()
     {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         stats = new Stats(Name());
 #endif
         GameObject obj = this.transform.parent.gameObject;
@@ -60,7 +60,7 @@ public class KinectJointPoseProvider : BasePoseProvider
             cwipc_skeleton skl = pc_reader.get_skeleton();
             if (skl.joints.Count > 0)
             {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 stats.statsUpdate(true, skl.joints.Count);
 #endif
                 cwipc_skeleton_joint jointData = skl.joints[(int)jointIndex];
@@ -79,7 +79,7 @@ public class KinectJointPoseProvider : BasePoseProvider
         } 
         else
         {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats.statsUpdate(false, 0);
 #endif
         }
@@ -90,7 +90,7 @@ public class KinectJointPoseProvider : BasePoseProvider
         output = new Pose(currentPosition, currentOrientation);
         return PoseDataFlags.Position | PoseDataFlags.Rotation;
     }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
  
     protected class Stats : Statistics
     {

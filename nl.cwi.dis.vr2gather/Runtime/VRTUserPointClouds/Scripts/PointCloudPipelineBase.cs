@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Orchestrator;
@@ -72,7 +72,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (VRTConfig.Instance.CwipcConfig.preparerQueueSize > 0)
             {
                 pcPreparerQueueSize = VRTConfig.Instance.CwipcConfig.preparerQueueSize;
-#if VRT_WITH_STATS                
+#if !VRT_WITHOUT_STATS                
                 Statistics.Output(Name(), $"preparer_queue_size={pcPreparerQueueSize}");
 #endif
             }
@@ -87,7 +87,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 msg += $", tile={curTile}";
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), msg);
 #endif
             renderers.Add(render);
@@ -114,7 +114,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Destroy(renderer);
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"finished=1");
 #endif
         }

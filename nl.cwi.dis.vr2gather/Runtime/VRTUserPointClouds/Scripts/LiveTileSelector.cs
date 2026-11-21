@@ -27,7 +27,7 @@ namespace VRT.UserRepresentation.PointCloud
             nTiles = _tilingConfig.tiles.Length;
             nQualities = _tilingConfig.tiles[0].qualities.Length;
             Debug.Log($"{Name()}: nQualities={nQualities}, nTiles={nTiles}");
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"nQualities={nQualities}, nTiles={nTiles}");
 #endif
             TileOrientation = new Vector3[nTiles];

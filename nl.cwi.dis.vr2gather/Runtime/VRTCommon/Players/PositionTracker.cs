@@ -73,7 +73,7 @@ namespace VRT.Pilots.Common
                 gameObject.SetActive(false);
                 Debug.Log($"{Name()}: Disabled");
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             if (isRecording) {
                 Statistics.Output(Name(), $"outputFile={outputFile}, interval_ms={timeInterval}");
             }

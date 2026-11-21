@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 using VRT.Core;
 using Cwipc;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -33,7 +33,7 @@ namespace VRT.Transport.TCPReflector
                 throw new System.Exception($"{Name()}: outQueue is null");
             }
             connection = TransportProtocolTCPReflector.Connect(url);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats = new Stats(Name());
 #endif
             this.streams = streams;
@@ -41,7 +41,7 @@ namespace VRT.Transport.TCPReflector
             {
                 streams[i].name = $"{userId}/{streamName}/{streams[i].tileNumber}";
                 connection.RegisterOutgoingStream(streams[i].name);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
             }
@@ -91,7 +91,7 @@ namespace VRT.Transport.TCPReflector
                 }
                 connection.SendChunk(chk, streams[i].name);
                 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 stats.statsUpdate(chk.length, i);
 #endif
                 chk.free();
@@ -105,7 +105,7 @@ namespace VRT.Transport.TCPReflector
             return new SyncConfig.ClockCorrespondence();
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

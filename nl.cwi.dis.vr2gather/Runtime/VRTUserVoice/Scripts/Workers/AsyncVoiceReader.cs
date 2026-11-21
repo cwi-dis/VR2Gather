@@ -5,7 +5,7 @@ using System.IO;
 using UnityEngine;
 using VRT.Core;
 using Cwipc;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -44,7 +44,7 @@ namespace VRT.UserRepresentation.Voice
         protected AsyncVoiceReader(int sampleRate, QueueThreadSafe _outQueue) : base()
         {
             wantedSampleRate = sampleRate;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats = new Stats(Name());
 #endif
             outQueue = _outQueue;
@@ -54,7 +54,7 @@ namespace VRT.UserRepresentation.Voice
         {
             NoUpdateCallsNeeded();
             wantedSampleRate = sampleRate;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats = new Stats(Name());
 #endif
             outQueue = _outQueue;
@@ -256,7 +256,7 @@ namespace VRT.UserRepresentation.Voice
                                 mc.metadata.timestamp = sampleTimestamp(available);
                                 timeRemainingInBuffer = (float)available / wantedSampleRate;
                                 bool ok = outQueue.Enqueue(mc);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                                 stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration(), MicrophoneLevel);
 #endif
                             }
@@ -298,7 +298,7 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogError($"{Name()}: No microphones detected, other participants will not hear you");
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

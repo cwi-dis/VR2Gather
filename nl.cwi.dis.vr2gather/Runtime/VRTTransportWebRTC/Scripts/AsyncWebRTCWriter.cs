@@ -10,7 +10,7 @@ using System.Threading;
 using VRT.Core;
 // using UnityEditor.MemoryProfiler;
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
@@ -76,7 +76,7 @@ namespace VRT.Transport.WebRTC
                 myThread.Name = Name();
                 tile_number = _tile_number;
                 quality = _quality;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 stats = new Stats(Name());
 #endif
             }
@@ -121,7 +121,7 @@ namespace VRT.Transport.WebRTC
                     {
                         NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                         if (mc == null) continue;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                         stats.statsUpdate(mc.length);
 #endif
                         if (parent.isAudio) {
@@ -148,7 +148,7 @@ namespace VRT.Transport.WebRTC
 
             }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             protected class Stats : Statistics
             {
                 public Stats(string name) : base(name) { }
@@ -237,7 +237,7 @@ namespace VRT.Transport.WebRTC
                 };
             }
             descriptions = ourDescriptions;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"url={_url}, stream={streamName}, nStream={descriptions.Length}");
 #endif
             Start();
@@ -272,7 +272,7 @@ namespace VRT.Transport.WebRTC
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
                 pusherThreads[i] = new WebRTCPushThread(this, descriptions[i], descriptions[i].tileNumber, descriptions[i].quality);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"pusher={pusherThreads[i].Name()}, stream={i}");
 #endif
             }

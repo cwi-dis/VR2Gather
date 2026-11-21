@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -18,10 +18,10 @@ namespace VRT.Profiler
             return $"{GetType().Name}#{transform.parent.gameObject.name}.{instanceNumber}";
         }
 
-#if !VRT_WITH_STATS
+#if VRT_WITHOUT_STATS
         private void Start()
         {
-            Debug.LogError($"{Name()}: VRT_WITH_STATS not enabled, making this a bit pointless");
+            Debug.LogError($"{Name()}: VRT_WITHOUT_STATS defined, making this a bit pointless");
         }
 #else
         // Start is called before the first frame update

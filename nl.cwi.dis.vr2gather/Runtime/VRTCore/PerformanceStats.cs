@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Core
 {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
     public class PerformanceStats : MonoBehaviour
     {
         // Start is called before the first frame update

@@ -4,7 +4,7 @@ using VRT.Orchestrator.Implementation;
 using VRT.Core;
 using Cwipc;
 using VRT.Orchestrator;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -51,7 +51,7 @@ namespace VRT.Transport.SocketIO
                 }
 
                 VRTOrchestratorSingleton.Streams.OnDataStreamReceived += OnDataPacketReceived;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 stats = new Stats(Name());
 #endif
                 Start();
@@ -127,7 +127,7 @@ namespace VRT.Transport.SocketIO
                     {
                         // Debug.Log($"{Name()}: Received packet for {streamName}, ts={timestamp}, size={chunk.length}");
                     }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     stats.statsUpdate(chunk.length, didDrop, timestamp, i);
 #endif
                     return;
@@ -140,7 +140,7 @@ namespace VRT.Transport.SocketIO
         {
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

@@ -117,7 +117,7 @@ Things to be aware of:
 Not a user action as such, but a way to detect what a participant is looking at. `P_Self_Player`'s camera has a **`GazeDetector`**, which each frame casts a ray straight forward from the head. Any object with a **`GazeTarget`** component is "looked at" when that ray hits one of its colliders (on the object or its children; triggers included, physics layers ignored).
 
 - `GazeTarget` fires `OnGazeEnter` / `OnGazeExit` for the local participant only. To make something happen for everyone, wire these to a `NetworkTrigger`.
-- With `VRT_WITH_STATS`, it logs `gazing=1`/`gazing=0` and its position as `stats:` lines (component `GazeTarget`).
+- Unless `VRT_WITHOUT_STATS` is defined, it logs `gazing=1`/`gazing=0` and its position as `stats:` lines (component `GazeTarget`).
 - `PFB_GazeTarget` is an invisible trigger box with a `GazeTarget`, for marking a region rather than an object. You can also add `GazeTarget` to an existing object and use its colliders: the TechnicalPlayground mirror does this.
 
 Head direction is only a proxy for gaze. Without eye tracking, people look around with their eyes, so small targets give poor results: make colliders generous, especially vertically. Gaze also passes through walls and other objects, because only gaze targets are tested.

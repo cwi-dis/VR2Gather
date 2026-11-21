@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -58,7 +58,7 @@ namespace VRT.Pilots.Common
         {
             m_LastLoggedPosition = transform.position;
             m_TimeSinceLastLog = 0f;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("GazeTarget", $"gazing=0, target={gameObject.name}");
             LogPosition();
 #endif
@@ -67,7 +67,7 @@ namespace VRT.Pilots.Common
         void OnDisable()
         {
             s_Active.Remove(this);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("GazeTarget", $"gazing=0, target={gameObject.name}");
             LogPosition();
 #endif
@@ -82,12 +82,12 @@ namespace VRT.Pilots.Common
             Vector3 pos = transform.position;
             if (pos == m_LastLoggedPosition) return;
             m_LastLoggedPosition = pos;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             LogPosition();
 #endif
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         void LogPosition()
         {
             Vector3 pos = transform.position;
@@ -117,7 +117,7 @@ namespace VRT.Pilots.Common
 
         public void NotifyGazeEnter()
         {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("GazeTarget", $"gazing=1, target={gameObject.name}");
 #endif
             m_OnGazeEnter?.Invoke();
@@ -125,7 +125,7 @@ namespace VRT.Pilots.Common
 
         public void NotifyGazeExit()
         {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("GazeTarget", $"gazing=0, target={gameObject.name}");
 #endif
             m_OnGazeExit?.Invoke();

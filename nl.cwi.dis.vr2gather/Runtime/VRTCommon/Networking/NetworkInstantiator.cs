@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using VRT.Orchestrator;
 using VRT.OrchestratorComm;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -60,20 +60,20 @@ namespace VRT.Pilots.Common
 			{
 				// We are not the master, so we ask the master to do the actual instantiation
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 				Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=1, frommaster=0, instantiatorId={NetworkId}");
 #endif
 				VRTOrchestratorSingleton.Comm.SendTypeEventToMaster(instantiatorRequest);
 				return;
 			}
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=1, frommaster=1, instantiatorId={NetworkId}");
 #endif
             var newId = InstantiateNetworkObject(null);
 			instantiatorRequest.InstantiatedObjectId = newId;
 			VRTOrchestratorSingleton.Comm.SendTypeEventToAll(instantiatorRequest);
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=1, frommaster=1, instantiatorId={NetworkId}, newId={newId}");
 #endif
 		}
@@ -96,7 +96,7 @@ namespace VRT.Pilots.Common
 				};
 				VRTOrchestratorSingleton.Comm.SendTypeEventToAll(instantiatorRequest);
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 				Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=0, frommaster=1, instantiatorId={NetworkId}, newId={newId}");
 #endif
 			}
@@ -107,7 +107,7 @@ namespace VRT.Pilots.Common
 					Debug.LogError($"NetworkInstantiator({name}): non-master received request with empty newId");
 				}
 				var newId = data.InstantiatedObjectId;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output("NetworkInstantiator", $"name={name}, fromlocal=0, frommaster=1, instantiatorId={NetworkId}, newId={newId}");
 #endif
                 InstantiateNetworkObject(newId);

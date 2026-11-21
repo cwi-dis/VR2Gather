@@ -5,7 +5,7 @@ using VRT.Core;
 using System;
 
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using System.IO;
@@ -70,7 +70,7 @@ namespace VRT.Pilots.Common
             {
                 Directory.CreateDirectory(screenshotTargetDirectory);
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"output_dir={screenshotTargetDirectory}");
 #endif
             width = Screen.width;
@@ -108,7 +108,7 @@ namespace VRT.Pilots.Common
 
             string fullFilename = Path.Join(screenshotTargetDirectory, curFilename);
             File.WriteAllBytes(fullFilename,screenshotBytes);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"num={num}, frame={framenum}, file={curFilename}");
 #endif
 

@@ -3,7 +3,7 @@ using UnityEngine;
 using VRT.Orchestrator;
 using VRT.Core;
 using Cwipc;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -29,14 +29,14 @@ namespace VRT.Transport.SocketIO
             {
                 throw new System.Exception($"{Name()}: outQueue is null");
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats = new Stats(Name());
 #endif
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i)
             {
                 streams[i].name = $"{userId}.{streamName}#{i}";
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
                 VRTOrchestratorSingleton.Streams.DeclareDataStream(streams[i].name);
@@ -103,7 +103,7 @@ namespace VRT.Transport.SocketIO
                     Array.Copy(hdr_timestamp, buf, sizeof(long));
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
                     VRTOrchestratorSingleton.Streams.SendData(streams[i].name, buf);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     stats.statsUpdate(chk.length, i);
 #endif
                     chk.free();
@@ -119,7 +119,7 @@ namespace VRT.Transport.SocketIO
             return new SyncConfig.ClockCorrespondence();
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

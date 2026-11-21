@@ -5,7 +5,7 @@ using UnityEngine;
 using VRT.Core;
 using VRT.Orchestrator;
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -98,7 +98,7 @@ namespace VRT.Orchestrator.Implementation
         public override void Connect(string url)
         {
             Trace("send", nameof(Connect));
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_url=standalone");
 #endif
             Trace("recv", nameof(OnConnectionEvent));
@@ -145,7 +145,7 @@ namespace VRT.Orchestrator.Implementation
         public override void GetVersion()
         {
             Trace("send", nameof(GetVersion));
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("OrchestratorController", $"connected=1, orchestrator_version=standalone");
 #endif
             Trace("recv", nameof(OnGetOrchestratorVersionEvent));
@@ -161,7 +161,7 @@ namespace VRT.Orchestrator.Implementation
                 ntpDate = System.DateTime.UtcNow.ToString("o"),
                 ntpTimeMs = (long)sinceEpoch.TotalMilliseconds,
             };
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms=0, uncertainty_interval_ms=0");
 #endif
             Trace("recv", nameof(OnGetNTPTimeEvent));
@@ -183,7 +183,7 @@ namespace VRT.Orchestrator.Implementation
                 sessionUsers = new[] { _selfUser.userId },
                 sessionUserDefinitions = new List<User> { _selfUser },
             };
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("OrchestratorController", $"created=1, sessionId={_currentSession.sessionId}, sessionName={_currentSession.sessionName}, isMaster=1, nUser=1");
 #endif
             Trace("recv", nameof(OnAddSessionEvent));
@@ -193,7 +193,7 @@ namespace VRT.Orchestrator.Implementation
         public override void LeaveSession()
         {
             Trace("send", nameof(LeaveSession));
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             if (_currentSession != null)
                 Statistics.Output("OrchestratorController", $"stopping=1, sessionId={_currentSession.sessionId}");
 #endif
@@ -213,12 +213,12 @@ namespace VRT.Orchestrator.Implementation
             Trace("send", nameof(SendMessageToAll));
             if (message.StartsWith("START_"))
             {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output("OrchestratorController", $"starting=1, sessionId={_currentSession?.sessionId}, sessionName={_currentSession?.sessionName}");
 #endif
                 if (VRTConfig.Instance.AutoStartConfig.autoLeaveAfter > 0)
                 {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     Statistics.Output("OrchestratorController", $"autoLeaveAfter={VRTConfig.Instance.AutoStartConfig.autoLeaveAfter}");
 #endif
                     Invoke("LeaveSession", VRTConfig.Instance.AutoStartConfig.autoLeaveAfter);

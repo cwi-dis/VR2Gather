@@ -6,7 +6,7 @@ using VRT.Core;
 #if !VRT_WITHOUT_WEBRTC
 using VRT.Transport.WebRTC;
 #endif
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Orchestrator;
@@ -212,7 +212,7 @@ namespace VRT.Pilots.Common
 				player.name = $"Player_{user.userId}";
 
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 #endif
 

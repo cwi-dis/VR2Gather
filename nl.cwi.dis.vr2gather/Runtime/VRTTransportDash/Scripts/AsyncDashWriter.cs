@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
@@ -26,7 +26,7 @@ namespace VRT.Transport.Dash
             {
                 initialized = true;
                 var version = lldpkg.get_version();
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output("AsyncDashWriter", $"module=lldash-srd-packager, version={version}");
 #endif
             }
@@ -120,7 +120,7 @@ namespace VRT.Transport.Dash
             for (int i = 0; i < nStreams; i++)
             {
                 streamPushers[i] = new DashStreamPusher(this, i, descriptions[i]);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, x={descriptions[i].orientation.x},  y={descriptions[i].orientation.y}, z={descriptions[i].orientation.z}");
 #endif
             }
@@ -187,7 +187,7 @@ namespace VRT.Transport.Dash
                 parent = _parent;
                 stream_index = _stream_index;
                 description = _description;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 stats = new Stats(Name());
 #endif
             }
@@ -216,7 +216,7 @@ namespace VRT.Transport.Dash
                 lock(this)
                 {
                     if (curBuffer == null) return;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     stats.statsUpdate(curBuffer.length);
 #endif
                     if (!parent.lldpkgHandle.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length))
@@ -225,7 +225,7 @@ namespace VRT.Transport.Dash
             }
 
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             protected class Stats : Statistics
             {
                 public Stats(string name) : base(name) { }

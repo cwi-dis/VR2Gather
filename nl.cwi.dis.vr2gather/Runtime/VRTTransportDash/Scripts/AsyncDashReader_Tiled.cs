@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using VRT.Core;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 namespace VRT.Transport.Dash
@@ -18,7 +18,7 @@ namespace VRT.Transport.Dash
             {
                 initialized = true;
                 var version = lldplay.get_version();
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output("AsyncDashReaderTiled", $"module=lldash-playout, version={version}");
 #endif
             }
@@ -70,7 +70,7 @@ namespace VRT.Transport.Dash
                 // Get more stream information
                 //
                 allStreamDescriptors = lldplayHandle.get_streams();
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 foreach (var sd in allStreamDescriptors)
                 {
                     Statistics.Output(base.Name(), $"stream_index={sd.streamIndex}, tile={sd.tileNumber}, orientation={sd.orientation}");
@@ -95,7 +95,7 @@ namespace VRT.Transport.Dash
                 if (qualityIndex == perTileInfo[tileIndex].currentStreamIndex)
                 {
                     // No change, so nothing to do.
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}, unchanged=true");
 #endif
                     return;
@@ -104,7 +104,7 @@ namespace VRT.Transport.Dash
                 // Now for this tile (and therefore receiver) find correct stream descriptor for this quality.
                 if (qualityIndex >= 0)
                 {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
 #endif
                     bool ok = lldplayHandle.enable_stream(tileIndex, qualityIndex);
@@ -116,7 +116,7 @@ namespace VRT.Transport.Dash
                 }
                 else
                 {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=0, tileIndex={tileIndex}");
 #endif
                     bool ok = lldplayHandle.disable_stream(tileIndex);

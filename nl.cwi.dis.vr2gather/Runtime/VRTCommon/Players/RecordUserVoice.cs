@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRT.UserRepresentation.Voice;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -66,7 +66,7 @@ namespace VRT.Pilots.Common
             _currentFilename = filename;
             _recordingStartTime = Time.realtimeSinceStartup;
             voicePipeline.StartRecording(filename);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("RecordUserVoice", $"recording_started=1, filename={filename}");
 #endif
         }
@@ -81,7 +81,7 @@ namespace VRT.Pilots.Common
             if (voicePipeline == null) return;
             if (_currentFilename == null) return;
             voicePipeline.StopRecording();
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("RecordUserVoice", $"recording_stopped=1, filename={_currentFilename}");
 #endif
             _currentFilename = null;
@@ -93,7 +93,7 @@ namespace VRT.Pilots.Common
             {
                 Debug.LogError($"RecordUserVoice: AddMarker: called while not recording");
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             float position = Time.realtimeSinceStartup - _recordingStartTime;
             Statistics.Output("RecordUserVoice", $"marker={markerName}, position_sec={position:F3}, filename={_currentFilename}");
 #endif

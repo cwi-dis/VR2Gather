@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using System;
@@ -71,7 +71,7 @@ namespace VRT.UserRepresentation.PointCloud
          static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         bool didOutputStatsIdentity = false;
 #endif
         public string Name()
@@ -171,7 +171,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //Debug.LogWarning($"{Name()}: Update() called, but no pipeline set yet");
                 return;
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             if (!didOutputStatsIdentity) {
                 Statistics.Output(Name(), $"enabled=1, pipeline={pipeline.Name()}, algorithm={algorithm.ToString()}");
                 didOutputStatsIdentity = true;
@@ -217,7 +217,7 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     statMsg += $", tile{i}={selectedTileQualities[i]}";
                 }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), statMsg);
 #endif
             }

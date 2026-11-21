@@ -2,7 +2,7 @@
 using UnityEngine.Events;
 using VRT.Orchestrator;
 using VRT.OrchestratorComm;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -77,7 +77,7 @@ namespace VRT.Pilots.Common
 			}
 			else
 			{
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 				string originId = VRTOrchestratorSingleton.Comm.SelfUser.userId;
 				Statistics.Output("NetworkTrigger", $"name={name}, origin={originId}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
@@ -90,7 +90,7 @@ namespace VRT.Pilots.Common
 		{
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output("NetworkTrigger", $"name={name}, origin={data.SenderId}, sessionId={VRTOrchestratorSingleton.Comm.CurrentSession.sessionId}");
 #endif
 

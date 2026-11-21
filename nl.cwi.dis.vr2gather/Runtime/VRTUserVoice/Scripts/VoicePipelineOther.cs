@@ -3,7 +3,7 @@ using UnityEngine;
 using VRT.Orchestrator;
 using VRT.Core;
 using Cwipc;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -66,7 +66,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==true");
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats = new Stats(Name());
 #endif
             if (synchronizer == null)
@@ -106,7 +106,7 @@ namespace VRT.UserRepresentation.Voice
 
             if (VRTConfig.Instance.VoiceConfig.preparerQueueSize > 0) {
                 preparerQueueSize = VRTConfig.Instance.VoiceConfig.preparerQueueSize;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"preparer_queue_size={preparerQueueSize}");
 #endif
             }
@@ -127,7 +127,7 @@ namespace VRT.UserRepresentation.Voice
                     break;
             }
             reader = TransportProtocol.NewReader(proto).Init(url, user.userId, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"userid={user.userId}, proto={proto}, url={url}, streamName={_streamName}, streamNumber={_streamNumber}, codec={audioCodec}");
 #endif
 
@@ -148,7 +148,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 decoderName = codec.Name();
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}, decoder={decoderName}, preparer={preparer.Name()}, synchronizer={synchronizerName}");
 #endif
         }
@@ -254,7 +254,7 @@ namespace VRT.UserRepresentation.Voice
                 }
             }
             
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, currentTimestamp, preparer.getQueueDuration());
 #endif
         }
@@ -264,7 +264,7 @@ namespace VRT.UserRepresentation.Voice
             reader.SetSyncInfo(_clockCorrespondence);
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

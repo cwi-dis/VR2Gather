@@ -122,7 +122,7 @@ namespace VRT.UserRepresentation.WebCam
                                 break;
                         }
                         writer = TransportProtocol.NewWriter(proto).Init(url, user.userId, "webcam", "wcwc", dashStreamDescriptions);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                         Statistics.Output(Name(), $"proto={proto}, url={url}");
 #endif
 
@@ -160,7 +160,7 @@ namespace VRT.UserRepresentation.WebCam
                         break;
                 }
                 reader = TransportProtocol.NewReader(proto).Init(url, user.userId, "webcam", 0, "wcwc", videoCodecQueue);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"proto={proto}, url={url}");
 #endif
 

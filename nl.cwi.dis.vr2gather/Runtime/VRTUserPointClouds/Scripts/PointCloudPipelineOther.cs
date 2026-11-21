@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using VRT.UserRepresentation.Voice;
@@ -83,7 +83,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogWarning($"{Name()}: No tileselector for user {user.GetId()}");
             }
             
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"self=0, userid={user.userId}");
 #endif
             //
@@ -137,7 +137,7 @@ namespace VRT.UserRepresentation.PointCloud
                 // And collect the relevant information for the Dash receiver
                 //
                 tilesToReceive[tileIndex].outQueue = decoderQueue;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"tile={tileIndex}, tile_number={tilesToReceive[tileIndex].tileNumber}, decoder={decoder.Name()}");
 #endif
             };
@@ -158,7 +158,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 synchronizerName = synchronizer.Name();
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output(Name(), $"reader={reader.Name()}, codec={pointcloudCodec}, synchronizer={synchronizerName}");
 #endif
         }

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using VRT.Core;
 using Cwipc;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -25,7 +25,7 @@ namespace VRT.UserRepresentation.Voice
         QueueThreadSafe outQueue;
         public AsyncVoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames = 1) : base()
         {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats = new Stats(Name());
 #endif
             inQueue = _inQueue;
@@ -74,13 +74,13 @@ namespace VRT.UserRepresentation.Voice
             }
             Timedelta queuedDuration = outQueue.QueuedDuration();
             bool ok = outQueue.Enqueue(mcOut);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats.statsUpdate(encodeDuration, queuedDuration, !ok);
 #endif
             mcIn.free();
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

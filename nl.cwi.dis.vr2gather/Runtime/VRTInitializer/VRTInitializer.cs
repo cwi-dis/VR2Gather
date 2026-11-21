@@ -13,7 +13,7 @@ using VRT.Transport.Dash;
 #if !VRT_WITHOUT_WEBRTC
 using VRT.Transport.WebRTC;
 #endif
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
@@ -44,7 +44,7 @@ public class VRTInitializer : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         Statistics.Output("VRTInitializer", $"quitting=1");
 #endif
 #if xxxjack_removed

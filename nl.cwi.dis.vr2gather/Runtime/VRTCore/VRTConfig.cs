@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Management;
 using Cwipc;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 namespace VRT.Core
@@ -491,7 +491,7 @@ namespace VRT.Core
                 }
             }
             // Initialize some other modules that have their own configuration.
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Initialize(this.StatisticsConfig.interval, this.StatisticsConfig.outputFile, this.StatisticsConfig.outputFileAppend);
             Statistics.Output("VRTConfig", VRTVersionInfo.StatsFields());
 #endif

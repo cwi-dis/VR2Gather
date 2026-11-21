@@ -2,7 +2,7 @@
 using UnityEngine;
 using VRT.Core;
 using Cwipc;
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 
@@ -33,7 +33,7 @@ namespace VRT.Transport.TCPReflector
 
             public void HandlePacket(BaseMemoryChunk packet) {
                 bool didDrop = !queue.Enqueue(packet);
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                 parent.stats.statsUpdate(packet.length, didDrop, packet.metadata.timestamp, handler_index);
 #endif
             }
@@ -75,7 +75,7 @@ namespace VRT.Transport.TCPReflector
                 IncomingStreamHandler handler = new(this, i, this.descriptors[i].outQueue);
                 connection.RegisterIncomingStream(this.descriptors[i].name, handler);
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             stats = new Stats(Name());
 #endif
             Start();
@@ -140,7 +140,7 @@ namespace VRT.Transport.TCPReflector
                     {
                         // Debug.Log($"{Name()}: Received packet for {streamName}, ts={timestamp}, size={chunk.length}");
                     }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
                     stats.statsUpdate(chunk.length, didDrop, timestamp, i);
 #endif
                     return;
@@ -153,7 +153,7 @@ namespace VRT.Transport.TCPReflector
         {
         }
 
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }

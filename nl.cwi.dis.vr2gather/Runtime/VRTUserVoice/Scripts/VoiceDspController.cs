@@ -38,7 +38,7 @@ namespace VRT.UserRepresentation.Voice
                     return false;
                 }
             }
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("VoiceDspController", $"voice_dsp_fps={dspFps:F2}, voice_dsp_buffer_ms={(bufferDuration*1000):F2}");
 #endif
             return true;

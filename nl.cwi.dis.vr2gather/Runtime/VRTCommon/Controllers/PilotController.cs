@@ -5,7 +5,9 @@ using UnityEngine.Video;
 using VRT.Core;
 using System;
 using VRT.Orchestrator.Implementation;
+#if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
+#endif
 
 namespace VRT.Pilots.Common
 {
@@ -71,7 +73,7 @@ namespace VRT.Pilots.Common
             }
             Instance = this;
             Debug.Log($"{Name()}: Awake.");
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("PilotController", $"controller={Name()}, scene={gameObject.scene.name}, started=1");
 #endif
             if (playableInEditor && !VRTConfig.InstanceExists())
@@ -83,7 +85,7 @@ namespace VRT.Pilots.Common
 
         protected virtual void OnDestroy()
         {
-#if VRT_WITH_STATS
+#if !VRT_WITHOUT_STATS
             Statistics.Output("PilotController", $"controller={Name()}, scene={gameObject.scene.name}, stopped=1");
 #endif
         }
