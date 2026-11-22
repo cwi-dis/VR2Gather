@@ -162,7 +162,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startFadedOut: 1
-  fadeOutText: 
   allowDirectInteractionInScene: 1
   NextSceneOnSessionEnd: VRTLoginManager
   playableInEditor: 1

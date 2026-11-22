@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed: socket.io writer exception at session end (#408)
 - Fixed: Android (Quest) players didn't compile since 1.4.0 (#355)
 - `OnDestroy()` of `NetworkIdBehaviour` and the point cloud pipelines is `protected virtual`: subclasses must `override` it and call `base.OnDestroy()` (#421)
+- Removed `PilotController.fadeOutText` and `CameraFader.SetText()`: the fade-out text has shown nothing since 2023 (#428)
 - Known problem: WebRTC and Dash sessions don't start at the moment (#425, #426)
 
 ## [1.4.5] - 2026-11-11

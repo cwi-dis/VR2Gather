@@ -27,9 +27,6 @@ namespace VRT.Pilots.Common
         [Tooltip("Fade in at start of scene (default only fadeout)")]
         [SerializeField] public bool startFadedOut = false;
 
-        [Tooltip("Text to show during fadeout (default: nothing)")]
-        [SerializeField] protected string fadeOutText;
-
         [Tooltip("Allow direct interaction in this scene (default: ray-based and keyboard/mouse")]
         [SerializeField] protected bool allowDirectInteractionInScene;
 
@@ -175,7 +172,6 @@ namespace VRT.Pilots.Common
             }
             if (CameraFader.Instance != null)
             {
-                if (fadeOutText != null && fadeOutText != "") CameraFader.Instance.SetText(fadeOutText);
                 StartCoroutine(CameraFader.Instance.FadeOut());
                 StartCoroutine(LoadSceneAfterFade(CameraFader.Instance.FadeDuration, newScene));
             }

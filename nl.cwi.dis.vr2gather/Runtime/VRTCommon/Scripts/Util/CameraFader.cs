@@ -16,7 +16,6 @@ namespace VRT.Pilots.Common
         public GameObject FadeGO;
         [Tooltip("Image in FadeGO, its material will be cloned and animated for fading")]
         public Image FadeImage;
-        private Text FadeText;
 
         [Tooltip("If true this scene fades in from black (otherwise it only fades out to black)")]
         public bool startFadedOut = false;
@@ -75,22 +74,11 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void SetText(string text)
-        {
-            if (FadeText != null) FadeText.text = text;
-        }
-
-        public void ClearText()
-        {
-            if (FadeText != null) FadeText.text = "";
-        }
-
         public IEnumerator FadeIn()
         {
             _InitFade();
             yield return null;
 
-            ClearText();
             _Fading = true;
             _Target = 0.0f;
             _Step = -1.0f / FadeDuration;
