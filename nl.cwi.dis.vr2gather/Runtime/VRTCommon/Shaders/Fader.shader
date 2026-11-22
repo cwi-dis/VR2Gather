@@ -11,6 +11,11 @@ Shader "Unlit/Fader"
     // URP
     SubShader
     {
+        // Skipped when URP isn't installed: Unity compiles every SubShader, and the URP
+        // include below would fail without the package (#365, as cwi-dis/cwipc_unity#55).
+        PackageRequirements {
+            "com.unity.render-pipelines.universal"
+        }
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Overlay" }
         Blend SrcAlpha OneMinusSrcAlpha
         ZWrite Off
