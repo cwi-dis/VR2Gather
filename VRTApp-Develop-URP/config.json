@@ -1,0 +1,132 @@
+{
+    "configVersion": 20260311,
+    "orchestratorURL": "http://virtnuc-dis.spin-off.cwi.nl:8090/",
+    "userConfigFilename": "",
+    "configOverrideFilename": "",
+    "targetFrameRate": -1,
+    "disableVR": false,
+    "ntpSyncThreshold": 0.10000000149011612,
+    "ffmpegDLLDir": "../ffmpeg/x64",
+    "autoInventUsername": true,
+    "StatisticsConfig": {
+        "interval": 10.0,
+        "outputFile": "",
+        "outputFileAppend": true
+    },
+    "ScreenshotConfig": {
+        "takeScreenshot": false,
+        "fps": 0,
+        "screenshotTargetDirectory": "",
+        "preDeleteTargetDirectory": true,
+        "filenameTemplate": "Frame{framenum}.png"
+    },
+    "AutoStartConfig": {
+        "autoCreate": false,
+        "autoCreateStandalone": false,
+        "autoJoin": false,
+        "autoCreateForUser": "",
+        "sessionName": "",
+        "sessionScenario": "",
+        "sessionTransportProtocol": "",
+        "sessionUncompressed": false,
+        "sessionUncompressedAudio": false,
+        "autoStartWith": -1,
+        "autoLeaveAfter": 0.0,
+        "autoStopAfterLeave": false,
+        "autoDelay": 0.20000000298023225
+    },
+    "TransportDashConfig": {
+        "segmentSize": 4000,
+        "segmentLife": 15000,
+        "logLevel": 0,
+        "nativeLibraryPath": ""
+    },
+    "TransportWebRTCConfig": {
+        "peerExecutablePath": "",
+        "peerInWindow": false,
+        "peerWindowDontClose": false,
+        "peerUDPPort": 8000,
+        "peerIPAddress": "127.0.0.1",
+        "logFileDirectory": "",
+        "debugLevel": 0
+    },
+    "CwipcConfig": {
+        "logLevel": 2,
+        "overrideNativeLoadPath": "",
+        "Codec": "cwi1",
+        "defaultCellSize": 0.0,
+        "cellSizeFactor": 0.0,
+        "debugColorize": false,
+        "timeoutBeforeGhosting": 5.0,
+        "decoderQueueSizeOverride": 0,
+        "preparerQueueSizeOverride": 0,
+        "encoderParallelism": 0,
+        "decoderParallelism": 0,
+        "preparerQueueSize": 0
+    },
+    "VoiceConfig": {
+        "audioFps": 50,
+        "maxPlayoutLatency": 0.30000001192092898,
+        "maxPlayoutAhead": 0.06599999964237213,
+        "preparerQueueSize": 0,
+        "ignoreSynchronizer": true
+    },
+    "SynchronizerConfig": {
+        "debugSynchronizer": false,
+        "debugJitterBuffer": false,
+        "minLatency": 0,
+        "maxLatency": 0,
+        "latencyMaxDecrease": 1,
+        "latencyMaxIncrease": 33,
+        "acceptDesyncOnDataUnavailable": false
+    },
+    "PointCloudTransmissionConfig": {
+        "tiled": false,
+        "EncoderConfigs": [
+            {
+                "octreeBits": 7
+            }
+        ]
+    },
+    "TileSelectorConfig": {
+        "algorithm": "",
+        "debugDecisions": false,
+        "bitrateBudget": 0
+    },
+    "PositionTrackerConfig": {
+        "outputFile": "",
+        "outputIntervalOverride": 0,
+        "inputFile": ""
+    },
+    "RepresentationConfig": {
+        "userName": "",
+        "representation": 1,
+        "representation_str": "SimpleAvatar",
+        "webcamName": "",
+        "microphoneName": "",
+        "userRepresentationTCPUrl": "",
+        "RepresentationPointcloudConfig": {
+            "variant": 0,
+            "variant_str": "camera",
+            "CameraConfig": {
+                "configFilename": ""
+            },
+            "RemoteConfig": {
+                "url": "",
+                "isCompressed": false
+            },
+            "ProxyConfig": {
+                "localIP": "",
+                "port": 0
+            },
+            "SyntheticConfig": {
+                "nPoints": 40000
+            },
+            "PrerecordedConfig": {
+                "folder": ""
+            },
+            "voxelSize": 0.0,
+            "frameRate": 15.0
+        }
+    }
+}

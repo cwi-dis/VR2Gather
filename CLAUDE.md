@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 VR2Gather is a Unity package (`nl.cwi.dis.vr2gather`) for collaborative networked social VR with live volumetric video (point clouds). Participants appear as real-time 3D reconstructions in shared virtual spaces. Built for Unity 6000.3+.
 
 - **Main package**: `nl.cwi.dis.vr2gather/`
-- **Development project**: `VRTApp-Develop/` (Unity project that imports the package via relative path for in-place editing)
+- **Development projects**: `VRTApp-Develop/` (BIRP, without the URP package) and `VRTApp-Develop-URP/` (URP). Both import the package via relative path for in-place editing and share the Samples through a symlink; check material and shader changes in both (#256, #429)
 - **Orchestrator**: External cloud service for session management; local URL configurable in `config.json`
 
 ## Build and Development Commands
@@ -38,7 +38,7 @@ git config --local core.symlinks true
 cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 ```
 
-**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on every push (#355). No tests or release builds yet (#416, #417).
+**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on every push (#355); `VRTApp-Develop-URP` only on Linux (#429). No tests or release builds yet (#416, #417).
 
 **Releasing**: follow `Documentation/21-releasing.md` (version + tag, players built on each platform, GitHub release, update `VR2Gather_sample`).
 

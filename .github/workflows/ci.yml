@@ -7,6 +7,10 @@
 # Local builds use VRTApp-Develop/scripts/build.sh instead; why the CI doesn't:
 # https://github.com/cwi-dis/VR2Gather/issues/415#issuecomment-7064351465
 #
+# Two development projects, one per render pipeline (#429, part of #256): VRTApp-Develop (BIRP,
+# without the URP package) is built for every platform; VRTApp-Develop-URP only on Linux, the
+# cheapest job.
+#
 # Secrets (same as cwipc_unity, Unity Personal): UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD.
 
 name: CI
@@ -25,8 +29,17 @@ jobs:
   # game-ci's image plus cwipc's -built- archive. Desktop player without XR (OpenXR doesn't
   # support Linux, #366), through VRT.Tools.CommandLineBuild.BuildWithoutXR.
   build-linux:
-    name: Build (Linux)
+    name: Build (Linux, ${{ matrix.pipeline }})
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pipeline: BIRP
+            project: VRTApp-Develop
+            artifact: VR2Gather-linux
+          - pipeline: URP
+            project: VRTApp-Develop-URP
     steps:
       - uses: actions/checkout@v7
         with:
@@ -34,15 +47,15 @@ jobs:
 
       - uses: actions/cache@v6
         with:
-          path: VRTApp-Develop/Library
-          key: Library-Linux-${{ hashFiles('VRTApp-Develop/Packages/**', 'VRTApp-Develop/ProjectSettings/**', 'nl.cwi.dis.vr2gather/package.json') }}
+          path: ${{ matrix.project }}/Library
+          key: Library-Linux-${{ matrix.pipeline }}-${{ hashFiles(format('{0}/Packages/**', matrix.project), format('{0}/ProjectSettings/**', matrix.project), 'nl.cwi.dis.vr2gather/package.json') }}
           restore-keys: |
-            Library-Linux-
+            Library-Linux-${{ matrix.pipeline }}-
 
       - id: unity
         name: Unity version of the project
         run: |
-          echo "version=$(sed -n 's/^m_EditorVersion: //p' VRTApp-Develop/ProjectSettings/ProjectVersion.txt)" >> "$GITHUB_OUTPUT"
+          echo "version=$(sed -n 's/^m_EditorVersion: //p' ${{ matrix.project }}/ProjectSettings/ProjectVersion.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Build the image with cwipc
         run: |
@@ -61,7 +74,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: VRTApp-Develop
+          projectPath: ${{ matrix.project }}
           targetPlatform: StandaloneLinux64
           unityVersion: auto
           customImage: vr2gather-ci:linux
@@ -70,9 +83,12 @@ jobs:
           buildsPath: Builds
           versioning: None
 
+      # No artifact for URP yet: its materials are mostly BIRP-only (pink) until the material
+      # sweep of #256, so the build only checks that the URP project compiles and builds.
       - uses: actions/upload-artifact@v7
+        if: matrix.pipeline == 'BIRP'
         with:
-          name: VR2Gather-linux
+          name: ${{ matrix.artifact }}
           path: |
             Builds/StandaloneLinux64/
             !Builds/StandaloneLinux64/**/*DoNotShip*/

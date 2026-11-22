@@ -34,6 +34,8 @@ At the toplevel folder you will find the source of the Unity package, `nl.cwi.di
 
 You will also find a Unity project `VRTApp-Develop` which is a pretty empty project that imports `nl.cwi.dis.vr2gather` by relative pathname. This has the advantage that as you make changes to any of the files from the package these changes will be made in-place, so you can then commit and push them later. There is also a trick with a symlink used to include the Samples into this project.
 
+`VRTApp-Develop-URP` is the same project for the Universal Render Pipeline (URP); `VRTApp-Develop` itself uses the Built-in Render Pipeline (BIRP), without the URP package installed. Both import the same package and the same Samples, so a change made in one shows up in the other. Check changes to materials and shaders in both.
+
   **Note:** to use `VRTApp-Develop` on Windows you **must** first enable symlinks with the following steps. You may have to do a fresh clone of the repository (after following these steps):
 
   - First enable them for Windows itself, in _Settings, Privacy & Security_, _Developer Mode_
@@ -49,10 +51,10 @@ After making changes, and before pushing or testing with `VR2Gather_sample` you 
 
 ## Render pipeline (BIRP/URP) plan
 
-Unity is deprecating the Built-in Render Pipeline (BIRP) in 6000.5, so VR2Gather is moving towards the Universal Render Pipeline (URP). This is happening in two tracks rather than converting everything at once:
+Unity is deprecating the Built-in Render Pipeline (BIRP) in 6000.5, so VR2Gather has to work in Universal Render Pipeline (URP) apps, while still working in BIRP apps for as long as those exist:
 
-- `master` stays BIRP-default, but keeps the core self-player path (`P_Self_Player`, `P_Player`, `VRTLoginManager`) working under both pipelines. The rest of the samples/scenes are not URP-compatible yet, and we're not chasing every non-compatible material there for now.
-- A long-lived `urp` branch will eventually host a full URP conversion (via Unity's built-in Render Pipeline Converter), likely alongside a `VR2Gather_Sample_URP` variant of the sample project. For a transition period `master` (BIRP) and `urp` will coexist.
-- Once URP usage becomes the norm - decided by observed usage, not a fixed date - `master` will be forked off as `birp` and `urp` will become the new `master`.
+- There is one `master`. The package and the samples are made *dual*: every shader and material works in both pipelines, without per-pipeline copies (Shader Graph shaders with both targets, or hand-written shaders with a URP SubShader guarded by `PackageRequirements`).
+- `VRTApp-Develop` (BIRP, without the URP package) and `VRTApp-Develop-URP` are the development projects, and CI builds both.
+- Not everything is dual yet: many materials still use the BIRP `Standard` shader, and render pink in URP.
 
 See [issue #256](https://github.com/cwi-dis/VR2Gather/issues/256) for the full plan and rationale.
