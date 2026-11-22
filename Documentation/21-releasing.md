@@ -34,7 +34,7 @@ gh release create vX.Y.Z --draft --title vX.Y.Z --notes-file <release notes>
 
 ## 4. Build the players and publish
 
-For now, by hand (some day GitHub Actions will do this, see #355). Build `VRTApp-Develop` on each platform with `VRTApp-Develop/scripts/build.sh`, from the tagged commit, with the Editor closed (see [Building the application](20-building.md)):
+For now, by hand (some day GitHub Actions will do this, see #417; CI already builds players on every push, #355). Build `VRTApp-Develop` on each platform with `VRTApp-Develop/scripts/build.sh`, from the tagged commit, with the Editor closed (see [Building the application](20-building.md)):
 
 - Windows: on a Windows machine, from Git Bash.
 - macOS: on a Mac.

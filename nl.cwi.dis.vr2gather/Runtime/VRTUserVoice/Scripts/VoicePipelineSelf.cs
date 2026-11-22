@@ -2,7 +2,6 @@
 using VRT.Orchestrator;
 using VRT.Core;
 using Cwipc;
-using UnityEngine.Windows.WebCam;
 #if !VRT_WITHOUT_STATS
 using Statistics = Cwipc.Statistics;
 #endif

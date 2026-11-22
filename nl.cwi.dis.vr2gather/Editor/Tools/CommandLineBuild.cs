@@ -10,7 +10,9 @@ using UnityEngine.XR.Management;
 namespace VRT.Tools
 {
     /// <summary>
-    /// Build methods for the command line (scripts/build.sh, through `unity build --execute-method`).
+    /// Build methods for the command line: scripts/build.sh (through `unity build --execute-method`,
+    /// output path in -buildOutput) and CI (game-ci's unity-builder buildMethod, output path in
+    /// -customBuildPath; see issue #355).
     ///
     /// BuildWithoutXR builds a desktop player without XR (desktop mode only), for the build target
     /// the Editor was started with (`unity build --target`). The XR settings for Standalone are
@@ -30,8 +32,9 @@ namespace VRT.Tools
             if (group != BuildTargetGroup.Standalone)
                 throw new ArgumentException($"CommandLineBuild.BuildWithoutXR: {target} is not a desktop (Standalone) target");
             string output = GetArgument("-buildOutput");
+            if (string.IsNullOrEmpty(output)) output = GetArgument("-customBuildPath");
             if (string.IsNullOrEmpty(output))
-                throw new ArgumentException("CommandLineBuild.BuildWithoutXR: no -buildOutput argument");
+                throw new ArgumentException("CommandLineBuild.BuildWithoutXR: no -buildOutput or -customBuildPath argument");
 
             var manager = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildTargetGroup.Standalone)?.AssignedSettings;
             var removedLoaders = new List<XRLoader>();

@@ -21,7 +21,7 @@ The script is the same in every VR2Gather project: it finds the project from its
 
 Before your first build, check the **Product Name** in Player Settings (`productName` in `ProjectSettings/ProjectSettings.asset`), and fix it if needed. A project copied from `VR2Gather_sample` or another app still has that project's name. It names the app and the zip, and Unity also uses it for the app's settings and log folders.
 
-There is currently no CI build; see issue #355.
+GitHub Actions (`.github/workflows/ci.yml`) builds `VRTApp-Develop` players for Linux, Windows, macOS (arm64 and Intel) and Android (Meta Quest) on every push, using game-ci with cwipc installed (issue #355). The players are kept as artifacts of the workflow run; they are not release builds (issue #417).
 
 ## Older notes (may be outdated)
 

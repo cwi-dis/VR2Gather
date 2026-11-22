@@ -1,0 +1,258 @@
+# CI builds for VR2Gather: build the VRTApp-Develop players, to find build breakage early
+# (#355, part of #415). Not released: the release builds are #417.
+#
+# Modelled on cwipc_unity's .github/workflows/ci.yml (cwi-dis/cwipc_unity#63, #71): game-ci's
+# unity-builder with cwipc in the build environment: a Docker image with cwipc added on Linux
+# and Windows (.github/docker/*/Dockerfile), cwipc's install-cwipc action on macOS.
+# Local builds use VRTApp-Develop/scripts/build.sh instead; why the CI doesn't:
+# https://github.com/cwi-dis/VR2Gather/issues/415#issuecomment-7064351465
+#
+# Secrets (same as cwipc_unity, Unity Personal): UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD.
+
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      cwipc-version:
+        description: 'cwipc version to build against: a release tag, or master'
+        required: false
+        default: 'v8.3.0'
+
+jobs:
+  # Linux: game-ci runs Unity in a Docker container; cwipc comes in through a custom image,
+  # game-ci's image plus cwipc's -built- archive. Desktop player without XR (OpenXR doesn't
+  # support Linux, #366), through VRT.Tools.CommandLineBuild.BuildWithoutXR.
+  build-linux:
+    name: Build (Linux)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+
+      - uses: actions/cache@v6
+        with:
+          path: VRTApp-Develop/Library
+          key: Library-Linux-${{ hashFiles('VRTApp-Develop/Packages/**', 'VRTApp-Develop/ProjectSettings/**', 'nl.cwi.dis.vr2gather/package.json') }}
+          restore-keys: |
+            Library-Linux-
+
+      - id: unity
+        name: Unity version of the project
+        run: |
+          echo "version=$(sed -n 's/^m_EditorVersion: //p' VRTApp-Develop/ProjectSettings/ProjectVersion.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Build the image with cwipc
+        run: |
+          docker build \
+            --build-arg UNITY_VERSION=${{ steps.unity.outputs.version }} \
+            --build-arg CWIPC_VERSION=${{ inputs.cwipc-version == 'master' && 'nightly' || inputs.cwipc-version || 'v8.3.0' }} \
+            -t vr2gather-ci:linux .github/docker/linux
+
+      # Pinned to an exact version, as in cwipc_unity: @v5 may move to the CLI-based builder.
+      # versioning None: the default (Semantic) wants the full git history, which this repo
+      # doesn't need for a CI build.
+      - name: Build player
+        uses: game-ci/unity-builder@v5.0.1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: VRTApp-Develop
+          targetPlatform: StandaloneLinux64
+          unityVersion: auto
+          customImage: vr2gather-ci:linux
+          buildMethod: VRT.Tools.CommandLineBuild.BuildWithoutXR
+          buildName: VR2Gather
+          buildsPath: Builds
+          versioning: None
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: VR2Gather-linux
+          path: |
+            Builds/StandaloneLinux64/
+            !Builds/StandaloneLinux64/**/*DoNotShip*/
+            !Builds/StandaloneLinux64/**/*DontShip*/
+          if-no-files-found: error
+
+  # Windows: as Linux, with .github/docker/windows/Dockerfile. game-ci's Windows images are
+  # Windows Server 2022, so this needs a windows-2022 runner. Player with XR (game-ci's own
+  # build method).
+  build-windows:
+    name: Build (Windows)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+
+      - uses: actions/cache@v6
+        with:
+          path: VRTApp-Develop/Library
+          key: Library-Windows-${{ hashFiles('VRTApp-Develop/Packages/**', 'VRTApp-Develop/ProjectSettings/**', 'nl.cwi.dis.vr2gather/package.json') }}
+          restore-keys: |
+            Library-Windows-
+
+      - id: unity
+        name: Unity version of the project
+        shell: bash
+        run: |
+          echo "version=$(sed -n 's/^m_EditorVersion: //p' VRTApp-Develop/ProjectSettings/ProjectVersion.txt | tr -d '\r')" >> "$GITHUB_OUTPUT"
+
+      - name: Build the image with cwipc
+        shell: bash
+        run: |
+          docker build \
+            --build-arg UNITY_VERSION=${{ steps.unity.outputs.version }} \
+            --build-arg CWIPC_VERSION=${{ inputs.cwipc-version == 'master' && 'nightly' || inputs.cwipc-version || 'v8.3.0' }} \
+            -t vr2gather-ci:windows .github/docker/windows
+
+      - name: Build player
+        uses: game-ci/unity-builder@v5.0.1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: VRTApp-Develop
+          targetPlatform: StandaloneWindows64
+          unityVersion: auto
+          customImage: vr2gather-ci:windows
+          buildName: VR2Gather
+          buildsPath: Builds
+          versioning: None
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: VR2Gather-windows
+          path: |
+            Builds/StandaloneWindows64/
+            !Builds/StandaloneWindows64/**/*DoNotShip*/
+            !Builds/StandaloneWindows64/**/*DontShip*/
+          if-no-files-found: error
+
+  # macOS: Unity runs directly on the runner; cwipc from cwipc's install-cwipc action.
+  # Unlike cwipc_unity, on every push: macOS runners used to be scarce, we try whether that's
+  # still a problem (#355).
+  # Intel players for as long as we still have Intel Macs in use.
+  build-macos:
+    name: Build (macOS ${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-15
+            hub-arch: arm64
+            hub-sha256: e04d0320daf5df3d460435320222d8f4981f1388ecb0b5b22482ad98a9bbbf85
+          - arch: intel
+            runner: macos-15-intel
+            hub-arch: x64
+            hub-sha256: ec2b1cea97ba8c418cd87c9e216294224ac7cee393fa84c6d6b1d98d1f963b92
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+
+      - uses: actions/cache@v6
+        with:
+          path: VRTApp-Develop/Library
+          key: Library-macOS-${{ matrix.arch }}-${{ hashFiles('VRTApp-Develop/Packages/**', 'VRTApp-Develop/ProjectSettings/**', 'nl.cwi.dis.vr2gather/package.json') }}
+          restore-keys: |
+            Library-macOS-${{ matrix.arch }}-
+
+      - id: cwipc
+        uses: cwi-dis/cwipc/.github/actions/install-cwipc@v8.3.0
+        with:
+          version: ${{ inputs.cwipc-version || 'v8.3.0' }}
+
+      # Temporary workaround, copied from cwipc_unity: Unity Hub 3.22.6 instead of brew's latest.
+      # Hub 4.x no longer supports the headless install unity-builder v5.0.1 uses, and the
+      # builder skips its own Hub install when /Applications/Unity Hub.app exists.
+      # URL and sha256 from the Homebrew cask for 3.22.6.
+      - name: Unity Hub 3.22.6
+        run: |
+          v=3.22.6
+          dmg="$RUNNER_TEMP/UnityHubSetup.dmg"
+          curl -fsSL -o "$dmg" "https://public-cdn.cloud.unity3d.com/hub/prod/$v/UnityHubSetup-$v-${{ matrix.hub-arch }}.dmg"
+          echo "${{ matrix.hub-sha256 }}  $dmg" | shasum -a 256 -c -
+          mnt=$(hdiutil attach -nobrowse -readonly "$dmg" | sed -n 's/.*\(\/Volumes\/.*\)$/\1/p' | tail -1)
+          cp -R "$mnt/Unity Hub.app" /Applications/
+          hdiutil detach "$mnt"
+
+      - name: Build player
+        uses: game-ci/unity-builder@v5.0.1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: VRTApp-Develop
+          targetPlatform: StandaloneOSX
+          unityVersion: auto
+          # Keep the installed Editor in the Actions cache: installing it takes ~14 minutes (#355).
+          # arm64 only: game-ci's cache key has no architecture, so the Intel job would restore
+          # the arm64 Editor ("Bad CPU type"; game-ci/unity-builder#869), and a second 5.5 GB
+          # Editor doesn't fit the cache.
+          cacheUnityInstallationOnMac: ${{ matrix.arch == 'arm64' }}
+          buildName: VR2Gather
+          buildsPath: Builds
+          versioning: None
+
+      # Zipped here: upload-artifact doesn't keep the symlinks in an .app bundle.
+      - name: Zip
+        run: |
+          cd Builds/StandaloneOSX
+          zip -qry "$GITHUB_WORKSPACE/VR2Gather-macos-${{ matrix.arch }}.zip" . -x '*DoNotShip*' '*DontShip*' '*.DS_Store'
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: VR2Gather-macos-${{ matrix.arch }}
+          path: VR2Gather-macos-${{ matrix.arch }}.zip
+          if-no-files-found: error
+
+  # Android (standalone Meta Quest): game-ci's own Android image, nothing to install: cwipc's
+  # Android libraries come with cwipc_unity (nl.cwi.dis.cwipc/Runtime/Plugins/android-arm64).
+  # Built with the Meta Quest build profile, which overrides Player and Quality settings.
+  # Signed with Unity's debug key: fine for sideloading.
+  build-android:
+    name: Build (Android, Meta Quest)
+    runs-on: ubuntu-24.04
+    steps:
+      # No "free disk space" step needed: the ubuntu-24.04 runner had 89 GB free (#355).
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+
+      - uses: actions/cache@v6
+        with:
+          path: VRTApp-Develop/Library
+          key: Library-Android-${{ hashFiles('VRTApp-Develop/Packages/**', 'VRTApp-Develop/ProjectSettings/**', 'nl.cwi.dis.vr2gather/package.json') }}
+          restore-keys: |
+            Library-Android-
+
+      - name: Build player
+        uses: game-ci/unity-builder@v5.0.1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: VRTApp-Develop
+          targetPlatform: Android
+          buildProfile: Assets/Settings/Build Profiles/Meta Quest.asset
+          unityVersion: auto
+          buildName: VR2Gather
+          buildsPath: Builds
+          versioning: None
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: VR2Gather-android-quest
+          path: Builds/Android/
+          if-no-files-found: error

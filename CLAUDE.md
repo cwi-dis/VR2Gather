@@ -38,7 +38,7 @@ git config --local core.symlinks true
 cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 ```
 
-**CI/CD**: none at the moment (the old workflow was removed in #322); see #355.
+**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on every push (#355). No tests or release builds yet (#416, #417).
 
 **Releasing**: follow `Documentation/21-releasing.md` (version + tag, players built on each platform, GitHub release, update `VR2Gather_sample`).
 
