@@ -16,7 +16,8 @@
         "GUID:fe685ec1767f73d42b749ea8045bfe43",
         "GUID:0fe28dc2fadbc7445be6b310124197c6",
         "GUID:9b63c533e75544f398f69585902a5620",
-        "GUID:7f7d1af65c2641843945d409d28f2e20"
+        "GUID:7f7d1af65c2641843945d409d28f2e20",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -27,6 +28,12 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "VRT_HAS_URP"
+        }
+    ],
     "noEngineReferences": false
 }
