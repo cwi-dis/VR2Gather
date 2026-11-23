@@ -8251,6 +8251,8 @@ MonoBehaviour:
   interactionObjectsNonXR:
   - {fileID: 8316936138455153360}
   - {fileID: 6871542164811301566}
+  componentsXR:
+  - {fileID: 8365135913216051646}
   debug: 0
 --- !u!114 &6695701840291593632
 MonoBehaviour:

@@ -8,6 +8,7 @@ This documentation is intended to get you started with developing a VR2Gather ex
 - [Prefabs](04-prefabs.md) goes into the structure of the important prefabs and accompanying scripts.
 - [Prefab conventions](43-prefab-conventions.md) lists how we structure prefabs and their wiring, and the workflow for editing them (also from scripts or a coding agent).
 - [Interaction system](100-interaction.md) explains the two primary user actions (pressing buttons, holding objects), the input modes supported (XR controllers, hand tracking, desktop keyboard+mouse), and the four categories of interactable objects.
+- [XR and controller initialisation](101-xr-initialisation.md) lists where the pieces are that make VR2Gather start with or without VR (project settings, startup code, the player prefab), and what to check when that breaks after an update.
 - [Creating an experience](10-createnew.md) explains how to start creating a new experience with VR2Gather.
 - [Building the experience](20-building.md) has some information on creating the built application.
 - [Making a release](21-releasing.md) lists the steps for a VR2Gather release (tag, players, `VR2Gather_sample`).

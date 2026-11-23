@@ -16,6 +16,8 @@ namespace VRT.Pilots.Common
         public List<GameObject> interactionObjectsXR;
         [Tooltip("GameObjects for interaction not in XR")]
         public List<GameObject> interactionObjectsNonXR;
+        [Tooltip("Components that are only useful in XR, disabled without XR (for example XRI's XRInputModalityManager, which warns about a missing hand tracking subsystem otherwise)")]
+        public List<Behaviour> componentsXR;
 
         [Tooltip("Enable debug messages")] 
         public bool debug = false;
@@ -53,6 +55,17 @@ namespace VRT.Pilots.Common
                     Debug.Log($"FixInteractors: {endis} {go.name}");
                 }
                 go.SetActive(!xrIsActive);
+            }
+            // Only disabled, never enabled: in XR they keep whatever state the prefab gives them.
+            // Runs in Start(), before the components' first Update() (#246).
+            if (!xrIsActive && componentsXR != null)
+            {
+                foreach (var c in componentsXR)
+                {
+                    if (c == null) continue;
+                    if (debug) Debug.Log($"FixInteractors: disable {c.GetType().Name} on {c.gameObject.name}");
+                    c.enabled = false;
+                }
             }
         }
     }

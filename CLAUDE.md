@@ -94,7 +94,7 @@ Configurable via `config-user.json`:
 
 ### Interaction system
 
-Two primary user actions: **pressing a button** (`PFB_Trigger` / `OBJ_NetworkButton`) and **holding an object** (`PFB_Grabbable`). Four interactable object categories: grabbable, static button, grabbable+button, and factory (`NetworkInstantiator`). Input modes: XR near (NearFarInteractor + PokeInteractor), XR far (NearFarInteractor ray), hand tracking, desktop keyboard+mouse (`P_Handsfree`), gamepad (non-functional skeleton). See `Documentation/100-interaction.md` for the full breakdown.
+Two primary user actions: **pressing a button** (`PFB_Trigger` / `OBJ_NetworkButton`) and **holding an object** (`PFB_Grabbable`). Four interactable object categories: grabbable, static button, grabbable+button, and factory (`NetworkInstantiator`). Input modes: XR near (NearFarInteractor + PokeInteractor), XR far (NearFarInteractor ray), hand tracking, desktop keyboard+mouse (`P_Handsfree`), gamepad (non-functional skeleton). See `Documentation/100-interaction.md` for the full breakdown, and `Documentation/101-xr-initialisation.md` for how XR, controllers and hands are set up with or without VR.
 
 ### Configuration
 

@@ -66,6 +66,9 @@ public class VRTInitializer : MonoBehaviour
             Debug.Log("VRTInitializer: VR disabled");
             return;
         }
+        // Mac: with an XR loader active, mouse input in the UI stopped working (since Unity 2021.3.28,
+        // #109), so stop and unload XR there. On today's Macs no loader is active at this point
+        // (the log says "XR was not enabled"), so this is a guard rather than a fix (#246).
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         if (XRGeneralSettings.Instance?.Manager?.activeLoader != null)
         {
