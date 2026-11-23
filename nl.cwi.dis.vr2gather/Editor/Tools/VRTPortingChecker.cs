@@ -25,35 +25,10 @@ namespace VRT.Tools
 
         void OnEnable()
         {
-            _checks = new List<PortingCheck>
-            {
-                new VR2GatherSamplesVersionCheck(),
-                new RequiredSamplesCheck(),
-                new InputActionsCheck(),
-                new TeleportInteractionLayerCheck(),
-                new ScenarioRegistryCheck(),
-                new RenderPipelineMaterialsCheck(),
-                new UILayersCheck(),
-                new HandTrackingCheck(),
-                new OrchestratorRefCheck(),
-                new SceneLoadCheck(),
-                new SceneSetupCheck(),
-                new SoloPlayerCheck(),
-                new PlayerStartFloorCheck(),
-                new PilotControllerCheck(),
-                new PhysicsLayerCheck(),
-                new TeleportLayerCheck(),
-                new InteractionLayerCheck(),
-                new TriggerInteractablesCheck(),
-                new ActivateOnlyTriggersCheck(),
-                new GrabbableEventsCheck(),
-                new TeleportableTagCheck(),
-                new InteractableConventionCheck(),
-            };
+            _checks = PortingChecks.CreateAll();
             InitScenes();
             EditorSceneManager.activeSceneChangedInEditMode += OnActiveSceneChanged;
         }
-
         void OnDisable()
         {
             EditorSceneManager.activeSceneChangedInEditMode -= OnActiveSceneChanged;
@@ -261,6 +236,39 @@ namespace VRT.Tools
         }
     }
 
+    // ── The checks ───────────────────────────────────────────────────────────────
+
+    // All checks, in the order the window shows them. The window and the Editor tests (#416) use
+    // this list, so a new check is tested as soon as it is added here.
+    static class PortingChecks
+    {
+        public static List<PortingCheck> CreateAll() => new List<PortingCheck>
+        {
+            new VR2GatherSamplesVersionCheck(),
+            new RequiredSamplesCheck(),
+            new InputActionsCheck(),
+            new TeleportInteractionLayerCheck(),
+            new ScenarioRegistryCheck(),
+            new RenderPipelineMaterialsCheck(),
+            new UILayersCheck(),
+            new HandTrackingCheck(),
+            new OrchestratorRefCheck(),
+            new SceneLoadCheck(),
+            new SceneSetupCheck(),
+            new SoloPlayerCheck(),
+            new PlayerStartFloorCheck(),
+            new PilotControllerCheck(),
+            new PhysicsLayerCheck(),
+            new TeleportLayerCheck(),
+            new InteractionLayerCheck(),
+            new TriggerInteractablesCheck(),
+            new ActivateOnlyTriggersCheck(),
+            new GrabbableEventsCheck(),
+            new TeleportableTagCheck(),
+            new InteractableConventionCheck(),
+        };
+    }
+
     // ── Data model ───────────────────────────────────────────────────────────────
 
     enum CheckCategory { Global, Scripts, Scene }
@@ -383,8 +391,8 @@ namespace VRT.Tools
 
         protected override CheckResult Run()
         {
-            // Use a runtime type with an explicit asmdef (VRT.Login) rather than the
-            // Tools editor scripts which have no asmdef and resolve to the default assembly.
+            // Use a runtime type of the package (VRT.Login): FindForAssembly needs an assembly that
+            // belongs to the package.
             var info = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(ScenarioRegistry).Assembly);
             if (info == null)
                 return new CheckResult { Status = CheckStatus.Skipped, Summary = "Could not determine VR2Gather package version" };
@@ -611,8 +619,9 @@ namespace VRT.Tools
 
     // In a project with a scriptable render pipeline (URP), materials on BIRP-only shaders render
     // pink: Standard, surface shaders, and Unity's built-in Default-Material (also Standard).
-    // Lists the project's own ones (under Assets/) and points to Unity's Render Pipeline Converter,
-    // which converts them once, one-way: fine for an app. VR2Gather's own materials are dual
+    // Lists the project's own ones (under Assets/, imported samples included) that the enabled
+    // scenes use, and points to Unity's Render Pipeline Converter, which converts them once,
+    // one-way: fine for an app. VR2Gather's own materials are dual
     // BIRP/URP (VRT/Lit, #433) and live under Packages/, so they aren't listed. In a BIRP project
     // there is nothing to check.
     class RenderPipelineMaterialsCheck : PortingCheck
@@ -653,19 +662,29 @@ namespace VRT.Tools
             if (pipeline == null)
                 return new CheckResult { Status = CheckStatus.OK, Summary = "Built-in Render Pipeline: nothing to check" };
 
+            // Only what the enabled scenes use, directly or through prefabs, models and materials:
+            // imported samples bring many materials no scene uses, and listing those is noise (#416).
+            // Somewhat too wide still: a model's default materials count even where a prefab
+            // replaces them.
+            var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
+            if (scenes.Length == 0)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "No enabled scenes in Build Settings" };
+            var used = AssetDatabase.GetDependencies(scenes, true)
+                .Where(p => p.StartsWith("Assets/"))
+                .OrderBy(p => p)
+                .ToList();
+
             var details = new List<string>();
             var selects = new List<Action>();
-            foreach (var guid in AssetDatabase.FindAssets("t:Material", new[] { "Assets" }))
+            foreach (string path in used.Where(p => p.EndsWith(".mat")))
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
                 var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
                 if (mat == null || !IsBirpOnly(mat.shader)) continue;
                 details.Add($"{path} (shader {(mat.shader != null ? mat.shader.name : "missing")})");
                 selects.Add(() => { Selection.activeObject = mat; EditorGUIUtility.PingObject(mat); });
             }
-            foreach (var guid in AssetDatabase.FindAssets("t:Prefab t:Scene", new[] { "Assets" }))
+            foreach (string path in used.Where(p => p.EndsWith(".prefab") || p.EndsWith(".unity")))
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
                 if (!File.ReadAllText(path).Contains(DefaultMaterialRef)) continue;
                 details.Add($"{path} uses Unity's built-in Default-Material");
                 var asset = AssetDatabase.LoadMainAssetAtPath(path);
@@ -673,7 +692,7 @@ namespace VRT.Tools
             }
 
             if (details.Count == 0)
-                return new CheckResult { Status = CheckStatus.OK, Summary = $"{pipeline.GetType().Name}: no BIRP-only materials under Assets/" };
+                return new CheckResult { Status = CheckStatus.OK, Summary = $"{pipeline.GetType().Name}: the enabled scenes use no BIRP-only materials from Assets/" };
 
             details.Add("Convert them with Window → Rendering → Render Pipeline Converter (one-way, to URP); " +
                         "VRT/Lit is only needed for assets that must also work in BIRP projects");
@@ -681,7 +700,7 @@ namespace VRT.Tools
             return new CheckResult
             {
                 Status = CheckStatus.Warning,
-                Summary = $"{details.Count - 1} BIRP-only material use(s): these render pink with {pipeline.GetType().Name}",
+                Summary = $"{details.Count - 1} BIRP-only material use(s) in the enabled scenes: these render pink with {pipeline.GetType().Name}",
                 Details = details,
                 DetailSelectActions = selects,
                 OpenAction = () => EditorApplication.ExecuteMenuItem("Window/Rendering/Render Pipeline Converter"),
