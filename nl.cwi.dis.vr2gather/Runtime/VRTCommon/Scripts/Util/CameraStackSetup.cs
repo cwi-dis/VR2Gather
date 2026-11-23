@@ -13,8 +13,14 @@ namespace VRT.Pilots.Common
     /// the second camera renders as a Base camera and the screen goes black. That setting lives in URP's
     /// UniversalAdditionalCameraData component, which can't be on the prefab: in a project without the URP
     /// package it is a missing script, and Unity refuses to save prefabs with missing scripts (#384).
-    /// So this component sets it up at runtime. In BIRP it does nothing: the overlay cameras' own
-    /// Camera settings (clear depth only, higher depth) already do the job.
+    /// So this component sets it up at runtime. In BIRP the overlay cameras' own Camera settings
+    /// (don't clear, higher depth) already do the job.
+    ///
+    /// The overlay cameras are disabled in the prefab and enabled here, in both pipelines. Outside Play
+    /// mode there is no stack, so in URP an enabled overlay camera renders as a second Base camera over
+    /// an uninitialised background: a yellow Game view (#433). The HUD still shows in the Game view
+    /// outside Play mode, because Main Camera also sees the UI-Overlay layer; it has to, or the HUD (a
+    /// world-space UI Toolkit panel) stops receiving pointer events.
     ///
     /// Remove when BIRP support goes: then UniversalAdditionalCameraData can be on the prefab again (#432).
     /// </summary>
@@ -27,6 +33,8 @@ namespace VRT.Pilots.Common
 
         void Awake()
         {
+            foreach (var cam in overlayCameras)
+                if (cam != null) cam.enabled = true;
             // The URP package can be installed in a project that uses BIRP (VRTApp-Prison did), so check
             // the active pipeline, not only whether URP is there.
             if (GraphicsSettings.currentRenderPipeline == null) return;
