@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OnDestroy()` of `NetworkIdBehaviour` and the point cloud pipelines is `protected virtual`: subclasses must `override` it and call `base.OnDestroy()` (#421)
 - Materials work in URP projects too: new dual shader `VRT/Lit` replaces `Standard`; VR2Gather now depends on Shader Graph (#433)
 - Porting Check warns about materials that render pink in a URP project, and opens the Render Pipeline Converter (#433)
+- Position recording and playback works again (missing from `P_Self_Player` since 1.4.0); the component is now `PositionRecorder`, configured with `PositionRecorderConfig` instead of `PositionTrackerConfig` (#246)
 - No "Hand Tracking Subsystem not found" warning without XR; XR and controller setup documented in `Documentation/101-xr-initialisation.md` (#246)
 - Porting Check also checks the UI layers, the OpenXR hand tracking features and disabled scenes in the Build Settings (#308)
 - Fixed: `P_Self_Player` had missing scripts in projects without the URP package, so variants of it couldn't be saved (#384)

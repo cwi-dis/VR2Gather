@@ -93,7 +93,7 @@
         "debugDecisions": false,
         "bitrateBudget": 0
     },
-    "PositionTrackerConfig": {
+    "PositionRecorderConfig": {
         "outputFile": "",
         "outputIntervalOverride": 0,
         "inputFile": ""

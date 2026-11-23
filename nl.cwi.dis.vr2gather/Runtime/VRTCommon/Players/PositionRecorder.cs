@@ -12,7 +12,16 @@ using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
-        public class PositionTracker : MonoBehaviour
+    /// <summary>
+    /// Records the player's body and camera positions to a JSON file, or plays them back from one,
+    /// as configured in config.json (PositionRecorderConfig: outputFile, inputFile). Used for
+    /// reproducible experiments (2024-spirit-lldash). Without either file it disables itself
+    /// (the component, not its GameObject) and does nothing.
+    ///
+    /// Called PositionTracker until 1.4.6 (#246). Not to be confused with
+    /// VRT.Profiler.PositionTracker, which writes the camera position as stats records.
+    /// </summary>
+    public class PositionRecorder : MonoBehaviour
     {
         [Serializable]
         public class PositionItem {
@@ -57,20 +66,20 @@ namespace VRT.Pilots.Common
         }
         void Initialize() 
         {
-            inputFile = VRTConfig.Instance.PositionTrackerConfig.inputFile;
-            outputFile = VRTConfig.Instance.PositionTrackerConfig.outputFile;
+            inputFile = VRTConfig.Instance.PositionRecorderConfig.inputFile;
+            outputFile = VRTConfig.Instance.PositionRecorderConfig.outputFile;
             string sceneName = SceneManager.GetActiveScene().name;
             string dateTime = DateTime.Now.ToString("yyyyMMdd-HHmm");
             outputFile = outputFile.Replace("{scene}", sceneName);
             outputFile = outputFile.Replace("{time}", dateTime);
             
-            if (VRTConfig.Instance.PositionTrackerConfig.outputIntervalOverride > 0) {
-                timeInterval = VRTConfig.Instance.PositionTrackerConfig.outputIntervalOverride;
+            if (VRTConfig.Instance.PositionRecorderConfig.outputIntervalOverride > 0) {
+                timeInterval = VRTConfig.Instance.PositionRecorderConfig.outputIntervalOverride;
             }
             isPlayingBack = !string.IsNullOrEmpty(inputFile);
             isRecording = !string.IsNullOrEmpty(outputFile);
             if ( !isPlayingBack && !isRecording ) {
-                gameObject.SetActive(false);
+                enabled = false;
                 Debug.Log($"{Name()}: Disabled");
             }
 #if !VRT_WITHOUT_STATS
@@ -84,11 +93,11 @@ namespace VRT.Pilots.Common
         }
 
         string Name() {
-            return "PositionTracker";
+            return "PositionRecorder";
         }
 
         private void LoadPositions() {
-            string filename = VRTConfig.ConfigFilename(inputFile, force:true, label:"Position tracker input");
+            string filename = VRTConfig.ConfigFilename(inputFile, force:true, label:"Position recorder input");
             Debug.Log($"{Name()}: Loading positions from {filename}");
             try
             {
@@ -101,7 +110,7 @@ namespace VRT.Pilots.Common
         }
 
         private void SavePositions() {
-            string filename = VRTConfig.ConfigFilename(outputFile, force:true, label:"Position tracker output");
+            string filename = VRTConfig.ConfigFilename(outputFile, force:true, label:"Position recorder output");
             Debug.Log($"{Name()}: Saving positions to {filename}");
 
             string json = JsonUtility.ToJson(positionData, true);
@@ -112,6 +121,7 @@ namespace VRT.Pilots.Common
         void Start()
         {
             Initialize();
+            if (!isPlayingBack && !isRecording) return;
             Debug.Log($"{Name()}: Started");
             if (isPlayingBack) {
                 LoadPositions();

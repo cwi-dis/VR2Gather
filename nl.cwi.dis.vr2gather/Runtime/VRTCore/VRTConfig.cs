@@ -221,7 +221,7 @@ namespace VRT.Core
         public TileSelectorConfigType TileSelectorConfig;
 
         [Serializable]
-        public class PositionTrackerConfigType {
+        public class PositionRecorderConfigType {
             [Tooltip("If non-empty, file where user location and gaze orientation are recorded")]
             public string outputFile;
             [Tooltip("Output recording interval override if non-zero, in milliseconds")]
@@ -229,8 +229,8 @@ namespace VRT.Core
             [Tooltip("If non-empty, file where user location and gaze orientation are played back from")]
             public string inputFile;
         }
-        [Tooltip("Parameters for saving or playing back user position")]
-        public PositionTrackerConfigType PositionTrackerConfig;
+        [Tooltip("Parameters for saving or playing back user position (PositionRecorder; called PositionTrackerConfig until 1.4.6)")]
+        public PositionRecorderConfigType PositionRecorderConfig;
 
         [Serializable]
         public class RepresentationConfigType
