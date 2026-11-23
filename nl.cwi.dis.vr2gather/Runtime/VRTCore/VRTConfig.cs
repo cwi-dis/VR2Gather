@@ -11,7 +11,7 @@ namespace VRT.Core
     [Serializable]
     public class VRTConfig : MonoBehaviour
     {
-        const int CurrentConfigVersion = 20260311;
+        internal const int CurrentConfigVersion = 20260311;
         [Tooltip("Version of this config file/struct. Do not change.")]
         public int configVersion = CurrentConfigVersion;
         public static bool ISXRActive() {
@@ -396,7 +396,7 @@ namespace VRT.Core
             Initialize();
         }
 
-        private void _PostLoad()
+        internal void _PostLoad()
         {
             // Convert all enums to their string representation
             if (!String.IsNullOrEmpty(RepresentationConfig.RepresentationPointcloudConfig.variant_str))
@@ -439,7 +439,7 @@ namespace VRT.Core
             RepresentationConfig.representation_str = RepresentationConfig.representation.ToString();
         }
 
-        private void _Validate()
+        internal void _Validate()
         {
             var encoderConfigs = PointCloudTransmissionConfig.EncoderConfigs;
             if (encoderConfigs == null || encoderConfigs.Length == 0)
