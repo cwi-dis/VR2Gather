@@ -539,6 +539,15 @@ namespace VRT.Core
             }
         }
 
+        // For the package's Play mode tests (#416): config.json and the files next to it come from
+        // this path, as if it was given with -vrt-config. null: back to normal.
+        internal static void SetConfigFileForTests(string fullPath)
+        {
+            clConfigFileFull = fullPath;
+            configFileFolder = fullPath == null ? null : System.IO.Path.GetDirectoryName(fullPath);
+            configFileFolderResolved = fullPath != null;
+        }
+
         public static string ConfigFilename(string filename="config.json", bool force=false, bool allowSearch=false, string label="Config file")
         {
             _ResolveConfigFileFolder();
