@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using VRT.Login;
 using VRT.Pilots.Common;
@@ -31,6 +32,7 @@ namespace VRT.Tools
                 new InputActionsCheck(),
                 new TeleportInteractionLayerCheck(),
                 new ScenarioRegistryCheck(),
+                new RenderPipelineMaterialsCheck(),
                 new OrchestratorRefCheck(),
                 new SceneLoadCheck(),
                 new SceneSetupCheck(),
@@ -592,6 +594,87 @@ namespace VRT.Tools
     }
 
     // ── Script checks ────────────────────────────────────────────────────────────
+
+    // In a project with a scriptable render pipeline (URP), materials on BIRP-only shaders render
+    // pink: Standard, surface shaders, and Unity's built-in Default-Material (also Standard).
+    // Lists the project's own ones (under Assets/) and points to Unity's Render Pipeline Converter,
+    // which converts them once, one-way: fine for an app. VR2Gather's own materials are dual
+    // BIRP/URP (VRT/Lit, #433) and live under Packages/, so they aren't listed. In a BIRP project
+    // there is nothing to check.
+    class RenderPipelineMaterialsCheck : PortingCheck
+    {
+        public override string Name => "Render Pipeline Materials";
+        public override CheckCategory Category => CheckCategory.Global;
+
+        const string DefaultMaterialRef = "fileID: 10303, guid: 0000000000000000f000000000000000";
+
+        // BIRP's pass light modes. A pass without a LightMode tag is drawn by URP too (SRPDefaultUnlit).
+        // Compared without case: Unity reports the built-in ones in upper case (FORWARDBASE, SHADOWCASTER).
+        static readonly HashSet<string> BirpLightModes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+            "ForwardBase", "ForwardAdd", "Deferred", "PrepassBase", "PrepassFinal",
+            "Vertex", "VertexLMRGBM", "VertexLM", "Always", "ShadowCaster", "Meta", "MotionVectors",
+        };
+
+        // True if no pass of the shader can be drawn by a scriptable render pipeline.
+        static bool IsBirpOnly(Shader shader)
+        {
+            if (shader == null) return true;
+            var pipelineTag = new ShaderTagId("RenderPipeline");
+            var lightModeTag = new ShaderTagId("LightMode");
+            for (int sub = 0; sub < shader.subshaderCount; sub++)
+            {
+                if (!string.IsNullOrEmpty(shader.FindSubshaderTagValue(sub, pipelineTag).name)) return false;
+                for (int pass = 0; pass < shader.GetPassCountInSubshader(sub); pass++)
+                {
+                    string lightMode = shader.FindPassTagValue(sub, pass, lightModeTag).name;
+                    if (string.IsNullOrEmpty(lightMode) || !BirpLightModes.Contains(lightMode)) return false;
+                }
+            }
+            return true;
+        }
+
+        protected override CheckResult Run()
+        {
+            var pipeline = GraphicsSettings.currentRenderPipeline;
+            if (pipeline == null)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "Built-in Render Pipeline: nothing to check" };
+
+            var details = new List<string>();
+            var selects = new List<Action>();
+            foreach (var guid in AssetDatabase.FindAssets("t:Material", new[] { "Assets" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+                if (mat == null || !IsBirpOnly(mat.shader)) continue;
+                details.Add($"{path} (shader {(mat.shader != null ? mat.shader.name : "missing")})");
+                selects.Add(() => { Selection.activeObject = mat; EditorGUIUtility.PingObject(mat); });
+            }
+            foreach (var guid in AssetDatabase.FindAssets("t:Prefab t:Scene", new[] { "Assets" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!File.ReadAllText(path).Contains(DefaultMaterialRef)) continue;
+                details.Add($"{path} uses Unity's built-in Default-Material");
+                var asset = AssetDatabase.LoadMainAssetAtPath(path);
+                selects.Add(() => { Selection.activeObject = asset; EditorGUIUtility.PingObject(asset); });
+            }
+
+            if (details.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = $"{pipeline.GetType().Name}: no BIRP-only materials under Assets/" };
+
+            details.Add("Convert them with Window → Rendering → Render Pipeline Converter (one-way, to URP); " +
+                        "VRT/Lit is only needed for assets that must also work in BIRP projects");
+            selects.Add(null);
+            return new CheckResult
+            {
+                Status = CheckStatus.Warning,
+                Summary = $"{details.Count - 1} BIRP-only material use(s): these render pink with {pipeline.GetType().Name}",
+                Details = details,
+                DetailSelectActions = selects,
+                OpenAction = () => EditorApplication.ExecuteMenuItem("Window/Rendering/Render Pipeline Converter"),
+                OpenLabel = "Open Converter",
+            };
+        }
+    }
 
     class OrchestratorRefCheck : PortingCheck
     {
