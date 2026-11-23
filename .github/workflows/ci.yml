@@ -11,6 +11,10 @@
 # without the URP package) is built for every platform; VRTApp-Develop-URP only on Linux, the
 # cheapest job.
 #
+# The package's tests (nl.cwi.dis.vr2gather/Tests, #416) run in the Linux job, in both projects:
+# EditMode and PlayMode, with game-ci's unity-test-runner in the same cwipc image, as in
+# cwipc_unity (cwi-dis/cwipc_unity#63).
+#
 # Secrets (same as cwipc_unity, Unity Personal): UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD.
 
 name: CI
@@ -42,11 +46,14 @@ jobs:
         run: python3 .github/scripts/check_render_pipeline_materials.py nl.cwi.dis.vr2gather
 
   # Linux: game-ci runs Unity in a Docker container; cwipc comes in through a custom image,
-  # game-ci's image plus cwipc's -built- archive. Desktop player without XR (OpenXR doesn't
-  # support Linux, #366), through VRT.Tools.CommandLineBuild.BuildWithoutXR.
+  # game-ci's image plus cwipc's -built- archive. First the tests (#416), then a desktop player
+  # without XR (OpenXR doesn't support Linux, #366), through VRT.Tools.CommandLineBuild.BuildWithoutXR.
   build-linux:
-    name: Build (Linux, ${{ matrix.pipeline }})
+    name: Build and test (Linux, ${{ matrix.pipeline }})
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      checks: write
     strategy:
       fail-fast: false
       matrix:
@@ -80,6 +87,36 @@ jobs:
             --build-arg CWIPC_VERSION=${{ inputs.cwipc-version == 'master' && 'nightly' || inputs.cwipc-version || 'v8.3.0' }} \
             -t vr2gather-ci:linux .github/docker/linux
 
+      # EditMode and PlayMode tests. continue-on-error: the player is built anyway; the
+      # summaries at the end fail the job, not game-ci's verdict, which can be success
+      # without any test having run (seen in cwipc_unity).
+      - name: Run tests
+        uses: game-ci/unity-test-runner@v4
+        continue-on-error: true
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          # game-ci reads the token for its GitHub API calls from the environment, not from
+          # its githubToken input; anonymous calls hit the shared per-IP rate limit (403).
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          projectPath: ${{ matrix.project }}
+          testMode: all
+          customImage: vr2gather-ci:linux
+          # Pinned, as in cwipc_unity: no "latest" lookup, reproducible runs. Update deliberately.
+          cliVersion: v0.1.76
+          artifactsPath: test-results
+          checkName: Tests (Linux, ${{ matrix.pipeline }})
+
+      - id: test-artifact
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-results-linux-${{ matrix.pipeline }}
+          path: test-results/
+          if-no-files-found: warn
+
       # Pinned to an exact version, as in cwipc_unity: @v5 may move to the CLI-based builder.
       # versioning None: the default (Semantic) wants the full git history, which this repo
       # doesn't need for a CI build.
@@ -110,6 +147,26 @@ jobs:
             !Builds/StandaloneLinux64/**/*DoNotShip*/
             !Builds/StandaloneLinux64/**/*DontShip*/
           if-no-files-found: error
+
+      # Our own summaries (.github/scripts/test_summary.py, from cwipc_unity): they fail the job
+      # when a results file is missing, no test ran, or a test failed.
+      - name: EditMode test summary
+        if: always()
+        run: >
+          python3 .github/scripts/test_summary.py
+          --label "EditMode tests (Linux, ${{ matrix.pipeline }})"
+          --artifact-url "${{ steps.test-artifact.outputs.artifact-url }}"
+          --log-hint "More in the check **Tests (Linux, ${{ matrix.pipeline }})** (game-ci's test report), and in the job log, step **Run tests**."
+          test-results/editmode-results.xml
+
+      - name: PlayMode test summary
+        if: always()
+        run: >
+          python3 .github/scripts/test_summary.py
+          --label "PlayMode tests (Linux, ${{ matrix.pipeline }})"
+          --artifact-url "${{ steps.test-artifact.outputs.artifact-url }}"
+          --log-hint "More in the check **Tests (Linux, ${{ matrix.pipeline }})** (game-ci's test report), and in the job log, step **Run tests**."
+          test-results/playmode-results.xml
 
   # Windows: as Linux, with .github/docker/windows/Dockerfile. game-ci's Windows images are
   # Windows Server 2022, so this needs a windows-2022 runner. Player with XR (game-ci's own

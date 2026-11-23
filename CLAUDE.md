@@ -38,11 +38,11 @@ git config --local core.symlinks true
 cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 ```
 
-**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on every push (#355); `VRTApp-Develop-URP` only on Linux (#429); macOS Intel only on master (#431). A "Static checks" job runs `.github/scripts/` on every push: URP SubShaders need `PackageRequirements`, and package materials must work in both pipelines (#431). No tests or release builds yet (#416, #417).
+**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on every push (#355); `VRTApp-Develop-URP` only on Linux (#429); macOS Intel only on master (#431). A "Static checks" job runs `.github/scripts/` on every push: URP SubShaders need `PackageRequirements`, and package materials must work in both pipelines (#431). The Linux job also runs the package's tests in both projects (#416). No release builds yet (#417).
 
 **Releasing**: follow `Documentation/21-releasing.md` (version + tag, players built on each platform, GitHub release, update `VR2Gather_sample`).
 
-There are no automated test commands — testing is done by running sample scenes in the Unity Editor (see Samples below).
+**Tests** (#416): `nl.cwi.dis.vr2gather/Tests/Editor` (EditMode: Porting Check on the enabled scenes, shaders and materials in this pipeline, config.json) and `Tests/Runtime` (PlayMode: smoke test, login → standalone Pilot 0 session → login, with a synthetic point cloud and a simple avatar; needs cwipc). Both development projects list the package in `testables`. Run them in the Test Runner (Window → General → Test Runner), or with `unity command run_tests --mode editor` (PlayMode only with `--async_tests true` and `test_status`: entering Play mode drops a synchronous request). Testing with several participants or in VR is still manual (the VR test list per release, #438).
 
 ## Architecture
 
