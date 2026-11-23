@@ -124,6 +124,7 @@ namespace VRT.Pilots.Common
             {
                 case UserRepresentationType.NoRepresentation:
                 case UserRepresentationType.NoRepresentationCamera:
+                case UserRepresentationType.AudioOnly:  // voice only, set up by the caller (#288)
                     break;
                 case UserRepresentationType.VideoAvatar:
                     isVisible = true;
@@ -188,6 +189,7 @@ namespace VRT.Pilots.Common
             {
                 case UserRepresentationType.NoRepresentation:
                 case UserRepresentationType.NoRepresentationCamera:
+                case UserRepresentationType.AudioOnly:
                     return null;
                 case UserRepresentationType.VideoAvatar:
                     return webcam;

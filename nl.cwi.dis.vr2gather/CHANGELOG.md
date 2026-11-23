@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Readers, writers and codecs stop cleanly without `Thread.Abort`; a thread that doesn't stop is logged with a `join_timeout` stats record (#422)
 - Fixed: one silent tile could stall the others in socket.io and TCP reflector writers; second TCP reflector session in one run didn't work (#422)
 - Fixed: socket.io writer exception at session end (#408)
+- Fixed: AudioOnly users caused "Unknown UserRepresentationType" errors (#288)
 - Fixed: Android (Quest) players didn't compile since 1.4.0 (#355)
 - `OnDestroy()` of `NetworkIdBehaviour` and the point cloud pipelines is `protected virtual`: subclasses must `override` it and call `base.OnDestroy()` (#421)
 - Materials work in URP projects too: new dual shader `VRT/Lit` replaces `Standard`; VR2Gather now depends on Shader Graph (#433)
