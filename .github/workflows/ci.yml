@@ -15,8 +15,12 @@
 
 name: CI
 
+# On pushes to master and on pull requests, not on every branch: a feature branch gets CI by
+# opening a pull request for it, or by starting the workflow by hand (Actions → CI → Run workflow).
 on:
   push:
+    branches: [master]
+  pull_request:
   workflow_dispatch:
     inputs:
       cwipc-version:
@@ -25,7 +29,7 @@ on:
         default: 'v8.3.0'
 
 jobs:
-  # Cheap checks without Unity, on every push (#431). A player build doesn't catch these: pink
+  # Cheap checks without Unity, on every run (#431). A player build doesn't catch these: pink
   # materials build fine, and a shader error in a SubShader that isn't used doesn't fail it.
   checks:
     name: Static checks
@@ -168,7 +172,7 @@ jobs:
           if-no-files-found: error
 
   # macOS: Unity runs directly on the runner; cwipc from cwipc's install-cwipc action.
-  # arm64 on every push (unlike cwipc_unity: runner scarcity hasn't been a problem, #355); Intel
+  # arm64 on every run (unlike cwipc_unity: runner scarcity hasn't been a problem, #355); Intel
   # only on master and when started by hand (#431), for as long as we still have Intel Macs in use.
   build-macos:
     name: Build (macOS ${{ matrix.arch }})
@@ -176,7 +180,7 @@ jobs:
       fail-fast: false
       matrix:
         # Intel takes about 40 minutes (no Editor cache, game-ci/unity-builder#869): only on
-        # master, or when the workflow is started by hand (#431). arm64 on every push.
+        # master, or when the workflow is started by hand (#431). arm64 on every run.
         include: >-
           ${{ fromJSON((github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch') && '[{"arch": "arm64", "runner": "macos-15", "hub-arch": "arm64", "hub-sha256": "e04d0320daf5df3d460435320222d8f4981f1388ecb0b5b22482ad98a9bbbf85"}, {"arch": "intel", "runner": "macos-15-intel", "hub-arch": "x64", "hub-sha256": "ec2b1cea97ba8c418cd87c9e216294224ac7cee393fa84c6d6b1d98d1f963b92"}]' || '[{"arch": "arm64", "runner": "macos-15", "hub-arch": "arm64", "hub-sha256": "e04d0320daf5df3d460435320222d8f4981f1388ecb0b5b22482ad98a9bbbf85"}]') }}
     runs-on: ${{ matrix.runner }}

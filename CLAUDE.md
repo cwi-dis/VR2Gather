@@ -38,7 +38,7 @@ git config --local core.symlinks true
 cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 ```
 
-**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on every push (#355); `VRTApp-Develop-URP` only on Linux (#429); macOS Intel only on master (#431). A "Static checks" job runs `.github/scripts/` on every push: URP SubShaders need `PackageRequirements`, and package materials must work in both pipelines (#431). No tests or release builds yet (#416, #417).
+**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on pushes to master and on pull requests (#355); `VRTApp-Develop-URP` only on Linux (#429); macOS Intel only on master (#431). A "Static checks" job runs `.github/scripts/` on every run: URP SubShaders need `PackageRequirements`, and package materials must work in both pipelines (#431). No tests or release builds yet (#416, #417).
 
 **Releasing**: follow `Documentation/21-releasing.md` (version + tag, players built on each platform, GitHub release, update `VR2Gather_sample`).
 
