@@ -76,7 +76,8 @@ namespace VRT.Pilots.Common
         {
             if (_Instance != null)
             {
-                Debug.LogWarning($"VRTPilotConfig: Awake() called but there is an Instance already from {_Instance.gameObject}. Keeping the old one.");
+                // Normal when a scene with its own initializer is loaded again (the login scene after a session): not a warning (#400).
+                Debug.Log($"VRTPilotConfig: Awake() called but there is an Instance already from {_Instance.gameObject}. Keeping the old one.");
                 Destroy(gameObject);
                 return;
             }
