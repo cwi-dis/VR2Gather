@@ -639,7 +639,7 @@ namespace VRT.Tools
         };
 
         // True if no pass of the shader can be drawn by a scriptable render pipeline.
-        static bool IsBirpOnly(Shader shader)
+        internal static bool IsBirpOnly(Shader shader)
         {
             if (shader == null) return true;
             var pipelineTag = new ShaderTagId("RenderPipeline");
