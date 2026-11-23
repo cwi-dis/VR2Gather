@@ -44,6 +44,8 @@ namespace VRT.Pilots.Common
         // May be set by subclasses to indicate this player should not transmit
         // any data streams.
         protected bool isPreviewPlayer = false;
+        /// <summary>True for the self player shown in the login scene, outside a session.</summary>
+        public bool IsPreviewPlayer => isPreviewPlayer;
 
         public bool isVisible
         {

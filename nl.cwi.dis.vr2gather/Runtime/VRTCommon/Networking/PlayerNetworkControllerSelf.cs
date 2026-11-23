@@ -40,6 +40,13 @@ namespace VRT.Pilots.Common
                 RightHandPositionOrientation.position = RightHandTransform.position;
                 RightHandPositionOrientation.rotation = RightHandTransform.rotation;
             }
+			// The login scene's preview player has nobody to send to, and it can be inactive for a
+			// while, which made the "No SendPlayerData() calls" check below misfire (#400).
+			if (playerController != null && playerController.IsPreviewPlayer)
+			{
+				_LastSendTime = 0;
+				return;
+			}
 			if (_LastSendTime + (1.0f / SendRate) <= Time.realtimeSinceStartup)
 			{
 				SendPlayerData();
