@@ -122,6 +122,16 @@ jobs:
             !Builds/StandaloneLinux64/**/*DontShip*/
           if-no-files-found: error
 
+      # xxxclaude: temporary (#416): what Library/PackageCache looks like after the build; the BIRP tests miss files there.
+      - name: xxxclaude PackageCache after the build
+        if: success() || failure()
+        run: |
+          P=${{ matrix.project }}/Library/PackageCache
+          echo "symlinks:"; find "$P" -maxdepth 3 -type l | head -20
+          echo "files with more than one hard link: $(find "$P" -type f -links +1 | wc -l)"; find "$P" -type f -links +1 | head -5
+          echo "files per package:"; for d in "$P"/*/; do echo "$(find "$d" -type f | wc -l) $(basename "$d")"; done
+          echo "owner, sample:"; ls -la "$P" | head -5; ls -la "$P"/com.unity.ai.navigation@*/Runtime 2>&1 | head -8
+
       # EditMode and PlayMode tests, after the build, as two steps: with testMode all, game-ci's
       # CLI starts the two Unity processes overlapping on the same project, and one of them then
       # finds files in Library/PackageCache changed or missing (#416; runs 45262169056 and
@@ -142,11 +152,23 @@ jobs:
         with:
           projectPath: ${{ matrix.project }}
           testMode: editmode
+          # We don't use coverage; game-ci's docs blame it for compile errors and crashes on Unity 6.
+          coverageEnabled: false
           customImage: vr2gather-ci:linux
           # Pinned, as in cwipc_unity: no "latest" lookup, reproducible runs. Update deliberately.
           cliVersion: v0.1.76
           artifactsPath: test-results
           checkName: EditMode tests (Linux, ${{ matrix.pipeline }})
+
+      # xxxclaude: temporary (#416): what Library/PackageCache looks like after the EditMode tests; the BIRP tests miss files there.
+      - name: xxxclaude PackageCache after the EditMode tests
+        if: success() || failure()
+        run: |
+          P=${{ matrix.project }}/Library/PackageCache
+          echo "symlinks:"; find "$P" -maxdepth 3 -type l | head -20
+          echo "files with more than one hard link: $(find "$P" -type f -links +1 | wc -l)"; find "$P" -type f -links +1 | head -5
+          echo "files per package:"; for d in "$P"/*/; do echo "$(find "$d" -type f | wc -l) $(basename "$d")"; done
+          echo "owner, sample:"; ls -la "$P" | head -5; ls -la "$P"/com.unity.ai.navigation@*/Runtime 2>&1 | head -8
 
       - name: Run PlayMode tests
         if: success() || failure()
@@ -162,11 +184,22 @@ jobs:
         with:
           projectPath: ${{ matrix.project }}
           testMode: playmode
+          coverageEnabled: false
           customImage: vr2gather-ci:linux
           # Pinned, as in cwipc_unity: no "latest" lookup, reproducible runs. Update deliberately.
           cliVersion: v0.1.76
           artifactsPath: test-results
           checkName: PlayMode tests (Linux, ${{ matrix.pipeline }})
+
+      # xxxclaude: temporary (#416): what Library/PackageCache looks like after the PlayMode tests; the BIRP tests miss files there.
+      - name: xxxclaude PackageCache after the PlayMode tests
+        if: success() || failure()
+        run: |
+          P=${{ matrix.project }}/Library/PackageCache
+          echo "symlinks:"; find "$P" -maxdepth 3 -type l | head -20
+          echo "files with more than one hard link: $(find "$P" -type f -links +1 | wc -l)"; find "$P" -type f -links +1 | head -5
+          echo "files per package:"; for d in "$P"/*/; do echo "$(find "$d" -type f | wc -l) $(basename "$d")"; done
+          echo "owner, sample:"; ls -la "$P" | head -5; ls -la "$P"/com.unity.ai.navigation@*/Runtime 2>&1 | head -8
 
       - id: test-artifact
         uses: actions/upload-artifact@v7
