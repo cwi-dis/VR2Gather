@@ -11,7 +11,7 @@ namespace VRT.Core
     [Serializable]
     public class VRTConfig : MonoBehaviour
     {
-        const int CurrentConfigVersion = 20260311;
+        internal const int CurrentConfigVersion = 20260311;
         [Tooltip("Version of this config file/struct. Do not change.")]
         public int configVersion = CurrentConfigVersion;
         public static bool ISXRActive() {
@@ -396,7 +396,7 @@ namespace VRT.Core
             Initialize();
         }
 
-        private void _PostLoad()
+        internal void _PostLoad()
         {
             // Convert all enums to their string representation
             if (!String.IsNullOrEmpty(RepresentationConfig.RepresentationPointcloudConfig.variant_str))
@@ -439,7 +439,7 @@ namespace VRT.Core
             RepresentationConfig.representation_str = RepresentationConfig.representation.ToString();
         }
 
-        private void _Validate()
+        internal void _Validate()
         {
             var encoderConfigs = PointCloudTransmissionConfig.EncoderConfigs;
             if (encoderConfigs == null || encoderConfigs.Length == 0)
@@ -537,6 +537,15 @@ namespace VRT.Core
                 clConfigFileFull = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
                 configFileFolder = System.IO.Path.GetDirectoryName(clConfigFileFull);
             }
+        }
+
+        // For the package's Play mode tests (#416): config.json and the files next to it come from
+        // this path, as if it was given with -vrt-config. null: back to normal.
+        internal static void SetConfigFileForTests(string fullPath)
+        {
+            clConfigFileFull = fullPath;
+            configFileFolder = fullPath == null ? null : System.IO.Path.GetDirectoryName(fullPath);
+            configFileFolderResolved = fullPath != null;
         }
 
         public static string ConfigFilename(string filename="config.json", bool force=false, bool allowSearch=false, string label="Config file")

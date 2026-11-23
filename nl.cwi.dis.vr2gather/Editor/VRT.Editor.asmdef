@@ -1,0 +1,22 @@
+{
+    "name": "VRT.Editor",
+    "rootNamespace": "",
+    "references": [
+        "VRT.Core",
+        "VRT.Pilots.Common",
+        "VRT.Login",
+        "Unity.XR.Management",
+        "Unity.XR.Management.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Requires cwipc_unity 8.3.0 (#423)
 - Package dependencies tidied: no longer on `com.unity.xr.oculus` (unused; projects that use the Oculus XR loader must list it themselves) or the deprecated `com.unity.textmeshpro` (now `com.unity.ugui`); `com.unity.inputsystem` declared (#246)
 - CI builds players for Linux, Windows, macOS (arm64, Intel) and Meta Quest, on pushes to master and on pull requests (#355, #415)
+- Automated tests: EditMode (Porting Check, shaders and materials, `config.json`) and a PlayMode smoke test, run in both development projects and in CI (#416)
+- Editor tools (Porting Check, `CommandLineBuild`, `CopyConfigOnBuild`) are in their own assembly, `VRT.Editor` (#416)
 - Statistics are compiled in by default; define `VRT_WITHOUT_STATS` to leave them out, `VRT_WITH_STATS` is no longer used (#419)
 - Readers, writers and codecs stop cleanly without `Thread.Abort`; a thread that doesn't stop is logged with a `join_timeout` stats record (#422)
 - Fixed: one silent tile could stall the others in socket.io and TCP reflector writers; second TCP reflector session in one run didn't work (#422)

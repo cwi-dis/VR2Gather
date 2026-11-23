@@ -92,9 +92,10 @@ namespace VRT.Login
         private static bool _autoStartDone;
         private static bool _autoStartAlreadyStarted;
 
-        // Statics survive Play mode in the Editor when domain reload is disabled.
+        // Statics survive Play mode in the Editor when domain reload is disabled. Also used by the
+        // Play mode tests, which run several sessions in one Play mode run (#416).
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetAutoStartStatics()
+        internal static void ResetAutoStartStatics()
         {
             _autoStartDone = false;
             _autoStartAlreadyStarted = false;
