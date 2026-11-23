@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed: socket.io writer exception at session end (#408)
 - Fixed: Android (Quest) players didn't compile since 1.4.0 (#355)
 - `OnDestroy()` of `NetworkIdBehaviour` and the point cloud pipelines is `protected virtual`: subclasses must `override` it and call `base.OnDestroy()` (#421)
+- Materials work in URP projects too: new dual shader `VRT/Lit` replaces `Standard`; VR2Gather now depends on Shader Graph (#433)
 - Fixed: `P_Self_Player` had missing scripts in projects without the URP package, so variants of it couldn't be saved (#384)
 - Fixed: shader compile error for `Fader.shader` in projects without the URP package (#365)
 - Removed `PilotController.fadeOutText` and `CameraFader.SetText()`: the fade-out text has shown nothing since 2023 (#428)
