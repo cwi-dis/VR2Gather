@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Requires cwipc_unity 8.3.0 (#423)
 - Package dependencies tidied: no longer on `com.unity.xr.oculus` (unused; projects that use the Oculus XR loader must list it themselves) or the deprecated `com.unity.textmeshpro` (now `com.unity.ugui`); `com.unity.inputsystem` declared (#246)
-- CI builds players for Linux, Windows, macOS (arm64, Intel) and Meta Quest on every push (#355)
+- CI builds players for Linux, Windows, macOS (arm64, Intel) and Meta Quest, on pushes to master and on pull requests (#355, #415)
 - Statistics are compiled in by default; define `VRT_WITHOUT_STATS` to leave them out, `VRT_WITH_STATS` is no longer used (#419)
 - Readers, writers and codecs stop cleanly without `Thread.Abort`; a thread that doesn't stop is logged with a `join_timeout` stats record (#422)
 - Fixed: one silent tile could stall the others in socket.io and TCP reflector writers; second TCP reflector session in one run didn't work (#422)
@@ -25,7 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed: `P_Self_Player` had missing scripts in projects without the URP package, so variants of it couldn't be saved (#384)
 - Fixed: shader compile error for `Fader.shader` in projects without the URP package (#365)
 - Removed `PilotController.fadeOutText` and `CameraFader.SetText()`: the fade-out text has shown nothing since 2023 (#428)
-- Known problem: WebRTC and Dash sessions don't start at the moment (#425, #426)
+- Fixed: WebRTC and Dash sessions didn't start since 1.4.0 (native library loaders missing from `Tool_VRTInitializer`) (#425, #426)
+- Known problem: on macOS, a Dash session can crash on an lldash packager error (#441); WebRTC sending on macOS is in doubt (#442)
 
 ## [1.4.5] - 2026-11-11
 
