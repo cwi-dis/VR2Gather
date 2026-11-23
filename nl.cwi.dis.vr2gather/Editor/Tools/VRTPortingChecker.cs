@@ -33,6 +33,8 @@ namespace VRT.Tools
                 new TeleportInteractionLayerCheck(),
                 new ScenarioRegistryCheck(),
                 new RenderPipelineMaterialsCheck(),
+                new UILayersCheck(),
+                new HandTrackingCheck(),
                 new OrchestratorRefCheck(),
                 new SceneLoadCheck(),
                 new SceneSetupCheck(),
@@ -566,7 +568,13 @@ namespace VRT.Tools
             }
 
             // b) Consistency between ScenarioRegistry and Build Settings (bi-directional)
+            // Only enabled scenes are in a build; disabled ones are listed separately (#308).
             var buildSceneNames = EditorBuildSettings.scenes
+                .Where(s => s.enabled)
+                .Select(s => Path.GetFileNameWithoutExtension(s.path))
+                .ToHashSet();
+            var disabledSceneNames = EditorBuildSettings.scenes
+                .Where(s => !s.enabled)
                 .Select(s => Path.GetFileNameWithoutExtension(s.path))
                 .ToHashSet();
             var registrySceneNames = registry.Scenarios
@@ -574,8 +582,14 @@ namespace VRT.Tools
                 .ToHashSet();
 
             foreach (var s in registry.Scenarios)
-                if (!buildSceneNames.Contains(s.scenarioSceneName))
+                if (disabledSceneNames.Contains(s.scenarioSceneName))
+                    errors.Add($"Scene '{s.scenarioSceneName}' (scenario '{s.scenarioName}') is in ScenarioRegistry but disabled in Build Settings");
+                else if (!buildSceneNames.Contains(s.scenarioSceneName))
                     errors.Add($"Scene '{s.scenarioSceneName}' (scenario '{s.scenarioName}') is in ScenarioRegistry but missing from Build Settings");
+
+            foreach (var disabled in disabledSceneNames)
+                if (!registrySceneNames.Contains(disabled))
+                    warnings.Add($"Scene '{disabled}' is in Build Settings but disabled: enable it or remove it");
 
             foreach (var buildName in buildSceneNames)
                 if (buildName != "VRTLoginManager" && !registrySceneNames.Contains(buildName))
@@ -672,6 +686,94 @@ namespace VRT.Tools
                 DetailSelectActions = selects,
                 OpenAction = () => EditorApplication.ExecuteMenuItem("Window/Rendering/Render Pipeline Converter"),
                 OpenLabel = "Open Converter",
+            };
+        }
+    }
+
+    // The HUD and the login dialog are on layers 6 (UI-Overlay) and 5 (UI), by number: cameras'
+    // culling masks depend on them (#308).
+    class UILayersCheck : PortingCheck
+    {
+        public override string Name => "UI Layers";
+        public override CheckCategory Category => CheckCategory.Global;
+
+        protected override CheckResult Run()
+        {
+            var problems = new List<string>();
+            foreach (var (layer, name) in new[] { (5, "UI"), (6, "UI-Overlay") })
+            {
+                string actual = LayerMask.LayerToName(layer);
+                if (actual != name)
+                    problems.Add($"Layer {layer} is '{(string.IsNullOrEmpty(actual) ? "(empty)" : actual)}', expected '{name}'");
+            }
+            if (problems.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "Layer 5 is 'UI', layer 6 is 'UI-Overlay'" };
+            return new CheckResult
+            {
+                Status = CheckStatus.Error,
+                Summary = $"{problems.Count} UI layer(s) wrong: the HUD and login dialog won't show correctly",
+                Details = problems,
+                OpenAction = () => SettingsService.OpenProjectSettings("Project/Tags and Layers"),
+                OpenLabel = "Open Settings",
+            };
+        }
+    }
+
+    // VR2Gather's hand tracking needs XR Hands' OpenXR features "Hand Tracking Subsystem" and
+    // "Meta Hand Tracking Aim", for desktop VR (Standalone) and Quest (Android) (#308).
+    // Looked up by class, not by feature ID: Unity's Microsoft Hand Interaction feature has the same
+    // ID as XR Hands' Hand Tracking Subsystem. Through reflection, so this assembly doesn't need
+    // references to OpenXR's assemblies.
+    class HandTrackingCheck : PortingCheck
+    {
+        public override string Name => "Hand Tracking";
+        public override CheckCategory Category => CheckCategory.Global;
+
+        static readonly (string type, string name)[] Features = {
+            ("UnityEngine.XR.Hands.OpenXR.HandTracking", "Hand Tracking Subsystem"),
+            ("UnityEngine.XR.Hands.OpenXR.MetaHandTrackingAim", "Meta Hand Tracking Aim"),
+        };
+
+        protected override CheckResult Run()
+        {
+            var settingsType = Type.GetType("UnityEngine.XR.OpenXR.OpenXRSettings, Unity.XR.OpenXR");
+            var getSettings = settingsType?.GetMethod("GetSettingsForBuildTargetGroup",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            // Not GetMethod("GetFeatures"): there is also a generic GetFeatures<T>().
+            var getFeatures = settingsType?.GetMethods().FirstOrDefault(m =>
+                m.Name == "GetFeatures" && !m.IsGenericMethod && m.GetParameters().Length == 0);
+            if (getSettings == null || getFeatures == null)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "OpenXR not installed" };
+
+            var problems = new List<string>();
+            int found = 0;
+            foreach (var group in new[] { BuildTargetGroup.Standalone, BuildTargetGroup.Android })
+            {
+                var settings = getSettings.Invoke(null, new object[] { group });
+                if (settings == null) continue;
+                var features = (getFeatures.Invoke(settings, null) as Array)?.Cast<UnityEngine.Object>().ToList()
+                               ?? new List<UnityEngine.Object>();
+                foreach (var (type, name) in Features)
+                {
+                    var feature = features.FirstOrDefault(f => f != null && f.GetType().FullName == type);
+                    if (feature == null) continue;
+                    found++;
+                    var enabled = feature.GetType().GetProperty("enabled")?.GetValue(feature) as bool?;
+                    if (enabled != true)
+                        problems.Add($"{group}: OpenXR feature '{name}' is not enabled");
+                }
+            }
+            if (found == 0)
+                return new CheckResult { Status = CheckStatus.Skipped, Summary = "XR Hands' OpenXR features not found (XR Hands not installed?)" };
+            if (problems.Count == 0)
+                return new CheckResult { Status = CheckStatus.OK, Summary = "Hand Tracking Subsystem and Meta Hand Tracking Aim enabled" };
+            return new CheckResult
+            {
+                Status = CheckStatus.Warning,
+                Summary = $"{problems.Count} hand tracking feature(s) not enabled: hand tracking won't work there",
+                Details = problems,
+                OpenAction = () => SettingsService.OpenProjectSettings("Project/XR Plug-in Management/OpenXR"),
+                OpenLabel = "Open Settings",
             };
         }
     }
