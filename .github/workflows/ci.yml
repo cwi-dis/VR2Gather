@@ -71,11 +71,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # BIRP: no tests for now (#416). In BIRP the Package Manager reinstalls packages in
+          # Library/PackageCache in test container after test container, also after the warm-up
+          # (run 45400693162), so the EditMode tests fail to compile more often than not.
+          # The build and the released Linux player are unaffected.
           - pipeline: BIRP
             project: VRTApp-Develop
             artifact: VR2Gather-linux-x64
+            tests: false
           - pipeline: URP
             project: VRTApp-Develop-URP
+            tests: true
     steps:
       - uses: actions/checkout@v7
         with:
@@ -154,7 +160,7 @@ jobs:
       # cache: also after an exact cache hit (run 45385059326, BIRP), so on every run. A filter
       # that matches no test.
       - name: Warm up the test container
-        if: success() || failure()
+        if: (success() || failure()) && matrix.tests
         uses: game-ci/unity-test-runner@v4
         continue-on-error: true
         env:
@@ -173,7 +179,7 @@ jobs:
           githubToken: ''
 
       - name: Run EditMode tests
-        if: success() || failure()
+        if: (success() || failure()) && matrix.tests
         uses: game-ci/unity-test-runner@v4
         continue-on-error: true
         env:
@@ -193,7 +199,7 @@ jobs:
           checkName: EditMode tests (Linux, ${{ matrix.pipeline }})
 
       - name: Run PlayMode tests
-        if: success() || failure()
+        if: (success() || failure()) && matrix.tests
         uses: game-ci/unity-test-runner@v4
         continue-on-error: true
         env:
@@ -222,7 +228,7 @@ jobs:
 
       - id: test-artifact
         uses: actions/upload-artifact@v7
-        if: always()
+        if: always() && matrix.tests
         with:
           name: test-results-linux-${{ matrix.pipeline }}
           path: test-results/
@@ -231,7 +237,7 @@ jobs:
       # Our own summaries (.github/scripts/test_summary.py, from cwipc_unity): they fail the job
       # when a results file is missing, no test ran, or a test failed.
       - name: EditMode test summary
-        if: always()
+        if: always() && matrix.tests
         run: >
           python3 .github/scripts/test_summary.py
           --label "EditMode tests (Linux, ${{ matrix.pipeline }})"
@@ -240,7 +246,7 @@ jobs:
           test-results/editmode-results.xml
 
       - name: PlayMode test summary
-        if: always()
+        if: always() && matrix.tests
         run: >
           python3 .github/scripts/test_summary.py
           --label "PlayMode tests (Linux, ${{ matrix.pipeline }})"
