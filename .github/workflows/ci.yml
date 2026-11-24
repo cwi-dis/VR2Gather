@@ -152,8 +152,6 @@ jobs:
         with:
           projectPath: ${{ matrix.project }}
           testMode: editmode
-          # We don't use coverage; game-ci's docs blame it for compile errors and crashes on Unity 6.
-          coverageEnabled: false
           customImage: vr2gather-ci:linux
           # Pinned, as in cwipc_unity: no "latest" lookup, reproducible runs. Update deliberately.
           cliVersion: v0.1.76
@@ -184,7 +182,6 @@ jobs:
         with:
           projectPath: ${{ matrix.project }}
           testMode: playmode
-          coverageEnabled: false
           customImage: vr2gather-ci:linux
           # Pinned, as in cwipc_unity: no "latest" lookup, reproducible runs. Update deliberately.
           cliVersion: v0.1.76
