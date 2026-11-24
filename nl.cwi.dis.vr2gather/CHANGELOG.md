@@ -7,28 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [next] - unreleased
 
-- Requires cwipc_unity 8.3.0 (#423)
-- Package dependencies tidied: no longer on `com.unity.xr.oculus` (unused; projects that use the Oculus XR loader must list it themselves) or the deprecated `com.unity.textmeshpro` (now `com.unity.ugui`); `com.unity.inputsystem` declared (#246)
-- CI builds players for Linux, Windows, macOS (arm64, Intel) and Meta Quest, on pushes to master and on pull requests (#355, #415)
-- Automated tests: EditMode (Porting Check, shaders and materials, `config.json`) and a PlayMode smoke test, run in both development projects and in CI (#416)
-- Editor tools (Porting Check, `CommandLineBuild`, `CopyConfigOnBuild`) are in their own assembly, `VRT.Editor` (#416)
-- Statistics are compiled in by default; define `VRT_WITHOUT_STATS` to leave them out, `VRT_WITH_STATS` is no longer used (#419)
-- Readers, writers and codecs stop cleanly without `Thread.Abort`; a thread that doesn't stop is logged with a `join_timeout` stats record (#422)
-- Fixed: one silent tile could stall the others in socket.io and TCP reflector writers; second TCP reflector session in one run didn't work (#422)
-- Fixed: socket.io writer exception at session end (#408)
-- Fixed: AudioOnly users caused "Unknown UserRepresentationType" errors (#288)
-- Fixed: Android (Quest) players didn't compile since 1.4.0 (#355)
-- `OnDestroy()` of `NetworkIdBehaviour` and the point cloud pipelines is `protected virtual`: subclasses must `override` it and call `base.OnDestroy()` (#421)
-- Materials work in URP projects too: new dual shader `VRT/Lit` replaces `Standard`; VR2Gather now depends on Shader Graph (#433)
-- Porting Check warns about materials that render pink in a URP project, and opens the Render Pipeline Converter (#433)
-- Position recording and playback works again (missing from `P_Self_Player` since 1.4.0); the component is now `PositionRecorder`, configured with `PositionRecorderConfig` instead of `PositionTrackerConfig` (#246)
-- No "Hand Tracking Subsystem not found" warning without XR; XR and controller setup documented in `Documentation/101-xr-initialisation.md` (#246)
-- Porting Check also checks the UI layers, the OpenXR hand tracking features and disabled scenes in the Build Settings (#308)
-- Fixed: `P_Self_Player` had missing scripts in projects without the URP package, so variants of it couldn't be saved (#384)
-- Fixed: shader compile error for `Fader.shader` in projects without the URP package (#365)
-- Removed `PilotController.fadeOutText` and `CameraFader.SetText()`: the fade-out text has shown nothing since 2023 (#428)
-- Fixed: WebRTC and Dash sessions didn't start since 1.4.0 (native library loaders missing from `Tool_VRTInitializer`) (#425, #426)
-- Known problem: on macOS, a Dash session can crash on an lldash packager error (#441); WebRTC sending on macOS is in doubt (#442)
+- Works in both BIRP and URP projects, Porting Check warns about materials that need work (#433, #384, #365, #428)
+- Cleaner lifecycle for pipelines, readers, writers and codecs; fixes stalled tiles and a second TCP reflector session in one run (#422, #421, #408)
+- Broken since 1.4.0 and working again: WebRTC and Dash sessions, position recording and playback, Quest players (#425, #426, #246, #355)
+- More Porting Checks (#308, #416)
+- Changes that may need work in apps (#423, #246, #433, #419, #421, #428):
+  - requires cwipc_unity 8.3.0, and depends on Shader Graph;
+  - no longer depends on `com.unity.xr.oculus` (list it yourself if you use the Oculus XR loader) or `com.unity.textmeshpro`;
+  - statistics are compiled in by default (`VRT_WITHOUT_STATS` leaves them out, `VRT_WITH_STATS` is no longer used);
+  - subclasses must `override` `OnDestroy()` and call `base.OnDestroy()`;
+  - `PositionTrackerConfig` is now `PositionRecorderConfig`;
+  - `PilotController.fadeOutText` is removed.
+- Various minor bugs fixed (#288, #400, #246)
+- Known problem on macOS: Dash and WebRTC may not work (#441, #442)
+- CI/CD: builds players for Linux, Windows, macOS (arm64, Intel) and Meta Quest. Limited testing too (#415, #355, #416, #417)
 
 ## [1.4.5] - 2026-11-11
 
