@@ -38,9 +38,9 @@ git config --local core.symlinks true
 cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 ```
 
-**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on pushes to master and on pull requests (#355); `VRTApp-Develop-URP` only on Linux (#429); macOS Intel only on master (#431). A "Static checks" job runs `.github/scripts/` on every run: URP SubShaders need `PackageRequirements`, and package materials must work in both pipelines (#431). The Linux job also runs the package's tests in both projects (#416). No release builds yet (#417).
+**CI/CD**: `.github/workflows/ci.yml` builds players (Linux, Windows, macOS arm64/Intel, Android Quest) with game-ci on pushes to master and on pull requests (#355); `VRTApp-Develop-URP` only on Linux (#429); macOS Intel only on master (#431). A "Static checks" job runs `.github/scripts/` on every run: URP SubShaders need `PackageRequirements`, and package materials must work in both pipelines (#431). The Linux job also runs the package's tests in both projects (#416). A `vX.Y.Z` tag drafts a GitHub release with the players, an `exp-*` tag a draft pre-release (#417).
 
-**Releasing**: follow `Documentation/21-releasing.md` (version + tag, players built on each platform, GitHub release, update `VR2Gather_sample`).
+**Releasing**: follow `Documentation/21-releasing.md` (version + tag, CI drafts the release with the players, try them and publish, update `VR2Gather_sample`).
 
 **Tests** (#416): `nl.cwi.dis.vr2gather/Tests/Editor` (EditMode: Porting Check on the enabled scenes, shaders and materials in this pipeline, config.json) and `Tests/Runtime` (PlayMode: smoke test, login → standalone Pilot 0 session → login, with a synthetic point cloud and a simple avatar; needs cwipc). Both development projects list the package in `testables`. Run them in the Test Runner (Window → General → Test Runner), or with `unity command run_tests --mode editor` (PlayMode only with `--async_tests true` and `test_status`: entering Play mode drops a synchronous request). Testing with several participants or in VR is still manual (the VR test list per release, #438).
 

@@ -1,5 +1,6 @@
 # CI builds for VR2Gather: build the VRTApp-Develop players, to find build breakage early
-# (#355, part of #415). Not released: the release builds are #417.
+# (#355, part of #415), and make releases from them (#417): on a vX.Y.Z or exp-* tag, the
+# release job at the end drafts a GitHub release with the players attached.
 #
 # Modelled on cwipc_unity's .github/workflows/ci.yml (cwi-dis/cwipc_unity#63, #71): game-ci's
 # unity-builder with cwipc in the build environment: a Docker image with cwipc added on Linux
@@ -21,9 +22,12 @@ name: CI
 
 # On pushes to master and on pull requests, not on every branch: a feature branch gets CI by
 # opening a pull request for it, or by starting the workflow by hand (Actions → CI → Run workflow).
+# Tags: vX.Y.Z makes a draft release, exp-* (an experiment or test build, also on a branch) a
+# draft pre-release (#417).
 on:
   push:
     branches: [master]
+    tags: ['v*', 'exp-*']
   pull_request:
   workflow_dispatch:
     inputs:
@@ -48,6 +52,11 @@ jobs:
       # no Unity Default-Material, no URP-only shaders.
       - name: Materials work in both render pipelines
         run: python3 .github/scripts/check_render_pipeline_materials.py nl.cwi.dis.vr2gather
+      # A release tag must match package.json and have a changelog section (#417): fails here, in
+      # the first minute, instead of in the release job after the player builds.
+      - name: Release tag matches package.json and changelog
+        if: startsWith(github.ref, 'refs/tags/')
+        run: python3 .github/scripts/release_notes.py "$GITHUB_REF_NAME" --check
 
   # Linux: game-ci runs Unity in a Docker container; cwipc comes in through a custom image,
   # game-ci's image plus cwipc's -built- archive. A desktop player without XR (OpenXR doesn't
@@ -64,7 +73,7 @@ jobs:
         include:
           - pipeline: BIRP
             project: VRTApp-Develop
-            artifact: VR2Gather-linux
+            artifact: VR2Gather-linux-x64
           - pipeline: URP
             project: VRTApp-Develop-URP
     steps:
@@ -115,16 +124,20 @@ jobs:
           buildsPath: Builds
           versioning: None
 
-      # No artifact for URP yet: its materials are mostly BIRP-only (pink) until the material
-      # sweep of #256, so the build only checks that the URP project compiles and builds.
+      # No artifact for URP yet: VRTApp-Develop (BIRP) is the released player; the URP build only
+      # checks that the URP project compiles and builds. Zipped as build.sh does (the release
+      # attaches the zip as it is, #417): the folder's contents, without the debug symbols.
+      - name: Zip
+        if: matrix.pipeline == 'BIRP'
+        run: |
+          cd Builds/StandaloneLinux64
+          zip -qry "$GITHUB_WORKSPACE/${{ matrix.artifact }}.zip" . -x '*DoNotShip*' '*DontShip*'
+
       - uses: actions/upload-artifact@v7
         if: matrix.pipeline == 'BIRP'
         with:
           name: ${{ matrix.artifact }}
-          path: |
-            Builds/StandaloneLinux64/
-            !Builds/StandaloneLinux64/**/*DoNotShip*/
-            !Builds/StandaloneLinux64/**/*DontShip*/
+          path: ${{ matrix.artifact }}.zip
           if-no-files-found: error
 
       # EditMode and PlayMode tests, after the build, as two steps: with testMode all, game-ci's
@@ -282,13 +295,18 @@ jobs:
           buildsPath: Builds
           versioning: None
 
+      # Zipped as build.sh does on Windows (#417): the folder's contents, without the debug symbols.
+      - name: Zip
+        shell: pwsh
+        run: |
+          Get-ChildItem Builds/StandaloneWindows64 |
+            Where-Object { $_.Name -notlike '*DoNotShip*' -and $_.Name -notlike '*DontShip*' } |
+            Compress-Archive -DestinationPath VR2Gather-windows-x64.zip
+
       - uses: actions/upload-artifact@v7
         with:
-          name: VR2Gather-windows
-          path: |
-            Builds/StandaloneWindows64/
-            !Builds/StandaloneWindows64/**/*DoNotShip*/
-            !Builds/StandaloneWindows64/**/*DontShip*/
+          name: VR2Gather-windows-x64
+          path: VR2Gather-windows-x64.zip
           if-no-files-found: error
 
   # macOS: Unity runs directly on the runner; cwipc from cwipc's install-cwipc action.
@@ -354,16 +372,21 @@ jobs:
           buildsPath: Builds
           versioning: None
 
-      # Zipped here: upload-artifact doesn't keep the symlinks in an .app bundle.
+      # Zipped here: upload-artifact doesn't keep the symlinks in an .app bundle. The player is
+      # universal (x86_64 and arm64) whichever runner builds it, so only the arm64 job's goes out;
+      # the Intel job is a build check (#417). Not all of it runs on Intel: the ffmpeg libraries
+      # of the native libraries package are arm64 only (Dash).
       - name: Zip
+        if: matrix.arch == 'arm64'
         run: |
           cd Builds/StandaloneOSX
-          zip -qry "$GITHUB_WORKSPACE/VR2Gather-macos-${{ matrix.arch }}.zip" . -x '*DoNotShip*' '*DontShip*' '*.DS_Store'
+          zip -qry "$GITHUB_WORKSPACE/VR2Gather-macos-universal.zip" . -x '*DoNotShip*' '*DontShip*' '*.DS_Store'
 
       - uses: actions/upload-artifact@v7
+        if: matrix.arch == 'arm64'
         with:
-          name: VR2Gather-macos-${{ matrix.arch }}
-          path: VR2Gather-macos-${{ matrix.arch }}.zip
+          name: VR2Gather-macos-universal
+          path: VR2Gather-macos-universal.zip
           if-no-files-found: error
 
   # Android (standalone Meta Quest): game-ci's own Android image, nothing to install: cwipc's
@@ -401,8 +424,61 @@ jobs:
           buildsPath: Builds
           versioning: None
 
+      # Under its release name (#417); exactly one .apk expected.
+      - name: Rename
+        run: |
+          apks=(Builds/Android/*.apk)
+          [ ${#apks[@]} = 1 ] && [ -f "${apks[0]}" ] || { echo "Expected one .apk in Builds/Android: ${apks[*]}"; exit 1; }
+          cp "${apks[0]}" VR2Gather-quest-arm64.apk
+
       - uses: actions/upload-artifact@v7
         with:
-          name: VR2Gather-android-quest
-          path: Builds/Android/
+          name: VR2Gather-quest-arm64
+          path: VR2Gather-quest-arm64.apk
           if-no-files-found: error
+
+  # Release (#417), on a vX.Y.Z or exp-* tag only, when everything built and the tests passed:
+  # a draft GitHub release for the tag (a pre-release for exp-*), with the release notes from
+  # CHANGELOG.md (.github/scripts/release_notes.py) and the players attached. Publishing stays
+  # by hand, after the players have been run (Documentation/21-releasing.md). Run again, it
+  # updates the draft; a published release is left alone.
+  release:
+    name: Draft release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [checks, build-linux, build-windows, build-macos, build-android]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: VR2Gather-*
+          path: players
+          merge-multiple: true
+
+      - name: Release notes
+        run: python3 .github/scripts/release_notes.py "$GITHUB_REF_NAME" > release-notes.md
+
+      - name: Draft release with the players
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$GITHUB_REF_NAME"
+          ls -l players
+          for f in VR2Gather-windows-x64.zip VR2Gather-linux-x64.zip VR2Gather-macos-universal.zip VR2Gather-quest-arm64.apk; do
+            [ -f "players/$f" ] || { echo "Missing player: $f"; exit 1; }
+          done
+          # From the list, not gh release view: looking up by tag doesn't always find drafts.
+          draft=$(gh release list --limit 100 --json tagName,isDraft --jq ".[] | select(.tagName == \"$tag\") | .isDraft")
+          if [ "$draft" = false ]; then
+            echo "Release $tag is already published: not changing it"; exit 1
+          elif [ "$draft" = true ]; then
+            gh release edit "$tag" --notes-file release-notes.md
+          else
+            prerelease=()
+            case "$tag" in exp-*) prerelease=(--prerelease) ;; esac
+            gh release create "$tag" --draft "${prerelease[@]}" --verify-tag --title "$tag" --notes-file release-notes.md
+          fi
+          gh release upload "$tag" players/* --clobber

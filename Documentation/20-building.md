@@ -11,7 +11,7 @@ VRTApp-Develop/scripts/build.sh windows    # or mac, linux; add --no-xr for a pl
 
 - It uses the Unity CLI (`unity build`), which reads the Unity version from `ProjectSettings/ProjectVersion.txt` and finds the matching Editor. Install the CLI first, with `curl -fsSL https://unity.com/install.sh | bash` (macOS, Linux) or `irm https://unity.com/install.ps1 | iex` (Windows PowerShell). On Windows, run the script from Git Bash.
 - The project must not be open in a Unity Editor while building.
-- The player goes to `VRTApp-Develop/Builds/<platform>/`, the zip to `Builds/<productName>-<platform>.zip`, and the build log to `Builds/buildlog-<platform>.txt`. Unity's debug-symbol folders (`*_DoNotShip`, `*_DontShip…`) are left out of the zip.
+- The player goes to `VRTApp-Develop/Builds/<variant>/`, the zip to `Builds/<productName>-<variant>.zip`, and the build log to `Builds/buildlog-<variant>.txt`. The variant is the operating system and architecture, as in the GitHub releases: `windows-x64`, `linux-x64` or `macos-universal` (Unity builds macOS players for both Intel and Apple silicon). Unity's debug-symbol folders (`*_DoNotShip`, `*_DontShip…`) are left out of the zip.
 - Building for another platform than the one you're on needs that platform's build support module in the Editor.
 - cwipc must be installed on the build machine, otherwise its native libraries aren't found.
 - `--no-xr` (for example `build.sh windows --no-xr`) builds a desktop-only player without XR. The folder and zip get a `-noxr` suffix. The script then builds through `VRT.Tools.CommandLineBuild.BuildWithoutXR`, which disables the XR loaders for Standalone during the build and puts them back afterwards.
@@ -21,7 +21,7 @@ The script is the same in every VR2Gather project: it finds the project from its
 
 Before your first build, check the **Product Name** in Player Settings (`productName` in `ProjectSettings/ProjectSettings.asset`), and fix it if needed. A project copied from `VR2Gather_sample` or another app still has that project's name. It names the app and the zip, and Unity also uses it for the app's settings and log folders.
 
-GitHub Actions (`.github/workflows/ci.yml`) builds `VRTApp-Develop` players for Linux, Windows, macOS (arm64 and Intel) and Android (Meta Quest) on pushes to master and on pull requests, using game-ci with cwipc installed (issue #355), and `VRTApp-Develop-URP` players for Linux only (issue #429). The macOS Intel build only runs on `master` and when the workflow is started by hand. A static-checks job (no Unity) checks that URP SubShaders have `PackageRequirements` and that the package's materials work in both render pipelines (issue #431). The players are kept as artifacts of the workflow run; they are not release builds (issue #417).
+GitHub Actions (`.github/workflows/ci.yml`) builds `VRTApp-Develop` players for Linux, Windows, macOS (arm64 and Intel) and Android (Meta Quest) on pushes to master and on pull requests, using game-ci with cwipc installed (issue #355), and `VRTApp-Develop-URP` players for Linux only (issue #429). The macOS Intel build only runs on `master` and when the workflow is started by hand. A static-checks job (no Unity) checks that URP SubShaders have `PackageRequirements` and that the package's materials work in both render pipelines (issue #431). The players are kept as artifacts of the workflow run, zipped and named as in the releases. On a version tag the same workflow drafts a GitHub release with them (issue #417, see [Making a release](21-releasing.md)).
 
 ## Older notes (may be outdated)
 

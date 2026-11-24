@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `PositionTrackerConfig` is now `PositionRecorderConfig`;
   - `PilotController.fadeOutText` is removed.
 - Various minor bugs fixed (#288, #400, #246)
-- Known problem on macOS: Dash and WebRTC may not work (#441, #442)
+- Known problem on macOS: Dash and WebRTC may not work (#441, #442); on Intel Macs more may not work
 - CI/CD: builds players for Linux, Windows, macOS (arm64, Intel) and Meta Quest. Limited testing too (#415, #355, #416, #417)
 
 ## [1.4.5] - 2026-11-11

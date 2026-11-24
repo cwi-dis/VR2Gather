@@ -11,8 +11,10 @@
 # script, and the app name is the productName from ProjectSettings.
 # The Unity version comes from ProjectVersion.txt; the Unity CLI finds the Editor.
 # The project must not be open in a Unity Editor while building.
-# Output: Builds/<platform>/ and Builds/<productName>-<platform>.zip, build log in Builds/
-# (<platform> gets a -noxr suffix for --no-xr builds of mac and windows).
+# Output: Builds/<variant>/ and Builds/<productName>-<variant>.zip, build log in Builds/.
+# <variant> is the operating system and architecture, as in the GitHub releases (#417):
+# windows-x64, linux-x64 or macos-universal (Unity builds macOS players for x86_64 and arm64),
+# with a -noxr suffix for --no-xr builds of mac and windows.
 #
 set -e
 set -x
@@ -42,16 +44,15 @@ if [ -z "$platform" ]; then
 fi
 
 case "$platform" in
-mac) target=StandaloneOSX; player="$APP_NAME.app" ;;
-windows) target=StandaloneWindows64; player="$APP_NAME.exe" ;;
-linux) target=StandaloneLinux64; player="$APP_NAME" ;;
+mac|macos) target=StandaloneOSX; player="$APP_NAME.app"; variant=macos-universal ;;
+windows) target=StandaloneWindows64; player="$APP_NAME.exe"; variant=windows-x64 ;;
+linux) target=StandaloneLinux64; player="$APP_NAME"; variant=linux-x64 ;;
 *) echo "Usage: $0 [mac|windows|linux] [--no-xr]" >&2; exit 2 ;;
 esac
-variant="$platform"
 if [ "$platform" = linux ]; then
 	noxr=yes
 elif [ -n "$noxr" ]; then
-	variant="$platform-noxr"
+	variant="$variant-noxr"
 fi
 
 BUILD_DIR="$PROJECT_DIR/Builds/$variant"
