@@ -127,16 +127,6 @@ jobs:
             !Builds/StandaloneLinux64/**/*DontShip*/
           if-no-files-found: error
 
-      # xxxclaude: temporary (#416): what Library/PackageCache looks like after the build; the BIRP tests miss files there.
-      - name: xxxclaude PackageCache after the build
-        if: success() || failure()
-        run: |
-          P=${{ matrix.project }}/Library/PackageCache
-          echo "symlinks:"; find "$P" -maxdepth 3 -type l 2>/dev/null | head -20
-          echo "files with more than one hard link: $(find "$P" -type f -links +1 2>/dev/null | wc -l)"; find "$P" -type f -links +1 2>/dev/null | head -5
-          echo "files per package:"; for d in "$P"/*/; do echo "$(find "$d" -type f | wc -l) $(basename "$d")"; done
-          echo "owner, sample:"; ls -la "$P" | head -5; ls -la "$P"/com.unity.ai.navigation@*/Runtime 2>&1 | head -8
-
       # EditMode and PlayMode tests, after the build, as two steps: with testMode all, game-ci's
       # CLI starts the two Unity processes overlapping on the same project, and one of them then
       # finds files in Library/PackageCache changed or missing (#416; runs 45262169056 and
@@ -188,16 +178,6 @@ jobs:
           artifactsPath: test-results
           checkName: EditMode tests (Linux, ${{ matrix.pipeline }})
 
-      # xxxclaude: temporary (#416): what Library/PackageCache looks like after the EditMode tests; the BIRP tests miss files there.
-      - name: xxxclaude PackageCache after the EditMode tests
-        if: success() || failure()
-        run: |
-          P=${{ matrix.project }}/Library/PackageCache
-          echo "symlinks:"; find "$P" -maxdepth 3 -type l 2>/dev/null | head -20
-          echo "files with more than one hard link: $(find "$P" -type f -links +1 2>/dev/null | wc -l)"; find "$P" -type f -links +1 2>/dev/null | head -5
-          echo "files per package:"; for d in "$P"/*/; do echo "$(find "$d" -type f | wc -l) $(basename "$d")"; done
-          echo "owner, sample:"; ls -la "$P" | head -5; ls -la "$P"/com.unity.ai.navigation@*/Runtime 2>&1 | head -8
-
       - name: Run PlayMode tests
         if: success() || failure()
         uses: game-ci/unity-test-runner@v4
@@ -217,16 +197,6 @@ jobs:
           cliVersion: v0.1.76
           artifactsPath: test-results
           checkName: PlayMode tests (Linux, ${{ matrix.pipeline }})
-
-      # xxxclaude: temporary (#416): what Library/PackageCache looks like after the PlayMode tests; the BIRP tests miss files there.
-      - name: xxxclaude PackageCache after the PlayMode tests
-        if: success() || failure()
-        run: |
-          P=${{ matrix.project }}/Library/PackageCache
-          echo "symlinks:"; find "$P" -maxdepth 3 -type l 2>/dev/null | head -20
-          echo "files with more than one hard link: $(find "$P" -type f -links +1 2>/dev/null | wc -l)"; find "$P" -type f -links +1 2>/dev/null | head -5
-          echo "files per package:"; for d in "$P"/*/; do echo "$(find "$d" -type f | wc -l) $(basename "$d")"; done
-          echo "owner, sample:"; ls -la "$P" | head -5; ls -la "$P"/com.unity.ai.navigation@*/Runtime 2>&1 | head -8
 
       # Saved after the tests: the Library state the test containers accept (see the warm-up step).
       # A key that exists already is never overwritten, so only when the restore wasn't an exact hit.
