@@ -72,7 +72,10 @@ jobs:
         with:
           lfs: true
 
-      - uses: actions/cache@v6
+      # Restore and save as separate steps: actions/cache saves only when the whole job succeeds,
+      # so a job that kept failing (BIRP tests, #416) never got a Library cache at all.
+      - id: library-cache
+        uses: actions/cache/restore@v6
         with:
           path: ${{ matrix.project }}/Library
           key: Library-Linux-${{ matrix.pipeline }}-${{ hashFiles(format('{0}/Packages/**', matrix.project), format('{0}/ProjectSettings/**', matrix.project), 'nl.cwi.dis.vr2gather/package.json') }}
@@ -109,6 +112,14 @@ jobs:
           buildName: VR2Gather
           buildsPath: Builds
           versioning: None
+
+      # Saved right after the build, before the tests touch Library/PackageCache. A key that
+      # exists already is never overwritten, so only when the restore wasn't an exact hit.
+      - uses: actions/cache/save@v6
+        if: (success() || failure()) && steps.library-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ matrix.project }}/Library
+          key: ${{ steps.library-cache.outputs.cache-primary-key }}
 
       # No artifact for URP yet: its materials are mostly BIRP-only (pink) until the material
       # sweep of #256, so the build only checks that the URP project compiles and builds.
