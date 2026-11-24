@@ -51,10 +51,10 @@ gh release edit vX.Y.Z --draft=false --latest
 
 ## 5. Update VR2Gather_sample
 
-`VR2Gather_sample` uses the package from GitHub (not pinned to a version), plus a copy of its samples.
+`VR2Gather_sample` uses the package from GitHub (not pinned to a version), plus a copy of its samples. Since 1.4.6 it is a URP project, like `VRTApp-Develop-URP` (new projects start on URP, #420).
 
 - Update VR2Gather and its git dependencies (`nl.cwi.dis.cwipc`, `nl.cwi.dis.vr2gather.nativelibraries`, `nl.cwi.dis.vr2gather.nativelibraries.webrtc`) to the versions `VRTApp-Develop` was tested with: compare the hashes in both `Packages/packages-lock.json` files. Either use *Update* in the Package Manager for each, or delete their entries from the sample's `packages-lock.json` (with Unity closed) so Unity fetches the current master when it opens the project. Updating only VR2Gather leaves the others at their old versions.
-- Packages that `VRTApp-Develop` has and the sample needs too: for now that includes the URP package, also for built-in render pipeline projects (#365).
+- Packages: the sample has what VR2Gather and its samples need, not everything `VRTApp-Develop-URP` has (that also has development tools such as `com.unity.pipeline`, `com.unity.test-framework` and `com.unity.recorder`). If VR2Gather needs a package it doesn't declare in its own `package.json`, add it to the sample too. Git packages come from the `cwi-dis` repositories.
 - In the Package Manager, VR2Gather, *Samples* tab: import the samples again (*VRT Essential Assets*). This replaces `Assets/Samples/VR2Gather/<old version>` by `<new version>`; check that the old folder is gone.
 - Run the Porting Check (*Tools → VR2Gather Porting Check*) on the login scene, Pilot0 and TechnicalPlayground: on freshly imported samples it should find no errors and offer no Fix buttons.
 - Check that the login scene, Pilot0 and TechnicalPlayground still work, and that the Editor log has no new warnings (for example `UI-Overlay layer not found`: the sample's layers must match `VRTApp-Develop`'s, #411).
