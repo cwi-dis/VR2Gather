@@ -28,7 +28,74 @@ namespace VRT.Transport.SocketIO
             return new AsyncSocketIOReader();
         }
 
+        static int instanceCounter = 0;
+        readonly int instanceNumber = instanceCounter++;
+
+        public override string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
+
+        /// <summary>
+        /// One incoming stream: its queue and its own stats, so every stream writes its own records,
+        /// as the readers of the other transports do (#424).
+        /// </summary>
+        class StreamHandler
+        {
+            readonly AsyncSocketIOReader parent;
+            readonly int index;
+            readonly QueueThreadSafe outQueue;
+#if !VRT_WITHOUT_STATS
+            readonly Stats stats;
+#endif
+
+            public StreamHandler(AsyncSocketIOReader _parent, int _index, QueueThreadSafe _outQueue)
+            {
+                parent = _parent;
+                index = _index;
+                outQueue = _outQueue;
+#if !VRT_WITHOUT_STATS
+                stats = new Stats(Name());
+#endif
+            }
+
+            public string Name()
+            {
+                return $"{parent.Name()}.{index}";
+            }
+
+            public void HandlePacket(UserDataStreamPacket pPacket)
+            {
+                byte[] hdr_timestamp = new byte[sizeof(long)];
+                Array.Copy(pPacket.dataStreamPacket, hdr_timestamp, sizeof(long));
+                Timestamp timestamp = BitConverter.ToInt64(hdr_timestamp, 0);
+                BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length - sizeof(long));
+                chunk.metadata.timestamp = timestamp;
+                System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, sizeof(long), chunk.pointer, chunk.length);
+                // Before Enqueue(): after it the queue or its consumer may have freed the chunk.
+                int nBytes = chunk.length;
+                bool didDrop = !outQueue.Enqueue(chunk);
+                if (didDrop)
+                {
+                    Debug.Log($"{Name()}: dropped packet for {pPacket.dataStreamType}, ts={timestamp}, queuelength is {outQueue.Count()}");
+                }
+#if !VRT_WITHOUT_STATS
+                stats.statsUpdate(nBytes, didDrop, timestamp);
+#endif
+            }
+
+            public void Final()
+            {
+#if !VRT_WITHOUT_STATS
+                stats.Final();
+#endif
+            }
+        }
+
         IncomingTileDescription[] descriptors;
+        StreamHandler[] handlers;
+        // Built in Init() before subscribing, read-only afterwards.
+        System.Collections.Generic.Dictionary<string, StreamHandler> handlersByName;
         // The user whose streams we receive (not ourselves). Needed again in Stop() to unregister.
         string remoteUserId;
 
@@ -41,15 +108,23 @@ namespace VRT.Transport.SocketIO
             }
             this.descriptors = descriptors;
             this.remoteUserId = userId;
-            // Before subscribing: a packet may arrive right away, and OnDataPacketReceived uses the stats.
+            // Before subscribing: a packet may arrive right away.
+            handlers = new StreamHandler[descriptors.Length];
+            handlersByName = new System.Collections.Generic.Dictionary<string, StreamHandler>();
+            for (int i = 0; i < this.descriptors.Length; ++i)
+            {
+                this.descriptors[i].name = $"{userId}.{streamName}#{i}";
+                handlers[i] = new StreamHandler(this, i, this.descriptors[i].outQueue);
+                handlersByName[this.descriptors[i].name] = handlers[i];
 #if !VRT_WITHOUT_STATS
-            stats = new Stats(Name());
+                // "pull_thread": the key VRTstatistics uses to map a reader's per-tile records to its tiles.
+                Statistics.Output(Name(), $"pull_thread={handlers[i].Name()}, tile={this.descriptors[i].tileNumber}, stream={this.descriptors[i].name}");
 #endif
+            }
             try
             {
                 for (int i = 0; i < this.descriptors.Length; ++i)
                 {
-                    this.descriptors[i].name = $"{userId}.{streamName}#{i}";
                     Debug.Log($"{Name()}:  RegisterForDataStream {i}: {this.descriptors[i].name} from {userId}");
                     VRTOrchestratorSingleton.Streams.RegisterForDataStream(userId, this.descriptors[i].name);
                 }
@@ -103,10 +178,11 @@ namespace VRT.Transport.SocketIO
 
         public override void AsyncOnStop()
         {
-            // After Stop() has unsubscribed, so no more statsUpdate() calls (#451).
-#if !VRT_WITHOUT_STATS
-            stats.Final();
-#endif
+            // After Stop() has unsubscribed, so no more packets (#451).
+            if (handlers != null)
+            {
+                foreach (var h in handlers) h.Final();
+            }
             base.AsyncOnStop();
         }
 
@@ -117,33 +193,10 @@ namespace VRT.Transport.SocketIO
         private void OnDataPacketReceived(UserDataStreamPacket pPacket)
         {
             // This callback method is called for _every_ socketIO reader. We select only the packets that are ours.
-            string streamName = pPacket.dataStreamType;
-            for(int i = 0; i < descriptors.Length; i++)
+            if (handlersByName.TryGetValue(pPacket.dataStreamType, out StreamHandler handler))
             {
-                if (streamName == descriptors[i].name)
-                {
-                    // This packet is for us.
-                    byte[] hdr_timestamp = new byte[sizeof(long)];
-                    Array.Copy(pPacket.dataStreamPacket, hdr_timestamp, sizeof(long));
-                    Timestamp timestamp = BitConverter.ToInt64(hdr_timestamp, 0);
-                    BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length - sizeof(long));
-                    chunk.metadata.timestamp = timestamp;
-                    System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, sizeof(long), chunk.pointer, chunk.length);
-                    bool didDrop = !descriptors[i].outQueue.Enqueue(chunk);
-                    if (didDrop)
-                    {
-                        Debug.Log($"{Name()}: dropped packet for {streamName}, ts={timestamp}, queuelength is {descriptors[i].outQueue.Count()}");
-                    } else
-                    {
-                        // Debug.Log($"{Name()}: Received packet for {streamName}, ts={timestamp}, size={chunk.length}");
-                    }
-#if !VRT_WITHOUT_STATS
-                    stats.statsUpdate(chunk.length, didDrop, timestamp, i);
-#endif
-                    return;
-                }
+                handler.HandlePacket(pPacket);
             }
-           
         }
 
         public void OnData(byte[] data)
@@ -151,7 +204,7 @@ namespace VRT.Transport.SocketIO
         }
 
 #if !VRT_WITHOUT_STATS
-        protected class Stats : Statistics
+        class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 
@@ -159,10 +212,9 @@ namespace VRT.Transport.SocketIO
             double statsTotalPackets = 0;
             int statsAggregatePackets = 0;
             double statsTotalDrops = 0;
-            int lastStreamIndex;
             Timestamp lastTimestamp;
             
-            public void statsUpdate(int nBytes, bool dropped, Timestamp timestamp, int streamId)
+            public void statsUpdate(int nBytes, bool dropped, Timestamp timestamp)
             {
                 lock (statsLock)
                 {
@@ -170,7 +222,6 @@ namespace VRT.Transport.SocketIO
                     statsTotalPackets++;
                     statsAggregatePackets++;
                     if (dropped) statsTotalDrops++;
-                    lastStreamIndex = streamId;
                     lastTimestamp = timestamp;
                     MaybeOutput();
                 }
@@ -182,7 +233,6 @@ namespace VRT.Transport.SocketIO
                     Rate("fps", statsTotalPackets),
                     Rate("fps_dropped", statsTotalDrops),
                     Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
-                    Field("last_stream_index", lastStreamIndex),
                     Field("last_timestamp", lastTimestamp),
                     Field("aggregate_packets", statsAggregatePackets),
                     Field("n_packets", statsTotalPackets),
@@ -193,8 +243,6 @@ namespace VRT.Transport.SocketIO
                 statsTotalDrops = 0;
             }
         }
-
-        protected Stats stats;
 #endif
     }
 

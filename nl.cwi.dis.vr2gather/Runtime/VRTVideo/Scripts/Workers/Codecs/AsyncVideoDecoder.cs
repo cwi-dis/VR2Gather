@@ -17,6 +17,15 @@ namespace VRT.Video
     }
     public unsafe class AsyncVideoDecoder : AsyncWorker
     {
+        // One per participant: a number to tell them apart in logs and stats records (#424).
+        static int instanceCounter = 0;
+        readonly int instanceNumber = instanceCounter++;
+
+        public override string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
+
         public string url;
         AVCodec* codecVideo;
         AVCodec* codecAudio;

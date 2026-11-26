@@ -16,6 +16,15 @@ namespace VRT.UserRepresentation.Voice
 
     public class AsyncVoiceDecoder : AsyncWorker
     {
+        // One per participant: a number to tell them apart in logs and stats records (#424).
+        static int instanceCounter = 0;
+        readonly int instanceNumber = instanceCounter++;
+
+        public override string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
+
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
 

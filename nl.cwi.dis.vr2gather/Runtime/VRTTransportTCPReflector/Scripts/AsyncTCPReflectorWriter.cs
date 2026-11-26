@@ -33,16 +33,19 @@ namespace VRT.Transport.TCPReflector
                 throw new System.Exception($"{Name()}: outQueue is null");
             }
             connection = TransportProtocolTCPReflector.Connect(url);
-#if !VRT_WITHOUT_STATS
-            stats = new Stats(Name());
-#endif
             this.streams = streams;
+#if !VRT_WITHOUT_STATS
+            stats = new Stats[streams.Length];
+#endif
             for (int i = 0; i < streams.Length; ++i)
             {
                 streams[i].name = $"{userId}/{streamName}/{streams[i].tileNumber}";
                 connection.RegisterOutgoingStream(streams[i].name);
 #if !VRT_WITHOUT_STATS
                 Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
+                stats[i] = new Stats($"{Name()}.{i}");
+                // "pusher": the key VRTstatistics uses to map a writer's per-stream records to its streams.
+                Statistics.Output(Name(), $"pusher={Name()}.{i}, stream={i}");
 #endif
             }
             try
@@ -75,7 +78,7 @@ namespace VRT.Transport.TCPReflector
                 connection.UnregisterOutgoingStream(streams[i].name);
             }
 #if !VRT_WITHOUT_STATS
-            stats.Final();
+            foreach (var st in stats) st.Final();
 #endif
             base.AsyncOnStop();
         }
@@ -94,7 +97,7 @@ namespace VRT.Transport.TCPReflector
                 connection.SendChunk(chk, streams[i].name);
                 
 #if !VRT_WITHOUT_STATS
-                stats.statsUpdate(chk.length, i);
+                stats[i].statsUpdate(chk.length);
 #endif
                 chk.free();
 
@@ -108,23 +111,23 @@ namespace VRT.Transport.TCPReflector
         }
 
 #if !VRT_WITHOUT_STATS
-        protected class Stats : Statistics
+        // One per stream, named <writer>.<stream index>, so every stream writes its own records, as the
+        // writers of the other transports do (#424).
+        class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 
             double statsTotalBytes;
             double statsTotalPackets;
             int statsAggregatePackets;
-            int lastStreamIndex;
            
-            public void statsUpdate(int nBytes, int streamIndex)
+            public void statsUpdate(int nBytes)
             {
                 lock (statsLock)
                 {
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
                     statsAggregatePackets++;
-                    lastStreamIndex = streamIndex;
                     MaybeOutput();
                 }
             }
@@ -134,7 +137,6 @@ namespace VRT.Transport.TCPReflector
                 OutputFields(
                     Rate("fps", statsTotalPackets),
                     Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
-                    Field("last_stream_id", lastStreamIndex),
                     Field("aggregate_packets", statsAggregatePackets),
                     Field("n_packets", statsTotalPackets),
                     Field("bytes", statsTotalBytes));
@@ -143,7 +145,7 @@ namespace VRT.Transport.TCPReflector
             }
         }
 
-        protected Stats stats;
+        Stats[] stats;
 #endif
     }
 }

@@ -16,10 +16,17 @@ namespace VRT.Transport.TCPReflector
 
     public class AsyncTCPReflectorReader : AsyncReader, ITransportProtocolReader, ITransportProtocolReader_Tiled
     {
+        /// <summary>
+        /// One incoming stream: its queue and its own stats, so every stream writes its own records,
+        /// as the readers of the other transports do (#424).
+        /// </summary>
         class IncomingStreamHandler : TransportProtocolTCPReflector.IncomingStreamHandler {
             AsyncTCPReflectorReader parent;
             QueueThreadSafe queue;
             int handler_index;
+#if !VRT_WITHOUT_STATS
+            readonly Stats stats;
+#endif
 
             public string Name()
             {
@@ -29,12 +36,25 @@ namespace VRT.Transport.TCPReflector
                 parent = _parent;
                 handler_index = _index;
                 queue = _queue;
+#if !VRT_WITHOUT_STATS
+                stats = new Stats(Name());
+#endif
             }
 
             public void HandlePacket(BaseMemoryChunk packet) {
+                // Before Enqueue(): after it the queue or its consumer may have freed the packet.
+                int nBytes = packet.length;
+                Timestamp timestamp = packet.metadata.timestamp;
                 bool didDrop = !queue.Enqueue(packet);
 #if !VRT_WITHOUT_STATS
-                parent.stats.statsUpdate(packet.length, didDrop, packet.metadata.timestamp, handler_index);
+                stats.statsUpdate(nBytes, didDrop, timestamp);
+#endif
+            }
+
+            public void Final()
+            {
+#if !VRT_WITHOUT_STATS
+                stats.Final();
 #endif
             }
         }
@@ -49,6 +69,7 @@ namespace VRT.Transport.TCPReflector
         }
 
         IncomingTileDescription[] descriptors;
+        IncomingStreamHandler[] handlers;
         private TransportProtocolTCPReflector connection;
         
         static int instanceCounter = 0;
@@ -67,17 +88,18 @@ namespace VRT.Transport.TCPReflector
                 throw new System.Exception($"{Name()}: descriptors is null");
             }
             this.descriptors = descriptors;
-            // Before registering the handlers: they use the stats as soon as packets arrive.
-#if !VRT_WITHOUT_STATS
-            stats = new Stats(Name());
-#endif
+            handlers = new IncomingStreamHandler[descriptors.Length];
             connection = TransportProtocolTCPReflector.Connect(remoteUrl);
             for (int i = 0; i < this.descriptors.Length; ++i)
             {
                 this.descriptors[i].name = $"{userId}/{streamName}/{i}";
                 Debug.Log($"{Name()}:  xxxjack RegisterForDataStream {i}: {this.descriptors[i].name}");
-                IncomingStreamHandler handler = new(this, i, this.descriptors[i].outQueue);
-                connection.RegisterIncomingStream(this.descriptors[i].name, handler);
+                handlers[i] = new(this, i, this.descriptors[i].outQueue);
+#if !VRT_WITHOUT_STATS
+                // "pull_thread": the key VRTstatistics uses to map a reader's per-tile records to its tiles.
+                Statistics.Output(Name(), $"pull_thread={handlers[i].Name()}, tile={this.descriptors[i].tileNumber}, stream={this.descriptors[i].name}");
+#endif
+                connection.RegisterIncomingStream(this.descriptors[i].name, handlers[i]);
             }
             Start();
             Debug.Log($"{Name()}: Started {remoteUrl}/{userId}/{streamName}");
@@ -122,9 +144,10 @@ namespace VRT.Transport.TCPReflector
                 descriptors[i].outQueue?.Close();
                 connection.UnregisterIncomingStream(descriptors[i].name); // This should also delete the handler by removing the last ref to it.
             }
-#if !VRT_WITHOUT_STATS
-            stats.Final();
-#endif
+            if (handlers != null)
+            {
+                foreach (var h in handlers) h.Final();
+            }
             base.AsyncOnStop();
         }
 
@@ -170,7 +193,7 @@ namespace VRT.Transport.TCPReflector
         }
 
 #if !VRT_WITHOUT_STATS
-        protected class Stats : Statistics
+        class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 
@@ -178,10 +201,9 @@ namespace VRT.Transport.TCPReflector
             double statsTotalPackets = 0;
             int statsAggregatePackets = 0;
             double statsTotalDrops = 0;
-            int lastStreamIndex;
             Timestamp lastTimestamp;
             
-            public void statsUpdate(int nBytes, bool dropped, Timestamp timestamp, int streamId)
+            public void statsUpdate(int nBytes, bool dropped, Timestamp timestamp)
             {
                 lock (statsLock)
                 {
@@ -189,7 +211,6 @@ namespace VRT.Transport.TCPReflector
                     statsTotalPackets++;
                     statsAggregatePackets++;
                     if (dropped) statsTotalDrops++;
-                    lastStreamIndex = streamId;
                     lastTimestamp = timestamp;
                     MaybeOutput();
                 }
@@ -201,7 +222,6 @@ namespace VRT.Transport.TCPReflector
                     Rate("fps", statsTotalPackets),
                     Rate("fps_dropped", statsTotalDrops),
                     Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
-                    Field("last_stream_index", lastStreamIndex),
                     Field("last_timestamp", lastTimestamp),
                     Field("aggregate_packets", statsAggregatePackets),
                     Field("n_packets", statsTotalPackets),
@@ -212,8 +232,6 @@ namespace VRT.Transport.TCPReflector
                 statsTotalDrops = 0;
             }
         }
-
-        protected Stats stats;
 #endif
     }
 
