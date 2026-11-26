@@ -24,49 +24,55 @@ namespace VRT.Profiler
             Debug.LogError($"{Name()}: VRT_WITHOUT_STATS defined, making this a bit pointless");
         }
 #else
+        // Its own timing and the static Statistics.Output(), not a Statistics subclass: the
+        // Inspector field interval stays per component (#451). 0: a record on every update,
+        // > 0: every so many seconds, < 0: only when destroyed. Always a last record when
+        // destroyed, with what was added up since the previous one.
+        string statsName;
+        System.DateTime lastOutput;
+        float px = 0, py = 0, pz = 0;
+        float rx = 0, ry = 0, rz = 0;
+        int count = 0;
+
         // Start is called before the first frame update
         void Start()
         {
-            stats = new Stats(Name(), interval);
+            // Here: when destroyed, the parent may be gone already.
+            statsName = Name();
+            lastOutput = System.DateTime.Now;
         }
 
         // Update is called once per frame
         void Update()
         {
-            stats.statsUpdate(transform.position, transform.eulerAngles);
+            Vector3 pos = transform.position;
+            Vector3 rot = transform.eulerAngles;
+            px += pos.x;
+            py += pos.y;
+            pz += pos.z;
+            rx += rot.x;
+            ry += rot.y;
+            rz += rot.z;
+            count++;
+            if (interval >= 0 && (System.DateTime.Now - lastOutput).TotalSeconds >= interval)
+            {
+                OutputRecord();
+            }
         }
 
-        protected class Stats : Statistics
+        void OnDestroy()
         {
-            public Stats(string name, double interval) : base(name, interval)
-            {
-            }
-
-            float px = 0, py = 0, pz = 0;
-            float rx = 0, ry = 0, rz = 0;
-            int count = 0;
-
-            public void statsUpdate(Vector3 pos, Vector3 rot)
-            {
-                px += pos.x;
-                py += pos.y;
-                pz += pos.z;
-                rx += rot.x;
-                ry += rot.y;
-                rz += rot.z;
-                count++;
-                if (ShouldOutput())
-                {
-                    Output($"px={px/count:f2}, py={py/count:f2}, pz={pz/count:f2}, rx={rx/count:f0}, ry={ry/count:f0}, rz={rz/count:f0}, count={count}");
-                    Clear();
-                    px = py = pz = 0;
-                    rx = ry = rz = 0;
-                    count = 0;
-                }
-            }
+            if (count > 0) OutputRecord();
         }
 
-        protected Stats stats;
+        void OutputRecord()
+        {
+            Statistics.Output(statsName, $"px={Statistics.Num(px / count)}, py={Statistics.Num(py / count)}, pz={Statistics.Num(pz / count)}, rx={Statistics.Num(rx / count, 0)}, ry={Statistics.Num(ry / count, 0)}, rz={Statistics.Num(rz / count, 0)}, count={count}");
+            lastOutput = System.DateTime.Now;
+            px = py = pz = 0;
+            rx = ry = rz = 0;
+            count = 0;
+        }
 #endif
     }
 }

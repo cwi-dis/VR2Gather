@@ -140,6 +140,9 @@ namespace VRT.UserRepresentation.Voice
         public override void AsyncOnStop()
         {
             outQueue.Close();
+#if !VRT_WITHOUT_STATS
+            stats.Final();
+#endif
             base.AsyncOnStop();
         }
 
@@ -321,28 +324,39 @@ namespace VRT.UserRepresentation.Voice
 
             public void statsUpdate(double timeInInputBuffer, int sampleCount, bool dropped, Timedelta queuedDuration, float level)
             {
-
-                statsTotalUpdates += 1;
-                statsTotalSamples += sampleCount;
-                statsTotalTimeInInputBuffer += timeInInputBuffer;
-                statsTotalQueuedDuration += queuedDuration;
-                if (level > statsMaxLevel)
+                lock (statsLock)
                 {
-                    statsMaxLevel = level;
+                    statsTotalUpdates += 1;
+                    statsTotalSamples += sampleCount;
+                    statsTotalTimeInInputBuffer += timeInInputBuffer;
+                    statsTotalQueuedDuration += queuedDuration;
+                    if (level > statsMaxLevel)
+                    {
+                        statsMaxLevel = level;
+                    }
+                    if (dropped) statsDrops++;
+                    MaybeOutput();
                 }
-                if (dropped) statsDrops++;
+            }
 
-                if (ShouldOutput())
-                {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, output_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}, samples_per_frame={(int)(statsTotalSamples/statsTotalUpdates)}, level={statsMaxLevel}");
-                    Clear();
-                    statsTotalUpdates = 0;
-                    statsTotalSamples = 0;
-                    statsTotalTimeInInputBuffer = 0;
-                    statsTotalQueuedDuration = 0;
-                    statsDrops = 0;
-                    statsMaxLevel = 0;
-                }
+            protected override void OutputAggregate()
+            {
+                OutputFields(
+                    Rate("fps", statsTotalUpdates, "F3"),
+                    Average("record_latency_ms", statsTotalTimeInInputBuffer * 1000, statsTotalUpdates, "F0"),
+                    Average("output_queue_ms", statsTotalQueuedDuration, statsTotalUpdates, "F0"),
+                    Rate("fps_dropped", statsDrops),
+                    Average("samples_per_frame", statsTotalSamples, statsTotalUpdates, "F0"),
+                    Field("level", statsMaxLevel),
+                    Field("n_frames", statsTotalUpdates),
+                    Field("n_dropped", statsDrops),
+                    Field("n_samples", statsTotalSamples));
+                statsTotalUpdates = 0;
+                statsTotalSamples = 0;
+                statsTotalTimeInInputBuffer = 0;
+                statsTotalQueuedDuration = 0;
+                statsDrops = 0;
+                statsMaxLevel = 0;
             }
         }
 

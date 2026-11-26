@@ -209,6 +209,9 @@ namespace VRT.Transport.Dash
                 }
             }
 
+            /// <summary>
+            /// Called when the writer stops: frees the buffer and writes the final stats record (#451).
+            /// </summary>
             public void FreeBuffer()
             {
                 lock(this)
@@ -216,6 +219,9 @@ namespace VRT.Transport.Dash
                     curBuffer?.free();
                     curBuffer = null;
                 }
+#if !VRT_WITHOUT_STATS
+                stats.Final();
+#endif
             }
 
             public void PushBuffer()
@@ -243,18 +249,25 @@ namespace VRT.Transport.Dash
 
                 public void statsUpdate(int nBytes)
                 {
- 
-                    statsTotalBytes += nBytes;
-                    statsTotalPackets++;
-                    statsAggregatePackets++;
-
-                    if (ShouldOutput())
+                    lock (statsLock)
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}, aggregate_packets={statsAggregatePackets}");
-                        Clear();
-                        statsTotalBytes = 0;
-                        statsTotalPackets = 0;
+                        statsTotalBytes += nBytes;
+                        statsTotalPackets++;
+                        statsAggregatePackets++;
+                        MaybeOutput();
                     }
+                }
+
+                protected override void OutputAggregate()
+                {
+                    OutputFields(
+                        Rate("fps", statsTotalPackets),
+                        Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
+                        Field("aggregate_packets", statsAggregatePackets),
+                        Field("n_packets", statsTotalPackets),
+                        Field("bytes", statsTotalBytes));
+                    statsTotalBytes = 0;
+                    statsTotalPackets = 0;
                 }
             }
 

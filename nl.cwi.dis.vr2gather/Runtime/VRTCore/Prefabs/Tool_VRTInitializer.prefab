@@ -57,7 +57,7 @@ MonoBehaviour:
   ffmpegDLLDir: ../ffmpeg/x64
   autoInventUsername: 1
   StatisticsConfig:
-    interval: 10
+    interval: -1
     outputFile: 
     outputFileAppend: 1
   ScreenshotConfig:

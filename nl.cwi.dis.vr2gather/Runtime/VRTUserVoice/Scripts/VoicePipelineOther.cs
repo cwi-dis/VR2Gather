@@ -193,6 +193,9 @@ namespace VRT.UserRepresentation.Voice
             reader?.StopAndWait();
             codec?.StopAndWait();
             preparer?.StopAndWait();
+#if !VRT_WITHOUT_STATS
+            stats?.Final();
+#endif
         }
         
 
@@ -276,47 +279,66 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalLatency = 0;
             int statsTotalLatencyContributions = 0;
             double statsTotalQueueDuration = 0;
+            Timestamp lastTimestamp = 0;
 
+            // Called on the audio thread (OnAudioFilterRead), Final() on the main thread.
             public void statsUpdate(int nSamples, int nZeroSamples, Timestamp timestamp, Timedelta queueDuration)
             {
-                
-                statsTotalAudioframeCount++;
-                statsTotalAudioSamples += nSamples;
-                statsTotalAudioZeroSamples += nZeroSamples;
-                if (nZeroSamples > 0) statsZeroInsertionCount++;
-                if (timestamp > 0)
+                lock (statsLock)
                 {
-                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
-                    Timedelta latency = now - timestamp;
-                    if (latency < 0 || latency > 1000000)
+                    statsTotalAudioframeCount++;
+                    statsTotalAudioSamples += nSamples;
+                    statsTotalAudioZeroSamples += nZeroSamples;
+                    if (nZeroSamples > 0) statsZeroInsertionCount++;
+                    if (timestamp > 0)
                     {
-                        Debug.LogWarning($"{name}.Stats: preposterous latency {latency}");
+                        System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                        Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
+                        Timedelta latency = now - timestamp;
+                        if (latency < 0 || latency > 1000000)
+                        {
+                            Debug.LogWarning($"{name}.Stats: preposterous latency {latency}");
+                        }
+                        statsTotalLatency += latency;
+                        statsTotalLatencyContributions++;
                     }
-                    statsTotalLatency += latency;
-                    statsTotalLatencyContributions++;
+                    statsTotalQueueDuration += queueDuration;
+                    lastTimestamp = timestamp;
+                    MaybeOutput();
                 }
+            }
 
-                statsTotalQueueDuration += queueDuration;
-            
-                if (ShouldOutput())
+            protected override void OutputAggregate()
+            {
+                if (statsTotalLatencyContributions > 0)
                 {
-                    double factor = (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount);
-                    long latency_ms = statsTotalLatencyContributions == 0 ? 0 : (int)(statsTotalLatency / statsTotalLatencyContributions);
+                    double latency_ms = statsTotalLatency / statsTotalLatencyContributions;
                     if (latency_ms < 0 || latency_ms > 1000000)
                     {
                         Debug.LogWarning($"{name}.Stats: preposterous average latency {latency_ms}");
                     }
-                    Output($"latency_ms={latency_ms}, fps_output={statsTotalAudioframeCount / Interval():F2}, fps_zero_inserted={statsZeroInsertionCount / Interval():F2}, zero_inserted_percentage={(statsTotalAudioZeroSamples/statsTotalAudioSamples)*100:F2}, zero_inserted_samples={(int)statsTotalAudioZeroSamples}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, output_freq={statsTotalAudioSamples/Interval():F2}, timestamp={timestamp}");
-                    Clear();
-                    statsTotalAudioframeCount = 0;
-                    statsTotalAudioSamples = 0;
-                    statsTotalAudioZeroSamples = 0;
-                    statsZeroInsertionCount = 0;
-                    statsTotalLatency = 0;
-                    statsTotalLatencyContributions = 0;
-                    statsTotalQueueDuration = 0;
                 }
+                OutputFields(
+                    Average("latency_ms", statsTotalLatency, statsTotalLatencyContributions, "F0"),
+                    Rate("fps_output", statsTotalAudioframeCount),
+                    Rate("fps_zero_inserted", statsZeroInsertionCount),
+                    Average("zero_inserted_percentage", statsTotalAudioZeroSamples * 100, statsTotalAudioSamples),
+                    Field("zero_inserted_samples", statsTotalAudioZeroSamples),
+                    Average("voicereceiver_queue_ms", statsTotalQueueDuration, statsTotalAudioframeCount, "F0"),
+                    Average("samples_per_frame", statsTotalAudioSamples, statsTotalAudioframeCount, "F0"),
+                    Rate("output_freq", statsTotalAudioSamples),
+                    Field("timestamp", lastTimestamp),
+                    Field("n_frames", statsTotalAudioframeCount),
+                    Field("n_zero_inserted", statsZeroInsertionCount),
+                    Field("n_samples", statsTotalAudioSamples),
+                    Field("n_latency", statsTotalLatencyContributions));
+                statsTotalAudioframeCount = 0;
+                statsTotalAudioSamples = 0;
+                statsTotalAudioZeroSamples = 0;
+                statsZeroInsertionCount = 0;
+                statsTotalLatency = 0;
+                statsTotalLatencyContributions = 0;
+                statsTotalQueueDuration = 0;
             }
         }
 

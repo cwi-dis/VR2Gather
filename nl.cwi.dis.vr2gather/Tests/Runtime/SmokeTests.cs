@@ -101,6 +101,10 @@ namespace VRT.Tests.Runtime
             yield return WaitForScene(LoginScene, "the session to end");
             // Let leaving the session finish.
             yield return new WaitForSeconds(1);
+            // A Statistics object whose component never called Final() warns from its finalizer
+            // (cwi-dis/cwipc_unity#89): make those run now, so the warning is counted below (#451).
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
 
             List<string> problems, stats;
             lock (_lock)

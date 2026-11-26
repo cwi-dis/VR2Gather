@@ -42,6 +42,9 @@ namespace VRT.UserRepresentation.Voice
         public override void AsyncOnStop()
         {
             outQueue.Close();
+#if !VRT_WITHOUT_STATS
+            stats.Final();
+#endif
             base.AsyncOnStop();
         }
 
@@ -90,27 +93,35 @@ namespace VRT.UserRepresentation.Voice
             public Stats(string name) : base(name) { }
 
             double statsTotalUpdates;
-            double statsTotalEncodeDuration;
+            double statsTotalDecodeDuration;
             double statsTotalQueuedDuration;
             double statsDrops;
 
             public void statsUpdate(Timedelta decodeDuration, Timedelta queuedDuration, bool dropped)
             {
-
-                statsTotalUpdates += 1;
-                statsTotalEncodeDuration += decodeDuration;
-                statsTotalQueuedDuration += queuedDuration;
-                if (dropped) statsDrops++;
-
-                if (ShouldOutput())
+                lock (statsLock)
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, decoder_ms={statsTotalEncodeDuration / statsTotalUpdates:F2}, decoder_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
-                    Clear();
-                    statsTotalUpdates = 0;
-                    statsTotalEncodeDuration = 0;
-                    statsTotalQueuedDuration = 0;
-                    statsDrops = 0;
+                    statsTotalUpdates += 1;
+                    statsTotalDecodeDuration += decodeDuration;
+                    statsTotalQueuedDuration += queuedDuration;
+                    if (dropped) statsDrops++;
+                    MaybeOutput();
                 }
+            }
+
+            protected override void OutputAggregate()
+            {
+                OutputFields(
+                    Rate("fps", statsTotalUpdates, "F3"),
+                    Average("decoder_ms", statsTotalDecodeDuration, statsTotalUpdates),
+                    Average("decoder_queue_ms", statsTotalQueuedDuration, statsTotalUpdates, "F0"),
+                    Rate("fps_dropped", statsDrops),
+                    Field("n_frames", statsTotalUpdates),
+                    Field("n_dropped", statsDrops));
+                statsTotalUpdates = 0;
+                statsTotalDecodeDuration = 0;
+                statsTotalQueuedDuration = 0;
+                statsDrops = 0;
             }
         }
 

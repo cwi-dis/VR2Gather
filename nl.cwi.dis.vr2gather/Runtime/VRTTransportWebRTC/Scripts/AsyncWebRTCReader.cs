@@ -168,6 +168,13 @@ namespace VRT.Transport.WebRTC
 #endif
                     }
                 }
+                finally
+                {
+                    // However this thread ends: its final stats record (#451).
+#if !VRT_WITHOUT_STATS
+                    stats.Final();
+#endif
+                }
 
             }
 
@@ -176,7 +183,6 @@ namespace VRT.Transport.WebRTC
             {
                 public Stats(string name) : base(name) { }
 
-                System.DateTime statsConnectionStartTime;
                 double statsTotalBytes;
                 double statsTotalPackets;
                 int statsAggregatePackets;
@@ -184,18 +190,30 @@ namespace VRT.Transport.WebRTC
                 
                 public void statsUpdate(int nBytes, bool dropped)
                 {
-                    statsTotalBytes += nBytes;
-                    statsTotalPackets++;
-                    statsAggregatePackets++;
-                    if (dropped) statsDroppedPackets++;
-                    if (ShouldOutput())
+                    lock (statsLock)
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, receive_bandwidth={(int)(statsTotalBytes/Interval())}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, aggregate_packets={statsAggregatePackets}");
-                        Clear();
-                        statsTotalBytes = 0;
-                        statsTotalPackets = 0;
-                        statsDroppedPackets = 0;
+                        statsTotalBytes += nBytes;
+                        statsTotalPackets++;
+                        statsAggregatePackets++;
+                        if (dropped) statsDroppedPackets++;
+                        MaybeOutput();
                     }
+                }
+
+                protected override void OutputAggregate()
+                {
+                    OutputFields(
+                        Rate("fps", statsTotalPackets),
+                        Rate("fps_dropped", statsDroppedPackets),
+                        Rate("receive_bandwidth", statsTotalBytes, "F0"),
+                        Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
+                        Field("aggregate_packets", statsAggregatePackets),
+                        Field("n_packets", statsTotalPackets),
+                        Field("n_dropped", statsDroppedPackets),
+                        Field("bytes", statsTotalBytes));
+                    statsTotalBytes = 0;
+                    statsTotalPackets = 0;
+                    statsDroppedPackets = 0;
                 }
             }
 

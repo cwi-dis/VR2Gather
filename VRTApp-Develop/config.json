@@ -9,7 +9,6 @@
     "ffmpegDLLDir": "../ffmpeg/x64",
     "autoInventUsername": true,
     "StatisticsConfig": {
-        "interval": 10.0,
         "outputFile": "",
         "outputFileAppend": true
     },

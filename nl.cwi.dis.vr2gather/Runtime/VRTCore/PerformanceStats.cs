@@ -15,7 +15,7 @@ namespace VRT.Core
         void Start()
         {
             stats = new Stats("PerformanceStats");
-         }
+        }
   
         // Update is called once per frame
         void Update()
@@ -23,30 +23,42 @@ namespace VRT.Core
             stats.statsUpdate();
         }
 
+        void OnDestroy()
+        {
+            stats?.Final();
+        }
  
         protected class Stats : Statistics
         {
             public Stats(string name) : base(name)
             {
                 myProcess = Process.GetCurrentProcess();
+                // Here, not in the first record: with final-only that is the only record, and it
+                // would always say cpu=0 (#451).
+                prevCpu = myProcess.TotalProcessorTime.TotalSeconds;
             }
 
             Process myProcess;
-            double prevCpu = -1;
+            double prevCpu;
 
             public void statsUpdate()
             {
-                if (ShouldOutput())
+                lock (statsLock)
                 {
-                    myProcess.Refresh();
-                    double cpu = myProcess.TotalProcessorTime.TotalSeconds;
-                    if (prevCpu < 0) prevCpu = cpu; // Stop-gap for extremely large value at beginning
-                    long memory = myProcess.VirtualMemorySize64;
-                    
-                    Output($"cpu={(cpu-prevCpu)/Interval()}, memory={memory}");
-                    Clear();
-                    prevCpu = myProcess.TotalProcessorTime.TotalSeconds;
+                    MaybeOutput();
                 }
+            }
+
+            protected override void OutputAggregate()
+            {
+                myProcess.Refresh();
+                double cpu = myProcess.TotalProcessorTime.TotalSeconds;
+                long memory = myProcess.VirtualMemorySize64;
+                // cpu: processor seconds per second over the interval of this record.
+                OutputFields(
+                    Rate("cpu", cpu - prevCpu, "F3"),
+                    Field("memory", memory));
+                prevCpu = cpu;
             }
         }
 

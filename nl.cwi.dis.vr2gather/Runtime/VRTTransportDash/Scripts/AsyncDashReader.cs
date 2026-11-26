@@ -81,6 +81,10 @@ namespace VRT.Transport.Dash
 
             public void Join()
             {
+                // Called when the reader stops (or reinitializes): the end of this handler (#451).
+#if !VRT_WITHOUT_STATS
+                stats.Final();
+#endif
             }
 
             protected void getDataFromStream(int stream_index, int bytesNeeded)
@@ -177,27 +181,45 @@ namespace VRT.Transport.Dash
                 int statsAggregatePackets;
                 double statsTotalDrops;
                 double statsTotalLatency;
-
                 double statsTotalDelta;
+                int lastStreamIndex;
+                Timestamp lastTimestamp;
                 
                 public void statsUpdate(int nBytes, bool didDrop, Timestamp timeStamp, Timestamp timeDelta, Timedelta latency, int stream_index)
                 {
-                    statsTotalBytes += nBytes;
-                    statsTotalDelta += timeDelta;
-                    statsTotalPackets++;
-                    statsAggregatePackets++;
-                    statsTotalLatency += latency;
-                    if (didDrop) statsTotalDrops++;
-                    if (ShouldOutput())
+                    lock (statsLock)
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, gap_ms={(int)(statsTotalDelta / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}, aggregate_packets={statsAggregatePackets}");
-                        Clear();
-                        statsTotalBytes = 0;
-                        statsTotalDelta = 0;
-                        statsTotalPackets = 0;
-                        statsTotalDrops = 0;
-                        statsTotalLatency = 0;
+                        statsTotalBytes += nBytes;
+                        statsTotalDelta += timeDelta;
+                        statsTotalPackets++;
+                        statsAggregatePackets++;
+                        statsTotalLatency += latency;
+                        if (didDrop) statsTotalDrops++;
+                        lastStreamIndex = stream_index;
+                        lastTimestamp = timeStamp;
+                        MaybeOutput();
                     }
+                }
+
+                protected override void OutputAggregate()
+                {
+                    OutputFields(
+                        Rate("fps", statsTotalPackets),
+                        Rate("fps_dropped", statsTotalDrops),
+                        Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
+                        Average("network_latency_ms", statsTotalLatency, statsTotalPackets, "F0"),
+                        Average("gap_ms", statsTotalDelta, statsTotalPackets, "F0"),
+                        Field("last_stream_index", lastStreamIndex),
+                        Field("last_timestamp", lastTimestamp),
+                        Field("aggregate_packets", statsAggregatePackets),
+                        Field("n_packets", statsTotalPackets),
+                        Field("n_dropped", statsTotalDrops),
+                        Field("bytes", statsTotalBytes));
+                    statsTotalBytes = 0;
+                    statsTotalDelta = 0;
+                    statsTotalPackets = 0;
+                    statsTotalDrops = 0;
+                    statsTotalLatency = 0;
                 }
             }
 

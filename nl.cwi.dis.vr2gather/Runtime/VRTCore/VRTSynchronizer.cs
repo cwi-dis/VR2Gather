@@ -349,6 +349,13 @@ namespace VRT.Core
 #endif
             }
 
+        void OnDestroy()
+        {
+#if !VRT_WITHOUT_STATS
+            stats?.Final();
+#endif
+        }
+
         // Update is called once per frame
         void Update()
         {
@@ -362,24 +369,37 @@ namespace VRT.Core
             int statsTotalCalls = 0;
             int statsTotalFreshReturn = 0;
             int statsTotalStaleReturn = 0;
-            
+            Timestamp lastTimestamp = 0;
+
             public void statsUpdate(bool freshReturn, bool staleReturn, Timestamp utcMillisForCurrentFrame, Timestamp timestamp)
             {
-                Timedelta currentLatency = utcMillisForCurrentFrame - timestamp;
-                statsTotalPreferredLatency += currentLatency;
-                statsTotalCalls++;
-                if (freshReturn) statsTotalFreshReturn++;
-                if (staleReturn) statsTotalStaleReturn++;
-                
-                if (ShouldOutput())
+                lock (statsLock)
                 {
-                    Output($"fps={statsTotalCalls / Interval():F2}, latency_ms={(int)(statsTotalPreferredLatency / statsTotalCalls)}, fps_fresh={statsTotalFreshReturn / Interval():F2}, fps_stale={statsTotalStaleReturn / Interval():F2}, timestamp={timestamp}");
-                    Clear();
-                    statsTotalPreferredLatency = 0;
-                    statsTotalCalls = 0;
-                    statsTotalFreshReturn = 0;
-                    statsTotalStaleReturn = 0;
+                    Timedelta currentLatency = utcMillisForCurrentFrame - timestamp;
+                    statsTotalPreferredLatency += currentLatency;
+                    statsTotalCalls++;
+                    if (freshReturn) statsTotalFreshReturn++;
+                    if (staleReturn) statsTotalStaleReturn++;
+                    lastTimestamp = timestamp;
+                    MaybeOutput();
                 }
+            }
+
+            protected override void OutputAggregate()
+            {
+                OutputFields(
+                    Rate("fps", statsTotalCalls),
+                    Average("latency_ms", statsTotalPreferredLatency, statsTotalCalls, "F0"),
+                    Rate("fps_fresh", statsTotalFreshReturn),
+                    Rate("fps_stale", statsTotalStaleReturn),
+                    Field("timestamp", lastTimestamp),
+                    Field("n_calls", statsTotalCalls),
+                    Field("n_fresh", statsTotalFreshReturn),
+                    Field("n_stale", statsTotalStaleReturn));
+                statsTotalPreferredLatency = 0;
+                statsTotalCalls = 0;
+                statsTotalFreshReturn = 0;
+                statsTotalStaleReturn = 0;
             }
         }
 

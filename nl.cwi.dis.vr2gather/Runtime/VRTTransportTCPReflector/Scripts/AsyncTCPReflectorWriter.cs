@@ -74,6 +74,9 @@ namespace VRT.Transport.TCPReflector
             {
                 connection.UnregisterOutgoingStream(streams[i].name);
             }
+#if !VRT_WITHOUT_STATS
+            stats.Final();
+#endif
             base.AsyncOnStop();
         }
 
@@ -112,19 +115,31 @@ namespace VRT.Transport.TCPReflector
             double statsTotalBytes;
             double statsTotalPackets;
             int statsAggregatePackets;
+            int lastStreamIndex;
            
             public void statsUpdate(int nBytes, int streamIndex)
             {
-                statsTotalBytes += nBytes;
-                statsTotalPackets++;
-                statsAggregatePackets++;
-                if (ShouldOutput())
+                lock (statsLock)
                 {
-                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}, aggregate_packets={statsAggregatePackets}");
-                    Clear();
-                    statsTotalBytes = 0;
-                    statsTotalPackets = 0;
+                    statsTotalBytes += nBytes;
+                    statsTotalPackets++;
+                    statsAggregatePackets++;
+                    lastStreamIndex = streamIndex;
+                    MaybeOutput();
                 }
+            }
+
+            protected override void OutputAggregate()
+            {
+                OutputFields(
+                    Rate("fps", statsTotalPackets),
+                    Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
+                    Field("last_stream_id", lastStreamIndex),
+                    Field("aggregate_packets", statsAggregatePackets),
+                    Field("n_packets", statsTotalPackets),
+                    Field("bytes", statsTotalBytes));
+                statsTotalBytes = 0;
+                statsTotalPackets = 0;
             }
         }
 

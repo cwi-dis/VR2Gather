@@ -47,6 +47,9 @@ namespace VRT.UserRepresentation.Voice
         public override void AsyncOnStop()
         {
             outQueue?.Close();
+#if !VRT_WITHOUT_STATS
+            stats.Final();
+#endif
             base.AsyncOnStop();
         }
 
@@ -96,21 +99,29 @@ namespace VRT.UserRepresentation.Voice
 
             public void statsUpdate(Timedelta encodeDuration, Timedelta queuedDuration, bool dropped)
             {
-
-                statsTotalUpdates += 1;
-                statsTotalEncodeDuration += encodeDuration;
-                statsTotalQueuedDuration += queuedDuration;
-                if (dropped) statsDrops++;
-
-                if (ShouldOutput())
+                lock (statsLock)
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, encoder_ms={(statsTotalEncodeDuration / statsTotalUpdates):F2}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
-                    Clear();
-                    statsTotalUpdates = 0;
-                    statsTotalEncodeDuration = 0;
-                    statsTotalQueuedDuration = 0;
-                    statsDrops = 0;
+                    statsTotalUpdates += 1;
+                    statsTotalEncodeDuration += encodeDuration;
+                    statsTotalQueuedDuration += queuedDuration;
+                    if (dropped) statsDrops++;
+                    MaybeOutput();
                 }
+            }
+
+            protected override void OutputAggregate()
+            {
+                OutputFields(
+                    Rate("fps", statsTotalUpdates, "F3"),
+                    Average("encoder_ms", statsTotalEncodeDuration, statsTotalUpdates),
+                    Average("transmitter_queue_ms", statsTotalQueuedDuration, statsTotalUpdates, "F0"),
+                    Rate("fps_dropped", statsDrops),
+                    Field("n_frames", statsTotalUpdates),
+                    Field("n_dropped", statsDrops));
+                statsTotalUpdates = 0;
+                statsTotalEncodeDuration = 0;
+                statsTotalQueuedDuration = 0;
+                statsDrops = 0;
             }
         }
 

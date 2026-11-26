@@ -44,8 +44,8 @@ namespace VRT.Core
         [Serializable]
         public class StatisticsConfigType
         {
-            [Tooltip("If nonzero: number of seconds between stats: lines. If zero: every event")]
-            public double interval = 10.0;
+            [Tooltip("Negative (the default): only a final stats: line per component, when it stops. Zero: a line on every event. Positive: seconds between periodic stats: lines, plus the final one")]
+            public double interval = -1;
             [Tooltip("Path name of stats: output file. Empty: to console log")]
             public string outputFile = "";
             [Tooltip("Append to stats: file in stead of overwriting")]

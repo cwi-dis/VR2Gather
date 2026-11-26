@@ -29,6 +29,13 @@ public class KinectJointPoseProvider : BasePoseProvider
 
     // Start is called before the first frame update
 
+    void OnDestroy()
+    {
+#if !VRT_WITHOUT_STATS
+        stats?.Final();
+#endif
+    }
+
     void Start()
     {
 #if !VRT_WITHOUT_STATS
@@ -99,27 +106,35 @@ public class KinectJointPoseProvider : BasePoseProvider
         double statsTotalSkeletons = 0;
         double statsTotalNoSkeletons = 0;
         double statsTotalJoints = 0;
-       
+
         public void statsUpdate(bool hasSkeleton, int nJoints)
         {
-            if (hasSkeleton)
+            lock (statsLock)
             {
-                statsTotalSkeletons++;
-                statsTotalJoints += nJoints;
+                if (hasSkeleton)
+                {
+                    statsTotalSkeletons++;
+                    statsTotalJoints += nJoints;
+                }
+                else
+                {
+                    statsTotalNoSkeletons++;
+                }
+                MaybeOutput();
             }
-            else
-            {
-                statsTotalNoSkeletons++;
-            }
-            if (ShouldOutput())
-            {
-                double factor = statsTotalSkeletons == 0 ? 1 : statsTotalSkeletons;
-                Output($"fps_skeleton={statsTotalSkeletons / Interval():F2}, joints_per_skeleton={(int)(statsTotalJoints / factor)}, fps_noskeleton={statsTotalNoSkeletons / Interval():F2}");
-                Clear();
-                statsTotalSkeletons = 0;
-                statsTotalNoSkeletons = 0;
-                statsTotalJoints = 0;
-             }
+        }
+
+        protected override void OutputAggregate()
+        {
+            OutputFields(
+                Rate("fps_skeleton", statsTotalSkeletons),
+                Average("joints_per_skeleton", statsTotalJoints, statsTotalSkeletons, "F0"),
+                Rate("fps_noskeleton", statsTotalNoSkeletons),
+                Field("n_skeletons", statsTotalSkeletons),
+                Field("n_noskeletons", statsTotalNoSkeletons));
+            statsTotalSkeletons = 0;
+            statsTotalNoSkeletons = 0;
+            statsTotalJoints = 0;
         }
     }
 

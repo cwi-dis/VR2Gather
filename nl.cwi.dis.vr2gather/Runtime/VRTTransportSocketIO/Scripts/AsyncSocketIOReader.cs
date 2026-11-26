@@ -41,6 +41,10 @@ namespace VRT.Transport.SocketIO
             }
             this.descriptors = descriptors;
             this.remoteUserId = userId;
+            // Before subscribing: a packet may arrive right away, and OnDataPacketReceived uses the stats.
+#if !VRT_WITHOUT_STATS
+            stats = new Stats(Name());
+#endif
             try
             {
                 for (int i = 0; i < this.descriptors.Length; ++i)
@@ -51,9 +55,6 @@ namespace VRT.Transport.SocketIO
                 }
 
                 VRTOrchestratorSingleton.Streams.OnDataStreamReceived += OnDataPacketReceived;
-#if !VRT_WITHOUT_STATS
-                stats = new Stats(Name());
-#endif
                 Start();
                 Debug.Log($"{Name()}: Started {remoteUrl}.{streamName}");
             }
@@ -98,6 +99,15 @@ namespace VRT.Transport.SocketIO
                 if (VRTOrchestratorSingleton.Streams != null)
                     VRTOrchestratorSingleton.Streams.UnregisterFromDataStream(remoteUserId, descriptors[i].name);
             }
+        }
+
+        public override void AsyncOnStop()
+        {
+            // After Stop() has unsubscribed, so no more statsUpdate() calls (#451).
+#if !VRT_WITHOUT_STATS
+            stats.Final();
+#endif
+            base.AsyncOnStop();
         }
 
         protected override void AsyncUpdate()
@@ -149,21 +159,38 @@ namespace VRT.Transport.SocketIO
             double statsTotalPackets = 0;
             int statsAggregatePackets = 0;
             double statsTotalDrops = 0;
+            int lastStreamIndex;
+            Timestamp lastTimestamp;
             
             public void statsUpdate(int nBytes, bool dropped, Timestamp timestamp, int streamId)
             {
-                statsTotalBytes += nBytes;
-                statsTotalPackets++;
-                statsAggregatePackets++;
-                if (dropped) statsTotalDrops++;
-                if (ShouldOutput())
+                lock (statsLock)
                 {
-                    Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={streamId}, last_timestamp={timestamp}, aggregate_packets={statsAggregatePackets}");
-                    Clear();
-                    statsTotalBytes = 0;
-                    statsTotalPackets = 0;
-                    statsTotalDrops = 0;
+                    statsTotalBytes += nBytes;
+                    statsTotalPackets++;
+                    statsAggregatePackets++;
+                    if (dropped) statsTotalDrops++;
+                    lastStreamIndex = streamId;
+                    lastTimestamp = timestamp;
+                    MaybeOutput();
                 }
+            }
+
+            protected override void OutputAggregate()
+            {
+                OutputFields(
+                    Rate("fps", statsTotalPackets),
+                    Rate("fps_dropped", statsTotalDrops),
+                    Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
+                    Field("last_stream_index", lastStreamIndex),
+                    Field("last_timestamp", lastTimestamp),
+                    Field("aggregate_packets", statsAggregatePackets),
+                    Field("n_packets", statsTotalPackets),
+                    Field("n_dropped", statsTotalDrops),
+                    Field("bytes", statsTotalBytes));
+                statsTotalBytes = 0;
+                statsTotalPackets = 0;
+                statsTotalDrops = 0;
             }
         }
 

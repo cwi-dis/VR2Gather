@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [next] - unreleased
 
+- Statistics: every component writes a final stats record when it stops, and the default `StatisticsConfig.interval` is final-only (`-1`); set an interval in `config.json` to get periodic records as before. Needs cwipc_unity with cwi-dis/cwipc_unity#89 (#451)
+
 ## [1.4.6] - 2026-11-24
 
 - Works in both BIRP and URP projects, Porting Check warns about materials that need work (#433, #384, #365, #428)

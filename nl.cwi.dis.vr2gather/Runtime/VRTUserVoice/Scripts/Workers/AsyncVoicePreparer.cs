@@ -86,6 +86,9 @@ namespace VRT.UserRepresentation.Voice
                 currentAudioFrame?.free();
                 currentAudioFrame = null;
             }
+#if !VRT_WITHOUT_STATS
+            stats.Final();
+#endif
             base.AsyncOnStop();
         }
 
@@ -337,26 +340,32 @@ namespace VRT.UserRepresentation.Voice
 
             public void statsUpdate(int nSamples, int dropCount, bool noData)
             {
-
-                statsTotalUpdates += 1;
-                statsTotalSamples += nSamples;
-                statsDrops += dropCount;
-                if (noData) statsNoData++;
-
-                if (ShouldOutput())
+                lock (statsLock)
                 {
-                    int samplesPerFrame = 0;
-                    if(statsTotalUpdates > statsNoData)
-                    {
-                        samplesPerFrame = (int)(statsTotalSamples / (statsTotalUpdates - statsNoData));
-                    }
-                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, samples_per_frame={samplesPerFrame}");
-                    Clear();
-                    statsTotalUpdates = 0;
-                    statsTotalSamples = 0;
-                    statsDrops = 0;
-                    statsNoData = 0;
+                    statsTotalUpdates += 1;
+                    statsTotalSamples += nSamples;
+                    statsDrops += dropCount;
+                    if (noData) statsNoData++;
+                    MaybeOutput();
                 }
+            }
+
+            protected override void OutputAggregate()
+            {
+                OutputFields(
+                    Rate("fps", statsTotalUpdates),
+                    Rate("fps_dropped", statsDrops),
+                    Rate("fps_nodata", statsNoData),
+                    // Per frame that had data.
+                    Average("samples_per_frame", statsTotalSamples, statsTotalUpdates - statsNoData, "F0"),
+                    Field("n_updates", statsTotalUpdates),
+                    Field("n_dropped", statsDrops),
+                    Field("n_nodata", statsNoData),
+                    Field("n_samples", statsTotalSamples));
+                statsTotalUpdates = 0;
+                statsTotalSamples = 0;
+                statsDrops = 0;
+                statsNoData = 0;
             }
         }
 
