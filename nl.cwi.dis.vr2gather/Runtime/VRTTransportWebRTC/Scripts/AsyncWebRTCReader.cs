@@ -145,9 +145,11 @@ namespace VRT.Transport.WebRTC
                         }
                         if (mc != null)
                         {
+                            // Before Enqueue(): after it the queue or its consumer may have freed mc.
+                            int nBytes = mc.length;
                             bool ok = receiverInfo.outQueue.Enqueue(mc);
 #if !VRT_WITHOUT_STATS
-                            stats.statsUpdate(mc.length, !ok);
+                            stats.statsUpdate(nBytes, !ok);
 #endif
                         } else
                         {
