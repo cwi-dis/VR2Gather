@@ -261,6 +261,16 @@ jobs:
     name: Build (Windows)
     runs-on: windows-2022
     steps:
+      # The Docker service sometimes isn't running when a windows-2022 runner starts
+      # (actions/runner-images#13729): start it. Remove once that is fixed (#455).
+      - name: Docker issue workaround
+        id: docker-workaround
+        run: |
+          $dockerState = Get-Service -Name "docker"
+          if ($dockerState.Status -ne "Running") {
+            Start-Service -Name "docker"
+          }
+
       - uses: actions/checkout@v7
         with:
           lfs: true
