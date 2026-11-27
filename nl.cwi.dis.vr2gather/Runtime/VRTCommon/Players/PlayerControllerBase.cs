@@ -3,6 +3,7 @@ using TMPro;
 using VRT.Core;
 using System;
 using VRT.UserRepresentation.Voice;
+using Statistics = Cwipc.Statistics;
 
 namespace VRT.Pilots.Common
 {
@@ -110,6 +111,7 @@ namespace VRT.Pilots.Common
             if (isInitialized && type == userRepresentation) return;
             isInitialized = true;
             userRepresentation = type;
+            bool fallback = false;
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
                 Destroy(webpipeline);
@@ -140,6 +142,7 @@ namespace VRT.Pilots.Common
                     {
                         Debug.Log($"Cannot set representation VideoAvatar. Exception {e}");
                         Debug.LogError($"Cannot set representation VideoAvatar. Revert to avatar.");
+                        fallback = true;
                         userRepresentation = UserRepresentationType.SimpleAvatar;
                         avatar.SetActive(true);
                         webcam.SetActive(false);
@@ -161,8 +164,11 @@ namespace VRT.Pilots.Common
                     }
                     catch (Exception e)
                     {
-                        Debug.Log($"Cannot set representation PointCloud, variant {VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant}. Exception {e}");
-                        Debug.LogError($"Cannot set representation PointCloud, variant {VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant}. Revert to avatar.");
+                        // Only the self player's variant is known here: it's our own config.
+                        string variantText = isLocalPlayer ? $", variant {SelfPointCloudVariant()}" : "";
+                        Debug.Log($"Cannot set representation PointCloud{variantText}. Exception {e}");
+                        Debug.LogError($"Cannot set representation PointCloud{variantText}. Revert to avatar.");
+                        fallback = true;
                         userRepresentation = UserRepresentationType.SimpleAvatar;
                         avatar.SetActive(true);
                         this.pointcloud.SetActive(false);
@@ -183,6 +189,28 @@ namespace VRT.Pilots.Common
                     isVisible = false;
                     break;
             }
+            StatsRepresentation(type, fallback);
+        }
+
+        /// <summary>
+        /// The variant of our own point cloud representation, from our own config.
+        /// </summary>
+        static RepresentationPointcloudVariant SelfPointCloudVariant()
+        {
+            return VRTConfig.Instance.RepresentationConfig.RepresentationPointcloudConfig.variant;
+        }
+
+        /// <summary>
+        /// A stats record with the representation this player ended up with, so a fallback to an avatar
+        /// shows in stats.log and not only in the Unity log (#450). The variant only for our own
+        /// point cloud: other players' variants aren't known here.
+        /// </summary>
+        void StatsRepresentation(UserRepresentationType requested, bool fallback)
+        {
+#if !VRT_WITHOUT_STATS
+            string variant = (isLocalPlayer && requested == UserRepresentationType.PointCloud) ? $", variant={SelfPointCloudVariant()}" : "";
+            Statistics.Output(Name(), $"representation={userRepresentation}{variant}, fallback={(fallback ? 1 : 0)}");
+#endif
         }
 
         public GameObject GetRepresentationGameObject()
