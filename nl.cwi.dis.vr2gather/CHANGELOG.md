@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Statistics: the version record says which render pipeline (BIRP or URP) a run used (#434)
 - Statistics: a record of each player's representation, so a fallback to an avatar shows in `stats.log` (#450)
 - Statistics: `latency_ms` is the lowest latency for voice too (was the mean), and point cloud `latency_max_ms` the highest age of what's on screen (was the highest at arrival). Needs cwipc_unity with cwi-dis/cwipc_unity#57 (#382)
+- Dash: no exception at application exit from the lldash#102 workaround (#448)
 
 ## [1.4.6] - 2026-11-24
 

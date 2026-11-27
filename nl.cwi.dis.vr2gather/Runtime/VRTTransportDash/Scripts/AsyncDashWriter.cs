@@ -33,6 +33,24 @@ namespace VRT.Transport.Dash
             return new AsyncDashWriter();
         }
 
+        // Set when the application quits, so the lldash#102 sleep in AsyncOnStop() ends early instead
+        // of being aborted by Unity's shutdown (#448).
+        static ManualResetEvent applicationQuitting = new ManualResetEvent(false);
+
+        // Also on every entry into Play mode: without a domain reload the event stays set from the last exit.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void WatchApplicationQuitting()
+        {
+            applicationQuitting.Reset();
+            Application.quitting -= OnApplicationQuitting;
+            Application.quitting += OnApplicationQuitting;
+        }
+
+        static void OnApplicationQuitting()
+        {
+            applicationQuitting.Set();
+        }
+
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         public lldpkg.connection lldpkgHandle;
@@ -140,9 +158,13 @@ namespace VRT.Transport.Dash
             }
             lldpkgHandle?.free();
             lldpkgHandle = null;
-            // Workaround attempt for lldash#102
+            // Workaround attempt for lldash#102. Not when the application quits: then the process ends
+            // anyway, and Unity's shutdown would abort the sleep before base.AsyncOnStop() (#448).
             Debug.Log($"{Name()}: Sleep 4 seconds as workaround for lldash#102");
-            Thread.Sleep(4000);
+            if (applicationQuitting.WaitOne(4000))
+            {
+                Debug.Log($"{Name()}: Application quitting, sleep for lldash#102 cut short");
+            }
             base.AsyncOnStop();
         }
 
