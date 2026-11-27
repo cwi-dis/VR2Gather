@@ -229,11 +229,13 @@ namespace VRT.Transport.Dash
                 lock(this)
                 {
                     if (curBuffer == null) return;
+                    bool sent = parent.lldpkgHandle.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length);
+                    if (!sent) Debug.LogError($"{Name()}({parent.url}): ERROR sending data");
 #if !VRT_WITHOUT_STATS
-                    stats.statsUpdate(curBuffer.length);
+                    // A frame lldash refused isn't sent: a drop, not counted in n_packets and bytes (#457).
+                    if (sent) stats.statsUpdate(curBuffer.length);
+                    else stats.statsDropSend();
 #endif
-                    if (!parent.lldpkgHandle.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length))
-                        Debug.LogError($"{Name()}({parent.url}): ERROR sending data");
                 }
             }
 
@@ -245,6 +247,7 @@ namespace VRT.Transport.Dash
 
                 double statsTotalBytes = 0;
                 double statsTotalPackets = 0;
+                double statsDrops = 0;
                 int statsAggregatePackets = 0;
 
                 public void statsUpdate(int nBytes)
@@ -258,6 +261,18 @@ namespace VRT.Transport.Dash
                     }
                 }
 
+                /// <summary>
+                /// A frame lldash refused to send: a drop (#457).
+                /// </summary>
+                public void statsDropSend()
+                {
+                    lock (statsLock)
+                    {
+                        statsDrops++;
+                        OutputDrop(DropReason.Send);
+                    }
+                }
+
                 protected override void OutputAggregate()
                 {
                     OutputFields(
@@ -265,9 +280,11 @@ namespace VRT.Transport.Dash
                         Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
                         Field("aggregate_packets", statsAggregatePackets),
                         Field("n_packets", statsTotalPackets),
+                        Field("n_dropped", statsDrops),
                         Field("bytes", statsTotalBytes));
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
+                    statsDrops = 0;
                 }
             }
 

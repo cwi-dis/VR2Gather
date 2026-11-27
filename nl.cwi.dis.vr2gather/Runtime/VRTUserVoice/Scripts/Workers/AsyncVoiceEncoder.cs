@@ -39,9 +39,10 @@ namespace VRT.UserRepresentation.Voice
 
         public override void Stop()
         {
+            // base.Stop() first: a failed Enqueue() after it is teardown, not a drop (#457).
+            base.Stop();
             // Close our output so the consumer wakes up at once (cwi-dis/cwipc_unity#82, rule 1).
             outQueue?.Close();
-            base.Stop();
         }
 
         public override void AsyncOnStop()
@@ -82,7 +83,8 @@ namespace VRT.UserRepresentation.Voice
             Timedelta queuedDuration = outQueue.QueuedDuration();
             bool ok = outQueue.Enqueue(mcOut);
 #if !VRT_WITHOUT_STATS
-            stats.statsUpdate(encodeDuration, queuedDuration, !ok);
+            // A failed Enqueue() while stopping is teardown (Stop() closes the queue), not a drop (#457).
+            stats.statsUpdate(encodeDuration, queuedDuration, !ok && isRunning);
 #endif
             mcIn.free();
         }
@@ -104,7 +106,11 @@ namespace VRT.UserRepresentation.Voice
                     statsTotalUpdates += 1;
                     statsTotalEncodeDuration += encodeDuration;
                     statsTotalQueuedDuration += queuedDuration;
-                    if (dropped) statsDrops++;
+                    if (dropped)
+                    {
+                        statsDrops++;
+                        OutputDrop(DropReason.Full);
+                    }
                     MaybeOutput();
                 }
             }

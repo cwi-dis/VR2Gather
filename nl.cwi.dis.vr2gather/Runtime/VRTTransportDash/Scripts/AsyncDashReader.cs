@@ -138,7 +138,8 @@ namespace VRT.Transport.Dash
 
                 bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
 #if !VRT_WITHOUT_STATS
-                stats.statsUpdate(bytesRead, didDrop, mostRecentDashTimestamp, deltaReceivedTimestamp, network_latency_ms, stream_index);
+                // A failed Enqueue() while stopping is teardown (Stop() closes the queue), not a drop (#457).
+                stats.statsUpdate(bytesRead, didDrop && parent.isRunning, mostRecentDashTimestamp, deltaReceivedTimestamp, network_latency_ms, stream_index);
 #endif
             }
 
@@ -194,7 +195,11 @@ namespace VRT.Transport.Dash
                         statsTotalPackets++;
                         statsAggregatePackets++;
                         statsTotalLatency += latency;
-                        if (didDrop) statsTotalDrops++;
+                        if (didDrop)
+                        {
+                            statsTotalDrops++;
+                            OutputDrop(DropReason.Full);
+                        }
                         lastStreamIndex = stream_index;
                         lastTimestamp = timeStamp;
                         MaybeOutput();

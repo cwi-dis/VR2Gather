@@ -160,7 +160,7 @@ namespace VRT.UserRepresentation.Voice
 
         bool _FillAudioFrame(Timestamp minTimestamp)
         {
-            int dropCount = 0;
+            int skipCount = 0; // older frames skipped to catch up: not drops (#457)
             while(true)
             {
                 if (currentAudioFrame != null)
@@ -176,7 +176,7 @@ namespace VRT.UserRepresentation.Voice
                         Debug.Log($"{Name()}: no audio frame available");
                     }
 #if !VRT_WITHOUT_STATS
-                    stats.statsUpdate(0, dropCount, true);
+                    stats.statsUpdate(0, skipCount, true);
 #endif
                     return false;
                 }
@@ -200,7 +200,7 @@ namespace VRT.UserRepresentation.Voice
                             // There is another frame in the queue that is also earlier than minTimestamp.
                             // Drop this one.
                             if (debugBuffering) Debug.Log($"{Name()}: drop frame ts={currentTimestamp} because next ts={queueHeadTimestamp} is better");
-                            dropCount++;
+                            skipCount++;
                             currentAudioFrame.free();
                             currentAudioFrame = null;
                             continue;
@@ -210,7 +210,7 @@ namespace VRT.UserRepresentation.Voice
                 }
                 int nSamples = currentAudioFrame.length / sizeof(float);
 #if !VRT_WITHOUT_STATS
-                stats.statsUpdate(nSamples, dropCount, false);
+                stats.statsUpdate(nSamples, skipCount, false);
 #endif
                 break;
             }
@@ -335,16 +335,16 @@ namespace VRT.UserRepresentation.Voice
 
             double statsTotalUpdates;
             double statsTotalSamples;
-            double statsDrops;
+            double statsSkips;
             double statsNoData;
 
-            public void statsUpdate(int nSamples, int dropCount, bool noData)
+            public void statsUpdate(int nSamples, int skipCount, bool noData)
             {
                 lock (statsLock)
                 {
                     statsTotalUpdates += 1;
                     statsTotalSamples += nSamples;
-                    statsDrops += dropCount;
+                    statsSkips += skipCount;
                     if (noData) statsNoData++;
                     MaybeOutput();
                 }
@@ -354,17 +354,17 @@ namespace VRT.UserRepresentation.Voice
             {
                 OutputFields(
                     Rate("fps", statsTotalUpdates),
-                    Rate("fps_dropped", statsDrops),
+                    Rate("fps_skipped", statsSkips),
                     Rate("fps_nodata", statsNoData),
                     // Per frame that had data.
                     Average("samples_per_frame", statsTotalSamples, statsTotalUpdates - statsNoData, "F0"),
                     Field("n_updates", statsTotalUpdates),
-                    Field("n_dropped", statsDrops),
+                    Field("n_skipped", statsSkips),
                     Field("n_nodata", statsNoData),
                     Field("n_samples", statsTotalSamples));
                 statsTotalUpdates = 0;
                 statsTotalSamples = 0;
-                statsDrops = 0;
+                statsSkips = 0;
                 statsNoData = 0;
             }
         }

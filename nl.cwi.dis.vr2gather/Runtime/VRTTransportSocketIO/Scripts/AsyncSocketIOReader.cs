@@ -80,7 +80,8 @@ namespace VRT.Transport.SocketIO
                     Debug.Log($"{Name()}: dropped packet for {pPacket.dataStreamType}, ts={timestamp}, queuelength is {outQueue.Count()}");
                 }
 #if !VRT_WITHOUT_STATS
-                stats.statsUpdate(nBytes, didDrop, timestamp);
+                // A failed Enqueue() while stopping is teardown (Stop() closes the queue), not a drop (#457).
+                stats.statsUpdate(nBytes, didDrop && parent.isRunning, timestamp);
 #endif
             }
 
@@ -221,7 +222,11 @@ namespace VRT.Transport.SocketIO
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
                     statsAggregatePackets++;
-                    if (dropped) statsTotalDrops++;
+                    if (dropped)
+                    {
+                        statsTotalDrops++;
+                        OutputDrop(DropReason.Full);
+                    }
                     lastTimestamp = timestamp;
                     MaybeOutput();
                 }

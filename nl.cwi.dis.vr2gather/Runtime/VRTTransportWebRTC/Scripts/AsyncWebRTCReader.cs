@@ -149,7 +149,8 @@ namespace VRT.Transport.WebRTC
                             int nBytes = mc.length;
                             bool ok = receiverInfo.outQueue.Enqueue(mc);
 #if !VRT_WITHOUT_STATS
-                            stats.statsUpdate(nBytes, !ok);
+                            // A failed Enqueue() while stopping is teardown (Stop() closes the queue), not a drop (#457).
+                            stats.statsUpdate(nBytes, !ok && parent.isRunning);
 #endif
                         } else
                         {
@@ -197,7 +198,11 @@ namespace VRT.Transport.WebRTC
                         statsTotalBytes += nBytes;
                         statsTotalPackets++;
                         statsAggregatePackets++;
-                        if (dropped) statsDroppedPackets++;
+                        if (dropped)
+                        {
+                            statsDroppedPackets++;
+                            OutputDrop(DropReason.Full);
+                        }
                         MaybeOutput();
                     }
                 }

@@ -104,6 +104,9 @@ namespace VRT.Transport.SocketIO
                     // weird errors with the current Orchestrator and BestHTTP implementations.
                     Debug.LogError($"{Name()}: Message size {chk.length} exceeds SocketIO 1MByte maximum. Dropping. ");
                     chk.free();
+#if !VRT_WITHOUT_STATS
+                    stats[i].statsDropTooLarge();
+#endif
                     continue;
                 }
                 var hdr_timestamp = BitConverter.GetBytes(chk.metadata.timestamp);
@@ -134,6 +137,7 @@ namespace VRT.Transport.SocketIO
 
             double statsTotalBytes;
             double statsTotalPackets;
+            double statsDrops;
             int statsAggregatePackets;
            
             public void statsUpdate(int nBytes)
@@ -147,6 +151,18 @@ namespace VRT.Transport.SocketIO
                 }
             }
 
+            /// <summary>
+            /// A frame thrown away because it is larger than socket.io can send: a drop (#457).
+            /// </summary>
+            public void statsDropTooLarge()
+            {
+                lock (statsLock)
+                {
+                    statsDrops++;
+                    OutputDrop(DropReason.Size);
+                }
+            }
+
             protected override void OutputAggregate()
             {
                 OutputFields(
@@ -154,9 +170,11 @@ namespace VRT.Transport.SocketIO
                     Average("bytes_per_packet", statsTotalBytes, statsTotalPackets, "F0"),
                     Field("aggregate_packets", statsAggregatePackets),
                     Field("n_packets", statsTotalPackets),
+                    Field("n_dropped", statsDrops),
                     Field("bytes", statsTotalBytes));
                 statsTotalBytes = 0;
                 statsTotalPackets = 0;
+                statsDrops = 0;
             }
         }
 

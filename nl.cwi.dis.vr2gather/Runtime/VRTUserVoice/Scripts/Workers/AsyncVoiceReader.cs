@@ -132,9 +132,10 @@ namespace VRT.UserRepresentation.Voice
             // On the main thread, like the MicroRecorder coroutine that writes the WAV file,
             // so the two can't interleave.
             StopRecording();
+            // base.Stop() first: a failed Enqueue() after it is teardown, not a drop (#457).
+            base.Stop();
             // Close our output so the consumer wakes up at once (cwi-dis/cwipc_unity#82, rule 1).
             outQueue.Close();
-            base.Stop();
         }
 
         public override void AsyncOnStop()
@@ -269,7 +270,8 @@ namespace VRT.UserRepresentation.Voice
                                 timeRemainingInBuffer = (float)available / wantedSampleRate;
                                 bool ok = outQueue.Enqueue(mc);
 #if !VRT_WITHOUT_STATS
-                                stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration(), MicrophoneLevel);
+                                // A failed Enqueue() while stopping is teardown (Stop() closes the queue), not a drop (#457).
+                                stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok && isRunning, outQueue.QueuedDuration(), MicrophoneLevel);
 #endif
                             }
                         }
@@ -334,7 +336,11 @@ namespace VRT.UserRepresentation.Voice
                     {
                         statsMaxLevel = level;
                     }
-                    if (dropped) statsDrops++;
+                    if (dropped)
+                    {
+                        statsDrops++;
+                        OutputDrop(DropReason.Full);
+                    }
                     MaybeOutput();
                 }
             }
