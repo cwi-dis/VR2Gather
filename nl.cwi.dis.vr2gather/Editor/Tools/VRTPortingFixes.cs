@@ -19,7 +19,7 @@ namespace VRT.Tools
     ///
     /// This file only uses Unity and (through reflection) XRI types, so it can also be run
     /// standalone against an application project:
-    ///   unity command run_script --file .../VRTPortingFixes.cs --entry VRT.Tools.VRTPortingFixes.FixPhysicsLayersInActiveScene --args '[true]'
+    ///   unity command script run --file .../VRTPortingFixes.cs --entry VRT.Tools.VRTPortingFixes.FixPhysicsLayersInActiveScene --args '[true]'
     /// </summary>
     public static class VRTPortingFixes
     {

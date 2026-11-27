@@ -42,7 +42,7 @@ cd webRTC-helpers && ./get_peer.sh && ./get_connector.sh
 
 **Releasing**: follow `Documentation/21-releasing.md` (version + tag, CI drafts the release with the players, try them and publish, update `VR2Gather_sample`).
 
-**Tests** (#416): `nl.cwi.dis.vr2gather/Tests/Editor` (EditMode: Porting Check on the enabled scenes, shaders and materials in this pipeline, config.json) and `Tests/Runtime` (PlayMode: smoke test, login → standalone Pilot 0 session → login, with a synthetic point cloud and a simple avatar; needs cwipc). Both development projects list the package in `testables`. Run them in the Test Runner (Window → General → Test Runner), or with `unity command run_tests --mode editor` (PlayMode only with `--async_tests true` and `test_status`: entering Play mode drops a synchronous request). Testing with several participants or in VR is still manual (the VR test list per release, #438).
+**Tests** (#416): `nl.cwi.dis.vr2gather/Tests/Editor` (EditMode: Porting Check on the enabled scenes, shaders and materials in this pipeline, config.json) and `Tests/Runtime` (PlayMode: smoke test, login → standalone Pilot 0 session → login, with a synthetic point cloud and a simple avatar; needs cwipc). Both development projects list the package in `testables`. Run them in the Test Runner (Window → General → Test Runner), or with `unity command test run --mode editor` (PlayMode only with `--async-tests true` and `unity command test status`: entering Play mode drops a synchronous request). Both development projects use `com.unity.pipeline` 1.0.0, with grouped command names (`script recompile`, `test run`); `unity command` lists the groups. Testing with several participants or in VR is still manual (the VR test list per release, #438).
 
 ## Architecture
 
