@@ -276,7 +276,8 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalAudioSamples = 0;
             double statsTotalAudioZeroSamples = 0;
             int statsZeroInsertionCount = 0;
-            double statsTotalLatency = 0;
+            // latency_ms is the lowest over the interval, as for point clouds (cwi-dis/cwipc_unity#57, #382).
+            Timedelta statsMinLatency = 0;
             int statsTotalLatencyContributions = 0;
             double statsTotalQueueDuration = 0;
             Timestamp lastTimestamp = 0;
@@ -299,7 +300,7 @@ namespace VRT.UserRepresentation.Voice
                         {
                             Debug.LogWarning($"{name}.Stats: preposterous latency {latency}");
                         }
-                        statsTotalLatency += latency;
+                        if (latency < statsMinLatency || statsTotalLatencyContributions == 0) statsMinLatency = latency;
                         statsTotalLatencyContributions++;
                     }
                     statsTotalQueueDuration += queueDuration;
@@ -310,16 +311,8 @@ namespace VRT.UserRepresentation.Voice
 
             protected override void OutputAggregate()
             {
-                if (statsTotalLatencyContributions > 0)
-                {
-                    double latency_ms = statsTotalLatency / statsTotalLatencyContributions;
-                    if (latency_ms < 0 || latency_ms > 1000000)
-                    {
-                        Debug.LogWarning($"{name}.Stats: preposterous average latency {latency_ms}");
-                    }
-                }
                 OutputFields(
-                    Average("latency_ms", statsTotalLatency, statsTotalLatencyContributions, "F0"),
+                    statsTotalLatencyContributions > 0 ? Field("latency_ms", statsMinLatency) : null,
                     Rate("fps_output", statsTotalAudioframeCount),
                     Rate("fps_zero_inserted", statsZeroInsertionCount),
                     Average("zero_inserted_percentage", statsTotalAudioZeroSamples * 100, statsTotalAudioSamples),
@@ -336,7 +329,7 @@ namespace VRT.UserRepresentation.Voice
                 statsTotalAudioSamples = 0;
                 statsTotalAudioZeroSamples = 0;
                 statsZeroInsertionCount = 0;
-                statsTotalLatency = 0;
+                statsMinLatency = 0;
                 statsTotalLatencyContributions = 0;
                 statsTotalQueueDuration = 0;
             }
