@@ -65,9 +65,9 @@ namespace VRT.UserRepresentation.Voice
             bool audioIsEncoded = audioCodec == "VR2A";
             string proto = SessionConfig.Instance.protocolType;
 
-            // Without a writer nobody reads senderQueue. A non-dropping senderQueue would then fill up and
-            // block the encoder, so in that case there is no encoder and the reader writes to a dropping queue.
-            // The reader still computes MicrophoneLevel, for the level meter in the preview.
+            // Without a writer (preview, or not networked) nobody would read the reader's frames, so there is
+            // no encoder and the reader gets no output queue: it doesn't push, and counts its frames as unused
+            // instead of dropped (#454, #457). It still computes MicrophoneLevel, for the level meter in the preview.
             bool transmit = !preview && VRTOrchestratorSingleton.Comm.IsNetworked;
 
             QueueThreadSafe _readerOutputQueue = null;
@@ -79,12 +79,19 @@ namespace VRT.UserRepresentation.Voice
                 minBufferSize = codec.minSamplesPerFrame;
                 _readerOutputQueue = encoderQueue;
             }
-            else
+            else if (transmit)
             {
                 encoderQueue = null;
                 codec = null;
                 senderQueue = new QueueThreadSafe("VoiceSenderSender", 4, true);
                 _readerOutputQueue = senderQueue;
+            }
+            else
+            {
+                encoderQueue = null;
+                codec = null;
+                senderQueue = null;
+                _readerOutputQueue = null;
             }
 
             try

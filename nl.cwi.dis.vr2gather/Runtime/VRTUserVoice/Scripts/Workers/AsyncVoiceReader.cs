@@ -135,12 +135,12 @@ namespace VRT.UserRepresentation.Voice
             // base.Stop() first: a failed Enqueue() after it is teardown, not a drop (#457).
             base.Stop();
             // Close our output so the consumer wakes up at once (cwi-dis/cwipc_unity#82, rule 1).
-            outQueue.Close();
+            outQueue?.Close();
         }
 
         public override void AsyncOnStop()
         {
-            outQueue.Close();
+            outQueue?.Close();
 #if !VRT_WITHOUT_STATS
             stats.Final();
 #endif
@@ -253,6 +253,22 @@ namespace VRT.UserRepresentation.Voice
                             }
                             //
                             // Write one packet from microphone.
+                            // Without an output queue nobody listens: the frame is only used for MicrophoneLevel,
+                            // and counted as unused, not dropped (#454, #457).
+                            if (outQueue == null)
+                            {
+                                FloatMemoryChunk unusedMc = new FloatMemoryChunk(nSamplesPerPacket);
+                                _copyTo(readBuffer, unusedMc.buffer);
+                                unusedMc.free();
+                                readPosition = (readPosition + nSamplesPerPacket) % nSamplesInCircularBuffer;
+                                available -= nSamplesPerPacket;
+                                timeRemainingInBuffer = (float)available / wantedSampleRate;
+#if !VRT_WITHOUT_STATS
+                                // isRunning: after Stop() frames are not counted at all.
+                                stats.statsUpdateUnused(timeRemainingInBuffer, nSamplesPerPacket, MicrophoneLevel, isRunning);
+#endif
+                                continue;
+                            }
                             lock (outQueue)
                             {
                                 FloatMemoryChunk mc = new FloatMemoryChunk(nSamplesPerPacket);
@@ -322,6 +338,7 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalTimeInInputBuffer;
             double statsTotalQueuedDuration;
             double statsDrops;
+            double statsUnused;
             private double statsMaxLevel;
 
             public void statsUpdate(double timeInInputBuffer, int sampleCount, bool dropped, Timedelta queuedDuration, float level)
@@ -345,6 +362,18 @@ namespace VRT.UserRepresentation.Voice
                 }
             }
 
+            /// <summary>
+            /// A frame read while there is no output queue: nobody listens, so it is unused, not dropped (#454).
+            /// </summary>
+            public void statsUpdateUnused(double timeInInputBuffer, int sampleCount, float level, bool running)
+            {
+                lock (statsLock)
+                {
+                    if (running) statsUnused++;
+                }
+                statsUpdate(timeInInputBuffer, sampleCount, false, 0, level);
+            }
+
             protected override void OutputAggregate()
             {
                 OutputFields(
@@ -356,12 +385,14 @@ namespace VRT.UserRepresentation.Voice
                     Field("level", statsMaxLevel),
                     Field("n_frames", statsTotalUpdates),
                     Field("n_dropped", statsDrops),
+                    Field("n_unused", statsUnused),
                     Field("n_samples", statsTotalSamples));
                 statsTotalUpdates = 0;
                 statsTotalSamples = 0;
                 statsTotalTimeInInputBuffer = 0;
                 statsTotalQueuedDuration = 0;
                 statsDrops = 0;
+                statsUnused = 0;
                 statsMaxLevel = 0;
             }
         }
