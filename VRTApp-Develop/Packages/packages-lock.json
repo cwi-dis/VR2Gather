@@ -328,7 +328,7 @@
         "com.unity.inputsystem": "1.8.1",
         "com.unity.xr.interaction.toolkit": "3.3.0"
       },
-      "hash": "e957a6ad3f13967c6feb67181dedeb5a7b08d2e0"
+      "hash": "b04e9704a0cd051f53c244d885088c49631b293a"
     },
     "nl.cwi.dis.vr2gather": {
       "version": "file:../../nl.cwi.dis.vr2gather",
