@@ -42,7 +42,7 @@ namespace VRT.Transport.TCPReflector
                 streams[i].name = $"{userId}/{streamName}/{streams[i].tileNumber}";
                 connection.RegisterOutgoingStream(streams[i].name);
 #if !VRT_WITHOUT_STATS
-                Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
+                Statistics.Output(Name(), $"streamName={streamName}, streamid={i}, tile={streams[i].tileNumber}, x={Statistics.Num(streams[i].orientation.x, 3)}, y={Statistics.Num(streams[i].orientation.y, 3)}, z={Statistics.Num(streams[i].orientation.z, 3)}, streamname={streams[i].name}");
                 stats[i] = new Stats($"{Name()}.{i}");
                 // "pusher": the key VRTstatistics uses to map a writer's per-stream records to its streams.
                 Statistics.Output(Name(), $"pusher={Name()}.{i}, stream={i}");
