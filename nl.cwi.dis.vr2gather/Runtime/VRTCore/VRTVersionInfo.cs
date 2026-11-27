@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 #if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
@@ -36,7 +37,20 @@ namespace VRT.Core
             PackageVersions packages = GetPackageVersions();
             return $"app={Application.productName}, app_version={Application.version}, " +
                 $"vr2gather={packages.vr2gather}, cwipc_unity={packages.cwipc_unity}, " +
-                $"unity={Application.unityVersion}, platform={Application.platform}";
+                $"unity={Application.unityVersion}, platform={Application.platform}, " +
+                $"render_pipeline={RenderPipelineName()}";
+        }
+
+        /// <summary>
+        /// BIRP, URP, or the type name of any other render pipeline asset (#434).
+        /// No reference to the URP package: VR2Gather also works without it.
+        /// </summary>
+        private static string RenderPipelineName()
+        {
+            RenderPipelineAsset asset = GraphicsSettings.currentRenderPipeline;
+            if (asset == null) return "BIRP";
+            string typeName = asset.GetType().Name;
+            return typeName == "UniversalRenderPipelineAsset" ? "URP" : typeName;
         }
 
 #if UNITY_EDITOR
