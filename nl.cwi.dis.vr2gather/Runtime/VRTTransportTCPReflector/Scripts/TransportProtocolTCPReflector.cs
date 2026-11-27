@@ -159,8 +159,8 @@ namespace VRT.Transport.TCPReflector
             }
             stopping = true;
             Sock?.Close();
-            HelperThreads.Join(OutgoingThread, JoinTimeoutMs, Name());
-            HelperThreads.Join(IncomingThread, JoinTimeoutMs, Name());
+            AsyncWorker.JoinHelperThread(OutgoingThread, JoinTimeoutMs, Name());
+            AsyncWorker.JoinHelperThread(IncomingThread, JoinTimeoutMs, Name());
         }
 
         public void RegisterOutgoingStream(string streamName)

@@ -114,7 +114,7 @@ namespace VRT.Transport.WebRTC
 
             public bool Join(int joinTimeout)
             {
-                return HelperThreads.Join(myThread, joinTimeout, parent.Name());
+                return AsyncWorker.JoinHelperThread(myThread, joinTimeout, parent.Name());
             }
 
 
