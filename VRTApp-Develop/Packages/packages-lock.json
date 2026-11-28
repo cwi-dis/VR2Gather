@@ -336,7 +336,7 @@
       "source": "local",
       "dependencies": {
         "nl.cwi.dis.vr2gather.nativelibraries": "0.99.8",
-        "nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.6",
+        "nl.cwi.dis.vr2gather.nativelibraries.webrtc": "0.9.7",
         "nl.cwi.dis.cwipc": "8.3.0",
         "com.itisnajim.socketiounity": "1.1.4",
         "com.unity.animation.rigging": "1.4.1",
@@ -362,7 +362,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "d374286fac2de783a11a671c46e026386a1fd0eb"
+      "hash": "53e59a312bb18d4b2c067d6fba53b9ef3faab2ce"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
